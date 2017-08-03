@@ -52,15 +52,18 @@ export const DocumentNode = ({
     }
   })
 
+  // Remove data object. Entries are added as child DatumNodes.
+  delete customTypeDocumentItem.data
+
   // Need to use prismicId since the original id key conflicts with Gatsby.
   const node = {
+    ...customTypeDocumentItem,
     id: customTypeDocumentItem.prismicId,
     parent: customTypeItem.id,
     children: [],
     internal: {
       type: makeTypeName(`Document`)
     },
-    ...customTypeDocumentItem
   }
 
   node.internal.contentDigest = digest(stringify(node))
@@ -84,7 +87,7 @@ export const DatumNode = ({
     parent: customTypeDocumentItem.id,
     children: [],
     internal: {
-      mediaType: 'application/x-prismic-v2',
+      mediaType: prismicMediaType,
       type: makeTypeName(`Datum`),
       content: str,
       contentDigest: digest(str)
@@ -93,3 +96,21 @@ export const DatumNode = ({
 
   return node
 }
+
+// export const SliceNode = ({
+//   customTypeDocumentItem,
+//   customTypeDocumentSliceItem
+// }) => {
+//   const node = {
+//     id: customTypeDocumentSliceItem.id,
+//     parent: customTypeDocumentItem.id,
+//     children: [],
+//     internal: {
+//       type: makeTypeName(`Slice`)
+//     }
+//   }
+
+//   node.internal.contentDigest = digest(stringify(node))
+
+//   return node
+// }

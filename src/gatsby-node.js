@@ -61,10 +61,6 @@ exports.sourceNodes = async (
 
       const customTypeDocumentData = customTypeDocumentItem.data
 
-      // Remove slice data
-      // TODO: Add this functionality
-      delete customTypeDocumentData.body
-
       // Level 3: CustomTypeDocumentDatum nodes
       Object.keys(customTypeDocumentData).forEach(customTypeDocumentDatumKey => {
         const customTypeDocumentDatumItem = customTypeDocumentData[customTypeDocumentDatumKey]
