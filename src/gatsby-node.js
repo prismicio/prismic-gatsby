@@ -59,25 +59,6 @@ exports.sourceNodes = async (
         customTypeDocumentItem
       })
 
-      const customTypeDocumentData = customTypeDocumentItem.data
-
-      // Level 3: CustomTypeDocumentDatum nodes
-      Object.keys(customTypeDocumentData).forEach(customTypeDocumentDatumKey => {
-        const customTypeDocumentDatumItem = customTypeDocumentData[customTypeDocumentDatumKey]
-
-        // Data do not have IDs, so generate a reproducable one based on the
-        // content. The MD5 hash of the content is used here.
-        customTypeDocumentDatumItem.id = digest(stringify(customTypeDocumentDatumItem))
-
-        const customTypeDocumentDatumNode = DatumNode({
-          customTypeDocumentItem,
-          customTypeDocumentDatumItem
-        })
-
-        createNode(customTypeDocumentDatumNode)
-        customTypeDocumentNode.children = customTypeDocumentNode.children.concat([customTypeDocumentDatumNode.id])
-      })
-
       createNode(customTypeDocumentNode)
       customTypeNode.children = customTypeNode.children.concat([customTypeDocumentNode.id])
     })
