@@ -10,11 +10,11 @@ const restrictedNodeFields = [`id`, `children`, `parent`, `fields`, `internal`]
 const makeTypeName = type => upperFirst(camelCase(`${typePrefix} ${type}`))
 const digest = str => createHash(`md5`).update(str).digest(`hex`)
 
-// TypeNode
+// CustomTypeNode
 //
-// Each custom type is a TypeNode. Documents using the custom type are child
-// nodes.
-export const TypeNode = ({
+// Each custom type is a CustomTypeNode. Documents using the custom type are
+// child nodes.
+export const CustomTypeNode = ({
   customTypeItem
 }) => {
   const node = {

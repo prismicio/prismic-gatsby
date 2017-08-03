@@ -2,11 +2,7 @@ import { uniq } from 'lodash'
 import { createHash } from 'crypto'
 import stringify from 'json-stringify-safe'
 import fetchData from './fetch'
-import {
-  TypeNode,
-  DocumentNode,
-  DatumNode
-} from './nodes'
+import { CustomTypeNode, DocumentNode } from './nodes'
 
 const digest = str => createHash(`md5`).update(str).digest(`hex`)
 
@@ -44,7 +40,7 @@ exports.sourceNodes = async (
 
   // Level 1: CustomType nodes
   customTypeItems.forEach(customTypeItem => {
-    const customTypeNode = TypeNode({
+    const customTypeNode = CustomTypeNode({
       customTypeItem
     })
 
@@ -52,7 +48,7 @@ exports.sourceNodes = async (
       doc => doc.type === customTypeItem.name
     )
 
-    // Level 2: CustomTypeDocument nodes
+    // Level 2: Document nodes
     customTypeDocuments.forEach(customTypeDocumentItem => {
       const customTypeDocumentNode = DocumentNode({
         customTypeItem,
