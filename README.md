@@ -8,8 +8,6 @@ Source plugin for pulling documents into Gatsby from prismic.io repositories.
 
 ## How to use
 
-### Using Delivery API
-
 ```javascript
 // In your gatsby-config.js
 plugins: [
