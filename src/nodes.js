@@ -10,54 +10,31 @@ const restrictedNodeFields = [`id`, `children`, `parent`, `fields`, `internal`]
 const makeTypeName = type => upperFirst(camelCase(`${typePrefix} ${type}`))
 const digest = str => createHash(`md5`).update(str).digest(`hex`)
 
-// CustomTypeNode
-//
-// Each custom type is a CustomTypeNode. Documents using the custom type are
-// child nodes.
-export const CustomTypeNode = ({
-  customTypeItem
-}) => {
-  const node = {
-    id: customTypeItem.id,
-    parent: sourceId,
-    children: [],
-    name: customTypeItem.name,
-    internal: {
-      type: makeTypeName(`${upperFirst(customTypeItem.name)} Type`)
-    }
-  }
-
-  node.internal.contentDigest = digest(stringify(node))
-
-  return node
-}
-
 // DocumentNode
 //
 // Each document is a DocumentNode. Data is available in the `data` property.
 export const DocumentNode = ({
-  customTypeItem,
-  customTypeDocumentItem: customTypeDocumentItemOrig
+  documentItem: documentItemOriginal
 }) => {
-  const customTypeDocumentItem = Object.assign({}, customTypeDocumentItemOrig)
+  const documentItem = Object.assign({}, documentItemOriginal)
 
   // Prefix conflicting keys.
-  Object.keys(customTypeDocumentItem).forEach(key => {
+  Object.keys(documentItem).forEach(key => {
     if (restrictedNodeFields.includes(key)) {
-      customTypeDocumentItem[`${conflictFieldPrefix}${upperFirst(key)}`] = customTypeDocumentItem[key]
-      delete customTypeDocumentItem[key]
+      documentItem[conflictFieldPrefix + upperFirst(key)] = documentItem[key]
+      delete documentItem[key]
     }
   })
 
   // Need to use prismicId since the original id key conflicts with Gatsby.
   const node = {
-    ...customTypeDocumentItem,
-    id: customTypeDocumentItem.prismicId,
-    parent: customTypeItem.id,
+    ...documentItem,
+    id: documentItem.prismicId,
+    parent: sourceId,
     children: [],
     internal: {
       type: makeTypeName(`Document`)
-    },
+    }
   }
 
   node.internal.contentDigest = digest(stringify(node))
