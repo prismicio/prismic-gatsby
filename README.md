@@ -4,8 +4,6 @@ Source plugin for pulling documents into Gatsby from prismic.io repositories.
 
 ## Install
 
-**Not actually published yet**
-
 `npm install --save gatsby-source-prismic`
 
 ## How to use
