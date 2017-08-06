@@ -12,16 +12,14 @@ exports.sourceNodes = async (
     setPluginStatus,
   } = boundActionCreators
 
-  const {
-    documents
-  } = await fetchData({
+  const { documents } = await fetchData({
     repositoryName,
-    accessToken
+    accessToken,
   })
 
   documents.forEach(doc => {
     const node = DocumentNode({
-      documentItem: doc
+      documentItem: doc,
     })
 
     createNode(node)

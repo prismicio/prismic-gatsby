@@ -13,9 +13,7 @@ const digest = str => createHash(`md5`).update(str).digest(`hex`)
 // DocumentNode
 //
 // Each document is a DocumentNode. Data is available in the `data` property.
-export const DocumentNode = ({
-  documentItem: documentItemOriginal
-}) => {
+export const DocumentNode = ({ documentItem: documentItemOriginal }) => {
   const documentItem = Object.assign({}, documentItemOriginal)
 
   // Prefix conflicting keys.
@@ -33,8 +31,8 @@ export const DocumentNode = ({
     parent: sourceId,
     children: [],
     internal: {
-      type: makeTypeName(`Document`)
-    }
+      type: makeTypeName(`Document`),
+    },
   }
 
   node.internal.contentDigest = digest(stringify(node))

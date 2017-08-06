@@ -13,7 +13,7 @@ module.exports = async ({ repositoryName, accessToken }) => {
   console.timeEnd(`Fetch Prismic data`)
 
   return {
-    documents
+    documents,
   }
 }
 
@@ -25,22 +25,23 @@ async function pagedGet(
   pageSize = 100,
   aggregatedResponse = null
 ) {
-  const mergedOptions = Object.assign({
-    lang: '*'
-  }, options)
+  const mergedOptions = Object.assign(
+    {
+      lang: '*',
+    },
+    options
+  )
 
   const response = await client.query(query, {
     ...mergedOptions,
     page,
-    pageSize
+    pageSize,
   })
 
   if (!aggregatedResponse) {
     aggregatedResponse = response.results
   } else {
-    aggregatedResponse = aggregatedResponse.concat(
-      response.results
-    )
+    aggregatedResponse = aggregatedResponse.concat(response.results)
   }
 
   if (page * pageSize < response.total_results_size) {
