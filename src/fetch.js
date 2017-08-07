@@ -45,7 +45,7 @@ async function pagedGet(
   }
 
   if (page * pageSize < response.total_results_size) {
-    return pagedGet(client, query, options, page + 1, aggregatedResponse)
+    return pagedGet(client, query, options, page + 1, pageSize, aggregatedResponse)
   }
 
   return aggregatedResponse
