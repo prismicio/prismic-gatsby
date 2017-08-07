@@ -14,7 +14,7 @@ plugins: [
   {
     resolve: `gatsby-source-prismic`,
     options: {
-      respositoryName: `your_repository_name`,
+      repositoryName: `your_repository_name`,
       accessToken: `your_acces_token`,
     },
   },
