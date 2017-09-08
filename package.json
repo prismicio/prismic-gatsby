@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "scripts": {
     "build": "babel src --out-dir .",
