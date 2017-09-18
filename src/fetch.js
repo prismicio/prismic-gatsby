@@ -5,7 +5,7 @@ module.exports = async ({ repositoryName, accessToken }) => {
   console.log(`Starting to fetch data from Prismic`)
 
   const apiEndpoint = `https://${repositoryName}.prismic.io/api/v2`
-  const client = await Prismic.getApi(apiEndpoint)
+  const client = await Prismic.getApi(apiEndpoint, { accessToken })
 
   // Query all documents from client
   const documents = await pagedGet(client)
