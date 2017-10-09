@@ -30,7 +30,7 @@ You can query Document nodes created from prismic.io like the following:
   allPrismicDocument {
     edges {
       node {
-        uid
+        id
         data {
           title {
             type
