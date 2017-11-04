@@ -1,3 +1,4 @@
+*.log
 /gatsby-node.js
 /nodes.js
 /fetch.js
