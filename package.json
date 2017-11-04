@@ -3,6 +3,7 @@
   "version": "0.1.3",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "scripts": {
+    "prepublish": "npm run build",
     "build": "babel src --out-dir .",
     "format": "prettier --trailing-comma es5 --no-semi --single-quote --write 'src/**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1",
