@@ -1,6 +1,6 @@
 import Prismic from 'prismic-javascript'
 
-module.exports = async ({ repositoryName, accessToken }) => {
+export default async ({ repositoryName, accessToken }) => {
   console.time(`Fetch Prismic data`)
   console.log(`Starting to fetch data from Prismic`)
 
@@ -27,7 +27,7 @@ async function pagedGet(
 ) {
   const mergedOptions = Object.assign(
     {
-      lang: '*',
+      lang: `*`,
     },
     options
   )
@@ -45,7 +45,14 @@ async function pagedGet(
   }
 
   if (page * pageSize < response.total_results_size) {
-    return pagedGet(client, query, options, page + 1, pageSize, aggregatedResponse)
+    return pagedGet(
+      client,
+      query,
+      options,
+      page + 1,
+      pageSize,
+      aggregatedResponse
+    )
   }
 
   return aggregatedResponse

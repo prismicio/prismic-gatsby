@@ -1,29 +1,16 @@
+import createNodeHelpers from 'gatsby-node-helpers'
+import { pipe } from 'lodash/fp/pipe'
 import fetchData from './fetch'
-import { DocumentNode } from './nodes'
 
-exports.sourceNodes = async (
-  { boundActionCreators, getNodes, hasNodeChanged, store },
+const { createNodeFactory } = createNodeHelpers({ typePrefix: `Prismic` })
+
+const DocumentNode = createNodeFactory(`Document`)
+
+export const sourceNodes = async (
+  { boundActionCreators: { createNode } },
   { repositoryName, accessToken }
 ) => {
-  const {
-    createNode,
-    deleteNodes,
-    touchNode,
-    setPluginStatus,
-  } = boundActionCreators
+  const { documents } = await fetchData({ respositoryName, accessToken })
 
-  const { documents } = await fetchData({
-    repositoryName,
-    accessToken,
-  })
-
-  documents.forEach(doc => {
-    const node = DocumentNode({
-      documentItem: doc,
-    })
-
-    createNode(node)
-  })
-
-  return
+  documents.forEach(pipe(DocumentNode, createNode))
 }
