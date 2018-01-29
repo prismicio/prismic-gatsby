@@ -10,7 +10,7 @@ export const sourceNodes = async (
   { boundActionCreators: { createNode } },
   { repositoryName, accessToken }
 ) => {
-  const { documents } = await fetchData({ respositoryName, accessToken })
+  const { documents } = await fetchData({ repositoryName, accessToken })
 
   documents.forEach(pipe(DocumentNode, createNode))
 }
