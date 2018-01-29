@@ -1,5 +1,4 @@
 import createNodeHelpers from 'gatsby-node-helpers'
-import pipe from 'lodash/fp/pipe'
 import fetchData from './fetch'
 
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Prismic` })
@@ -12,5 +11,7 @@ export const sourceNodes = async (
 ) => {
   const { documents } = await fetchData({ repositoryName, accessToken })
 
-  documents.forEach(pipe(DocumentNode, createNode))
+  documents.forEach(document => {
+    createNode(DocumentNode(document, { raw: JSON.stringify(document) }))
+  })
 }
