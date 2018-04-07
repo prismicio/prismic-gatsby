@@ -24,6 +24,7 @@
   "dependencies": {
     "gatsby-node-helpers": "^0.1.3",
     "lodash": "^4.17.4",
+    "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5"
   },
   "devDependencies": {
