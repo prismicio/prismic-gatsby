@@ -23,13 +23,13 @@ async function pagedGet(
   options = {},
   page = 1,
   pageSize = 100,
-  aggregatedResponse = null
+  aggregatedResponse = null,
 ) {
   const mergedOptions = Object.assign(
     {
       lang: `*`,
     },
-    options
+    options,
   )
 
   const response = await client.query(query, {
@@ -51,7 +51,7 @@ async function pagedGet(
       options,
       page + 1,
       pageSize,
-      aggregatedResponse
+      aggregatedResponse,
     )
   }
 

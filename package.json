@@ -5,7 +5,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "babel src --out-dir .",
-    "format": "prettier --trailing-comma es5 --no-semi --single-quote --write 'src/**/*.js'",
+    "format": "prettier --trailing-comma all --no-semi --single-quote --write 'src/**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "babel -w src --out-dir ."
   },
@@ -23,7 +23,6 @@
   "license": "MIT",
   "dependencies": {
     "gatsby-node-helpers": "^0.1.3",
-    "lodash": "^4.17.4",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5"
   },
