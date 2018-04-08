@@ -22,7 +22,7 @@ export const sourceNodes = async (
     Object.entries(node.data).forEach(([key, value]) => {
       const htmlOptions = { node, key, value }
 
-      // Provide HTML, text, and raw values for RichText fields.
+      // Provide HTML, text, raw, and rawString values for RichText fields.
       if (isRichTextField(value))
         node.data[key] = {
           html: PrismicDOM.RichText.asHtml(
@@ -32,6 +32,7 @@ export const sourceNodes = async (
           ),
           text: PrismicDOM.RichText.asText(value),
           raw: value,
+          rawString: JSON.stringify(value),
         }
     })
 

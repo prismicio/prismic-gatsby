@@ -16,6 +16,16 @@ plugins: [
     options: {
       repositoryName: `your_repository_name`,
       accessToken: `your_acces_token`,
+
+      // Link resolver used whenever an HTML field is created.
+      linkResolver: ({ node, key, value }) => doc => {
+        // your link resolver
+      },
+
+      // HTML serializer used whenever an HTML field is created.
+      htmlSerializer: ({ node, key, value }) => (element, content) => {
+        // your HTML serializer
+      }
     },
   },
 ]
@@ -66,6 +76,9 @@ available:
                 end
               }
             }
+          }
+          credit {
+            rawString
           }
         }
       }
