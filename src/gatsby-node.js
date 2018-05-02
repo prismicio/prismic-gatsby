@@ -28,6 +28,11 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
 
   documents.forEach(doc => {
     const Node = createNodeFactory(doc.type, node => {
+      // Add node.data as a string for parsing client-side. Functionality of
+      // this plugin should be enough that this field is rarely used.
+      node.dataString = JSON.stringify(node)
+
+      // Iterate each field and process as necessary.
       Object.entries(node.data).forEach(([key, value]) => {
         // Process RichText fields. Provides html, text, raw, and rawString
         // fields to avoid prismic-dom usage client-side.
@@ -40,7 +45,6 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
             ),
             text: PrismicDOM.RichText.asText(value),
             raw: value,
-            rawString: JSON.stringify(value),
           }
         }
 
