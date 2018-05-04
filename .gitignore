@@ -1,5 +1,4 @@
 *.log
 /gatsby-node.js
 /fetch.js
-/yarn.lock
 node_modules
