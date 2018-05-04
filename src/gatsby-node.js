@@ -13,6 +13,8 @@ const isRichTextField = value =>
 
 const isDocumentLinkField = value =>
   !!value &&
+  !!value.type &&
+  !!value.id &&
   typeof value === 'object' &&
   value.link_type === 'Document'
 
