@@ -12,6 +12,9 @@ const isRichTextField = value =>
   Object.keys(value[0]).includes('spans')
 
 const isDocumentLinkField = value =>
+  !!value &&
+  !!value.type &&
+  !!value.id &&
   typeof value === 'object' &&
   value.link_type === 'Document'
 
