@@ -19,10 +19,16 @@ const isLinkField = value =>
 const isLinkDocumentField = value =>
   isLinkField(value) && value.link_type === 'Document'
 
+const isLinkMediaField = value =>
+  isLinkField(value) && value.link_type === 'Media'
+
 const isLinkWebField = value => isLinkField(value) && value.link_type === 'Web'
 
 const isLinkAnyField = value =>
-  isLinkField(value) && !isLinkDocumentField(value) && !isLinkWebField(value)
+  isLinkField(value) &&
+  !isLinkDocumentField(value) &&
+  !isLinkMediaField(value) &&
+  !isLinkWebField(value)
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { boundActionCreators: { createNode } } = gatsby
@@ -81,6 +87,18 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
             raw: value,
           }
           return
+        }
+
+        if (isLinkMediaField(value)) {
+          if (!value.url) {
+            delete node.data[key]
+            return
+          }
+
+          node.data[key] = {
+            url: value.url,
+            raw: value,
+          }
         }
 
         if (isLinkAnyField(value)) {
