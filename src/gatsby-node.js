@@ -2,11 +2,7 @@ import createNodeHelpers from 'gatsby-node-helpers'
 import PrismicDOM from 'prismic-dom'
 import fetchData from './fetch'
 
-const {
-  createNodeFactory,
-  generateNodeId,
-  generateTypeName,
-} = createNodeHelpers({
+const { createNodeFactory, generateNodeId } = createNodeHelpers({
   typePrefix: 'Prismic',
 })
 
