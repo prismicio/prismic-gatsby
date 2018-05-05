@@ -12,7 +12,17 @@ const isRichTextField = value =>
   Object.keys(value[0]).includes('spans')
 
 const isLinkField = value =>
-  !!value && typeof value === 'object' && value.hasOwnProperty('link_type')
+  value !== null &&
+  typeof value === 'object' &&
+  value.hasOwnProperty('link_type')
+
+const isLinkDocumentField = value =>
+  isLinkField(value) && value.link_type === 'Document'
+
+const isLinkWebField = value => isLinkField(value) && value.link_type === 'Web'
+
+const isLinkAnyField = value =>
+  isLinkField(value) && !isLinkDocumentField(value) && !isLinkWebField(value)
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { boundActionCreators: { createNode } } = gatsby
@@ -27,21 +37,13 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
 
   documents.forEach(doc => {
     const Node = createNodeFactory(doc.type, node => {
-      // Add node.data as a string for parsing client-side. Functionality of
-      // this plugin should be enough that this field is rarely used.
       node.dataString = JSON.stringify(node)
 
-      // Iterate each field and process as necessary.
       Object.entries(node.data).forEach(([key, value]) => {
         const linkResolverForField = linkResolver({ node, key, value })
         const htmlSerializerForField = htmlSerializer({ node, key, value })
 
         if (isRichTextField(value)) {
-          // Replace the field with an object containing the following keys:
-          //
-          // - html: The field's data provided as HTML via prismic-dom
-          // - text: The field's data provided as text via prismic-dom
-          // - raw:  The field's raw data
           node.data[key] = {
             html: PrismicDOM.RichText.asHtml(
               value,
@@ -54,33 +56,34 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
           return
         }
 
-        if (isLinkField(value)) {
-          // If the field links to a document, replace the field with an object
-          // containing the following keys:
-          //
-          // - url:      The linked document's url via the linkResolver
-          // - document: The linked document's data
-          if (value.link_type === 'Document' && value.type && value.id) {
-            node.data[key] = {
-              url: PrismicDOM.Link.url(value, linkResolverForField),
-              document___NODE: [generateNodeId(value.type, value.id)],
-            }
+        if (isLinkDocumentField(value)) {
+          if (!value.type && !value.id) {
+            delete node.data[key]
             return
           }
 
-          // If the field links to an external URL, replace the field with an
-          // object containing the following keys:
-          //
-          // - url: The linked url
-          if (value.link_type === 'Web' && value.url) {
-            node.data[key] = {
-              url: value.url,
-            }
+          node.data[key] = {
+            document___NODE: [generateNodeId(value.type, value.id)],
+            url: PrismicDOM.Link.url(value, linkResolverForField),
+            raw: value,
+          }
+          return
+        }
+
+        if (isLinkWebField(value)) {
+          if (!value.url) {
+            delete node.data[key]
             return
           }
 
-          // If the field does not match one of the above link types, delete
-          // the field; the field is considered empty.
+          node.data[key] = {
+            url: value.url,
+            raw: value,
+          }
+          return
+        }
+
+        if (isLinkAnyField(value)) {
           delete node.data[key]
           return
         }
