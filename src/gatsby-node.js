@@ -14,21 +14,6 @@ const isRichTextField = value =>
 const isLinkField = value =>
   !!value && typeof value === 'object' && value.hasOwnProperty('link_type')
 
-// const isContentRelationField = value =>
-//   !!value &&
-//   typeof value === 'object' &&
-//   value.link_type === 'Document'
-
-// const isLinkField = value =>
-//   !!value &&
-//   typeof value === 'object' &&
-//   value.link_type === 'Any'
-
-// const isLinkToMediaField = value =>
-//   !!value &&
-//   typeof value === 'object' &&
-//   value.link_type === 'Document'
-
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { boundActionCreators: { createNode } } = gatsby
   const {
