@@ -216,12 +216,15 @@ exports.createPages = async ({ graphql, boundActionCreators }) => {
     }
   `)
 
-  pages.data.allPrismicPage.edges.forEach(edge => {
-    const pageTemplate = path.resolve('./src/templates/page.js')
+  const pageTemplates = {
+    'Light': path.resolve('./src/templates/light.js'),
+    'Dark': path.resolve('./src/templates/dark.js'),
+  }
 
+  pages.data.allPrismicPage.edges.forEach(edge => {
     createPage({
       path: `/${edge.node.uid}`,
-      component: pageTemplate,
+      component: pageTemplates[edge.node.template],
       context: {
         id: edge.node.id,
       },
