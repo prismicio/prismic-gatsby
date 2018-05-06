@@ -366,5 +366,6 @@ exports.createPages = async ({ graphql, boundActionCreators }) => {
 [gatsby]: https://www.gatsbyjs.org/
 [prismic]: https://prismic.io/
 [prismic-dom]: https://github.com/prismicio/prismic-dom
+[prismic-javascript]: https://github.com/prismicio/prismic-javascript
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
 [gatsby-plugin-sharp]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
