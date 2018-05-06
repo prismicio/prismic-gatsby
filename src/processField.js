@@ -10,70 +10,46 @@ const isLinkField = value =>
   typeof value === 'object' &&
   value.hasOwnProperty('link_type')
 
-export const processField = args => {
-  const {
-    node,
-    fields,
-    key,
-    linkResolver,
-    htmlSerializer,
-    generateNodeId,
-  } = args
-  const linkResolverForField = linkResolver({ node, key, value })
-  const htmlSerializerForField = htmlSerializer({ node, key, value })
-  const value = fields[key]
+const processRichTextField = (value, linkResolver, htmlSerializer) => ({
+  html: PrismicDOM.RichText.asHtml(value, linkResolver, htmlSerializer),
+  text: PrismicDOM.RichText.asText(value),
+  raw: value,
+})
 
-  if (isRichTextField(value)) {
-    return {
-      ...fields,
-      [key]: {
-        html: PrismicDOM.RichText.asHtml(
-          value,
-          linkResolverForField,
-          htmlSerializerForField,
-        ),
-        text: PrismicDOM.RichText.asText(value),
+const processLinkField = (value, linkResolver, generateNodeId) => {
+  switch (value.link_type) {
+    case 'Document':
+      if (!value.type || !value.id) return undefined
+      return {
+        document___NODE: [generateNodeId(value.type, value.id)],
+        url: PrismicDOM.Link.url(value, linkResolver),
         raw: value,
       }
-    }
+
+    case 'Media':
+    case 'Web':
+      return {
+        url: value.url,
+        raw: value,
+      }
+
+    default:
+      return undefined
   }
+}
 
-  if (isLinkField(value)) {
-    switch (value.link_type) {
-      case 'Document':
-        if (!value.type && !value.id) {
-          return {
-            ...fields,
-            [key]: undefined,
-          }
-        }
+export const processField = (key, value, node, pluginOptions, nodeHelpers) => {
+  let { linkResolver = () => {}, htmlSerializer = () => {} } = pluginOptions
+  const { generateNodeId } = nodeHelpers
 
-        return {
-          ...fields,
-          [key]: {
-            document___NODE: [generateNodeId(value.type, value.id)],
-            url: PrismicDOM.Link.url(value, linkResolverForField),
-            raw: value,
-          }
-        }
+  linkResolver = linkResolver({ node, key, value })
+  htmlSerializer = htmlSerializer({ node, key, value })
 
-      case 'Media':
-      case 'Web':
-        return {
-          ...fields,
-          [key]: {
-            url: value.url,
-            raw: value,
-          }
-        }
+  if (isRichTextField(value))
+    return processRichTextField(value, linkResolver, htmlSerializer)
 
-      default:
-        return {
-          ...fields,
-          [key]: undefined,
-        }
-    }
-  }
+  if (isLinkField(value))
+    return processLinkField(value, linkResolver, generateNodeId)
 
-  return fields
+  return value
 }

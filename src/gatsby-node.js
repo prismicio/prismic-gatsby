@@ -2,18 +2,12 @@ import createNodeHelpers from 'gatsby-node-helpers'
 import fetchData from './fetch'
 import { processField } from './processField'
 
-const { createNodeFactory, generateNodeId } = createNodeHelpers({
-  typePrefix: 'Prismic',
-})
+const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
+const { createNodeFactory, generateNodeId } = nodeHelpers
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { boundActionCreators: { createNode } } = gatsby
-  const {
-    repositoryName,
-    accessToken,
-    linkResolver = () => undefined,
-    htmlSerializer = () => undefined,
-  } = pluginOptions
+  const { repositoryName, accessToken } = pluginOptions
 
   const { documents } = await fetchData({ repositoryName, accessToken })
 
@@ -21,52 +15,49 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     const Node = createNodeFactory(doc.type, node => {
       node.dataString = JSON.stringify(node.data)
 
-      const allFieldKeys = Object.keys(node.data)
-      const fieldKeys = allFieldKeys.filter(k => !k.match(/body[0-9]*/))
-      const sliceKeys = allFieldKeys.filter(k => k.match(/body[0-9]*/))
+      const allFields = Object.entries(node.data)
+      const fields = allFields.filter(([key]) => !key.match(/body[0-9]*/))
+      const slices = allFields.filter(([key]) => key.match(/body[0-9]*/))
 
-      fieldKeys.forEach(key =>
-        node.data = processField({
-          node,
-          fields: node.data,
+      fields.forEach(([key, value]) => {
+        node.data[key] = processField(
           key,
-          linkResolver,
-          htmlSerializer,
-          generateNodeId,
-        }),
-      )
+          value,
+          node,
+          pluginOptions,
+          nodeHelpers,
+        )
+      })
 
-      sliceKeys.forEach(sliceKey => {
-        const entries = node.data[sliceKey]
-        const childEntryNodeIds = []
+      slices.forEach(([sliceKey, entries]) => {
+        const primaryChildrenIds = []
 
         entries.forEach((entry, entryIndex) => {
           entry.id = entryIndex
 
-          const EntryNode = createNodeFactory(`${doc.type}_${sliceKey}_${entry.slice_type}`, entryNode => {
-            const entryFieldKeys = Object.keys(entryNode.primary)
+          const entryNodeType = `${doc.type}_${sliceKey}_${entry.slice_type}`
+          const EntryNode = createNodeFactory(entryNodeType, entryNode => {
+            const entryFields = Object.entries(entryNode.primary)
 
-            entryFieldKeys.forEach(key =>
-              entryNode.primary = processField({
-                node,
-                fields: entry.primary,
+            entryFields.forEach(([key, value]) => {
+              entryNode.primary[key] = processField(
                 key,
-                linkResolver,
-                htmlSerializer,
-                generateNodeId,
-              })
-            )
+                value,
+                node,
+                pluginOptions,
+                nodeHelpers,
+              )
+            })
 
             return entryNode
           })
 
           const entryNode = EntryNode(entry)
           createNode(entryNode)
-
-          childEntryNodeIds.push(entryNode.id)
+          primaryChildrenIds.push(entryNode.id)
         })
 
-        node.data[`${sliceKey}___NODE`] = childEntryNodeIds
+        node.data[`${sliceKey}___NODE`] = primaryChildrenIds
         delete node.data[sliceKey]
       })
 
