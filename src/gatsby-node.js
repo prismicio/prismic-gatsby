@@ -1,34 +1,10 @@
 import createNodeHelpers from 'gatsby-node-helpers'
-import PrismicDOM from 'prismic-dom'
 import fetchData from './fetch'
+import { processField } from './processField'
 
 const { createNodeFactory, generateNodeId } = createNodeHelpers({
   typePrefix: 'Prismic',
 })
-
-const isRichTextField = value =>
-  Array.isArray(value) &&
-  typeof value[0] === 'object' &&
-  Object.keys(value[0]).includes('spans')
-
-const isLinkField = value =>
-  value !== null &&
-  typeof value === 'object' &&
-  value.hasOwnProperty('link_type')
-
-const isLinkDocumentField = value =>
-  isLinkField(value) && value.link_type === 'Document'
-
-const isLinkMediaField = value =>
-  isLinkField(value) && value.link_type === 'Media'
-
-const isLinkWebField = value => isLinkField(value) && value.link_type === 'Web'
-
-const isLinkAnyField = value =>
-  isLinkField(value) &&
-  !isLinkDocumentField(value) &&
-  !isLinkMediaField(value) &&
-  !isLinkWebField(value)
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { boundActionCreators: { createNode } } = gatsby
@@ -43,68 +19,55 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
 
   documents.forEach(doc => {
     const Node = createNodeFactory(doc.type, node => {
-      node.dataString = JSON.stringify(node)
+      node.dataString = JSON.stringify(node.data)
 
-      Object.entries(node.data).forEach(([key, value]) => {
-        const linkResolverForField = linkResolver({ node, key, value })
-        const htmlSerializerForField = htmlSerializer({ node, key, value })
+      const allFieldKeys = Object.keys(node.data)
+      const fieldKeys = allFieldKeys.filter(k => !k.match(/body[0-9]*/))
+      const sliceKeys = allFieldKeys.filter(k => k.match(/body[0-9]*/))
 
-        if (isRichTextField(value)) {
-          node.data[key] = {
-            html: PrismicDOM.RichText.asHtml(
-              value,
-              linkResolverForField,
-              htmlSerializerForField,
-            ),
-            text: PrismicDOM.RichText.asText(value),
-            raw: value,
-          }
-          return
-        }
+      fieldKeys.forEach(key =>
+        node.data = processField({
+          node,
+          fields: node.data,
+          key,
+          linkResolver,
+          htmlSerializer,
+          generateNodeId,
+        }),
+      )
 
-        if (isLinkDocumentField(value)) {
-          if (!value.type && !value.id) {
-            delete node.data[key]
-            return
-          }
+      sliceKeys.forEach(sliceKey => {
+        const entries = node.data[sliceKey]
+        const childEntryNodeIds = []
 
-          node.data[key] = {
-            document___NODE: [generateNodeId(value.type, value.id)],
-            url: PrismicDOM.Link.url(value, linkResolverForField),
-            raw: value,
-          }
-          return
-        }
+        entries.forEach((entry, entryIndex) => {
+          entry.id = entryIndex
 
-        if (isLinkWebField(value)) {
-          if (!value.url) {
-            delete node.data[key]
-            return
-          }
+          const EntryNode = createNodeFactory(`${doc.type}_${sliceKey}_${entry.slice_type}`, entryNode => {
+            const entryFieldKeys = Object.keys(entryNode.primary)
 
-          node.data[key] = {
-            url: value.url,
-            raw: value,
-          }
-          return
-        }
+            entryFieldKeys.forEach(key =>
+              entryNode.primary = processField({
+                node,
+                fields: entry.primary,
+                key,
+                linkResolver,
+                htmlSerializer,
+                generateNodeId,
+              })
+            )
 
-        if (isLinkMediaField(value)) {
-          if (!value.url) {
-            delete node.data[key]
-            return
-          }
+            return entryNode
+          })
 
-          node.data[key] = {
-            url: value.url,
-            raw: value,
-          }
-        }
+          const entryNode = EntryNode(entry)
+          createNode(entryNode)
 
-        if (isLinkAnyField(value)) {
-          delete node.data[key]
-          return
-        }
+          childEntryNodeIds.push(entryNode.id)
+        })
+
+        node.data[`${sliceKey}___NODE`] = childEntryNodeIds
+        delete node.data[sliceKey]
       })
 
       return node
