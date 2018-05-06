@@ -63,5 +63,62 @@ plugins: [
 ]
 ```
 
+## How to query
+
+You can query nodes created from Prismic using GraphQL like the following:
+
+**Note**: Learn to use the GraphQL tool and Ctrl+Spacebar at
+<http://localhost:3000/___graphql> to discover the types and properties of your
+GraphQL model.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        uid
+        first_publication_date
+        last_publication_date
+        data {
+          title {
+            text
+          }
+          content {
+            html
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+All documents are pulled from your repository and created as
+`prismic${contentTypeName}` and `allPrismic${contentTypeName}`, where
+`${contentTypeName}` is the API ID of your document's content type.
+
+For example, if you have `Product` as one of your content types, you will be
+able to query it like the following:
+
+```graphql
+{
+  allPrismicProduct {
+    edges {
+      node {
+        id
+        data {
+          name
+          price
+          description {
+            html
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 [gatsby]: https://www.gatsbyjs.org/
 [prismic]: https://prismic.io/
