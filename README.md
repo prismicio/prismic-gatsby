@@ -292,6 +292,31 @@ Full example:
 }
 ```
 
+### Query direct API data as a fallback
+
+If you find you cannot query the data you need through the GraphQL interface,
+you can get the raw response from the [prismic-javascript][prismic-javascript]
+API using the `dataString` field.
+
+This field contains the whole node's original data before processing as a
+string generated using `JSON.stringify`.
+
+This is absolutely discouraged as it defeats the purpose of Gatsby's GraphQL
+data interface, but it is available if necessary
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        dataString
+      }
+    }
+  }
+}
+```
+
 ### Image processing
 
 Coming soon!
