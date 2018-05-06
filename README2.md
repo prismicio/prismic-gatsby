@@ -120,5 +120,117 @@ able to query it like the following:
 }
 ```
 
+### Query with slices
+
+Prismic slices allow you to build a flexible series of content blocks. Since
+the content structure is dynamic, querying the content is handled differently
+than other fields.
+
+To access slice fields, you need to use GraphQL [inline
+fragments][graphql-inline-fragments]. This requires you to know types of nodes.
+The easiest way to get the type of nodes is to the the `/___graphql` debugger
+and run the below query (adjust the document type and field name).
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          body {
+            __typename
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+When you have node type names, you can use them to create inline fragments.
+
+Full example:
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          body {
+            __typename
+            ... on PrismicPageBodyRichText {
+              text {
+                html
+              }
+            }
+            ... on PrismicPageBodyQuote {
+              quote {
+                html
+              }
+              credit {
+                text
+              }
+            }
+            ... on PrismicPageBodyFootnote {
+              content {
+                html
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Image processing
+
+Coming soon!
+
+To learn more about image processing, check the documentation of
+[gatsby-plugin-sharp][gatsby-plugin-sharp].
+
+## Site's `gatsby-node.js` example
+
+```js
+const path = require('path')
+
+exports.createPages = async ({ graphql, boundActionCreators }) => {
+  const { createPage } = boundActionCreators
+
+  const pages = await graphql(`
+    {
+      allPrismicPage {
+        edges {
+          node {
+            id
+            uid
+            template
+          }
+        }
+      }
+    }
+  `)
+
+  pages.data.allPrismicPage.edges.forEach(edge => {
+    const pageTemplate = path.resolve('./src/templates/page.js')
+
+    createPage({
+      path: `/${edge.node.uid}`,
+      component: pageTemplate,
+      context: {
+        id: edge.node.id,
+      },
+    })
+  })
+}
+```
+
 [gatsby]: https://www.gatsbyjs.org/
 [prismic]: https://prismic.io/
+[graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
+[gatsby-plugin-sharp]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
