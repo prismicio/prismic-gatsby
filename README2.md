@@ -120,7 +120,107 @@ able to query it like the following:
 }
 ```
 
-### Query with slices
+### Query Rich Text fields
+
+Data from fields with rich text formatting (e.g. headings, bold, italic) is
+transformed to provide HTML and text versions. This uses the official
+[prismic-dom][prismic-dom] library and the `linkResolver` and `htmlSerializer`
+functions from your site's `gatsby-node.js` to create the HTML and text fields.
+
+**Note**: If you need to access the raw data, the original data is accessible
+using the `raw` field, though use of this field is discouraged.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          title {
+            text
+          }
+          content {
+            html
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Query Link fields
+
+Link fields are processed using the official [prismic-dom][prismic-dom] library
+and the `linkResolver` function from your site's `gatsby-node.js`. The resolved
+URL is provided at the `url` field.
+
+If the link type is a web link (i.e. a URL external from your site), the URL is
+provided without additional processing.
+
+**Note**: If you need to access the raw data, the original data is accessible
+using the `raw` field, though use of this field is discouraged.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          featured_post {
+            url
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Query Content Relation fields
+
+Content Relation fields relate a field to another document. Since fields from
+within the related document is often needed, the document data is provided at
+the `document` field. The resolved URL to the document using the official
+[prismic-dom][prismic-dom] library and the `linkResolver` function from your
+site's `gatsby-node.js` is also provided at the `url` field.
+
+**Note**: Data within the `document` field is wrapped in an array. Due to the
+method in which Gatsby processes one-to-one node relationships, this
+work-around is necessary to ensure the field can accomidate different content
+types. This may be fixed in a later Gatsby relase.
+
+**Note**: If you need to access the raw data, the original data is accessible
+using the `raw` field, though use of this field is discouraged.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          featured_post {
+            url
+            document {
+              uid
+              data {
+                title {
+                  text
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Query slices
 
 Prismic slices allow you to build a flexible series of content blocks. Since
 the content structure is dynamic, querying the content is handled differently
