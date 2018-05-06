@@ -1,5 +1,12 @@
 import PrismicDOM from 'prismic-dom'
 
+const isSliceZone = (key, value) =>
+  typeof key === 'string' &&
+  key.match(/body[0-9]*/) &&
+  Array.isArray(value) &&
+  typeof value[0] === 'object' &&
+  value[0].hasOwnProperty('slice_type')
+
 const isRichTextField = value =>
   Array.isArray(value) &&
   typeof value[0] === 'object' &&
@@ -9,6 +16,46 @@ const isLinkField = value =>
   value !== null &&
   typeof value === 'object' &&
   value.hasOwnProperty('link_type')
+
+const processSliceZone = args => {
+  const {
+    key: sliceKey,
+    value: entries,
+    node,
+    pluginOptions,
+    nodeHelpers,
+    createNode,
+  } = args
+  const { createNodeFactory } = nodeHelpers
+  const childrenIds = []
+
+  entries.forEach((entry, index) => {
+    entry.id = index
+
+    const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
+    const EntryNode = createNodeFactory(entryNodeType, entryNode => {
+      const entryFields = Object.entries(entryNode.primary)
+
+      entryFields.forEach(([key, value]) => {
+        entryNode.primary[key] = processField({
+          ...args,
+          key,
+          value,
+        })
+      })
+
+      return entryNode
+    })
+
+    const entryNode = EntryNode(entry)
+    createNode(entryNode)
+    childrenIds.push(entryNode.id)
+  })
+
+  // TODO: Remove hard-coded setter
+  node.data[`${sliceKey}___NODE`] = childrenIds
+  return undefined
+}
 
 const processRichTextField = (value, linkResolver, htmlSerializer) => ({
   html: PrismicDOM.RichText.asHtml(value, linkResolver, htmlSerializer),
@@ -38,12 +85,15 @@ const processLinkField = (value, linkResolver, generateNodeId) => {
   }
 }
 
-export const processField = (key, value, node, pluginOptions, nodeHelpers) => {
-  let { linkResolver = () => {}, htmlSerializer = () => {} } = pluginOptions
+export const processField = args => {
+  const { key, value, node, pluginOptions, nodeHelpers } = args
   const { generateNodeId } = nodeHelpers
 
+  let { linkResolver = () => {}, htmlSerializer = () => {} } = pluginOptions
   linkResolver = linkResolver({ node, key, value })
   htmlSerializer = htmlSerializer({ node, key, value })
+
+  if (isSliceZone(key, value)) return processSliceZone(args)
 
   if (isRichTextField(value))
     return processRichTextField(value, linkResolver, htmlSerializer)
