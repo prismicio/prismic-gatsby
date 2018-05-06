@@ -62,3 +62,6 @@ plugins: [
   }
 ]
 ```
+
+[gatsby]: https://www.gatsbyjs.org/
+[prismic]: https://prismic.io/
