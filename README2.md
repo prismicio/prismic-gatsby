@@ -192,6 +192,9 @@ method in which Gatsby processes one-to-one node relationships, this
 work-around is necessary to ensure the field can accomidate different content
 types. This may be fixed in a later Gatsby relase.
 
+Quering data on the `document` field is handled the same as querying slices.
+Please read the [Query slices](#query-slices) section for details.
+
 **Note**: If you need to access the raw data, the original data is accessible
 using the `raw` field, though use of this field is discouraged.
 
