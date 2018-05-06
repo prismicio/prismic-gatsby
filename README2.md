@@ -128,7 +128,7 @@ than other fields.
 
 To access slice fields, you need to use GraphQL [inline
 fragments][graphql-inline-fragments]. This requires you to know types of nodes.
-The easiest way to get the type of nodes is to the the `/___graphql` debugger
+The easiest way to get the type of nodes is to use the `/___graphql` debugger
 and run the below query (adjust the document type and field name).
 
 ```graphql
