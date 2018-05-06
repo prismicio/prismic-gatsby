@@ -34,13 +34,25 @@ const processSliceZone = args => {
 
     const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
     const EntryNode = createNodeFactory(entryNodeType, entryNode => {
-      const entryFields = Object.entries(entryNode.primary)
+      const primaryFields = Object.entries(entryNode.primary)
 
-      entryFields.forEach(([key, value]) => {
+      primaryFields.forEach(([key, value]) => {
         entryNode.primary[key] = processField({
           ...args,
           key,
           value,
+        })
+      })
+
+      entryNode.items.forEach((item, itemIndex) => {
+        const itemFields = Object.entries(item)
+
+        itemFields.forEach(([key, value]) => {
+          entryNode.items[itemIndex][key] = processField({
+            ...args,
+            key,
+            value,
+          })
         })
       })
 
