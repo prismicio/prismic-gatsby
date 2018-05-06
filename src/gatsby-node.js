@@ -7,7 +7,12 @@ const { createNodeFactory, generateNodeId } = nodeHelpers
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { boundActionCreators: { createNode } } = gatsby
-  const { repositoryName, accessToken } = pluginOptions
+  const {
+    repositoryName,
+    accessToken,
+    linkResolver = () => {},
+    htmlSerializer = () => {},
+  } = pluginOptions
 
   const { documents } = await fetchData({ repositoryName, accessToken })
 
@@ -20,7 +25,8 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
           key,
           value,
           node,
-          pluginOptions,
+          linkResolver,
+          htmlSerializer,
           nodeHelpers,
           createNode,
         })

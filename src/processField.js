@@ -86,10 +86,10 @@ const processLinkField = (value, linkResolver, generateNodeId) => {
 }
 
 export const processField = args => {
-  const { key, value, node, pluginOptions, nodeHelpers } = args
+  const { key, value, node, nodeHelpers } = args
+  let { linkResolver, htmlSerializer } = args
   const { generateNodeId } = nodeHelpers
 
-  let { linkResolver = () => {}, htmlSerializer = () => {} } = pluginOptions
   linkResolver = linkResolver({ node, key, value })
   htmlSerializer = htmlSerializer({ node, key, value })
 
