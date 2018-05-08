@@ -1,25 +1,35 @@
 import PrismicDOM from 'prismic-dom'
 
+// Returns true if the key and value appear to be from a slice zone field,
+// false otherwise.
 const isSliceZone = (key, value) =>
   key.match(/body[0-9]*/) &&
   Array.isArray(value) &&
   typeof value[0] === 'object' &&
   value[0].hasOwnProperty('slice_type')
 
+// Returns true if the field value appears to be a Rich Text field, false
+// otherwise.
 const isRichTextField = value =>
   Array.isArray(value) &&
   typeof value[0] === 'object' &&
   Object.keys(value[0]).includes('spans')
 
+// Returns true if the field value appears to be a Link field, false otherwise.
 const isLinkField = value =>
   value !== null &&
   typeof value === 'object' &&
   value.hasOwnProperty('link_type')
 
-// This check must be performed after isRichTextField and isSliceZone.
+// Returns true if the field value appears to be a group field, false
+// otherwise.
+// NOTE: This check must be performed after isRichTextField and isSliceZone.
 const isGroupField = value =>
   Array.isArray(value) && typeof value[0] === 'object'
 
+// Processes a slice zone field by recursively processing `item` and `primary`
+// keys. It creates a node type for each slice type to ensure the slice key can
+// handle multiple (i.e. union) types.
 const processSliceZone = args => {
   const { key: sliceKey, value: entries, node, nodeHelpers, createNode } = args
   const { createNodeFactory } = nodeHelpers
@@ -46,17 +56,25 @@ const processSliceZone = args => {
   return undefined
 }
 
+// Processes a group field by recursively processing each entry.
 const processGroupField = args => {
-  const { value } = args
-  return value.map(entry => processFields({ ...args, value: entry }))
+  const { value: entries } = args
+  return entries.map(entry => processFields({ ...args, value: entry }))
 }
 
+// Processes a rich text field by providing HTML and text versions of the value
+// using `prismic-dom` on the `html` and `text` keys, respectively. The raw
+// value is provided on the `raw` key.
 const processRichTextField = (value, linkResolver, htmlSerializer) => ({
   html: PrismicDOM.RichText.asHtml(value, linkResolver, htmlSerializer),
   text: PrismicDOM.RichText.asText(value),
   raw: value,
 })
 
+// Processes a link field by providing a resolved URL using `prismic-dom` on
+// the `url` field. If the value is an external link, the value is provided
+// as-is. If the value is a document link, the document's data is provided on
+// the `document` key.
 const processLinkField = (value, linkResolver, generateNodeId) => {
   switch (value.link_type) {
     case 'Document':
@@ -79,6 +97,7 @@ const processLinkField = (value, linkResolver, generateNodeId) => {
   }
 }
 
+// Processes all fields in a key-value object.
 export const processFields = args => {
   const { value: fields } = args
 
@@ -89,6 +108,9 @@ export const processFields = args => {
   return fields
 }
 
+// Processes a field by determining it's type and returning an enhanced version
+// of it. If the type is not supported or needs to processing, it is returned
+// as-is.
 export const processField = args => {
   const { key, value, node, nodeHelpers } = args
   let { linkResolver, htmlSerializer } = args
