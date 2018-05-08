@@ -1,6 +1,6 @@
 import createNodeHelpers from 'gatsby-node-helpers'
 import fetchData from './fetch'
-import { processFields } from './processField'
+import { normalizeFields } from './normalize'
 
 const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
 const { createNodeFactory, generateNodeId } = nodeHelpers
@@ -19,7 +19,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
   documents.forEach(doc => {
     const Node = createNodeFactory(doc.type, node => {
       node.dataString = JSON.stringify(node.data)
-      node.data = processFields({
+      node.data = normalizeFields({
         value: node.data,
         node,
         linkResolver,
