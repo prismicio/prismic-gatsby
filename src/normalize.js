@@ -43,7 +43,7 @@ const normalizeRichTextField = (value, linkResolver, htmlSerializer) => ({
 const normalizeLinkField = (value, linkResolver, generateNodeId) => {
   switch (value.link_type) {
     case 'Document':
-      if (!value.type || !value.id) return undefined
+      if (!value.type || !value.id || value.isBroken) return undefined
       return {
         document___NODE: [generateNodeId(value.type, value.id)],
         url: PrismicDOM.Link.url(value, linkResolver),
