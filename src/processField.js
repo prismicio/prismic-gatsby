@@ -109,7 +109,7 @@ export const processFields = args => {
 }
 
 // Processes a field by determining its type and returning an enhanced version
-// of it. If the type is not supported or needs to processing, it is returned
+// of it. If the type is not supported or needs no processing, it is returned
 // as-is.
 export const processField = args => {
   const { key, value, node, nodeHelpers } = args
