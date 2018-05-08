@@ -20,7 +20,6 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     const Node = createNodeFactory(doc.type, node => {
       node.dataString = JSON.stringify(node.data)
       node.data = processFields({
-        key: 'data',
         value: node.data,
         node,
         linkResolver,

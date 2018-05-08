@@ -1,7 +1,6 @@
 import PrismicDOM from 'prismic-dom'
 
 const isSliceZone = (key, value) =>
-  typeof key === 'string' &&
   key.match(/body[0-9]*/) &&
   Array.isArray(value) &&
   typeof value[0] === 'object' &&
@@ -17,7 +16,7 @@ const isLinkField = value =>
   typeof value === 'object' &&
   value.hasOwnProperty('link_type')
 
-// This check must be performed after isRichTextField.
+// This check must be performed after isRichTextField and isSliceZone.
 const isGroupField = value =>
   Array.isArray(value) && typeof value[0] === 'object'
 
