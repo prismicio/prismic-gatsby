@@ -17,15 +17,12 @@ const isLinkField = value =>
   typeof value === 'object' &&
   value.hasOwnProperty('link_type')
 
+// This check must be performed after isRichTextField.
+const isGroupField = value =>
+  Array.isArray(value) && typeof value[0] === 'object'
+
 const processSliceZone = args => {
-  const {
-    key: sliceKey,
-    value: entries,
-    node,
-    pluginOptions,
-    nodeHelpers,
-    createNode,
-  } = args
+  const { key: sliceKey, value: entries, node, nodeHelpers, createNode } = args
   const { createNodeFactory } = nodeHelpers
   const childrenIds = []
 
@@ -34,27 +31,8 @@ const processSliceZone = args => {
 
     const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
     const EntryNode = createNodeFactory(entryNodeType, entryNode => {
-      const primaryFields = Object.entries(entryNode.primary)
-
-      primaryFields.forEach(([key, value]) => {
-        entryNode.primary[key] = processField({
-          ...args,
-          key,
-          value,
-        })
-      })
-
-      entryNode.items.forEach((item, itemIndex) => {
-        const itemFields = Object.entries(item)
-
-        itemFields.forEach(([key, value]) => {
-          entryNode.items[itemIndex][key] = processField({
-            ...args,
-            key,
-            value,
-          })
-        })
-      })
+      entryNode.items = processGroupField({ ...args, value: entryNode.items })
+      entryNode.primary = processFields({ ...args, value: entryNode.primary })
 
       return entryNode
     })
@@ -67,6 +45,11 @@ const processSliceZone = args => {
   // TODO: Remove hard-coded setter
   node.data[`${sliceKey}___NODE`] = childrenIds
   return undefined
+}
+
+const processGroupField = args => {
+  const { value } = args
+  return value.map(entry => processFields({ ...args, value: entry }))
 }
 
 const processRichTextField = (value, linkResolver, htmlSerializer) => ({
@@ -97,6 +80,16 @@ const processLinkField = (value, linkResolver, generateNodeId) => {
   }
 }
 
+export const processFields = args => {
+  const { value: fields } = args
+
+  Object.entries(fields).forEach(([key, value]) => {
+    fields[key] = processField({ ...args, key, value })
+  })
+
+  return fields
+}
+
 export const processField = args => {
   const { key, value, node, nodeHelpers } = args
   let { linkResolver, htmlSerializer } = args
@@ -105,13 +98,15 @@ export const processField = args => {
   linkResolver = linkResolver({ node, key, value })
   htmlSerializer = htmlSerializer({ node, key, value })
 
-  if (isSliceZone(key, value)) return processSliceZone(args)
-
   if (isRichTextField(value))
     return processRichTextField(value, linkResolver, htmlSerializer)
 
   if (isLinkField(value))
     return processLinkField(value, linkResolver, generateNodeId)
+
+  if (isSliceZone(key, value)) return processSliceZone(args)
+
+  if (isGroupField(value)) return processGroupField(args)
 
   return value
 }
