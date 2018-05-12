@@ -71,7 +71,9 @@ const normalizeSliceField = args => {
   const childrenIds = []
 
   entries.forEach((entry, index) => {
-    entry.id = index
+    // Create unique ID for the child using the parent node ID, the slice key,
+    // and the index of the slice.
+    entry.id = `${node.id}__${sliceKey}__${index}`
 
     const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
     const EntryNode = createNodeFactory(entryNodeType, entryNode => {
