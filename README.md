@@ -2,6 +2,11 @@
 
 Source plugin for pulling documents into Gatsby from prismic.io repositories.
 
+**NOTE**: This plugin is going through a major overhaul. Please check the [`v1`
+branch](https://github.com/angeloashmore/gatsby-source-prismic/tree/v1) for
+details and, if possible, try out the [latest `1.0.0-alpha`
+release](https://www.npmjs.com/package/gatsby-source-prismic).
+
 ## Install
 
 `npm install --save gatsby-source-prismic`
