@@ -22,7 +22,9 @@
   "author": "Angelo Ashmore <angelo.ashmore@walltowall.com>",
   "license": "MIT",
   "dependencies": {
-    "gatsby-node-helpers": "^0.2.0",
+    "asyncro": "^3.0.0",
+    "gatsby-node-helpers": "^0.3.0",
+    "gatsby-source-filesystem": "^1.5.35",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5"
   },

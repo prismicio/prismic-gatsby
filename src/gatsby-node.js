@@ -6,7 +6,8 @@ const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
 const { createNodeFactory, generateNodeId } = nodeHelpers
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
-  const { boundActionCreators: { createNode } } = gatsby
+  const { boundActionCreators, store, cache } = gatsby
+  const { createNode, touchNode } = boundActionCreators
   const {
     repositoryName,
     accessToken,
@@ -16,21 +17,26 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
 
   const { documents } = await fetchData({ repositoryName, accessToken })
 
-  documents.forEach(doc => {
-    const Node = createNodeFactory(doc.type, node => {
-      node.dataString = JSON.stringify(node.data)
-      node.data = normalizeFields({
-        value: node.data,
-        node,
-        linkResolver,
-        htmlSerializer,
-        nodeHelpers,
-        createNode,
+  return await Promise.all(
+    documents.map(async doc => {
+      const Node = createNodeFactory(doc.type, async node => {
+        node.dataString = JSON.stringify(node.data)
+        node.data = await normalizeFields({
+          value: node.data,
+          node,
+          linkResolver,
+          htmlSerializer,
+          nodeHelpers,
+          createNode,
+          touchNode,
+          store,
+          cache,
+        })
+
+        return node
       })
 
-      return node
-    })
-
-    createNode(Node(doc))
-  })
+      createNode(await Node(doc))
+    }),
+  )
 }
