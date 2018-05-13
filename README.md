@@ -319,7 +319,63 @@ data interface, but it is available if necessary
 
 ### Image processing
 
-Coming soon!
+To use image processing you need `gatsby-transformer-sharp`,
+`gatsby-plugin-sharp`, and their dependencies `gatsby-image` and
+`gatsby-source-filesystem` in your `gatsby-config.js`.
+
+You can apply image processing to any image field on a document. Image
+processing of inline images added to Rich Text fields is currently not
+supported.
+
+To access image process in your queries, you need to use this pattern, where
+`...ImageFragment` is one of the [`gatsby-transformer-sharp`
+fragments][gatsby-image-fragments]:
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            localFile {
+              childImageSharp {
+                ...ImageFragment
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Full example:
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            localFile {
+              childImageSharp {
+                resolutions(width: 500, height: 300) {
+                  ...GatsbyImageSharpResolutions_withWebp
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 To learn more about image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
@@ -369,3 +425,4 @@ exports.createPages = async ({ graphql, boundActionCreators }) => {
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
 [gatsby-plugin-sharp]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
+[gatsby-image-fragments]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
