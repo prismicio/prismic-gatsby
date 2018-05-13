@@ -129,31 +129,29 @@ const normalizeSliceField = async args => {
   const { createNodeFactory } = nodeHelpers
   const childrenIds = []
 
-  await Promise.all(
-    entries.map(async (entry, index) => {
-      // Create unique ID for the child using the parent node ID, the slice key,
-      // and the index of the slice.
-      entry.id = `${node.id}__${sliceKey}__${index}`
+  await map(entries, async (entry, index) => {
+    // Create unique ID for the child using the parent node ID, the slice key,
+    // and the index of the slice.
+    entry.id = `${node.id}__${sliceKey}__${index}`
 
-      const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
-      const EntryNode = createNodeFactory(entryNodeType, async entryNode => {
-        entryNode.items = await normalizeGroupField({
-          ...args,
-          value: entryNode.items,
-        })
-        entryNode.primary = await normalizeFields({
-          ...args,
-          value: entryNode.primary,
-        })
-
-        return entryNode
+    const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
+    const EntryNode = createNodeFactory(entryNodeType, async entryNode => {
+      entryNode.items = await normalizeGroupField({
+        ...args,
+        value: entryNode.items,
+      })
+      entryNode.primary = await normalizeFields({
+        ...args,
+        value: entryNode.primary,
       })
 
-      const entryNode = await EntryNode(entry)
-      createNode(entryNode)
-      childrenIds.push(entryNode.id)
-    }),
-  )
+      return entryNode
+    })
+
+    const entryNode = await EntryNode(entry)
+    createNode(entryNode)
+    childrenIds.push(entryNode.id)
+  })
 
   // TODO: Remove hard-coded setter
   node.data[`${sliceKey}___NODE`] = childrenIds
@@ -162,7 +160,10 @@ const normalizeSliceField = async args => {
 
 // Normalizes a group field by recursively normalizing each entry.
 const normalizeGroupField = async args =>
-  map(args.value, async value => await normalizeFields({ ...args, value }))
+  await map(
+    args.value,
+    async value => await normalizeFields({ ...args, value }),
+  )
 
 // Normalizes a field by determining its type and returning an enhanced version
 // of it. If the type is not supported or needs no normalizing, it is returned
