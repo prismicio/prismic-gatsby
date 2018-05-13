@@ -327,7 +327,7 @@ You can apply image processing to any image field on a document. Image
 processing of inline images added to Rich Text fields is currently not
 supported.
 
-To access image process in your queries, you need to use this pattern, where
+To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the [`gatsby-transformer-sharp`
 fragments][gatsby-image-fragments]:
 
