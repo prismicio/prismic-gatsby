@@ -74,6 +74,10 @@ const normalizeLinkField = (value, linkResolver, generateNodeId) => {
   }
 }
 
+// Normalizes an Image field by downloading the remote image and creating a
+// File node using `gatsby-source-filesystem`. This allows for
+// `gatsby-transformer-sharp` and `gatsby-image` integration. The linked node
+// data is provided on the `localFile` key.
 const normalizeImageField = async args => {
   const { value, createNode, store, cache, touchNode } = args
 
