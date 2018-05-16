@@ -17,7 +17,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
 
   const { documents } = await fetchData({ repositoryName, accessToken })
 
-  return await Promise.all(
+  await Promise.all(
     documents.map(async doc => {
       const Node = createNodeFactory(doc.type, async node => {
         node.dataString = JSON.stringify(node.data)
@@ -36,7 +36,10 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
         return node
       })
 
-      createNode(await Node(doc))
+      const node = await Node(doc)
+      createNode(node)
     }),
   )
+
+  return
 }

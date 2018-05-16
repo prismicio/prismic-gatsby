@@ -127,31 +127,35 @@ const normalizeImageField = async args => {
 const normalizeSliceField = async args => {
   const { key: sliceKey, value: entries, node, nodeHelpers, createNode } = args
   const { createNodeFactory } = nodeHelpers
-  const childrenIds = []
 
-  await map(entries, async (entry, index) => {
-    // Create unique ID for the child using the parent node ID, the slice key,
-    // and the index of the slice.
-    entry.id = `${node.id}__${sliceKey}__${index}`
+  const childrenIds = await reduce(
+    entries,
+    async (acc, entry, index) => {
+      // Create unique ID for the child using the parent node ID, the slice key,
+      // and the index of the slice.
+      entry.id = `${node.id}__${sliceKey}__${index}`
 
-    const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
-    const EntryNode = createNodeFactory(entryNodeType, async entryNode => {
-      entryNode.items = await normalizeGroupField({
-        ...args,
-        value: entryNode.items,
+      const entryNodeType = `${node.type}_${sliceKey}_${entry.slice_type}`
+      const EntryNode = createNodeFactory(entryNodeType, async entryNode => {
+        entryNode.items = await normalizeGroupField({
+          ...args,
+          value: entryNode.items,
+        })
+        entryNode.primary = await normalizeFields({
+          ...args,
+          value: entryNode.primary,
+        })
+
+        return entryNode
       })
-      entryNode.primary = await normalizeFields({
-        ...args,
-        value: entryNode.primary,
-      })
 
-      return entryNode
-    })
+      const entryNode = await EntryNode(entry)
+      createNode(entryNode)
 
-    const entryNode = await EntryNode(entry)
-    createNode(entryNode)
-    childrenIds.push(entryNode.id)
-  })
+      return acc.concat([entryNode.id])
+    },
+    [],
+  )
 
   // TODO: Remove hard-coded setter
   node.data[`${sliceKey}___NODE`] = childrenIds
