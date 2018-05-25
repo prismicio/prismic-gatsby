@@ -1,45 +1,45 @@
 import createNodeHelpers from 'gatsby-node-helpers'
-import PrismicDOM from 'prismic-dom'
 import fetchData from './fetch'
+import { normalizeFields } from './normalize'
 
-const { createNodeFactory } = createNodeHelpers({ typePrefix: `Prismic` })
+const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
+const { createNodeFactory, generateNodeId } = nodeHelpers
 
-const isRichTextField = value =>
-  Array.isArray(value) &&
-  typeof value[0] === 'object' &&
-  Object.keys(value[0]).includes('spans')
-
-export const sourceNodes = async (
-  { boundActionCreators: { createNode } },
-  {
+export const sourceNodes = async (gatsby, pluginOptions) => {
+  const { boundActionCreators, store, cache } = gatsby
+  const { createNode, touchNode } = boundActionCreators
+  const {
     repositoryName,
     accessToken,
-    linkResolver = () => undefined,
-    htmlSerializer = () => undefined,
-  },
-) => {
-  const DocumentNode = createNodeFactory(`Document`, node => {
-    Object.entries(node.data).forEach(([key, value]) => {
-      const htmlOptions = { node, key, value }
-
-      // Provide HTML, text, raw, and rawString values for RichText fields.
-      if (isRichTextField(value))
-        node.data[key] = {
-          html: PrismicDOM.RichText.asHtml(
-            value,
-            linkResolver(htmlOptions),
-            htmlSerializer(htmlOptions),
-          ),
-          text: PrismicDOM.RichText.asText(value),
-          raw: value,
-          rawString: JSON.stringify(value),
-        }
-    })
-
-    return node
-  })
+    linkResolver = () => {},
+    htmlSerializer = () => {},
+  } = pluginOptions
 
   const { documents } = await fetchData({ repositoryName, accessToken })
 
-  documents.forEach(doc => createNode(DocumentNode(doc)))
+  await Promise.all(
+    documents.map(async doc => {
+      const Node = createNodeFactory(doc.type, async node => {
+        node.dataString = JSON.stringify(node.data)
+        node.data = await normalizeFields({
+          value: node.data,
+          node,
+          linkResolver,
+          htmlSerializer,
+          nodeHelpers,
+          createNode,
+          touchNode,
+          store,
+          cache,
+        })
+
+        return node
+      })
+
+      const node = await Node(doc)
+      createNode(node)
+    }),
+  )
+
+  return
 }
