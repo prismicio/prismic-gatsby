@@ -1,15 +1,14 @@
 # gatsby-source-prismic
 
-Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic] repositories.
+Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
+repositories.
 
 ## Features
 
 - Supports Rich Text fields, slices, and content relation fields
-
-**NOTE**: This plugin is going through a major overhaul. Please check the [`v1`
-branch](https://github.com/angeloashmore/gatsby-source-prismic/tree/v1) for
-details and, if possible, try out the [latest `1.0.0-alpha`
-release](https://github.com/angeloashmore/gatsby-source-prismic/releases).
+- Supports `gatsby-transformer-sharp` and `gatsby-image` for image fields
+- Utilizes `prismic-dom` to provide HTML and link values so you don't have to
+  use `prismic-dom` directly
 
 ## Install
 
