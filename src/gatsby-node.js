@@ -6,8 +6,8 @@ const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
 const { createNodeFactory, generateNodeId } = nodeHelpers
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
-  const { boundActionCreators, store, cache } = gatsby
-  const { createNode, touchNode } = boundActionCreators
+  const { actions, store, cache, createNodeId } = gatsby
+  const { createNode, touchNode } = actions
   const {
     repositoryName,
     accessToken,
@@ -28,6 +28,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
           htmlSerializer,
           nodeHelpers,
           createNode,
+          createNodeId,
           touchNode,
           store,
           cache,

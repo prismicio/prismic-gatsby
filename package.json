@@ -24,7 +24,7 @@
   "dependencies": {
     "asyncro": "^3.0.0",
     "gatsby-node-helpers": "^0.3.0",
-    "gatsby-source-filesystem": "^1.5.35",
+    "gatsby-source-filesystem": "next",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5"
   },
