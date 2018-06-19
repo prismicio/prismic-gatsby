@@ -28,10 +28,10 @@ const isImageField = value =>
 // Returns true if the key and value appear to be from a slice zone field,
 // false otherwise.
 const isSliceField = (key, value) =>
-  key.match(/body[0-9]*/) &&
   Array.isArray(value) &&
   typeof value[0] === 'object' &&
-  value[0].hasOwnProperty('slice_type')
+  value[0].hasOwnProperty('slice_type') &&
+  (value[0].hasOwnProperty('primary') || value[0].hasOwnProperty('items'))
 
 // Returns true if the field value appears to be a group field, false
 // otherwise.
