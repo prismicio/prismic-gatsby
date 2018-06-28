@@ -1,6 +1,6 @@
 import Prismic from 'prismic-javascript'
 
-export default async ({ repositoryName, accessToken, experimentVariationName }) => {
+export default async ({ repositoryName, accessToken, experimentBranchName }) => {
   console.log(`Starting to fetch data from Prismic`)
 
   const apiEndpoint = `https://${repositoryName}.prismic.io/api/v2`
@@ -10,9 +10,9 @@ export default async ({ repositoryName, accessToken, experimentVariationName }) 
     .map(variation => variation.data)
   const options = {}
 
-  if (experimentVariationName && availableVariations.length > 0) {
+  if (experimentBranchName && availableVariations.length) {
     const matchedVariation = availableVariations.find((variation) => {
-      return variation.label.toLowerCase().replace(' ', '-') === experimentVariationName
+      return variation.label.toLowerCase().replace(' ', '-') === experimentBranchName
     })
     if (matchedVariation) {
       options.ref = matchedVariation.ref

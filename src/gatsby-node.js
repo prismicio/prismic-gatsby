@@ -11,12 +11,12 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
   const {
     repositoryName,
     accessToken,
-    experimentVariationName = null,
+    experimentBranchName = null,
     linkResolver = () => {},
     htmlSerializer = () => {},
   } = pluginOptions
 
-  const { documents } = await fetchData({ repositoryName, accessToken, experimentVariationName })
+  const { documents } = await fetchData({ repositoryName, accessToken, experimentBranchName })
 
   await Promise.all(
     documents.map(async doc => {
