@@ -5,13 +5,16 @@ export default async ({ repositoryName, accessToken, experimentBranchName }) => 
 
   const apiEndpoint = `https://${repositoryName}.prismic.io/api/v2`
   const client = await Prismic.api(apiEndpoint, { accessToken })
-  const availableVariations = Object
-    .assign(...client.experiments.running.map(experiment => experiment.variations))
-    .map(variation => variation.data)
+  let runningVariations = []
   const options = {}
 
-  if (experimentBranchName && availableVariations.length) {
-    const matchedVariation = availableVariations.find((variation) => {
+  if (client.experiments.running && client.experiments.running.length) {
+    runningVariations = Object
+      .assign(...client.experiments.running.map(experiment => experiment.variations))
+      .map(variation => variation.data)
+  }
+  if (experimentBranchName && runningVariations.length) {
+    const matchedVariation = runningVariations.find((variation) => {
       return variation.label.toLowerCase().replace(' ', '-') === experimentBranchName
     })
     if (matchedVariation) {
