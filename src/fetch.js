@@ -16,9 +16,9 @@ export default async ({ repositoryName, accessToken, experimentBranchName }) => 
     })
     if (matchedVariation) {
       options.ref = matchedVariation.ref
-      console.log(`Using "${matchedVariation.label}" Prismic experiment variation`)
+      console.log(`Using "${matchedVariation.label}" Prismic experiment branch`)
     } else {
-      console.log(`Falling back to no Prismic experiment variation`);
+      console.log(`Falling back to no Prismic experiment branch`);
     }
   }
 
