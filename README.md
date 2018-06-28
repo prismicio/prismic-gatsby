@@ -39,6 +39,12 @@ plugins: [
       // The token will be listed under "Permanent access tokens".
       accessToken: "example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj",
 
+      // Set an experiment branch name. This is optional.
+      // Uncomment this option and set the hyphen-separated branch name.
+      // See more about A/B testing with prismic.io experiments:
+      // https://user-guides.prismic.io/a-b-testing-with-prismic-io-experiments
+      // experimentBranchName: "example-branch",
+
       // Set a link resolver function used to process links in your content.
       // Fields with rich text formatting or links to internal content use this
       // function to generate the correct link URL.
