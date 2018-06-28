@@ -1,14 +1,31 @@
 import Prismic from 'prismic-javascript'
 
-export default async ({ repositoryName, accessToken }) => {
-  console.time(`Fetch Prismic data`)
+export default async ({ repositoryName, accessToken, experimentVariationName }) => {
   console.log(`Starting to fetch data from Prismic`)
 
   const apiEndpoint = `https://${repositoryName}.prismic.io/api/v2`
   const client = await Prismic.api(apiEndpoint, { accessToken })
+  const availableVariations = Object
+    .assign(...client.experiments.running.map(experiment => experiment.variations))
+    .map(variation => variation.data)
+  const options = {}
+
+  if (experimentVariationName && availableVariations.length > 0) {
+    const matchedVariation = availableVariations.find((variation) => {
+      return variation.label.toLowerCase().replace(' ', '-') === experimentVariationName
+    })
+    if (matchedVariation) {
+      options.ref = matchedVariation.ref
+      console.log(`Using "${matchedVariation.label}" Prismic experiment variation`)
+    } else {
+      console.log(`Falling back to no Prismic experiment variation`);
+    }
+  }
+
+  console.time(`Fetch Prismic data`)
 
   // Query all documents from client
-  const documents = await pagedGet(client)
+  const documents = await pagedGet(client, options)
 
   console.timeEnd(`Fetch Prismic data`)
 
@@ -19,8 +36,8 @@ export default async ({ repositoryName, accessToken }) => {
 
 async function pagedGet(
   client,
+  options,
   query = [],
-  options = {},
   page = 1,
   pageSize = 100,
   aggregatedResponse = null,
@@ -47,8 +64,8 @@ async function pagedGet(
   if (page * pageSize < response.total_results_size) {
     return pagedGet(
       client,
-      query,
       options,
+      query,
       page + 1,
       pageSize,
       aggregatedResponse,
