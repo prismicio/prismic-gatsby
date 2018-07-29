@@ -16,7 +16,11 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     fetchLinks = [],
   } = pluginOptions
 
-  const { documents } = await fetchData({ repositoryName, accessToken, fetchLinks })
+  const { documents } = await fetchData({
+    repositoryName,
+    accessToken,
+    fetchLinks,
+  })
 
   await Promise.all(
     documents.map(async doc => {
