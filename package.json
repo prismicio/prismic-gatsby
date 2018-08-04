@@ -28,7 +28,8 @@
     "gatsby-source-filesystem": "^1.5.35",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
-    "ramda": "^0.25.0"
+    "ramda": "^0.25.0",
+    "ramda-adjunct": "^2.9.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.56",

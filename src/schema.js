@@ -1,4 +1,5 @@
-import R from 'ramda'
+import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 const parseField = field => {
   switch (field.type) {
@@ -17,25 +18,21 @@ const parseField = field => {
       return 'link'
 
     case 'Slice':
-      return parseSlice(field)
+      return parseSliceField(field)
 
     case 'Slices':
       return parseSchema(field.config)
 
-    default: return field
+    default:
+      return field
   }
 }
 
-const parseSlice = field => ({
-  primary: R.pipe(
-    R.path(['non-repeat']),
-    R.map(parseField),
-  )(field),
-  items: R.pipe(
-    R.path(['repeat']),
-    R.map(parseField)
-  )(field)
-})
+const parseSliceField = R.pipe(
+  R.pick(['non-repeat', 'repeat']),
+  RA.renameKeys({ 'non-repeat': 'primary', repeat: 'items' }),
+  R.map(R.map(parseField)),
+)
 
 export const parseSchema = R.pipe(
   R.values,
