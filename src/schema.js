@@ -3,6 +3,7 @@ import * as RA from 'ramda-adjunct'
 
 const parseField = field => {
   switch (field.type) {
+    case 'Color':
     case 'Select':
     case 'Text':
     case 'UID':
@@ -11,11 +12,27 @@ const parseField = field => {
     case 'StructuredText':
       return 'html'
 
+    case 'Number':
+      return 'float'
+
+    case 'Date':
+    case 'Timestamp':
+      return 'datetime'
+
+    case 'GeoPoint':
+      return 'geopoint'
+
+    case 'Embed':
+      return 'embed'
+
     case 'Image':
       return 'image'
 
     case 'Link':
       return 'link'
+
+    case 'Group':
+      return parseGroupField(field)
 
     case 'Slice':
       return parseSliceField(field)
@@ -24,9 +41,14 @@ const parseField = field => {
       return parseSchema(field.config)
 
     default:
-      return field
+      return `UNPROCESSED FIELD for type "${field.type}"`
   }
 }
+
+const parseGroupField = R.pipe(
+  R.path(['config', 'fields']),
+  R.map(parseField),
+)
 
 const parseSliceField = R.pipe(
   R.pick(['non-repeat', 'repeat']),

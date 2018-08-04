@@ -1,346 +1,158 @@
 {
   "Main" : {
-    "title" : {
-      "type" : "StructuredText",
-      "config" : {
-        "single" : "heading1",
-        "label" : "Title"
-      }
-    },
     "uid" : {
       "type" : "UID",
       "config" : {
         "label" : "UID"
       }
     },
-    "parent" : {
+    "title" : {
+      "type" : "StructuredText",
+      "config" : {
+        "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
+        "label" : "Title"
+      }
+    },
+    "rich_text" : {
+      "type" : "StructuredText",
+      "config" : {
+        "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+        "label" : "Rich Text"
+      }
+    },
+    "image" : {
+      "type" : "Image",
+      "config" : {
+        "constraint" : { },
+        "thumbnails" : [ ],
+        "label" : "Image"
+      }
+    },
+    "content_relationship" : {
       "type" : "Link",
       "config" : {
         "select" : "document",
-        "customtypes" : [ "page" ],
-        "label" : "Parent"
+        "label" : "Content Relationship"
       }
     },
-    "show_sign_in_bar" : {
+    "link" : {
+      "type" : "Link",
+      "config" : {
+        "label" : "Link"
+      }
+    },
+    "link_to_media" : {
+      "type" : "Link",
+      "config" : {
+        "select" : "media",
+        "label" : "Link to Media"
+      }
+    },
+    "date" : {
+      "type" : "Date",
+      "config" : {
+        "label" : "Date"
+      }
+    },
+    "timestamp" : {
+      "type" : "Timestamp",
+      "config" : {
+        "label" : "Timestamp"
+      }
+    },
+    "color" : {
+      "type" : "Color",
+      "config" : {
+        "label" : "Color"
+      }
+    },
+    "number" : {
+      "type" : "Number",
+      "config" : {
+        "label" : "Number"
+      }
+    },
+    "key_text" : {
+      "type" : "Text",
+      "config" : {
+        "label" : "Key Text"
+      }
+    },
+    "select" : {
       "type" : "Select",
       "config" : {
-        "options" : [ "False", "True" ],
-        "default_value" : "False",
-        "label" : "Show Sign In Bar"
+        "options" : [ ],
+        "label" : "Select"
       }
-    }
-  },
-  "Layout" : {
-    "layout" : {
+    },
+    "embed" : {
+      "type" : "Embed",
+      "config" : {
+        "label" : "Embed"
+      }
+    },
+    "geopoint" : {
+      "type" : "GeoPoint",
+      "config" : {
+        "label" : "GeoPoint"
+      }
+    },
+    "group" : {
+      "type" : "Group",
+      "config" : {
+        "fields" : {
+          "image_for_group" : {
+            "type" : "Image",
+            "config" : {
+              "constraint" : { },
+              "thumbnails" : [ ],
+              "label" : "Image for Group"
+            }
+          },
+          "title_for_group" : {
+            "type" : "StructuredText",
+            "config" : {
+              "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
+              "label" : "Title for Group"
+            }
+          },
+          "rich_text_for_group" : {
+            "type" : "StructuredText",
+            "config" : {
+              "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+              "label" : "Rich Text for Group"
+            }
+          }
+        },
+        "label" : "Group"
+      }
+    },
+    "body" : {
       "type" : "Slices",
       "fieldset" : "Slice zone",
       "config" : {
         "choices" : {
-          "destination_boxes" : {
+          "text" : {
             "type" : "Slice",
-            "fieldset" : "Destination Boxes",
-            "description" : "Boxes with supporting content linked to an endpoint",
-            "icon" : "border_all",
-            "display" : "grid",
+            "fieldset" : "Text",
+            "description" : "Rich Text Section",
+            "icon" : "text_fields",
             "non-repeat" : {
               "text" : {
                 "type" : "StructuredText",
                 "config" : {
-                  "multi" : "paragraph, heading2",
-                  "label" : "Text"
+                  "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+                  "label" : "text",
+                  "placeholder" : "Your content here"
                 }
               }
             },
             "repeat" : {
-              "primary_image" : {
-                "type" : "Image",
-                "config" : {
-                  "constraint" : { },
-                  "thumbnails" : [ ],
-                  "label" : "Primary Image"
-                }
-              },
-              "secondary_image" : {
-                "type" : "Image",
-                "config" : {
-                  "constraint" : { },
-                  "thumbnails" : [ ],
-                  "label" : "Secondary Image"
-                }
-              },
-              "primary_body" : {
+              "repeatable_title" : {
                 "type" : "StructuredText",
                 "config" : {
-                  "multi" : "paragraph, heading1",
-                  "label" : "Primary Body"
-                }
-              },
-              "primary_link" : {
-                "type" : "Link",
-                "config" : {
-                  "allowTargetBlank" : true,
-                  "label" : "Primary Link"
-                }
-              },
-              "secondary_body" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, heading2",
-                  "label" : "Secondary Body"
-                }
-              },
-              "secondary_button_text" : {
-                "type" : "Text",
-                "config" : {
-                  "label" : "Secondary Button Text"
-                }
-              },
-              "secondary_button_link" : {
-                "type" : "Link",
-                "config" : {
-                  "allowTargetBlank" : true,
-                  "label" : "Secondary Button Link"
-                }
-              }
-            }
-          },
-          "locations_search" : {
-            "type" : "Slice",
-            "fieldset" : "Locations Search",
-            "description" : "Search field directed to Locations page",
-            "icon" : "location_on",
-            "display" : "list",
-            "non-repeat" : {
-              "show_map" : {
-                "type" : "Select",
-                "config" : {
-                  "options" : [ "False", "True" ],
-                  "default_value" : "False",
-                  "label" : "Show Map"
-                }
-              },
-              "show_results" : {
-                "type" : "Select",
-                "config" : {
-                  "options" : [ "False", "True" ],
-                  "default_value" : "False",
-                  "label" : "Show Results"
-                }
-              }
-            },
-            "repeat" : { }
-          },
-          "contact_links" : {
-            "type" : "Slice",
-            "fieldset" : "Contact Links",
-            "description" : "Links to FAQ, Contact, and social media accounts",
-            "icon" : "contact_mail",
-            "display" : "list",
-            "non-repeat" : { },
-            "repeat" : { }
-          },
-          "page_navigation" : {
-            "type" : "Slice",
-            "fieldset" : "Page Navigation",
-            "description" : "Links that navigate to sections within the page.",
-            "icon" : "playlist_play",
-            "display" : "list",
-            "non-repeat" : { },
-            "repeat" : {
-              "name" : {
-                "type" : "Text",
-                "config" : {
-                  "label" : "Name"
-                }
-              },
-              "link" : {
-                "type" : "Link",
-                "config" : {
-                  "allowTargetBlank" : true,
-                  "label" : "Link"
-                }
-              }
-            }
-          },
-          "hero" : {
-            "type" : "Slice",
-            "fieldset" : "Hero",
-            "description" : "Large photo with supporting text",
-            "icon" : "photo_size_select_actual",
-            "display" : "list",
-            "non-repeat" : {
-              "image" : {
-                "type" : "Image",
-                "config" : {
-                  "constraint" : { },
-                  "thumbnails" : [ ],
-                  "label" : "Image"
-                }
-              },
-              "body" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, heading2, heading3",
-                  "label" : "Body"
-                }
-              }
-            },
-            "repeat" : { }
-          },
-          "destination_bar" : {
-            "type" : "Slice",
-            "fieldset" : "Destination Bar",
-            "description" : "Single destination with supporting text and media",
-            "icon" : "art_track",
-            "display" : "list",
-            "non-repeat" : {
-              "type" : {
-                "type" : "Select",
-                "config" : {
-                  "options" : [ "Basic", "BusinessDebitCreditCards", "BusinessServices", "BusinessLoans", "PersonalRetirement", "PersonalDebitCreditCards", "PersonalServices" ],
-                  "default_value" : "Basic",
-                  "label" : "Type"
-                }
-              },
-              "body" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, heading2",
-                  "label" : "Body"
-                }
-              },
-              "button_text" : {
-                "type" : "Text",
-                "config" : {
-                  "label" : "Button Text"
-                }
-              },
-              "button_link" : {
-                "type" : "Link",
-                "config" : {
-                  "allowTargetBlank" : true,
-                  "label" : "Button Link"
-                }
-              }
-            },
-            "repeat" : { }
-          },
-          "body" : {
-            "type" : "Slice",
-            "fieldset" : "Body",
-            "description" : "Main content section (use Body tab to edit)",
-            "icon" : "format_align_left",
-            "display" : "list",
-            "non-repeat" : { },
-            "repeat" : { }
-          },
-          "large_hero" : {
-            "type" : "Slice",
-            "fieldset" : "Large Hero",
-            "description" : "Large photo with supporting text",
-            "icon" : "photo_size_select_actual",
-            "display" : "list",
-            "non-repeat" : {
-              "image" : {
-                "type" : "Image",
-                "config" : {
-                  "constraint" : { },
-                  "thumbnails" : [ ],
-                  "label" : "Image"
-                }
-              }
-            },
-            "repeat" : { }
-          },
-          "split_panels" : {
-            "type" : "Slice",
-            "fieldset" : "Split Panels",
-            "description" : "Boxes with supporting content linked to an endpoint",
-            "icon" : "map",
-            "display" : "grid",
-            "non-repeat" : { },
-            "repeat" : {
-              "image" : {
-                "type" : "Image",
-                "config" : {
-                  "constraint" : { },
-                  "thumbnails" : [ ],
-                  "label" : "Image"
-                }
-              },
-              "text" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, heading2",
-                  "label" : "Text"
-                }
-              },
-              "button_text" : {
-                "type" : "Text",
-                "config" : {
-                  "label" : "Button Text"
-                }
-              },
-              "button_link" : {
-                "type" : "Link",
-                "config" : {
-                  "allowTargetBlank" : true,
-                  "label" : "Button Link"
-                }
-              }
-            }
-          },
-          "card_gallery" : {
-            "type" : "Slice",
-            "fieldset" : "Card Gallery",
-            "description" : "List of cards with supporting text",
-            "icon" : "credit_card",
-            "display" : "list",
-            "non-repeat" : {
-              "styling" : {
-                "type" : "Select",
-                "config" : {
-                  "options" : [ "Normal", "Alt" ],
-                  "default_value" : "Normal",
-                  "label" : "Styling"
-                }
-              },
-              "text" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, heading2, heading3",
-                  "label" : "Text"
-                }
-              }
-            },
-            "repeat" : {
-              "image" : {
-                "type" : "Image",
-                "config" : {
-                  "constraint" : { },
-                  "thumbnails" : [ ],
-                  "label" : "Image"
-                }
-              },
-              "text" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, heading4, strong, em, hyperlink",
-                  "allowTargetBlank" : true,
-                  "label" : "Text"
-                }
-              },
-              "button_text" : {
-                "type" : "Text",
-                "config" : {
-                  "label" : "Button Text"
-                }
-              },
-              "button_link" : {
-                "type" : "Link",
-                "config" : {
-                  "allowTargetBlank" : true,
-                  "label" : "Button Link"
+                  "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
+                  "label" : "Repeatable Title"
                 }
               }
             }
@@ -349,29 +161,58 @@
       }
     }
   },
-  "Body" : {
-    "body" : {
+  "Secondary" : {
+    "title_for_secondary" : {
+      "type" : "StructuredText",
+      "config" : {
+        "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
+        "label" : "Title for Secondary"
+      }
+    },
+    "rich_text_for_secondary" : {
+      "type" : "StructuredText",
+      "config" : {
+        "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+        "label" : "Rich Text for Secondary"
+      }
+    },
+    "image_for_secondary" : {
+      "type" : "Image",
+      "config" : {
+        "constraint" : { },
+        "thumbnails" : [ ],
+        "label" : "Image for Secondary"
+      }
+    },
+    "body1" : {
       "type" : "Slices",
       "fieldset" : "Slice zone",
       "config" : {
         "choices" : {
-          "rich_text" : {
+          "text" : {
             "type" : "Slice",
-            "fieldset" : "Rich Text",
-            "description" : "Rich text section",
+            "fieldset" : "Text",
+            "description" : "Rich Text Section",
             "icon" : "text_fields",
-            "display" : "list",
             "non-repeat" : {
               "text" : {
                 "type" : "StructuredText",
                 "config" : {
                   "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
-                  "allowTargetBlank" : true,
-                  "label" : "Text"
+                  "label" : "text",
+                  "placeholder" : "Your content here"
                 }
               }
             },
-            "repeat" : { }
+            "repeat" : {
+              "repeatable_title" : {
+                "type" : "StructuredText",
+                "config" : {
+                  "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
+                  "label" : "Repeatable Title"
+                }
+              }
+            }
           }
         }
       }
