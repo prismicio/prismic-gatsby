@@ -2,4 +2,5 @@
 /gatsby-node.js
 /fetch.js
 /normalize.js
+/schema.js
 node_modules
