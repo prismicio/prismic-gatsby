@@ -1,10 +1,6 @@
 import Prismic from 'prismic-javascript'
 
-export default async ({
-  repositoryName,
-  accessToken,
-  fetchLinks,
-}) => {
+export default async ({ repositoryName, accessToken, fetchLinks }) => {
   console.time(`Fetch Prismic data`)
   console.log(`Starting to fetch data from Prismic`)
 
