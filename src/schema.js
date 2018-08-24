@@ -32,10 +32,17 @@ const parseField = field => {
       return 'link'
 
     case 'Group':
-      return parseGroupField(field)
+      return R.pipe(
+        R.path(['config', 'fields']),
+        R.map(parseField),
+      )(field)
 
     case 'Slice':
-      return parseSliceField(field)
+      return R.pipe(
+        R.pick(['non-repeat', 'repeat']),
+        RA.renameKeys({ 'non-repeat': 'primary', repeat: 'items' }),
+        R.map(R.map(parseField)),
+      )(field)
 
     case 'Slices':
       return parseSchema(field.config)
@@ -45,16 +52,6 @@ const parseField = field => {
   }
 }
 
-const parseGroupField = R.pipe(
-  R.path(['config', 'fields']),
-  R.map(parseField),
-)
-
-const parseSliceField = R.pipe(
-  R.pick(['non-repeat', 'repeat']),
-  RA.renameKeys({ 'non-repeat': 'primary', repeat: 'items' }),
-  R.map(R.map(parseField)),
-)
 
 export const parseSchema = R.pipe(
   R.values,
