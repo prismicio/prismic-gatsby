@@ -170,6 +170,12 @@ URL is provided at the `url` field.
 If the link type is a web link (i.e. a URL external from your site), the URL is
 provided without additional processing.
 
+All other URL fields, such as `target`, `lang`, and `isBroken`, are provided on
+the field, as well.
+
+The `target` field defaults to an empty string. This allows you to always query
+the `target` field even if it is not set in Prismic.
+
 **Note**: If you need to access the raw data, the original data is accessible
 using the `raw` field, though use of this field is discouraged.
 
@@ -182,6 +188,7 @@ using the `raw` field, though use of this field is discouraged.
         data {
           featured_post {
             url
+            target
           }
         }
       }

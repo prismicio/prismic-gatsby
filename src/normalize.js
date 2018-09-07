@@ -57,15 +57,18 @@ const normalizeLinkField = (value, linkResolver, generateNodeId) => {
     case 'Document':
       if (!value.type || !value.id || value.isBroken) return undefined
       return {
+        ...value,
         document___NODE: [generateNodeId(value.type, value.id)],
         url: PrismicDOM.Link.url(value, linkResolver),
+        target: value.target || '',
         raw: value,
       }
 
     case 'Media':
     case 'Web':
       return {
-        url: value.url,
+        ...value,
+        target: value.target || '',
         raw: value,
       }
 
