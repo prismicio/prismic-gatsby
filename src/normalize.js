@@ -115,6 +115,8 @@ const normalizeImageField = async args => {
   if (fileNodeID) {
     return {
       ...value,
+      alt: value.alt || '',
+      copyright: value.copyright || '',
       localFile___NODE: fileNodeID,
     }
   }
