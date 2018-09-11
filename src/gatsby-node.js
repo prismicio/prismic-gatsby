@@ -14,12 +14,14 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     linkResolver = () => {},
     htmlSerializer = () => {},
     fetchLinks = [],
+    lang = '*'
   } = pluginOptions
 
   const { documents } = await fetchData({
     repositoryName,
     accessToken,
     fetchLinks,
+    lang,
   })
 
   await Promise.all(
