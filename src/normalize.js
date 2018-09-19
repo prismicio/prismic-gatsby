@@ -89,7 +89,7 @@ const normalizeImageField = async args => {
   // created file node to not try to redownload.
   if (cacheMediaData) {
     fileNodeID = cacheMediaData.fileNodeID
-    touchNode(cacheMediaData.fileNodeID)
+    touchNode({ nodeId: cacheMediaData.fileNodeID})
   }
 
   // If we don't have cached data, download the file.
