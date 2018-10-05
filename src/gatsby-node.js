@@ -3,7 +3,7 @@ import fetchData from './fetch'
 import { normalizeFields } from './normalize'
 
 const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
-const { createNodeFactory, generateNodeId } = nodeHelpers
+const { createNodeFactory } = nodeHelpers
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { actions, createNodeId, store, cache } = gatsby
