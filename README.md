@@ -69,6 +69,11 @@ plugins: [
           // Your HTML serializer
         }
       ),
+
+      // Set a default language when fetching documents. The default value is
+      // '*' which will fetch all languages.
+      // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
+      lang: '*',
     }
   }
 ]
