@@ -83,9 +83,10 @@ const normalizeLinkField = (value, linkResolver, generateNodeId) => {
 // data is provided on the `localFile` key.
 const normalizeImageField = async args => {
   const { value, createNode, createNodeId, store, cache, touchNode } = args
+  const { alt, dimensions, copyright, url, ...extraFields } = value
 
   let fileNodeID
-  const mediaDataCacheKey = `prismic-media-${value.url}`
+  const mediaDataCacheKey = `prismic-media-${url}`
   const cacheMediaData = await cache.get(mediaDataCacheKey)
 
   // If we have cached media data and it wasn't modified, reuse previously
@@ -99,7 +100,7 @@ const normalizeImageField = async args => {
   if (!fileNodeID) {
     try {
       const fileNode = await createRemoteFileNode({
-        url: value.url,
+        url,
         store,
         cache,
         createNode,
@@ -115,11 +116,17 @@ const normalizeImageField = async args => {
     }
   }
 
+  for (const key in extraFields) {
+    if (isImageField(value[key])) {
+      value[key] = await normalizeImageField({ ...args, key, value: value[key] });
+    }
+  }
+
   if (fileNodeID) {
     return {
       ...value,
-      alt: value.alt || '',
-      copyright: value.copyright || '',
+      alt: alt || '',
+      copyright: copyright || '',
       localFile___NODE: fileNodeID,
     }
   }
