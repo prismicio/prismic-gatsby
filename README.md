@@ -84,7 +84,7 @@ plugins: [
 You can query nodes created from Prismic using GraphQL like the following:
 
 **Note**: Learn to use the GraphQL tool and Ctrl+Spacebar at
-<http://localhost:3000/___graphql> to discover the types and properties of your
+<http://localhost:8000/___graphql> to discover the types and properties of your
 GraphQL model.
 
 ```graphql
