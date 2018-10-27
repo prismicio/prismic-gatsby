@@ -14,11 +14,7 @@
     "type": "git",
     "url": "https://github.com/angeloashmore/gatsby-source-prismic.git"
   },
-  "keywords": [
-    "gatsby",
-    "gatsby-plugin",
-    "gatsby-source-plugin"
-  ],
+  "keywords": ["gatsby", "gatsby-plugin", "gatsby-source-plugin"],
   "author": "Angelo Ashmore <angelo.ashmore@walltowall.com>",
   "license": "MIT",
   "dependencies": {
@@ -34,6 +30,6 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.0",
-    "prettier": "^1.5.3"
+    "prettier": "^1.14.3"
   }
 }

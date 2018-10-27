@@ -118,7 +118,11 @@ const normalizeImageField = async args => {
 
   for (const key in extraFields) {
     if (isImageField(value[key])) {
-      value[key] = await normalizeImageField({ ...args, key, value: value[key] });
+      value[key] = await normalizeImageField({
+        ...args,
+        key,
+        value: value[key],
+      })
     }
   }
 
