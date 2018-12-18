@@ -79,7 +79,7 @@ plugins: [
       lang: '*',
 
       // Set a function to determine if images are downloaded locally and made
-      // available for gatsby-transformer-prismic for use with gatsby-image.
+      // available for gatsby-transformer-sharp for use with gatsby-image.
       // The document node, field key (i.e. API ID), and field value are
       // provided to the function, as seen below. This allows you to use
       // different logic for each field if necessary.
