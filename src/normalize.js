@@ -190,7 +190,7 @@ const normalizeGroupField = async args =>
 // of it. If the type is not supported or needs no normalizing, it is returned
 // as-is.
 export const normalizeField = async args => {
-  const { key, value, node, nodeHelpers, normalizeImages } = args
+  const { key, value, node, nodeHelpers, shouldNormalizeImage } = args
   let { linkResolver, htmlSerializer } = args
   const { generateNodeId } = nodeHelpers
 
@@ -203,7 +203,11 @@ export const normalizeField = async args => {
   if (isLinkField(value))
     return normalizeLinkField(value, linkResolver, generateNodeId)
 
-  if (normalizeImages && isImageField(value))
+  if (
+    isImageField(value) &&
+    typeof shouldNormalizeImage === 'function' &&
+    shouldNormalizeImage({ node, key, value })
+  )
     return await normalizeImageField(args)
 
   if (isSliceField(key, value)) return await normalizeSliceField(args)
