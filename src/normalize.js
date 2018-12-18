@@ -83,7 +83,8 @@ const normalizeLinkField = (value, linkResolver, generateNodeId) => {
 // data is provided on the `localFile` key.
 const normalizeImageField = async args => {
   const { value, createNode, createNodeId, store, cache, touchNode } = args
-  const { alt, dimensions, copyright, url, ...extraFields } = value
+  const { alt, dimensions, copyright, ...extraFields } = value
+  const url = decodeURIComponent(value.url)
 
   let fileNodeID
   const mediaDataCacheKey = `prismic-media-${url}`
