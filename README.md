@@ -26,18 +26,18 @@ plugins: [
    * plugins. Here the site sources its data from prismic.io.
    */
   {
-    resolve: "gatsby-source-prismic",
+    resolve: 'gatsby-source-prismic',
     options: {
       // The name of your prismic.io repository. This is required.
       // Example: 'gatsby-source-prismic-test-site' if your prismic.io address
       // is 'gatsby-source-prismic-test-site.prismic.io'.
-      repositoryName: "gatsby-source-prismic-test-site",
+      repositoryName: 'gatsby-source-prismic-test-site',
 
       // An API access token to your prismic.io repository. This is required.
       // You can generate an access token in the "API & Security" section of
       // your repository settings. Setting a "Callback URL" is not necessary.
       // The token will be listed under "Permanent access tokens".
-      accessToken: "example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj",
+      accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
 
       // Set a link resolver function used to process links in your content.
       // Fields with rich text formatting or links to internal content use this
@@ -65,17 +65,30 @@ plugins: [
       // different HTML serializer logic for each field if necessary.
       // See: https://prismic.io/docs/nodejs/beyond-the-api/html-serializer
       htmlSerializer: ({ node, key, value }) => (
-        (type, element, content, children) => {
-          // Your HTML serializer
-        }
-      ),
+        type,
+        element,
+        content,
+        children,
+      ) => {
+        // Your HTML serializer
+      },
 
       // Set a default language when fetching documents. The default value is
       // '*' which will fetch all languages.
       // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
       lang: '*',
-    }
-  }
+
+      // Set a function to determine if images are downloaded locally and made
+      // available for gatsby-transformer-prismic for use with gatsby-image.
+      // The document node, field key (i.e. API ID), and field value are
+      // provided to the function, as seen below. This allows you to use
+      // different logic for each field if necessary.
+      // This defaults to always return true.
+      shouldNormalizeImage: ({ node, key, value }) => {
+        // Return true to normalize the image or false to skip.
+      },
+    },
+  },
 ]
 ```
 
@@ -426,8 +439,8 @@ exports.createPages = async ({ graphql, actions }) => {
   `)
 
   const pageTemplates = {
-    'Light': path.resolve('./src/templates/light.js'),
-    'Dark': path.resolve('./src/templates/dark.js'),
+    Light: path.resolve('./src/templates/light.js'),
+    Dark: path.resolve('./src/templates/dark.js'),
   }
 
   pages.data.allPrismicPage.edges.forEach(edge => {
