@@ -14,6 +14,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     linkResolver = () => {},
     htmlSerializer = () => {},
     fetchLinks = [],
+    shouldNormalizeImage = () => true,
   } = pluginOptions
 
   const { documents } = await fetchData({
@@ -36,6 +37,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
           touchNode,
           store,
           cache,
+          shouldNormalizeImage,
         })
 
         return node
