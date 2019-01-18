@@ -9,7 +9,7 @@ test('parse schema from provided JSON', () => {
   console.log(util.inspect(parsed, false, null))
 })
 
-test('parse schema from experiemental endpoint', () => {
+test.skip('parse schema from experiemental endpoint', () => {
   // Schema from https://<repository-name>.prismic.io/apibrowser/types?ref=<ref>
   const parsed = parseSchemaExperimental(schemaExperimental)
   console.log(util.inspect(parsed, false, null))

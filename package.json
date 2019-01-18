@@ -24,8 +24,10 @@
   "license": "MIT",
   "dependencies": {
     "asyncro": "^3.0.0",
+    "gatsby": "^2.0.91",
     "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.1",
+    "pascalcase": "^0.1.1",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
     "ramda": "^0.25.0",
@@ -41,6 +43,6 @@
     "babel-jest": "^23.4.2",
     "jest": "^23.4.2",
     "prettier": "^1.5.3",
-    "regenerator-runtime": "^0.12.1"
+    "regenerator-runtime": "^0.13.1"
   }
 }
