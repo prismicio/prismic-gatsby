@@ -26,18 +26,18 @@ plugins: [
    * plugins. Here the site sources its data from prismic.io.
    */
   {
-    resolve: "gatsby-source-prismic",
+    resolve: 'gatsby-source-prismic',
     options: {
       // The name of your prismic.io repository. This is required.
       // Example: 'gatsby-source-prismic-test-site' if your prismic.io address
       // is 'gatsby-source-prismic-test-site.prismic.io'.
-      repositoryName: "gatsby-source-prismic-test-site",
+      repositoryName: 'gatsby-source-prismic-test-site',
 
       // An API access token to your prismic.io repository. This is required.
       // You can generate an access token in the "API & Security" section of
       // your repository settings. Setting a "Callback URL" is not necessary.
       // The token will be listed under "Permanent access tokens".
-      accessToken: "example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj",
+      accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
 
       // Set a link resolver function used to process links in your content.
       // Fields with rich text formatting or links to internal content use this
@@ -50,6 +50,13 @@ plugins: [
         // Your link resolver
       },
 
+      // Set a list of links to fetch and be made available in your link
+      // resolver function.
+      // See: https://prismic.io/docs/javascript/query-the-api/fetch-linked-document-fields
+      fetchLinks: [
+        // Your list of links
+      ],
+
       // Set an HTML serializer function used to process formatted content.
       // Fields with rich text formatting use this function to generate the
       // correct HTML.
@@ -58,12 +65,30 @@ plugins: [
       // different HTML serializer logic for each field if necessary.
       // See: https://prismic.io/docs/nodejs/beyond-the-api/html-serializer
       htmlSerializer: ({ node, key, value }) => (
-        (type, element, content, children) => {
-          // Your HTML serializer
-        }
-      )
-    }
-  }
+        type,
+        element,
+        content,
+        children,
+      ) => {
+        // Your HTML serializer
+      },
+
+      // Set a default language when fetching documents. The default value is
+      // '*' which will fetch all languages.
+      // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
+      lang: '*',
+
+      // Set a function to determine if images are downloaded locally and made
+      // available for gatsby-transformer-sharp for use with gatsby-image.
+      // The document node, field key (i.e. API ID), and field value are
+      // provided to the function, as seen below. This allows you to use
+      // different logic for each field if necessary.
+      // This defaults to always return true.
+      shouldNormalizeImage: ({ node, key, value }) => {
+        // Return true to normalize the image or false to skip.
+      },
+    },
+  },
 ]
 ```
 
@@ -72,7 +97,7 @@ plugins: [
 You can query nodes created from Prismic using GraphQL like the following:
 
 **Note**: Learn to use the GraphQL tool and Ctrl+Spacebar at
-<http://localhost:3000/___graphql> to discover the types and properties of your
+<http://localhost:8000/___graphql> to discover the types and properties of your
 GraphQL model.
 
 ```graphql
@@ -163,6 +188,12 @@ URL is provided at the `url` field.
 If the link type is a web link (i.e. a URL external from your site), the URL is
 provided without additional processing.
 
+All other URL fields, such as `target`, `lang`, and `isBroken`, are provided on
+the field, as well.
+
+The `target` field defaults to an empty string. This allows you to always query
+the `target` field even if it is not set in Prismic.
+
 **Note**: If you need to access the raw data, the original data is accessible
 using the `raw` field, though use of this field is discouraged.
 
@@ -175,6 +206,7 @@ using the `raw` field, though use of this field is discouraged.
         data {
           featured_post {
             url
+            target
           }
         }
       }
@@ -389,8 +421,8 @@ To learn more about image processing, check the documentation of
 ```js
 const path = require('path')
 
-exports.createPages = async ({ graphql, boundActionCreators }) => {
-  const { createPage } = boundActionCreators
+exports.createPages = async ({ graphql, actions }) => {
+  const { createPage } = actions
 
   const pages = await graphql(`
     {
@@ -407,8 +439,8 @@ exports.createPages = async ({ graphql, boundActionCreators }) => {
   `)
 
   const pageTemplates = {
-    'Light': path.resolve('./src/templates/light.js'),
-    'Dark': path.resolve('./src/templates/dark.js'),
+    Light: path.resolve('./src/templates/light.js'),
+    Dark: path.resolve('./src/templates/dark.js'),
   }
 
   pages.data.allPrismicPage.edges.forEach(edge => {

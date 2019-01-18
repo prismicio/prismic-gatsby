@@ -57,15 +57,18 @@ const normalizeLinkField = (value, linkResolver, generateNodeId) => {
     case 'Document':
       if (!value.type || !value.id || value.isBroken) return undefined
       return {
+        ...value,
         document___NODE: [generateNodeId(value.type, value.id)],
         url: PrismicDOM.Link.url(value, linkResolver),
+        target: value.target || '',
         raw: value,
       }
 
     case 'Media':
     case 'Web':
       return {
-        url: value.url,
+        ...value,
+        target: value.target || '',
         raw: value,
       }
 
@@ -79,27 +82,30 @@ const normalizeLinkField = (value, linkResolver, generateNodeId) => {
 // `gatsby-transformer-sharp` and `gatsby-image` integration. The linked node
 // data is provided on the `localFile` key.
 const normalizeImageField = async args => {
-  const { value, createNode, store, cache, touchNode } = args
+  const { value, createNode, createNodeId, store, cache, touchNode } = args
+  const { alt, dimensions, copyright, ...extraFields } = value
+  const url = decodeURIComponent(value.url)
 
   let fileNodeID
-  const mediaDataCacheKey = `prismic-media-${value.url}`
+  const mediaDataCacheKey = `prismic-media-${url}`
   const cacheMediaData = await cache.get(mediaDataCacheKey)
 
   // If we have cached media data and it wasn't modified, reuse previously
   // created file node to not try to redownload.
   if (cacheMediaData) {
     fileNodeID = cacheMediaData.fileNodeID
-    touchNode(cacheMediaData.fileNodeID)
+    touchNode({ nodeId: cacheMediaData.fileNodeID })
   }
 
   // If we don't have cached data, download the file.
   if (!fileNodeID) {
     try {
       const fileNode = await createRemoteFileNode({
-        url: value.url,
+        url,
         store,
         cache,
         createNode,
+        createNodeId,
       })
 
       if (fileNode) {
@@ -111,9 +117,21 @@ const normalizeImageField = async args => {
     }
   }
 
+  for (const key in extraFields) {
+    if (isImageField(value[key])) {
+      value[key] = await normalizeImageField({
+        ...args,
+        key,
+        value: value[key],
+      })
+    }
+  }
+
   if (fileNodeID) {
     return {
       ...value,
+      alt: alt || '',
+      copyright: copyright || '',
       localFile___NODE: fileNodeID,
     }
   }
@@ -173,7 +191,7 @@ const normalizeGroupField = async args =>
 // of it. If the type is not supported or needs no normalizing, it is returned
 // as-is.
 export const normalizeField = async args => {
-  const { key, value, node, nodeHelpers } = args
+  const { key, value, node, nodeHelpers, shouldNormalizeImage } = args
   let { linkResolver, htmlSerializer } = args
   const { generateNodeId } = nodeHelpers
 
@@ -186,7 +204,12 @@ export const normalizeField = async args => {
   if (isLinkField(value))
     return normalizeLinkField(value, linkResolver, generateNodeId)
 
-  if (isImageField(value)) return await normalizeImageField(args)
+  if (
+    isImageField(value) &&
+    typeof shouldNormalizeImage === 'function' &&
+    shouldNormalizeImage({ node, key, value })
+  )
+    return await normalizeImageField(args)
 
   if (isSliceField(key, value)) return await normalizeSliceField(args)
 
