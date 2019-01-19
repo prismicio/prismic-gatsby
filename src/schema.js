@@ -1,58 +1,82 @@
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import { GraphQLString, GraphQLFloat, GraphQLObjectType } from 'gatsby/graphql'
+import {
+  GraphQLSchema,
+  GraphQLString,
+  GraphQLFloat,
+  GraphQLObjectType,
+} from 'gatsby/graphql'
 import pascalcase from 'pascalcase'
 
-const parseField = (field, key) => {
+const generateTypeName = (...parts) =>
+  ['Prismic', ...parts.map(pascalcase)].join('')
+
+const PrismicHTMLType = new GraphQLObjectType({
+  name: generateTypeName('HTMLType'),
+  fields: {
+    html: GraphQLString,
+    text: GraphQLString,
+  },
+})
+
+const PrismicGeoPointType = new GraphQLObjectType({
+  name: generateTypeName('GeoPointType'),
+  fields: {
+    latitude: GraphQLFloat,
+    longitude: GraphQLFloat,
+  },
+})
+
+const PrismicEmbedType = new GraphQLObjectType({
+  name: generateTypeName('EmbedType'),
+  fields: {},
+})
+
+const PrismicImageType = new GraphQLObjectType({
+  name: generateTypeName('ImageType'),
+  fields: {},
+})
+
+const PrismicLinkType = new GraphQLObjectType({
+  name: generateTypeName('LinkType'),
+  fields: {},
+})
+
+const createPrismicSliceType = (typename, key, fields) =>
+  new GraphQLObjectType({
+    name: generateTypeName(typename, key),
+    fields: parseSubSchema(fields),
+  })
+
+const parseField = typename => (field, key) => {
   switch (field.type) {
     case 'Color':
     case 'Select':
     case 'Text':
     case 'UID':
-      return GraphQLString
+      return { type: GraphQLString }
 
     case 'StructuredText':
-      return new GraphQLObjectType({
-        name: 'PrismicHTMLType',
-        fields: {
-          html: GraphQLString,
-          text: GraphQLString,
-        },
-      })
+      return { type: PrismicHTMLType }
 
     case 'Number':
-      return GraphQLFloat
+      return { type: GraphQLFloat }
 
     case 'Date':
     case 'Timestamp':
-      return GraphQLString
+      return { type: GraphQLString }
 
     case 'GeoPoint':
-      return new GraphQLObjectType({
-        name: 'PrismicGeoPointType',
-        fields: {
-          latitude: GraphQLFloat,
-          longitude: GraphQLFloat,
-        },
-      })
+      return { type: PrismicGeoPointType }
 
     case 'Embed':
-      return new GraphQLObjectType({
-        name: 'PrismicEmbedType',
-        fields: {},
-      })
+      return { type: PrismicEmbedType }
 
     case 'Image':
-      return new GraphQLObjectType({
-        name: 'PrismicImageType',
-        fields: {},
-      })
+      return { type: PrismicImageType }
 
     case 'Link':
-      return new GraphQLObjectType({
-        name: 'PrismicLinkType',
-        fields: {},
-      })
+      return { type: PrismicLinkType }
 
     case 'Group':
       return R.pipe(
@@ -60,8 +84,9 @@ const parseField = (field, key) => {
         subfields =>
           new GraphQLObjectType({
             name: `PrismicGroup${pascalcase(key)}Type`,
-            fields: R.map(parseField, subfields),
+            fields: R.map(parseField(typename), subfields),
           }),
+        x => ({ type: x }),
       )(field)
 
     // TODO: Add custom type namespace to type
@@ -71,20 +96,23 @@ const parseField = (field, key) => {
         RA.renameKeys({ 'non-repeat': 'primary', repeat: 'items' }),
         subfields =>
           new GraphQLObjectType({
-            name: `PrismicSlice${pascalcase(
-              key,
-            )}Type__NEEDS_CUSTOM_TYPE_NAMESPACE`,
-            fields: R.map(R.map(parseField), subfields),
+            name: `Prismic${pascalcase(typename)}${pascalcase(key)}`,
+            fields: R.map(R.map(parseField(typename)), subfields),
           }),
+        x => ({ type: x }),
       )(field)
 
     // TODO: Should be an array of Slice types, not an object
     // TODO: Add custom type namespace to type
     case 'Slices':
-      return new GraphQLObjectType({
-        name: `PrismicSliceZone${pascalcase(key)}__NEEDS_CUSTOM_TYPE_NAMESPACE`,
-        fields: parseSubSchema(field.config),
-      })
+      return {
+        type: new GraphQLObjectType({
+          name: `Prismic${pascalcase(typename)}${pascalcase(key)}__SliceZone`,
+          fields: R.mapObjIndexed((val, sliceName) =>
+            sliceToGraphQLType(typename, key, sliceName)(val),
+          )(field.config.choices),
+        }),
+      }
 
     // TODO: Do not include in schema if unknown type
     default:
@@ -92,13 +120,35 @@ const parseField = (field, key) => {
   }
 }
 
-const parseSubSchema = R.pipe(
-  R.values,
-  R.mergeAll,
-  R.mapObjIndexed(parseField),
-)
+const sliceToGraphQLType = (typename, key, sliceName) => fields => ({
+  type: new GraphQLObjectType({
+    name: generateTypeName(typename, key, sliceName),
+    fields: parseSubSchema(typename)(fields),
+  }),
+})
 
-export const parseSchema = R.pipe(
-  parseSubSchema,
-  ({ uid, ...rest }) => ({ uid, data: rest }),
-)
+const parseSubSchema = typename =>
+  R.pipe(
+    R.values,
+    R.mergeAll,
+    R.mapObjIndexed(parseField(typename)),
+  )
+
+export const customTypeJsonToGraphQLSchema = (typename, json) => {
+  const { uid, ...dataFields } = parseSubSchema(typename)(json)
+
+  const dataType = new GraphQLObjectType({
+    name: generateTypeName(typename, 'Data'),
+    fields: dataFields,
+  })
+
+  const queryType = new GraphQLObjectType({
+    name: generateTypeName(typename),
+    fields: {
+      uid,
+      data: { type: dataType },
+    },
+  })
+
+  return new GraphQLSchema({ query: queryType })
+}
