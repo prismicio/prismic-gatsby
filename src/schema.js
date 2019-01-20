@@ -1,6 +1,7 @@
 import * as R from 'ramda'
 import {
   GraphQLFloat,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLSchema,
@@ -9,41 +10,59 @@ import {
 } from 'gatsby/graphql'
 import pascalcase from 'pascalcase'
 
-const generateTypeName = (...parts) =>
-  ['Prismic', ...parts.map(pascalcase)].join('')
+const _generateTypeName = joinChar => (...parts) =>
+  ['Prismic', ...parts.map(pascalcase)].join(joinChar)
+const generatePublicTypeName = _generateTypeName('')
+const generateNamespacedTypeName = _generateTypeName('__')
 
-const generatePrivateTypeName = (...parts) =>
-  ['Prismic', ...parts.map(pascalcase)].join('__')
-
-const GraphQLPrismicPrimitiveHTML = new GraphQLObjectType({
-  name: generatePrivateTypeName('HTML'),
+const GraphQLPrismicHTML = new GraphQLObjectType({
+  name: generateNamespacedTypeName('HTML'),
   fields: {
     html: { type: GraphQLString },
     text: { type: GraphQLString },
   },
 })
 
-const GraphQLPrismicPrimitiveGeoPoint = new GraphQLObjectType({
-  name: generatePrivateTypeName('GeoPoint'),
+const GraphQLPrismicGeoPoint = new GraphQLObjectType({
+  name: generateNamespacedTypeName('GeoPoint'),
   fields: {
     latitude: { type: GraphQLFloat },
     longitude: { type: GraphQLFloat },
   },
 })
 
-const GraphQLPrismicPrimitiveEmbed = new GraphQLObjectType({
-  name: generatePrivateTypeName('Embed'),
+// TODO: Implement embed fields. Fields are dynamic based on embed source.
+// TODO: Convert to a union type for each embed source (e.g. GitHub, YouTube, etc.).
+const GraphQLPrismicEmbed = new GraphQLObjectType({
+  name: generateNamespacedTypeName('Embed'),
   fields: {},
 })
 
-const GraphQLPrismicPrimitiveImage = new GraphQLObjectType({
-  name: generatePrivateTypeName('Image'),
-  fields: {},
+const GraphQLPrismicImageDimensions = new GraphQLObjectType({
+  name: generateNamespacedTypeName('Image', 'Dimensions'),
+  fields: {
+    width: { type: GraphQLInt },
+    height: { type: GraphQLInt },
+  },
 })
 
-const GraphQLPrismicPrimitiveLink = new GraphQLObjectType({
-  name: generatePrivateTypeName('Link'),
-  fields: {},
+const GraphQLPrismicImage = new GraphQLObjectType({
+  name: generateNamespacedTypeName('Image'),
+  fields: {
+    alt: { type: GraphQLString },
+    copyright: { type: GraphQLString },
+    dimensions: { type: GraphQLPrismicImageDimensions },
+    url: { type: GraphQLString },
+  },
+})
+
+// TODO: Convert to a union type for each link_type (Document, Media, Web).
+const GraphQLPrismicLink = new GraphQLObjectType({
+  name: generateNamespacedTypeName('Link'),
+  fields: {
+    id: { type: GraphQLString },
+    link_type: { type: GraphQLString },
+  },
 })
 
 const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
@@ -55,7 +74,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       return { type: GraphQLString }
 
     case 'StructuredText':
-      return { type: GraphQLPrismicPrimitiveHTML }
+      return { type: GraphQLPrismicHTML }
 
     case 'Number':
       return { type: GraphQLFloat }
@@ -65,23 +84,23 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       return { type: GraphQLString }
 
     case 'GeoPoint':
-      return { type: GraphQLPrismicPrimitiveGeoPoint }
+      return { type: GraphQLPrismicGeoPoint }
 
     case 'Embed':
-      return { type: GraphQLPrismicPrimitiveEmbed }
+      return { type: GraphQLPrismicEmbed }
 
     case 'Image':
-      return { type: GraphQLPrismicPrimitiveImage }
+      return { type: GraphQLPrismicImage }
 
     case 'Link':
-      return { type: GraphQLPrismicPrimitiveLink }
+      return { type: GraphQLPrismicLink }
 
     case 'Group':
       return R.pipe(
         R.path(['config', 'fields']),
         subfields =>
           new GraphQLObjectType({
-            name: generatePrivateTypeName('Group', fieldId),
+            name: generateNamespacedTypeName('Group', fieldId),
             fields: R.map(fieldToGraphQLType(customTypeId), subfields),
           }),
         R.objOf('type'),
@@ -92,7 +111,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       const { 'non-repeat': primaryFields, repeat: itemsFields } = field
 
       const primaryType = new GraphQLObjectType({
-        name: generatePrivateTypeName(
+        name: generateNamespacedTypeName(
           customTypeId,
           sliceZoneId,
           fieldId,
@@ -102,7 +121,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       })
 
       const itemType = new GraphQLObjectType({
-        name: generatePrivateTypeName(
+        name: generateNamespacedTypeName(
           customTypeId,
           sliceZoneId,
           fieldId,
@@ -113,7 +132,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
 
       // GraphQL type must match source plugin type.
       const sliceType = new GraphQLObjectType({
-        name: generateTypeName(customTypeId, sliceZoneId, fieldId),
+        name: generatePublicTypeName(customTypeId, sliceZoneId, fieldId),
         fields: {
           primary: { type: primaryType },
           items: { type: new GraphQLList(itemType) },
@@ -133,7 +152,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       )(field)
 
       const unionType = new GraphQLUnionType({
-        name: generatePrivateTypeName(customTypeId, fieldId, 'Slice'),
+        name: generateNamespacedTypeName(customTypeId, fieldId, 'Slice'),
         types: choiceTypes,
       })
 
@@ -153,13 +172,13 @@ export const customTypeJsonToGraphQLSchema = (customTypeId, json) => {
   )(json)
 
   const dataType = new GraphQLObjectType({
-    name: generatePrivateTypeName(customTypeId, 'Data'),
+    name: generateNamespacedTypeName(customTypeId, 'Data'),
     fields: dataFields,
   })
 
   // GraphQL type must match source plugin type.
   const queryType = new GraphQLObjectType({
-    name: generateTypeName(customTypeId),
+    name: generatePublicTypeName(customTypeId),
     fields: {
       uid,
       data: { type: dataType },
