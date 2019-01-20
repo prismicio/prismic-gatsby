@@ -8,7 +8,6 @@ import { printSchema } from 'gatsby/graphql'
 test('parse schema from provided JSON', () => {
   const schema = customTypeJsonToGraphQLSchema('page', customTypeJson)
   console.log(printSchema(schema))
-  // console.log(util.inspect(parsed, false, null))
 })
 
 test.skip('parse schema from experiemental endpoint', () => {
