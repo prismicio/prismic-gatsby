@@ -1,13 +1,11 @@
-import createNodeHelpers from 'gatsby-node-helpers'
 import fetchData from './fetch'
 import { normalizeFields } from './normalize'
 import { hydrateGraphQLSchema } from './hydrateGraphQLSchema'
-
-const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
-const { createNodeFactory } = nodeHelpers
+import { nodeHelpers, createNodeFactory, generateTypeName } from './nodeHelpers'
+import { createTemporaryMockNodes } from './createTemporaryMockNodes'
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
-  const { actions, createNodeId, store, cache } = gatsby
+  const { actions, createNodeId, store, cache, emitter } = gatsby
   const { createNode, touchNode, deleteNode } = actions
   const {
     repositoryName,
@@ -27,7 +25,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     lang,
   })
 
-  await hydrateGraphQLSchema({ schemas, createNode, deleteNode })
+  createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
 
   await Promise.all(
     documents.map(async doc => {
@@ -56,4 +54,13 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
   )
 
   return
+}
+
+// this is just first API hook after "createPages" hook
+// and before regenerating schema
+export const onPreExtractQueries = ({ emitter, actions }, pluginOptions) => {
+  const { schemas } = pluginOptions
+  const { createNode, deleteNode } = actions
+
+  createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
 }

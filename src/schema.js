@@ -113,33 +113,40 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       const { sliceZoneId } = options
       const { 'non-repeat': primaryFields, repeat: itemsFields } = field
 
-      const primaryType = new GraphQLObjectType({
-        name: generateNamespacedTypeName(
-          customTypeId,
-          sliceZoneId,
-          fieldId,
-          'Primary',
-        ),
-        fields: R.map(fieldToGraphQLType(customTypeId), primaryFields),
-      })
+      const sliceFields = {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+      }
 
-      const itemType = new GraphQLObjectType({
-        name: generateNamespacedTypeName(
-          customTypeId,
-          sliceZoneId,
-          fieldId,
-          'Item',
-        ),
-        fields: R.map(fieldToGraphQLType(customTypeId), itemsFields),
-      })
+      if (!R.isEmpty(primaryFields))
+        sliceFields.primary = {
+          type: new GraphQLObjectType({
+            name: generateNamespacedTypeName(
+              customTypeId,
+              sliceZoneId,
+              fieldId,
+              'Primary',
+            ),
+            fields: R.map(fieldToGraphQLType(customTypeId), primaryFields),
+          }),
+        }
+
+      if (!R.isEmpty(itemsFields))
+        sliceFields.items = {
+          type: new GraphQLObjectType({
+            name: generateNamespacedTypeName(
+              customTypeId,
+              sliceZoneId,
+              fieldId,
+              'Item',
+            ),
+            fields: R.map(fieldToGraphQLType(customTypeId), itemsFields),
+          }),
+        }
 
       // GraphQL type must match source plugin type.
       const sliceType = new GraphQLObjectType({
         name: generatePublicTypeName(customTypeId, sliceZoneId, fieldId),
-        fields: {
-          primary: { type: primaryType },
-          items: { type: new GraphQLList(itemType) },
-        },
+        fields: sliceFields,
       })
 
       return { type: sliceType }
@@ -183,6 +190,7 @@ export const customTypeJsonToGraphQLSchema = (customTypeId, json) => {
   const queryType = new GraphQLObjectType({
     name: generatePublicTypeName(customTypeId),
     fields: {
+      id: { type: new GraphQLNonNull(GraphQLString) },
       uid,
       data: { type: dataType },
     },

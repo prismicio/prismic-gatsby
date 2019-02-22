@@ -4,5 +4,5 @@
 /normalize.js
 /schema.js
 /schemaExperimental.js
-/hydrateGraphQLSchema.js
+/createTemporaryMockNodes.js
 node_modules
