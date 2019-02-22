@@ -24,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "asyncro": "^3.0.0",
+    "easygraphql-mock": "^0.1.11",
     "gatsby": "^2.0.91",
     "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.1",

@@ -1,13 +1,14 @@
 import createNodeHelpers from 'gatsby-node-helpers'
 import fetchData from './fetch'
 import { normalizeFields } from './normalize'
+import { hydrateGraphQLSchema } from './hydrateGraphQLSchema'
 
 const nodeHelpers = createNodeHelpers({ typePrefix: 'Prismic' })
 const { createNodeFactory } = nodeHelpers
 
 export const sourceNodes = async (gatsby, pluginOptions) => {
   const { actions, createNodeId, store, cache } = gatsby
-  const { createNode, touchNode } = actions
+  const { createNode, touchNode, deleteNode } = actions
   const {
     repositoryName,
     accessToken,
@@ -16,6 +17,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     fetchLinks = [],
     lang = '*',
     shouldNormalizeImage = () => true,
+    schemas,
   } = pluginOptions
 
   const { documents } = await fetchData({
@@ -24,6 +26,8 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     fetchLinks,
     lang,
   })
+
+  await hydrateGraphQLSchema({ schemas, createNode, deleteNode })
 
   await Promise.all(
     documents.map(async doc => {

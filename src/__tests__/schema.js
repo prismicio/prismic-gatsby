@@ -4,10 +4,17 @@ import { parseSchema as parseSchemaExperimental } from '../schemaExperimental'
 import customTypeJson from './fixtures/schema.json'
 import schemaExperimental from './fixtures/schemaExperimental.json'
 import { printSchema } from 'gatsby/graphql'
+import easygraphqlMock from 'easygraphql-mock'
 
 test('parse schema from provided JSON', () => {
   const schema = customTypeJsonToGraphQLSchema('page', customTypeJson)
-  console.log(printSchema(schema))
+  const printedSchema = printSchema(schema)
+
+  const mockedSchema = easygraphqlMock(printedSchema)
+
+  // console.log(printedSchema)
+
+  console.log(util.inspect(mockedSchema, false, null, true))
 })
 
 test.skip('parse schema from experiemental endpoint', () => {

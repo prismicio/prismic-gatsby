@@ -3,6 +3,7 @@ import {
   GraphQLFloat,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
@@ -18,16 +19,16 @@ const generateNamespacedTypeName = _generateTypeName('__')
 const GraphQLPrismicHTML = new GraphQLObjectType({
   name: generateNamespacedTypeName('HTML'),
   fields: {
-    html: { type: GraphQLString },
-    text: { type: GraphQLString },
+    html: { type: new GraphQLNonNull(GraphQLString) },
+    text: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
 const GraphQLPrismicGeoPoint = new GraphQLObjectType({
   name: generateNamespacedTypeName('GeoPoint'),
   fields: {
-    latitude: { type: GraphQLFloat },
-    longitude: { type: GraphQLFloat },
+    latitude: { type: new GraphQLNonNull(GraphQLFloat) },
+    longitude: { type: new GraphQLNonNull(GraphQLFloat) },
   },
 })
 
@@ -35,24 +36,26 @@ const GraphQLPrismicGeoPoint = new GraphQLObjectType({
 // TODO: Convert to a union type for each embed source (e.g. GitHub, YouTube, etc.).
 const GraphQLPrismicEmbed = new GraphQLObjectType({
   name: generateNamespacedTypeName('Embed'),
-  fields: {},
+  fields: {
+    name: { type: new GraphQLNonNull(GraphQLString) },
+  },
 })
 
 const GraphQLPrismicImageDimensions = new GraphQLObjectType({
   name: generateNamespacedTypeName('Image', 'Dimensions'),
   fields: {
-    width: { type: GraphQLInt },
-    height: { type: GraphQLInt },
+    width: { type: new GraphQLNonNull(GraphQLInt) },
+    height: { type: new GraphQLNonNull(GraphQLInt) },
   },
 })
 
 const GraphQLPrismicImage = new GraphQLObjectType({
   name: generateNamespacedTypeName('Image'),
   fields: {
-    alt: { type: GraphQLString },
-    copyright: { type: GraphQLString },
+    alt: { type: new GraphQLNonNull(GraphQLString) },
+    copyright: { type: new GraphQLNonNull(GraphQLString) },
     dimensions: { type: GraphQLPrismicImageDimensions },
-    url: { type: GraphQLString },
+    url: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -60,8 +63,8 @@ const GraphQLPrismicImage = new GraphQLObjectType({
 const GraphQLPrismicLink = new GraphQLObjectType({
   name: generateNamespacedTypeName('Link'),
   fields: {
-    id: { type: GraphQLString },
-    link_type: { type: GraphQLString },
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    link_type: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -71,17 +74,17 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
     case 'Select':
     case 'Text':
     case 'UID':
-      return { type: GraphQLString }
+      return { type: new GraphQLNonNull(GraphQLString) }
 
     case 'StructuredText':
       return { type: GraphQLPrismicHTML }
 
     case 'Number':
-      return { type: GraphQLFloat }
+      return { type: new GraphQLNonNull(GraphQLFloat) }
 
     case 'Date':
     case 'Timestamp':
-      return { type: GraphQLString }
+      return { type: new GraphQLNonNull(GraphQLString) }
 
     case 'GeoPoint':
       return { type: GraphQLPrismicGeoPoint }
