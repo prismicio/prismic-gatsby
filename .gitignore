@@ -1,8 +1,9 @@
 *.log
-/gatsby-node.js
-/fetch.js
-/normalize.js
-/schema.js
-/schemaExperimental.js
-/createTemporaryMockNodes.js
 node_modules
+
+/createTemporaryMockNodes.js
+/customTypeJsonToGraphQLSchema.js
+/fetch.js
+/gatsby-node.js
+/nodeHelpers.js
+/normalize.js
