@@ -84,7 +84,12 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
 
     case 'Date':
     case 'Timestamp':
-      return { type: new GraphQLNonNull(GraphQLString) }
+      return {
+        type: new GraphQLNonNull(GraphQLString),
+        args: {
+          formatString: { type: GraphQLString },
+        },
+      }
 
     case 'GeoPoint':
       return { type: GraphQLPrismicGeoPoint }
@@ -99,15 +104,16 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       return { type: GraphQLPrismicLink }
 
     case 'Group':
-      return R.pipe(
+      const group = R.pipe(
         R.path(['config', 'fields']),
         subfields =>
           new GraphQLObjectType({
             name: generateNamespacedTypeName('Group', fieldId),
             fields: R.map(fieldToGraphQLType(customTypeId), subfields),
           }),
-        R.objOf('type'),
       )(field)
+
+      return { type: new GraphQLList(group) }
 
     case 'Slice':
       const { sliceZoneId } = options
@@ -132,15 +138,17 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
 
       if (!R.isEmpty(itemsFields))
         sliceFields.items = {
-          type: new GraphQLObjectType({
-            name: generateNamespacedTypeName(
-              customTypeId,
-              sliceZoneId,
-              fieldId,
-              'Item',
-            ),
-            fields: R.map(fieldToGraphQLType(customTypeId), itemsFields),
-          }),
+          type: new GraphQLList(
+            new GraphQLObjectType({
+              name: generateNamespacedTypeName(
+                customTypeId,
+                sliceZoneId,
+                fieldId,
+                'Item',
+              ),
+              fields: R.map(fieldToGraphQLType(customTypeId), itemsFields),
+            }),
+          ),
         }
 
       // GraphQL type must match source plugin type.

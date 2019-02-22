@@ -3,7 +3,7 @@ import * as R from 'ramda'
 import { printSchema } from 'gatsby/graphql'
 import easygraphqlMock from 'easygraphql-mock'
 
-import { customTypeJsonToGraphQLSchema } from './schema'
+import { customTypeJsonToGraphQLSchema } from './customTypeJsonToGraphQLSchema'
 import { createNodeFactory, generateTypeName } from './nodeHelpers'
 
 export const createTemporaryMockNodes = ({
@@ -22,11 +22,36 @@ export const createTemporaryMockNodes = ({
         mockedSchema[generateTypeName(type)],
       )
 
+      // console.log(`================ ${type}`)
+      // console.log(printedSchema)
+      // console.log(util.inspect({ type, mockNode }, false, null, true))
+
       return R.concat(acc, [mockNode])
     }, []),
   )(schemas)
 
-  mockNodes.forEach(x => createNode(x))
+  mockNodes.forEach(node => {
+    R.forEachObjIndexed((val, key) => {
+      if (
+        R.is(Array, val) &&
+        (R.hasPath([0, 'primary'], val) || R.hasPath([0, 'items']))
+      ) {
+        const sliceChoiceNodes = R.map(
+          sliceChoice =>
+            createNodeFactory(sliceChoice.__typename.replace(/^Prismic/, ''))(
+              sliceChoice,
+            ),
+          val,
+        )
+
+        sliceChoiceNodes.forEach(x => createNode(x))
+
+        node.data[`${key}___NODE`] = R.map(R.prop('id'), sliceChoiceNodes)
+      }
+    }, node.data)
+
+    createNode(node)
+  })
 
   const onSchemaUpdate = () => {
     mockNodes.forEach(node => deleteNode({ node }))

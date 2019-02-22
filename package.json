@@ -2,6 +2,7 @@
   "name": "gatsby-source-prismic",
   "version": "2.3.0-alpha.0",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
+  "main": "dist/index.js",
   "scripts": {
     "prepublish": "npm run build",
     "build": "babel src --ignore '**/__tests__' --out-dir '.'",
@@ -31,7 +32,7 @@
     "pascalcase": "^0.1.1",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
-    "ramda": "^0.25.0",
+    "ramda": "^0.26.1",
     "ramda-adjunct": "^2.9.0"
   },
   "devDependencies": {

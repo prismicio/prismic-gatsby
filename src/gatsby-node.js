@@ -1,6 +1,5 @@
 import fetchData from './fetch'
 import { normalizeFields } from './normalize'
-import { hydrateGraphQLSchema } from './hydrateGraphQLSchema'
 import { nodeHelpers, createNodeFactory, generateTypeName } from './nodeHelpers'
 import { createTemporaryMockNodes } from './createTemporaryMockNodes'
 
@@ -56,11 +55,12 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
   return
 }
 
-// this is just first API hook after "createPages" hook
-// and before regenerating schema
-export const onPreExtractQueries = ({ emitter, actions }, pluginOptions) => {
+export const onPreExtractQueries = (gatsby, pluginOptions) => {
+  const {
+    actions: { createNode, deleteNode },
+    emitter,
+  } = gatsby
   const { schemas } = pluginOptions
-  const { createNode, deleteNode } = actions
 
   createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
 }
