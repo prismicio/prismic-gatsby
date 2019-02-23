@@ -48,7 +48,7 @@ const createTemporaryAccessoryMockNodes = ({ node, createNode }) => {
       node.data[`${key}___NODE`] = R.map(R.prop('id'), sliceChoiceNodes)
       delete node.data[key]
 
-      createdMockNodes = sliceChoiceNodes
+      createdMockNodes = R.concat(createdMockNode, sliceChoiceNodes)
     }
   }, node.data)
 
