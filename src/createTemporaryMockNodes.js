@@ -32,7 +32,7 @@ const jsonSchemaToMockNode = (type, jsonSchema) => {
 const createTemporaryAccessoryMockNodes = ({ node, createNode }) => {
   let createdMockNodes = []
 
-  R.forEach((val, key) => {
+  R.forEachObjIndexed((value, key) => {
     // If field is a slice field, create slice nodes and create references.
     if (isSliceField(value)) {
       const sliceChoiceNodes = R.map(
@@ -48,7 +48,7 @@ const createTemporaryAccessoryMockNodes = ({ node, createNode }) => {
       node.data[`${key}___NODE`] = R.map(R.prop('id'), sliceChoiceNodes)
       delete node.data[key]
 
-      createdMockNodes = R.concat(createdMockNode, sliceChoiceNodes)
+      createdMockNodes = [...createdMockNodes, ...sliceChoiceNodes]
     }
   }, node.data)
 
@@ -74,8 +74,10 @@ export const createTemporaryMockNodes = ({
     // 1. Convert the schemas to mock nodes.
     R.toPairs,
     R.reduce(
-      (acc, [type, jsonSchema]) =>
-        R.concat(acc, [jsonSchemaToMockNode(type, jsonSchema)]),
+      (acc, [type, jsonSchema]) => [
+        ...acc,
+        jsonSchemaToMockNode(type, jsonSchema),
+      ],
       [],
     ),
 
@@ -95,7 +97,7 @@ export const createTemporaryMockNodes = ({
 
       createNode(mockNode)
 
-      return [mockNode, temporaryAccessoryMockNodes]
+      return [mockNode, ...temporaryAccessoryMockNodes]
     }),
 
     // 3. Set createdMockNodes with the list of nodes to delete later.
