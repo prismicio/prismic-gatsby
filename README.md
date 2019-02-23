@@ -73,6 +73,20 @@ plugins: [
         // Your HTML serializer
       },
 
+      // Provide an object of Prismic custom type JSON schemas to load into
+      // Gatsby. Providing the schemas allows you to query for fields present in
+      // your custom types even if they are unused in your documents.
+      //
+      // Example:
+      //
+      //     schemas: {
+      //       page: require('./src/schemas/page.json'),
+      //       blogPost: require('./src/schemas/blogPost.json'),
+      //     }
+      schemas: {
+        // Your custom types mapped to schemas
+      }
+
       // Set a default language when fetching documents. The default value is
       // '*' which will fetch all languages.
       // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
