@@ -3,6 +3,21 @@
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
 
+## Table of Contents
+
+- [Features](#features)
+- [Install](#install)
+- [How to use](#how-to-use)
+- [Providing JSON schemas](#providing-json-schemas)
+- [How to query](#how-to-query)
+  - [Query Rich Text fields](#query-right-text-fields)
+  - [Query Link fields](#query-link-fields)
+  - [Query Content Relation fields](#query-content-relation-fields)
+  - [Query Slices](#query-slices)
+  - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
+  - [Image processing](#image-processing)
+- [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
+
 ## Features
 
 - Supports Rich Text fields, slices, and content relation fields
@@ -76,13 +91,6 @@ plugins: [
       // Provide an object of Prismic custom type JSON schemas to load into
       // Gatsby. Providing the schemas allows you to query for fields present in
       // your custom types even if they are unused in your documents.
-      //
-      // Example:
-      //
-      //     schemas: {
-      //       page: require('./src/schemas/page.json'),
-      //       blogPost: require('./src/schemas/blogPost.json'),
-      //     }
       schemas: {
         // Your custom types mapped to schemas
       }
@@ -105,6 +113,58 @@ plugins: [
   },
 ]
 ```
+
+## Providing JSON schemas
+
+When querying for data in Gatsby via GraphQL, the list of available fields is
+dependent on the data provided to Gatsby. By default, this plugin pulls all
+data from Prismic, performs convenient transformations like HTML and link
+conversions, and injects it directly into Gatsby.
+
+For most cases, this works, but there are times when a field will exist in
+Prismic, but not in Gatsby. You may come across this GraphQL error:
+
+```
+Cannot query field \"my_field_id\" on type \"data_XX\".
+```
+
+This happens when no documents in your Prismic repository use the field being
+queried.
+
+To get around this, you can perform one of the following:
+
+- **Recommended**: Provide the full JSON schema from Prismic to the source
+  plugin via the `schemas` option in `gatsby-config.js`.
+
+- Create a "placeholder" document for each custom type that has all values for
+  all fields. In your `gatsby-node.js` file, set a way to find these documents
+  and skip creating pages or delete them from the GraphQL store.
+
+The recommended approach is to create a `schemas` directory in your project and
+import them into your `gatsby-config.js` file.
+
+```js
+// In your gatsby-config.js
+plugins: [
+  {
+    resolve: 'gatsby-source-prismic',
+    options: {
+      // ...
+      schemas: {
+        page: require('./src/schemas/page.json'),
+        blogPost: require('./src/schemas/blogPost.json'),
+      },
+      // ...
+    },
+  },
+]
+```
+
+Each schema file should be populated with the contents of the "JSON editor" tab
+in the Prismic Custom Type editor.
+
+See the official docs for more details: [How to version custom
+types][prismic-version-custom-types].
 
 ## How to query
 
@@ -473,6 +533,7 @@ exports.createPages = async ({ graphql, actions }) => {
 [prismic]: https://prismic.io/
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
+[prismic-version-custom-types]: https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
 [gatsby-plugin-sharp]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
 [gatsby-image-fragments]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
