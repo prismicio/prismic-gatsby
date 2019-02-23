@@ -5,6 +5,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLScalarType,
   GraphQLSchema,
   GraphQLString,
   GraphQLUnionType,
@@ -68,6 +69,15 @@ const GraphQLPrismicLink = new GraphQLObjectType({
   },
 })
 
+// Provides the ability to control the return value of Date fields on the
+// mocked node. This is required to ensure Gatsby processes the field as a Date
+// to provide date arguments like `formatString`.
+const GraphQLDate = new GraphQLScalarType({
+  name: 'Date',
+  serialize: R.identity,
+})
+
+// Returns a GraphQL type for a given schema field.
 const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
   switch (field.type) {
     case 'Color':
@@ -84,12 +94,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
 
     case 'Date':
     case 'Timestamp':
-      return {
-        type: new GraphQLNonNull(GraphQLString),
-        args: {
-          formatString: { type: GraphQLString },
-        },
-      }
+      return { type: new GraphQLNonNull(GraphQLDate) }
 
     case 'GeoPoint':
       return { type: GraphQLPrismicGeoPoint }
@@ -121,6 +126,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
 
       const sliceFields = {
         id: { type: new GraphQLNonNull(GraphQLString) },
+        slice_type: { type: new GraphQLNonNull(GraphQLString) },
       }
 
       if (!R.isEmpty(primaryFields))
@@ -182,6 +188,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
   }
 }
 
+// Returns a GraphQL schema generated from a custom type JSON schema.
 export const customTypeJsonToGraphQLSchema = (customTypeId, json) => {
   const { uid, ...dataFields } = R.pipe(
     R.values,

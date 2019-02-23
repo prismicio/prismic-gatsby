@@ -4,20 +4,20 @@ import { map, reduce } from 'asyncro'
 
 // Returns true if the field value appears to be a Rich Text field, false
 // otherwise.
-const isRichTextField = value =>
+export const isRichTextField = value =>
   Array.isArray(value) &&
   typeof value[0] === 'object' &&
   Object.keys(value[0]).includes('spans')
 
 // Returns true if the field value appears to be a Link field, false otherwise.
-const isLinkField = value =>
+export const isLinkField = value =>
   value !== null &&
   typeof value === 'object' &&
   value.hasOwnProperty('link_type')
 
 // Returns true if the field value appears to be an Image field, false
 // otherwise.
-const isImageField = value =>
+export const isImageField = value =>
   value !== null &&
   typeof value === 'object' &&
   value.hasOwnProperty('url') &&
@@ -27,7 +27,7 @@ const isImageField = value =>
 
 // Returns true if the key and value appear to be from a slice zone field,
 // false otherwise.
-const isSliceField = (key, value) =>
+export const isSliceField = value =>
   Array.isArray(value) &&
   typeof value[0] === 'object' &&
   value[0].hasOwnProperty('slice_type') &&
@@ -36,7 +36,7 @@ const isSliceField = (key, value) =>
 // Returns true if the field value appears to be a group field, false
 // otherwise.
 // NOTE: This check must be performed after isRichTextField and isSliceField.
-const isGroupField = value =>
+export const isGroupField = value =>
   Array.isArray(value) && typeof value[0] === 'object'
 
 // Normalizes a rich text field by providing HTML and text versions of the
@@ -211,7 +211,7 @@ export const normalizeField = async args => {
   )
     return await normalizeImageField(args)
 
-  if (isSliceField(key, value)) return await normalizeSliceField(args)
+  if (isSliceField(value)) return await normalizeSliceField(args)
 
   if (isGroupField(value)) return await normalizeGroupField(args)
 
