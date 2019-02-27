@@ -24,7 +24,7 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     lang,
   })
 
-  createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
+  await createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
 
   await Promise.all(
     documents.map(async doc => {
@@ -55,12 +55,12 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
   return
 }
 
-export const onPreExtractQueries = (gatsby, pluginOptions) => {
+export const onPreExtractQueries = async (gatsby, pluginOptions) => {
   const {
     actions: { createNode, deleteNode },
     emitter,
   } = gatsby
   const { schemas } = pluginOptions
 
-  createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
+  await createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
 }

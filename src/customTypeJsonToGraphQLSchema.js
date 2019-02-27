@@ -17,6 +17,21 @@ const _generateTypeName = joinChar => (...parts) =>
 const generatePublicTypeName = _generateTypeName('')
 const generateNamespacedTypeName = _generateTypeName('__')
 
+const GraphQLPrismicMockDocumentData = new GraphQLObjectType({
+  name: generateNamespacedTypeName('MockDocument', 'Data'),
+  fields: {
+    __mock: { type: new GraphQLNonNull(GraphQLString) },
+  },
+})
+
+const GraphQLPrismicMockDocument = new GraphQLObjectType({
+  name: generateNamespacedTypeName('MockDocument'),
+  fields: {
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    data: { type: GraphQLPrismicMockDocumentData },
+  },
+})
+
 const GraphQLPrismicHTML = new GraphQLObjectType({
   name: generateNamespacedTypeName('HTML'),
   fields: {
@@ -33,12 +48,23 @@ const GraphQLPrismicGeoPoint = new GraphQLObjectType({
   },
 })
 
-// TODO: Implement embed fields. Fields are dynamic based on embed source.
-// TODO: Convert to a union type for each embed source (e.g. GitHub, YouTube, etc.).
 const GraphQLPrismicEmbed = new GraphQLObjectType({
   name: generateNamespacedTypeName('Embed'),
   fields: {
+    author_name: { type: new GraphQLNonNull(GraphQLString) },
+    author_url: { type: new GraphQLNonNull(GraphQLString) },
+    cache_age: { type: new GraphQLNonNull(GraphQLString) },
+    embed_url: { type: new GraphQLNonNull(GraphQLString) },
+    html: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
+    provider_name: { type: new GraphQLNonNull(GraphQLString) },
+    provider_url: { type: new GraphQLNonNull(GraphQLString) },
+    thumbnail_height: { type: new GraphQLNonNull(GraphQLString) },
+    thumbnail_url: { type: new GraphQLNonNull(GraphQLString) },
+    thumbnail_width: { type: new GraphQLNonNull(GraphQLString) },
+    title: { type: new GraphQLNonNull(GraphQLString) },
+    type: { type: new GraphQLNonNull(GraphQLString) },
+    version: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -50,6 +76,7 @@ const GraphQLPrismicImageDimensions = new GraphQLObjectType({
   },
 })
 
+// TODO: Add localFile___NODE field with mocked file.
 const GraphQLPrismicImage = new GraphQLObjectType({
   name: generateNamespacedTypeName('Image'),
   fields: {
@@ -60,12 +87,14 @@ const GraphQLPrismicImage = new GraphQLObjectType({
   },
 })
 
-// TODO: Convert to a union type for each link_type (Document, Media, Web).
+// TODO: Add document___NODE field with mocked document.
 const GraphQLPrismicLink = new GraphQLObjectType({
   name: generateNamespacedTypeName('Link'),
   fields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     link_type: { type: new GraphQLNonNull(GraphQLString) },
+    url: { type: new GraphQLNonNull(GraphQLString) },
+    target: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -196,19 +225,22 @@ export const customTypeJsonToGraphQLSchema = (customTypeId, json) => {
     R.mapObjIndexed(fieldToGraphQLType(customTypeId)),
   )(json)
 
-  const dataType = new GraphQLObjectType({
-    name: generateNamespacedTypeName(customTypeId, 'Data'),
-    fields: dataFields,
-  })
+  const fields = {
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    data: {
+      type: new GraphQLObjectType({
+        name: generateNamespacedTypeName(customTypeId, 'Data'),
+        fields: dataFields,
+      }),
+    },
+  }
+
+  if (uid) fields.uid = uid
 
   // GraphQL type must match source plugin type.
   const queryType = new GraphQLObjectType({
     name: generatePublicTypeName(customTypeId),
-    fields: {
-      id: { type: new GraphQLNonNull(GraphQLString) },
-      uid,
-      data: { type: dataType },
-    },
+    fields,
   })
 
   return new GraphQLSchema({ query: queryType })

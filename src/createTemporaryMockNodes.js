@@ -9,6 +9,11 @@ import { isSliceField } from './normalize'
 // Mock date to allow Gatsby to apply Date arguments
 const MOCK_DATE = '1991-03-07'
 
+// Returns a copy of an object with a given prop removed at all levels.
+const removePropDeep = R.curry((prop, obj) =>
+  JSON.parse(JSON.stringify(obj, (k, v) => (k === prop ? undefined : v))),
+)
+
 // Returns a mock Gatsby Node for the given type and custom type JSON schema.
 const jsonSchemaToMockNode = (type, jsonSchema) => {
   // Convert the JSON schema to a collection of mock objects.
@@ -29,30 +34,42 @@ const jsonSchemaToMockNode = (type, jsonSchema) => {
 
 // Creates accessory nodes and mutates original node as necessary. Returns an
 // array of nodes that were created.
-const createTemporaryAccessoryMockNodes = ({ node, createNode }) => {
-  let createdMockNodes = []
+const createTemporaryAccessoryMockNodes = async (node, createNode) => {
+  const promises = R.pipe(
+    R.toPairs,
+    R.map(async ([key, value]) => {
+      if (isSliceField(value)) {
+        const sliceChoiceNodes = R.map(
+          sliceChoice =>
+            createNodeFactory(sliceChoice.__typename.replace(/^Prismic/, ''))(
+              sliceChoice,
+            ),
+          value,
+        )
 
-  R.forEachObjIndexed((value, key) => {
-    // If field is a slice field, create slice nodes and create references.
-    if (isSliceField(value)) {
-      const sliceChoiceNodes = R.map(
-        sliceChoice =>
-          createNodeFactory(sliceChoice.__typename.replace(/^Prismic/, ''))(
-            sliceChoice,
-          ),
-        value,
-      )
+        // Create all choice nodes, set as a union field, and delete the original key.
+        sliceChoiceNodes.forEach(x =>
+          createNode(removePropDeep('__typename', x)),
+        )
+        node.data[`${key}___NODE`] = R.map(R.prop('id'), sliceChoiceNodes)
+        delete node.data[key]
 
-      // Create all choice nodes, set as a union field, and delete the original key.
-      sliceChoiceNodes.forEach(x => createNode(x))
-      node.data[`${key}___NODE`] = R.map(R.prop('id'), sliceChoiceNodes)
-      delete node.data[key]
+        return sliceChoiceNodes
+      }
 
-      createdMockNodes = [...createdMockNodes, ...sliceChoiceNodes]
-    }
-  }, node.data)
+      if (isImageField(value)) {
+        // Use createRemoteFileNode to create accessory node.
+      }
 
-  return createdMockNodes
+      if (isLinkField(value)) {
+        // Create instances of each content type and link to document___NODE field.
+      }
+
+      return []
+    }),
+  )(node)
+
+  return await Promise.all(promises)
 }
 
 // Creates and deletes temporary mock nodes from the provided custom type JSON
@@ -60,50 +77,35 @@ const createTemporaryAccessoryMockNodes = ({ node, createNode }) => {
 //
 // This function sets up an emitter listener to automatically remove the mock
 // nodes once they are unnecessary
-export const createTemporaryMockNodes = ({
+export const createTemporaryMockNodes = async ({
   schemas,
   emitter,
   createNode,
   deleteNode,
 }) => {
-  // As nodes are created, they will be appended here for deletion later.
-  let createdMockNodes = []
-
-  // Create mock nodes from an object mapping a type name to a custom type JSON schema.
-  R.pipe(
-    // 1. Convert the schemas to mock nodes.
+  // 1. Convert the schemas to mock nodes.
+  const mockNodes = R.pipe(
     R.toPairs,
-    R.reduce(
-      (acc, [type, jsonSchema]) => [
-        ...acc,
-        jsonSchemaToMockNode(type, jsonSchema),
-      ],
-      [],
-    ),
-
-    // 2. Create the mock nodes and any necessary accessory mock nodes.
-    // Accessory mock nodes are necessary anywhere "___NODE" fields are used in
-    // the source plugin, such as Slice and Link fields.
-    //
-    // Return a list of nodes created.
-    //
-    // NOTE: This map function has side-effects!
-    R.map(mockNode => {
-      // Side-effect! This creates nodes.
-      const temporaryAccessoryMockNodes = createTemporaryAccessoryMockNodes({
-        node: mockNode,
-        createNode,
-      })
-
-      createNode(mockNode)
-
-      return [mockNode, ...temporaryAccessoryMockNodes]
-    }),
-
-    // 3. Set createdMockNodes with the list of nodes to delete later.
-    R.flatten,
-    nodes => (createdMockNodes = nodes),
+    R.map(([type, jsonSchema]) => jsonSchemaToMockNode(type, jsonSchema)),
   )(schemas)
+
+  // 2. Create the mock nodes and any necessary accessory mock nodes.
+  //    Accessory mock nodes are necessary anywhere "___NODE" fields are used
+  //    in the source plugin, such as Slice and Link fields.
+  const promises = R.map(async mockNode => {
+    const temporaryAccessoryMockNodes = await createTemporaryAccessoryMockNodes(
+      mockNode,
+      createNode,
+    )
+
+    createNode(removePropDeep('__typename', mockNode))
+
+    return [mockNode, ...temporaryAccessoryMockNodes]
+  }, mockNodes)
+
+  // 3. Set createdMockNodes with the list of nodes to delete later.
+  const createdMockNodesSegmented = await Promise.all(promises)
+  const createdMockNodes = R.flatten(createdMockNodesSegmented)
 
   // Performed once the schema has been set so we can delete all temporary mock nodes.
   const onSchemaUpdate = () => {
