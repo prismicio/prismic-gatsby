@@ -4,7 +4,7 @@ import easygraphqlMock from 'easygraphql-mock'
 
 import { customTypeJsonToGraphQLSchema } from './customTypeJsonToGraphQLSchema'
 import { createNodeFactory, generateTypeName } from './nodeHelpers'
-import { isSliceField } from './normalize'
+import { isSliceField, isImageField, isLinkField } from './normalize'
 
 // Mock date to allow Gatsby to apply Date arguments
 const MOCK_DATE = '1991-03-07'
@@ -34,7 +34,11 @@ const jsonSchemaToMockNode = (type, jsonSchema) => {
 
 // Creates accessory nodes and mutates original node as necessary. Returns an
 // array of nodes that were created.
-const createTemporaryAccessoryMockNodes = async (node, createNode) => {
+const createTemporaryAccessoryMockNodes = async (
+  node,
+  rootNodes,
+  createNodeWithoutTypename,
+) => {
   const promises = R.pipe(
     R.toPairs,
     R.map(async ([key, value]) => {
@@ -48,9 +52,7 @@ const createTemporaryAccessoryMockNodes = async (node, createNode) => {
         )
 
         // Create all choice nodes, set as a union field, and delete the original key.
-        sliceChoiceNodes.forEach(x =>
-          createNode(removePropDeep('__typename', x)),
-        )
+        sliceChoiceNodes.forEach(x => createNodeWithoutTypename(x))
         node.data[`${key}___NODE`] = R.map(R.prop('id'), sliceChoiceNodes)
         delete node.data[key]
 
@@ -62,12 +64,13 @@ const createTemporaryAccessoryMockNodes = async (node, createNode) => {
       }
 
       if (isLinkField(value)) {
-        // Create instances of each content type and link to document___NODE field.
+        // No nodes created.
+        node.data[key].document___NODE = R.map(R.prop('id'), rootNodes)
       }
 
       return []
     }),
-  )(node)
+  )(node.data)
 
   return await Promise.all(promises)
 }
@@ -83,6 +86,11 @@ export const createTemporaryMockNodes = async ({
   createNode,
   deleteNode,
 }) => {
+  // createNode function without typename injected from
+  // customTypeJsonToGraphQLSchema.
+  const createNodeWithoutTypename = node =>
+    createNode(removePropDeep('__typename', node))
+
   // 1. Convert the schemas to mock nodes.
   const mockNodes = R.pipe(
     R.toPairs,
@@ -95,10 +103,11 @@ export const createTemporaryMockNodes = async ({
   const promises = R.map(async mockNode => {
     const temporaryAccessoryMockNodes = await createTemporaryAccessoryMockNodes(
       mockNode,
-      createNode,
+      mockNodes,
+      createNodeWithoutTypename,
     )
 
-    createNode(removePropDeep('__typename', mockNode))
+    createNodeWithoutTypename(mockNode)
 
     return [mockNode, ...temporaryAccessoryMockNodes]
   }, mockNodes)
@@ -109,7 +118,7 @@ export const createTemporaryMockNodes = async ({
 
   // Performed once the schema has been set so we can delete all temporary mock nodes.
   const onSchemaUpdate = () => {
-    createdMockNodes.forEach(node => deleteNode({ node }))
+    // createdMockNodes.forEach(node => deleteNode({ node }))
 
     // Only perform this action once
     emitter.off(`SET_SCHEMA`, onSchemaUpdate)
