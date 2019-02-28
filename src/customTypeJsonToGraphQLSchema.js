@@ -17,19 +17,20 @@ const _generateTypeName = joinChar => (...parts) =>
 const generatePublicTypeName = _generateTypeName('')
 const generateNamespacedTypeName = _generateTypeName('__')
 
-const GraphQLPrismicMockDocumentData = new GraphQLObjectType({
-  name: generateNamespacedTypeName('MockDocument', 'Data'),
-  fields: {
-    __mock: { type: new GraphQLNonNull(GraphQLString) },
-  },
+// Provides the ability to control the return value of Date fields on the
+// mocked node. This is required to ensure Gatsby processes the field as a Date
+// to provide date arguments like `formatString`.
+const GraphQLDate = new GraphQLScalarType({
+  name: 'Date',
+  serialize: R.identity,
 })
 
-const GraphQLPrismicMockDocument = new GraphQLObjectType({
-  name: generateNamespacedTypeName('MockDocument'),
-  fields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
-    data: { type: GraphQLPrismicMockDocumentData },
-  },
+// Provides the ability to control the return value of ImageURL fields on the
+// mocked node. This is required to allow setting the image URL when creating
+// mock localFile fields.
+const GraphQLImageURL = new GraphQLScalarType({
+  name: 'ImageURL',
+  serialize: R.identity,
 })
 
 const GraphQLPrismicHTML = new GraphQLObjectType({
@@ -76,18 +77,16 @@ const GraphQLPrismicImageDimensions = new GraphQLObjectType({
   },
 })
 
-// TODO: Add localFile___NODE field with mocked file.
 const GraphQLPrismicImage = new GraphQLObjectType({
   name: generateNamespacedTypeName('Image'),
   fields: {
     alt: { type: new GraphQLNonNull(GraphQLString) },
     copyright: { type: new GraphQLNonNull(GraphQLString) },
     dimensions: { type: GraphQLPrismicImageDimensions },
-    url: { type: new GraphQLNonNull(GraphQLString) },
+    url: { type: GraphQLImageURL },
   },
 })
 
-// TODO: Add document___NODE field with mocked document.
 const GraphQLPrismicLink = new GraphQLObjectType({
   name: generateNamespacedTypeName('Link'),
   fields: {
@@ -96,14 +95,6 @@ const GraphQLPrismicLink = new GraphQLObjectType({
     url: { type: new GraphQLNonNull(GraphQLString) },
     target: { type: new GraphQLNonNull(GraphQLString) },
   },
-})
-
-// Provides the ability to control the return value of Date fields on the
-// mocked node. This is required to ensure Gatsby processes the field as a Date
-// to provide date arguments like `formatString`.
-const GraphQLDate = new GraphQLScalarType({
-  name: 'Date',
-  serialize: R.identity,
 })
 
 // Returns a GraphQL type for a given schema field.
