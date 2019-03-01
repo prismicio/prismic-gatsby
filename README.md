@@ -125,7 +125,7 @@ For most cases, this works, but there are times when a field will exist in
 Prismic, but not in Gatsby. You may come across this GraphQL error:
 
 ```
-Cannot query field \"my_field_id\" on type \"data_XX\".
+Cannot query field "my_field_id" on type "data_XX".
 ```
 
 This happens when no documents in your Prismic repository use the field being
