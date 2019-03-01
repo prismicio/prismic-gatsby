@@ -110,11 +110,20 @@ const normalizeMockSliceField = async args => {
     return [gatsbySliceChoiceNode, ...itemNodes, ...primaryNodes]
   }, value)
 
-  value[`${key}___NODE`] = R.map(R.prop('id'), value)
-  delete value[key]
-
   const createdMockNodesSegmented = await Promise.all(promises)
   const createdMockNodes = R.flatten(createdMockNodesSegmented)
+
+  // Set slice references to the created nodes. We know the first element in
+  // the segmented array is the slice choice and not any of its accessory mock
+  // nodes.
+  node.data[`${key}___NODE`] = R.map(
+    R.pipe(
+      R.head,
+      R.prop('id'),
+    ),
+    createdMockNodesSegmented,
+  )
+  delete node.data[key]
 
   return createdMockNodes
 }
