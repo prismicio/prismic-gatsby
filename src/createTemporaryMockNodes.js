@@ -7,10 +7,10 @@ import { map, reduce } from 'asyncro'
 import { customTypeJsonToGraphQLSchema } from './customTypeJsonToGraphQLSchema'
 import { createNodeFactory, generateTypeName } from './nodeHelpers'
 import {
-  isSliceField,
+  isGroupField,
   isImageField,
   isLinkField,
-  normalizeImageField,
+  isSliceField,
 } from './normalize'
 
 // Mock date to allow Gatsby to apply Date arguments
@@ -47,7 +47,7 @@ const jsonSchemaToMockNode = (type, jsonSchema) => {
 // `gatsby-source-filesystem`. This allows for `gatsby-transformer-sharp` and
 // `gatsby-image` integration. Creates one File node.
 const normalizeMockImageField = async args => {
-  const { key, value, gatsbyContext } = args
+  const { value, gatsbyContext } = args
   const {
     actions: { createNode },
     createNodeId,
@@ -65,7 +65,7 @@ const normalizeMockImageField = async args => {
     createNodeId,
   })
 
-  node.data[key].localFile___NODE = fileNode.id
+  value.localFile___NODE = fileNode.id
 
   // TODO: Resolve `children` error when fileNode is deleted with `deleteNodes`
   // later in the process.
@@ -78,9 +78,9 @@ const normalizeMockImageField = async args => {
 // type containing all custom types. The node references use the existing mock
 // nodes. Creates no additional nodes.
 const normalizeMockLinkField = async args => {
-  const { rootNodes } = args
+  const { value, rootNodes } = args
 
-  node.data[key].document___NODE = R.map(R.prop('id'), rootNodes)
+  value.document___NODE = R.map(R.prop('id'), rootNodes)
 
   return []
 }
@@ -90,25 +90,29 @@ const normalizeMockLinkField = async args => {
 // each slice type to ensure the slice key can handle multiple (i.e. union)
 // types.
 const normalizeMockSliceField = async args => {
-  const { key, value, createNodeWithoutTypename } = args
+  const { key, value, node, createNodeWithoutTypename } = args
 
   const promises = R.map(async sliceChoiceNode => {
     const itemNodes = await normalizeMockGroupField({
       ...args,
       value: sliceChoiceNode.items,
     })
+
     const primaryNodes = await normalizeMockFields({
       ...args,
       value: sliceChoiceNode.primary,
     })
 
-    createNodeWithoutTypename(sliceChoiceNode)
+    const typename = sliceChoiceNode.__typename.replace(/^Prismic/, '')
+    const gatsbySliceChoiceNode = createNodeFactory(typename)(sliceChoiceNode)
 
-    return [sliceChoiceNode, ...itemNodes, ...primaryNodes]
-  })
+    createNodeWithoutTypename(gatsbySliceChoiceNode)
 
-  node.data[`${key}___NODE`] = R.map(R.prop('id'), value)
-  delete node.data[key]
+    return [gatsbySliceChoiceNode, ...itemNodes, ...primaryNodes]
+  }, value)
+
+  value[`${key}___NODE`] = R.map(R.prop('id'), value)
+  delete value[key]
 
   const createdMockNodesSegmented = await Promise.all(promises)
   const createdMockNodes = R.flatten(createdMockNodesSegmented)
@@ -143,7 +147,7 @@ const normalizeMockGroupField = async args => {
 // created nodes. If the type is not supported or needs no normalizing, an
 // empty list is returned.
 const normalizeMockField = async args => {
-  const { value } = args
+  const { key, value } = args
 
   if (isLinkField(value)) return await normalizeMockLinkField(args)
   if (isImageField(value)) return await normalizeMockImageField(args)
@@ -153,22 +157,28 @@ const normalizeMockField = async args => {
   return []
 }
 
-// Normalizes a mock node's data fields and returns a list of created nodes.
-const normalizeMockNode = async args => {
-  const { node } = args
+// Normalizes an object of mock fields and returns a list of created nodes.
+const normalizeMockFields = async args => {
+  const { value } = args
 
   const promises = R.pipe(
-    R.prop('data'),
     R.toPairs,
     R.map(
       async ([key, value]) => await normalizeMockField({ ...args, key, value }),
     ),
-  )(node)
+  )(value)
 
   const createdMockNodesSegmented = await Promise.all(promises)
   const createdMockNodes = R.flatten(createdMockNodesSegmented)
 
   return createdMockNodes
+}
+
+// Normalizes a mock node's data fields and returns a list of created nodes.
+const normalizeMockNode = async args => {
+  const { node } = args
+
+  return await normalizeMockFields({ ...args, value: node.data })
 }
 
 // Creates and deletes temporary mock nodes from the provided custom type JSON
@@ -197,16 +207,16 @@ export const createTemporaryMockNodes = async ({ schemas, gatsbyContext }) => {
   //    Accessory mock nodes are necessary anywhere "___NODE" fields are used
   //    in the source plugin, such as Slice and Link fields.
   const promises = R.map(async mockNode => {
-    const temporaryAccessoryMockNodes = await createTemporaryAccessoryMockNodes(
-      mockNode,
-      mockNodes,
+    const createdMockNodes = await normalizeMockNode({
+      node: mockNode,
+      rootNodes: mockNodes,
       createNodeWithoutTypename,
       gatsbyContext,
-    )
+    })
 
     createNodeWithoutTypename(mockNode)
 
-    return [mockNode, ...temporaryAccessoryMockNodes]
+    return [mockNode, ...createdMockNodes]
   }, mockNodes)
 
   // 3. Set createdMockNodes with the list of nodes to delete later.
