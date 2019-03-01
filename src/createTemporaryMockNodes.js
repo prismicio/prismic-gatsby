@@ -2,7 +2,6 @@ import * as R from 'ramda'
 import { printSchema } from 'gatsby/graphql'
 import easygraphqlMock from 'easygraphql-mock'
 import { createRemoteFileNode } from 'gatsby-source-filesystem'
-import { map, reduce } from 'asyncro'
 
 import { customTypeJsonToGraphQLSchema } from './customTypeJsonToGraphQLSchema'
 import { createNodeFactory, generateTypeName } from './nodeHelpers'
