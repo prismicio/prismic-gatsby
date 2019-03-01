@@ -217,7 +217,15 @@ export const customTypeJsonToGraphQLSchema = (customTypeId, json) => {
   )(json)
 
   const fields = {
+    dataString: { type: new GraphQLNonNull(GraphQLString) },
+    first_publication_date: { type: new GraphQLNonNull(GraphQLDate) },
+    href: { type: new GraphQLNonNull(GraphQLString) },
     id: { type: new GraphQLNonNull(GraphQLString) },
+    lang: { type: new GraphQLNonNull(GraphQLString) },
+    last_publication_date: { type: new GraphQLNonNull(GraphQLDate) },
+    tags: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
+    tags: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
+    type: { type: new GraphQLNonNull(GraphQLString) },
     data: {
       type: new GraphQLObjectType({
         name: generateNamespacedTypeName(customTypeId, 'Data'),
