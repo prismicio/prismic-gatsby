@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Prismic from 'prismic-javascript'
 import qs from 'qs'
 import * as Cookies from 'es-cookie'
-import { camelCase } from 'camelcase'
+import camelCase from 'camelcase'
 
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
