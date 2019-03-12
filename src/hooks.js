@@ -7,21 +7,25 @@ import camelCase from 'camelcase'
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 
-// Returns normalized Prismic preview data for a provided location object from
-// gatsby.
-export const usePrismicPreview = (
+// Returns an object containing normalized Prismic preview data directly from
+// the Prismic API. The normalized data object's shape is identical to the shape
+// created by Gatsby at build time, minus image processing due to running in the
+// browser.
+export const usePrismicPreview = ({
   location,
-  customType,
-  linkResolver,
-  htmlSerializer,
-  fetchLinks,
+  customType = 'page',
+  linkResolver = doc => doc.uid,
+  htmlSerializer = () => {},
+  fetchLinks = {},
   repositoryName,
   accessToken,
-) => {
+}) => {
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
 
   // Hook helper functions:
-  // Returns the UID associated with the current preview session.
+
+  // Returns the UID associated with the current preview session and sets the
+  // appropriate preview cookie from Prismic.
   const getPreviewUID = async () => {
     try {
       const params = qs.parse(location.search.slice(1))
@@ -38,7 +42,7 @@ export const usePrismicPreview = (
     }
   }
 
-  // Returns the raw preview data API response from Prismic.
+  // Returns the raw preview data from Prismic's API.
   const getRawPreviewData = async () => {
     try {
       const { uid, api } = await getPreviewUID()
@@ -51,8 +55,8 @@ export const usePrismicPreview = (
     }
   }
 
-  // Returns Prismic Preview data that has the same shape as a Gatsby Prismic
-  // data node.
+  // Returns an object containing normalized Prismic Preview data. This data has
+  // has the same shape as the queryable graphql data created by Gatsby at build time.
   const normalizePreviewData = async () => {
     const doc = await getRawPreviewData()
 
@@ -91,6 +95,7 @@ export const usePrismicPreview = (
     }
   }
 
+  // Allows for async/await syntax inside of useEffect().
   const asyncEffect = async (setPreviewData, setLoading) => {
     const data = await normalizePreviewData(location)
     setPreviewData(data)
