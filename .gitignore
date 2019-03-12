@@ -1,9 +1,3 @@
 *.log
+*.js
 node_modules
-
-/createTemporaryMockNodes.js
-/customTypeJsonToGraphQLSchema.js
-/fetch.js
-/gatsby-node.js
-/nodeHelpers.js
-/normalize.js
