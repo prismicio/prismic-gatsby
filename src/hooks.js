@@ -16,7 +16,7 @@ export const usePrismicPreview = ({
   customType = 'page',
   linkResolver = doc => doc.uid,
   htmlSerializer = () => {},
-  fetchLinks = {},
+  fetchLinks = [],
   repositoryName,
   accessToken,
 }) => {
@@ -47,7 +47,7 @@ export const usePrismicPreview = ({
     try {
       const { uid, api } = await getPreviewUID()
 
-      return await api.getByUID(customType, uid, fetchLinks)
+      return await api.getByUID(customType, uid, { fetchLinks })
     } catch (error) {
       console.error('Error fetching Prismic preview data: ', error)
 
