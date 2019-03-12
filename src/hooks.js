@@ -107,7 +107,7 @@ export const usePrismicPreview = ({
 
   useEffect(() => {
     asyncEffect(setPreviewData, setLoading)
-  })
+  }, [])
 
   return { previewData, isLoading }
 }
