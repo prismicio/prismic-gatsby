@@ -52,31 +52,45 @@ const normalizeRichTextField = (value, linkResolver, htmlSerializer) => ({
 // the `url` field. If the value is an external link, the value is provided
 // as-is. If the value is a document link, the document's data is provided on
 // the `document` key.
+const normalizeLinkField = async args => {
+  const {
+    value,
+    linkResolver,
+    repositoryName,
+    accessToken,
+    fetchLinks,
+    fetchedIds,
+  } = args
 
-// TODO: Make API request if it's a Document and populate the document field.
-// PLAN: Turn into async function, run the Prismic.getByID(), then normalize the
-// response.
-const normalizeLinkField = async ({
-  value,
-  linkResolver,
-  repositoryName,
-  accessToken,
-  fetchLinks,
-  ...args
-}) => {
   switch (value.link_type) {
     case 'Document':
       if (!value.type || !value.id || value.isBroken) return undefined
+      if (fetchedIds.includes(value.id)) {
+        console.warn('Warning about circular link', value.id)
+        return {
+          ...value,
+          document: [{}], // TODO
+          url: PrismicDOM.Link.url(value, linkResolver),
+          target: value.target || '',
+          raw: value,
+        }
+      }
+      // To avoid circular links, cache this ID to ensure we don't query for it again.
+      fetchedIds.push(value.id)
 
-      // Query Prismic's API for the actual document node.
+      // Now query Prismic's API for the actual document node and normalize it.
       const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
       const api = await Prismic.api(apiEndpoint, { accessToken })
       const node = await api.getByID(value.id, { fetchLinks })
-      console.log(node)
+      node.data = await normalizeBrowserFields({
+        ...args,
+        value: node.data,
+        node: node,
+      })
 
       return {
         ...value,
-        document: [], // TODO
+        document: [node], // TODO
         url: PrismicDOM.Link.url(value, linkResolver),
         target: value.target || '',
         raw: value,

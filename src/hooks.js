@@ -68,6 +68,10 @@ export const usePrismicPreview = ({
         htmlSerializer: () => htmlSerializer,
         nodeHelpers,
         shouldNormalizeImage: () => true,
+        repositoryName,
+        accessToken,
+        fetchLinks,
+        fetchedIds: [],
       })
 
       return node
@@ -81,6 +85,7 @@ export const usePrismicPreview = ({
     const sliceBody = node.data.body.map(slice => ({
       id: slice.id,
       primary: slice.primary,
+      items: slice.items,
       __typename: slice.internal.type,
     }))
 
