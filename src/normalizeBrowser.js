@@ -1,4 +1,5 @@
 import PrismicDOM from 'prismic-dom'
+import Prismic from 'prismic-javascript'
 import { map, reduce } from 'asyncro'
 
 // Returns true if the field value appears to be a Rich Text field, false
@@ -51,12 +52,31 @@ const normalizeRichTextField = (value, linkResolver, htmlSerializer) => ({
 // the `url` field. If the value is an external link, the value is provided
 // as-is. If the value is a document link, the document's data is provided on
 // the `document` key.
-const normalizeLinkField = (value, linkResolver) => {
+
+// TODO: Make API request if it's a Document and populate the document field.
+// PLAN: Turn into async function, run the Prismic.getByID(), then normalize the
+// response.
+const normalizeLinkField = async ({
+  value,
+  linkResolver,
+  repositoryName,
+  accessToken,
+  fetchLinks,
+  ...args
+}) => {
   switch (value.link_type) {
     case 'Document':
       if (!value.type || !value.id || value.isBroken) return undefined
+
+      // Query Prismic's API for the actual document node.
+      const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
+      const api = await Prismic.api(apiEndpoint, { accessToken })
+      const node = await api.getByID(value.id, { fetchLinks })
+      console.log(node)
+
       return {
         ...value,
+        document: [], // TODO
         url: PrismicDOM.Link.url(value, linkResolver),
         target: value.target || '',
         raw: value,
@@ -141,9 +161,8 @@ const normalizeGroupField = async args =>
 // of it. If the type is not supported or needs no normalizing, it is returned
 // as-is.
 export const normalizeField = async args => {
-  const { key, value, node, nodeHelpers, shouldNormalizeImage } = args
+  const { key, value, node, shouldNormalizeImage } = args
   let { linkResolver, htmlSerializer } = args
-  const { generateNodeId } = nodeHelpers
 
   linkResolver = linkResolver({ node, key, value })
   htmlSerializer = htmlSerializer({ node, key, value })
@@ -151,8 +170,7 @@ export const normalizeField = async args => {
   if (isRichTextField(value))
     return normalizeRichTextField(value, linkResolver, htmlSerializer)
 
-  if (isLinkField(value))
-    return normalizeLinkField(value, linkResolver, generateNodeId)
+  if (isLinkField(value)) return await normalizeLinkField(args)
 
   if (
     isImageField(value) &&
