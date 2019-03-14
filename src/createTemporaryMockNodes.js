@@ -10,7 +10,7 @@ import {
   isImageField,
   isLinkField,
   isSliceField,
-} from './normalize'
+} from './validations'
 
 // Mock date to allow Gatsby to apply Date arguments
 const MOCK_DATE = '1991-03-07'
