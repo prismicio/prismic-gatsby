@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useStaticQuery, graphql } from 'gatsby'
 import Prismic from 'prismic-javascript'
 import qs from 'qs'
 import * as Cookies from 'es-cookie'
@@ -6,6 +7,17 @@ import camelCase from 'camelcase'
 
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
+
+const pluginQuery = graphql`
+  query {
+    sitePlugin(name: { eq: "gatsby-source-prismic" }) {
+      pluginOptions {
+        repositoryName
+        accessToken
+      }
+    }
+  }
+`
 
 // Returns an object containing normalized Prismic preview data directly from
 // the Prismic API. The normalized data object's shape is identical to the shape
@@ -17,12 +29,12 @@ export const usePrismicPreview = ({
   linkResolver = doc => doc.uid,
   htmlSerializer = () => {},
   fetchLinks = [],
-  repositoryName,
-  accessToken,
 }) => {
+  const { sitePlugin: gatsbyPlugin } = useStaticQuery(pluginQuery)
+  const { repositoryName, accessToken } = gatsbyPlugin.pluginOptions
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
 
-  // Hook helper functions:
+  // Hook helpers:
 
   // Returns the UID associated with the current preview session and sets the
   // appropriate preview cookie from Prismic.

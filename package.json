@@ -28,7 +28,7 @@
     "camelcase": "^5.2.0",
     "easygraphql-mock": "^0.1.11",
     "es-cookie": "^1.2.0",
-    "gatsby": "^2.0.91",
+    "gatsby": "^2.1.32",
     "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.1",
     "pascalcase": "^0.1.1",
