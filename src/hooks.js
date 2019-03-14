@@ -83,7 +83,6 @@ export const usePrismicPreview = ({
         repositoryName,
         accessToken,
         fetchLinks,
-        fetchedIds: [],
       })
 
       return node
