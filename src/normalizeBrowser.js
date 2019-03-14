@@ -2,6 +2,8 @@ import PrismicDOM from 'prismic-dom'
 import Prismic from 'prismic-javascript'
 import { map, reduce } from 'asyncro'
 
+const store = new Map()
+
 // Returns true if the field value appears to be a Rich Text field, false
 // otherwise.
 export const isRichTextField = value =>
@@ -53,48 +55,46 @@ const normalizeRichTextField = (value, linkResolver, htmlSerializer) => ({
 // as-is. If the value is a document link, the document's data is provided on
 // the `document` key.
 const normalizeLinkField = async args => {
-  const {
-    value,
-    linkResolver,
-    repositoryName,
-    accessToken,
-    fetchLinks,
-    fetchedIds,
-  } = args
+  const { value, linkResolver, repositoryName, accessToken, fetchLinks } = args
 
   switch (value.link_type) {
     case 'Document':
       if (!value.type || !value.id || value.isBroken) return undefined
-      if (fetchedIds.includes(value.id)) {
-        console.warn('Warning about circular link', value.id)
-        return {
+
+      // Check to see if we have a cached value for this document.
+      if (!store.has(value.id)) {
+        // Create a key in our store for our data to prevent infinite recursion.
+        store.set(value.id, {})
+
+        // Query Prismic's API for the actual document node and normalize it.
+        const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
+        const api = await Prismic.api(apiEndpoint, { accessToken })
+        const node = await api.getByID(value.id, { fetchLinks })
+        node.data = await normalizeBrowserFields({
+          ...args,
+          value: node.data,
+          node: node,
+        })
+
+        // Now that we have this node's normallized data, store it in our cache.
+        store.set(value.id, node)
+      }
+
+      // Return data from our cache.
+      return new Proxy(
+        {
           ...value,
-          document: [{}], // TODO
           url: PrismicDOM.Link.url(value, linkResolver),
           target: value.target || '',
           raw: value,
-        }
-      }
-      // To avoid circular links, cache this ID to ensure we don't query for it again.
-      fetchedIds.push(value.id)
-
-      // Now query Prismic's API for the actual document node and normalize it.
-      const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
-      const api = await Prismic.api(apiEndpoint, { accessToken })
-      const node = await api.getByID(value.id, { fetchLinks })
-      node.data = await normalizeBrowserFields({
-        ...args,
-        value: node.data,
-        node: node,
-      })
-
-      return {
-        ...value,
-        document: [node], // TODO
-        url: PrismicDOM.Link.url(value, linkResolver),
-        target: value.target || '',
-        raw: value,
-      }
+        },
+        {
+          get: (obj, prop) => {
+            if (obj.hasOwnProperty(prop)) return obj[prop]
+            if (prop === 'document') return [store.get(value.id)]
+          },
+        },
+      )
 
     case 'Media':
     case 'Web':
