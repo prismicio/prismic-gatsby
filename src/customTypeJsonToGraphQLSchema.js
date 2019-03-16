@@ -10,12 +10,10 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from 'gatsby/graphql'
-import pascalcase from 'pascalcase'
-
-const _generateTypeName = joinChar => (...parts) =>
-  ['Prismic', ...parts.map(pascalcase)].join(joinChar)
-const generatePublicTypeName = _generateTypeName('')
-const generateNamespacedTypeName = _generateTypeName('__')
+import {
+  generateTypeName as generatePublicTypeName,
+  generateInternalTypeName,
+} from './nodeHelpers'
 
 // Provides the ability to control the return value of Date fields on the
 // mocked node. This is required to ensure Gatsby processes the field as a Date
@@ -34,7 +32,7 @@ const GraphQLImageURL = new GraphQLScalarType({
 })
 
 const GraphQLPrismicHTML = new GraphQLObjectType({
-  name: generateNamespacedTypeName('HTML'),
+  name: generateInternalTypeName('HTML'),
   fields: {
     html: { type: new GraphQLNonNull(GraphQLString) },
     text: { type: new GraphQLNonNull(GraphQLString) },
@@ -42,7 +40,7 @@ const GraphQLPrismicHTML = new GraphQLObjectType({
 })
 
 const GraphQLPrismicGeoPoint = new GraphQLObjectType({
-  name: generateNamespacedTypeName('GeoPoint'),
+  name: generateInternalTypeName('GeoPoint'),
   fields: {
     latitude: { type: new GraphQLNonNull(GraphQLFloat) },
     longitude: { type: new GraphQLNonNull(GraphQLFloat) },
@@ -50,7 +48,7 @@ const GraphQLPrismicGeoPoint = new GraphQLObjectType({
 })
 
 const GraphQLPrismicEmbed = new GraphQLObjectType({
-  name: generateNamespacedTypeName('Embed'),
+  name: generateInternalTypeName('Embed'),
   fields: {
     author_name: { type: new GraphQLNonNull(GraphQLString) },
     author_url: { type: new GraphQLNonNull(GraphQLString) },
@@ -70,7 +68,7 @@ const GraphQLPrismicEmbed = new GraphQLObjectType({
 })
 
 const GraphQLPrismicImageDimensions = new GraphQLObjectType({
-  name: generateNamespacedTypeName('Image', 'Dimensions'),
+  name: generateInternalTypeName('ImageDimensions'),
   fields: {
     width: { type: new GraphQLNonNull(GraphQLInt) },
     height: { type: new GraphQLNonNull(GraphQLInt) },
@@ -78,7 +76,7 @@ const GraphQLPrismicImageDimensions = new GraphQLObjectType({
 })
 
 const GraphQLPrismicImage = new GraphQLObjectType({
-  name: generateNamespacedTypeName('Image'),
+  name: generateInternalTypeName('Image'),
   fields: {
     alt: { type: new GraphQLNonNull(GraphQLString) },
     copyright: { type: new GraphQLNonNull(GraphQLString) },
@@ -88,7 +86,7 @@ const GraphQLPrismicImage = new GraphQLObjectType({
 })
 
 const GraphQLPrismicLink = new GraphQLObjectType({
-  name: generateNamespacedTypeName('Link'),
+  name: generateInternalTypeName('Link'),
   fields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     link_type: { type: new GraphQLNonNull(GraphQLString) },
@@ -133,7 +131,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
         R.path(['config', 'fields']),
         subfields =>
           new GraphQLObjectType({
-            name: generateNamespacedTypeName('Group', fieldId),
+            name: generateInternalTypeName('Group ${fieldId}'),
             fields: R.map(fieldToGraphQLType(customTypeId), subfields),
           }),
       )(field)
@@ -152,11 +150,8 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       if (!R.isEmpty(primaryFields))
         sliceFields.primary = {
           type: new GraphQLObjectType({
-            name: generateNamespacedTypeName(
-              customTypeId,
-              sliceZoneId,
-              fieldId,
-              'Primary',
+            name: generateInternalTypeName(
+              `${customTypeId} ${sliceZoneId} ${fieldId} Primary`,
             ),
             fields: R.map(fieldToGraphQLType(customTypeId), primaryFields),
           }),
@@ -166,11 +161,8 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
         sliceFields.items = {
           type: new GraphQLList(
             new GraphQLObjectType({
-              name: generateNamespacedTypeName(
-                customTypeId,
-                sliceZoneId,
-                fieldId,
-                'Item',
+              name: generateInternalTypeName(
+                `${customTypeId} ${sliceZoneId} ${fieldId} Item`,
               ),
               fields: R.map(fieldToGraphQLType(customTypeId), itemsFields),
             }),
@@ -179,7 +171,9 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
 
       // GraphQL type must match source plugin type.
       const sliceType = new GraphQLObjectType({
-        name: generatePublicTypeName(customTypeId, sliceZoneId, fieldId),
+        name: generatePublicTypeName(
+          `${customTypeId} ${sliceZoneId} ${fieldId}`,
+        ),
         fields: sliceFields,
       })
 
@@ -196,7 +190,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
       )(field)
 
       const unionType = new GraphQLUnionType({
-        name: generateNamespacedTypeName(customTypeId, fieldId, 'Slice'),
+        name: generateInternalTypeName(`${customTypeId} ${fieldId} Slice`),
         types: choiceTypes,
       })
 
@@ -228,7 +222,7 @@ export const customTypeJsonToGraphQLSchema = (customTypeId, json) => {
     type: { type: new GraphQLNonNull(GraphQLString) },
     data: {
       type: new GraphQLObjectType({
-        name: generateNamespacedTypeName(customTypeId, 'Data'),
+        name: generateInternalTypeName(`${customTypeId} Data`),
         fields: dataFields,
       }),
     },
