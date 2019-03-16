@@ -129,6 +129,10 @@ const normalizeSliceField = async args => {
 
     const entryNode = await EntryNode(entry)
 
+    // At build time, Gatsby adds a __typename key to each node. We're
+    // replicating that here.
+    entryNode.__typename = entryNode.internal.type
+
     return entryNode
   })
 

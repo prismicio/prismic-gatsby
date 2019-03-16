@@ -9,8 +9,8 @@ import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 
 // Returns an object containing normalized Prismic preview data directly from
 // the Prismic API. The normalized data object's shape is identical to the shape
-// created by Gatsby at build time, minus image processing due to running in the
-// browser.
+// created by Gatsby at build time minus image processing due to running in the
+// browser. Instead, image nodes return their source URL.
 export const usePrismicPreview = ({
   location,
   customType = 'page',
@@ -79,23 +79,8 @@ export const usePrismicPreview = ({
     const node = await Node(doc)
     const prefixedType = camelCase(node.internal.type)
 
-    // Reconstruct the node's body to match how Gatsby reconstructs it at build
-    // time.
-    const sliceBody = node.data.body.map(slice => ({
-      id: slice.id,
-      primary: slice.primary,
-      items: slice.items,
-      __typename: slice.internal.type,
-    }))
-
     return {
-      [prefixedType]: {
-        data: {
-          ...node.data,
-          body: sliceBody,
-        },
-        uid: node.uid,
-      },
+      [prefixedType]: node,
     }
   }
 
