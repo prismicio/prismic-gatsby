@@ -2,14 +2,13 @@
   "name": "gatsby-source-prismic",
   "version": "2.3.0-alpha.0",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
-  "main": "dist/index.js",
   "scripts": {
-    "prepublish": "npm run build",
     "build": "babel src --ignore '**/__tests__' --out-dir '.'",
-    "format": "prettier --trailing-comma all --no-semi --single-quote --write 'src/**/*.js'",
+    "build:watch": "npm run build -- -w",
+    "format": "prettier --write README.md 'src/**/*.js' 'gatsby-*.js'",
+    "prepublish": "npm run build",
     "test": "jest",
-    "test:watch": "npm run test -- --watch",
-    "watch": "npm run build -- -w"
+    "test:watch": "npm run test -- --watch"
   },
   "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
   "repository": {
@@ -26,24 +25,23 @@
   "dependencies": {
     "asyncro": "^3.0.0",
     "easygraphql-mock": "^0.1.11",
-    "gatsby": "^2.0.91",
+    "gatsby": "^2.1.17",
     "gatsby-node-helpers": "^0.3.0",
-    "gatsby-source-filesystem": "^2.0.1",
+    "gatsby-source-filesystem": "^2.0.22",
     "pascalcase": "^0.1.1",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
-    "ramda": "^0.26.1",
-    "ramda-adjunct": "^2.9.0"
+    "ramda": "^0.26.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.56",
-    "@babel/core": "^7.0.0-beta.56",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.56",
-    "@babel/plugin-transform-async-to-generator": "^7.0.0-beta.56",
-    "@babel/preset-env": "^7.0.0-beta.56",
-    "babel-core": "^7.0.0-0",
-    "babel-jest": "^23.4.2",
-    "jest": "^23.4.2",
-    "prettier": "^1.5.3"
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "@babel/plugin-transform-async-to-generator": "^7.2.0",
+    "@babel/preset-env": "^7.3.1",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^24.1.0",
+    "jest": "^24.1.0",
+    "prettier": "^1.16.4"
   }
 }
