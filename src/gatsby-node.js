@@ -3,8 +3,8 @@ import { normalizeFields } from './normalize'
 import { nodeHelpers, createNodeFactory, generateTypeName } from './nodeHelpers'
 import { createTemporaryMockNodes } from './createTemporaryMockNodes'
 
-export const sourceNodes = async (gatsby, pluginOptions) => {
-  const { actions, createNodeId, store, cache, emitter } = gatsby
+export const sourceNodes = async (gatsbyContext, pluginOptions) => {
+  const { actions, createNodeId, store, cache } = gatsbyContext
   const { createNode, touchNode, deleteNode } = actions
   const {
     repositoryName,
@@ -24,7 +24,10 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
     lang,
   })
 
-  createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
+  await createTemporaryMockNodes({
+    schemas,
+    gatsbyContext,
+  })
 
   await Promise.all(
     documents.map(async doc => {
@@ -55,12 +58,8 @@ export const sourceNodes = async (gatsby, pluginOptions) => {
   return
 }
 
-export const onPreExtractQueries = (gatsby, pluginOptions) => {
-  const {
-    actions: { createNode, deleteNode },
-    emitter,
-  } = gatsby
+export const onPreExtractQueries = async (gatsbyContext, pluginOptions) => {
   const { schemas } = pluginOptions
 
-  createTemporaryMockNodes({ schemas, emitter, createNode, deleteNode })
+  await createTemporaryMockNodes({ schemas, gatsbyContext })
 }

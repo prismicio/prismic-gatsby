@@ -17,6 +17,22 @@ const _generateTypeName = joinChar => (...parts) =>
 const generatePublicTypeName = _generateTypeName('')
 const generateNamespacedTypeName = _generateTypeName('__')
 
+// Provides the ability to control the return value of Date fields on the
+// mocked node. This is required to ensure Gatsby processes the field as a Date
+// to provide date arguments like `formatString`.
+const GraphQLDate = new GraphQLScalarType({
+  name: 'Date',
+  serialize: R.identity,
+})
+
+// Provides the ability to control the return value of ImageURL fields on the
+// mocked node. This is required to allow setting the image URL when creating
+// mock localFile fields.
+const GraphQLImageURL = new GraphQLScalarType({
+  name: 'ImageURL',
+  serialize: R.identity,
+})
+
 const GraphQLPrismicHTML = new GraphQLObjectType({
   name: generateNamespacedTypeName('HTML'),
   fields: {
@@ -33,12 +49,23 @@ const GraphQLPrismicGeoPoint = new GraphQLObjectType({
   },
 })
 
-// TODO: Implement embed fields. Fields are dynamic based on embed source.
-// TODO: Convert to a union type for each embed source (e.g. GitHub, YouTube, etc.).
 const GraphQLPrismicEmbed = new GraphQLObjectType({
   name: generateNamespacedTypeName('Embed'),
   fields: {
+    author_name: { type: new GraphQLNonNull(GraphQLString) },
+    author_url: { type: new GraphQLNonNull(GraphQLString) },
+    cache_age: { type: new GraphQLNonNull(GraphQLString) },
+    embed_url: { type: new GraphQLNonNull(GraphQLString) },
+    html: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
+    provider_name: { type: new GraphQLNonNull(GraphQLString) },
+    provider_url: { type: new GraphQLNonNull(GraphQLString) },
+    thumbnail_height: { type: new GraphQLNonNull(GraphQLString) },
+    thumbnail_url: { type: new GraphQLNonNull(GraphQLString) },
+    thumbnail_width: { type: new GraphQLNonNull(GraphQLString) },
+    title: { type: new GraphQLNonNull(GraphQLString) },
+    type: { type: new GraphQLNonNull(GraphQLString) },
+    version: { type: new GraphQLNonNull(GraphQLString) },
   },
 })
 
@@ -56,25 +83,18 @@ const GraphQLPrismicImage = new GraphQLObjectType({
     alt: { type: new GraphQLNonNull(GraphQLString) },
     copyright: { type: new GraphQLNonNull(GraphQLString) },
     dimensions: { type: GraphQLPrismicImageDimensions },
-    url: { type: new GraphQLNonNull(GraphQLString) },
+    url: { type: GraphQLImageURL },
   },
 })
 
-// TODO: Convert to a union type for each link_type (Document, Media, Web).
 const GraphQLPrismicLink = new GraphQLObjectType({
   name: generateNamespacedTypeName('Link'),
   fields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     link_type: { type: new GraphQLNonNull(GraphQLString) },
+    url: { type: new GraphQLNonNull(GraphQLString) },
+    target: { type: new GraphQLNonNull(GraphQLString) },
   },
-})
-
-// Provides the ability to control the return value of Date fields on the
-// mocked node. This is required to ensure Gatsby processes the field as a Date
-// to provide date arguments like `formatString`.
-const GraphQLDate = new GraphQLScalarType({
-  name: 'Date',
-  serialize: R.identity,
 })
 
 // Returns a GraphQL type for a given schema field.
@@ -196,19 +216,30 @@ export const customTypeJsonToGraphQLSchema = (customTypeId, json) => {
     R.mapObjIndexed(fieldToGraphQLType(customTypeId)),
   )(json)
 
-  const dataType = new GraphQLObjectType({
-    name: generateNamespacedTypeName(customTypeId, 'Data'),
-    fields: dataFields,
-  })
+  const fields = {
+    dataString: { type: new GraphQLNonNull(GraphQLString) },
+    first_publication_date: { type: new GraphQLNonNull(GraphQLDate) },
+    href: { type: new GraphQLNonNull(GraphQLString) },
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    lang: { type: new GraphQLNonNull(GraphQLString) },
+    last_publication_date: { type: new GraphQLNonNull(GraphQLDate) },
+    tags: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
+    tags: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
+    type: { type: new GraphQLNonNull(GraphQLString) },
+    data: {
+      type: new GraphQLObjectType({
+        name: generateNamespacedTypeName(customTypeId, 'Data'),
+        fields: dataFields,
+      }),
+    },
+  }
+
+  if (uid) fields.uid = uid
 
   // GraphQL type must match source plugin type.
   const queryType = new GraphQLObjectType({
     name: generatePublicTypeName(customTypeId),
-    fields: {
-      id: { type: new GraphQLNonNull(GraphQLString) },
-      uid,
-      data: { type: dataType },
-    },
+    fields,
   })
 
   return new GraphQLSchema({ query: queryType })
