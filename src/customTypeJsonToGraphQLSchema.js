@@ -147,7 +147,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
         slice_type: { type: new GraphQLNonNull(GraphQLString) },
       }
 
-      if (!R.isEmpty(primaryFields))
+      if (primaryFields && !R.isEmpty(primaryFields))
         sliceFields.primary = {
           type: new GraphQLObjectType({
             name: generateInternalTypeName(
@@ -157,7 +157,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
           }),
         }
 
-      if (!R.isEmpty(itemsFields))
+      if (itemsFields && !R.isEmpty(itemsFields))
         sliceFields.items = {
           type: new GraphQLList(
             new GraphQLObjectType({
