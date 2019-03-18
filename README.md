@@ -510,6 +510,7 @@ static data for our preview data.
 querying and normalizing API responses from Prismic. An example is shown below:
 
 ```js
+// { ... }
 import { usePrismicPreview } from 'gatsby-source-prismic'
 
 const PreviewPage = ({ location }) => {
@@ -522,6 +523,8 @@ const PreviewPage = ({ location }) => {
     repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
     accessToken: process.env.GATSBY_PRISMIC_ACCESS_TOKEN,
   })
+
+  return isLoading ? <div>Loading...</div> : <PageTemplate data={previewData} />
 }
 ```
 
