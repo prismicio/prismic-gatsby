@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "2.3.0-previews.7",
+  "version": "2.3.0-previews.8",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "main": "index.js",
   "scripts": {
