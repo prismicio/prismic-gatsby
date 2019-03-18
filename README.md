@@ -542,6 +542,7 @@ const PreviewPage = ({ location }) => {
 | location       | Object   | Location object from `@reach/router`. Used to parse the preview token from Prismic and the `uid` of the page being previewed.                          |
 | customType     | String   | Specifies the custom type from Prismic that we are previewing.                                                                                         |
 | linkResolver   | Function | Determines how link URLs are normalized. Refer to Prismic's docs on link resolving for more info.                                                      |
+| htmlSerializer | Function | Determines how rich text fields are formatted as HTML. Refer to Prismic's docs on html serializing for more info.                                      |
 | fetchLinks     | Array    | List of options to determine the fields to fetch when a field contains a content relationship. Refer to Prismic's docs on query options for more info. |
 | repositoryName | String   | Same as repositorName passed in `options`. Due to restrictions from Gatsby, this must be passed explicitly.                                            |
 | accessToken    | String   | Same as the accessToken passed in `options`.                                                                                                           |
