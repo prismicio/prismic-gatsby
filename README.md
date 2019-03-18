@@ -563,19 +563,17 @@ recommend keeping your preview-route behind some form of authentication layer.
 
 Since image preview data is normalized on the fly in the browser, we're unable
 to peform the same optimizations that Gatsby does at build time. Instead,
-usePrismicPreview() provides just the image url from Prismic's CDN.
+`usePrismicPreview()` provides just the image url from Prismic's CDN.
 
 To ensure image parity in previews, it's recommended to create a wrapper around
-`gatsby-image` that can conditionally render an `<Img>` from `gatsby-image` or a
-plain HTML `<img>` based on the presence of the `fluid`/`fixed` and
-`src` props.
+`gatsby-image`'s `<Img>` component that can conditionally render an `<Img>` or
+HTML `<img>` based on the presence of the `fluid`/`fixed` and `src` props.
 
 #### GraphQL queries with `allPrismicX`
 
 Pages with graphQL queries that use `allPrismicX` should be refactored to
-utilize Gatsby's `useStaticQuery()` hook instead of being composed at the page
-level. This is a known limitation of `usePrismicPreview()` since we're querying
-the Prismic API via `uid`.
+utilize Gatsby's `useStaticQuery()` hook instead. This is a known limitation of
+`usePrismicPreview()` since we're querying the Prismic API via `uid`.
 
 If needed, refactor portions of a page to separate components since there can
 only be one root level GraphQL query in any `.js` file. This is a known issue
