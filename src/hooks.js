@@ -7,21 +7,25 @@ import camelCase from 'camelcase'
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 
-// Returns normalized Prismic preview data for a provided location object from
-// gatsby.
-export const usePrismicPreview = (
+// Returns an object containing normalized Prismic preview data directly from
+// the Prismic API. The normalized data object's shape is identical to the shape
+// created by Gatsby at build time minus image processing due to running in the
+// browser. Instead, image nodes return their source URL.
+export const usePrismicPreview = ({
   location,
-  customType,
-  linkResolver,
-  htmlSerializer,
-  fetchLinks,
-  repositoryName,
+  customType = 'page',
+  linkResolver = doc => doc.uid,
+  htmlSerializer = () => {},
+  fetchLinks = [],
   accessToken,
-) => {
+  repositoryName,
+}) => {
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
 
-  // Hook helper functions:
-  // Returns the UID associated with the current preview session.
+  // Hook helpers:
+
+  // Returns the UID associated with the current preview session and sets the
+  // appropriate preview cookie from Prismic.
   const getPreviewUID = async () => {
     try {
       const params = qs.parse(location.search.slice(1))
@@ -38,12 +42,12 @@ export const usePrismicPreview = (
     }
   }
 
-  // Returns the raw preview data API response from Prismic.
+  // Returns the raw preview data from Prismic's API.
   const getRawPreviewData = async () => {
     try {
       const { uid, api } = await getPreviewUID()
 
-      return await api.getByUID(customType, uid, fetchLinks)
+      return await api.getByUID(customType, uid, { fetchLinks })
     } catch (error) {
       console.error('Error fetching Prismic preview data: ', error)
 
@@ -51,8 +55,8 @@ export const usePrismicPreview = (
     }
   }
 
-  // Returns Prismic Preview data that has the same shape as a Gatsby Prismic
-  // data node.
+  // Returns an object containing normalized Prismic Preview data. This data has
+  // has the same shape as the queryable graphql data created by Gatsby at build time.
   const normalizePreviewData = async () => {
     const doc = await getRawPreviewData()
 
@@ -64,6 +68,9 @@ export const usePrismicPreview = (
         htmlSerializer: () => htmlSerializer,
         nodeHelpers,
         shouldNormalizeImage: () => true,
+        repositoryName,
+        accessToken,
+        fetchLinks,
       })
 
       return node
@@ -72,25 +79,12 @@ export const usePrismicPreview = (
     const node = await Node(doc)
     const prefixedType = camelCase(node.internal.type)
 
-    // Reconstruct the node's body to match how Gatsby reconstructs it at build
-    // time.
-    const sliceBody = node.data.body.map(slice => ({
-      id: slice.id,
-      primary: slice.primary,
-      __typename: slice.internal.type,
-    }))
-
     return {
-      [prefixedType]: {
-        data: {
-          ...node.data,
-          body: sliceBody,
-        },
-        uid: node.uid,
-      },
+      [prefixedType]: node,
     }
   }
 
+  // Allows for async/await syntax inside of useEffect().
   const asyncEffect = async (setPreviewData, setLoading) => {
     const data = await normalizePreviewData(location)
     setPreviewData(data)
@@ -102,7 +96,7 @@ export const usePrismicPreview = (
 
   useEffect(() => {
     asyncEffect(setPreviewData, setLoading)
-  })
+  }, [])
 
   return { previewData, isLoading }
 }

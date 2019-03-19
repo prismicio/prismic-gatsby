@@ -1,42 +1,18 @@
 import PrismicDOM from 'prismic-dom'
+import Prismic from 'prismic-javascript'
 import { map, reduce } from 'asyncro'
+import {
+  isRichTextField,
+  isLinkField,
+  isImageField,
+  isSliceField,
+  isGroupField,
+} from './validations'
 
-// Returns true if the field value appears to be a Rich Text field, false
-// otherwise.
-export const isRichTextField = value =>
-  Array.isArray(value) &&
-  typeof value[0] === 'object' &&
-  Object.keys(value[0]).includes('spans')
-
-// Returns true if the field value appears to be a Link field, false otherwise.
-export const isLinkField = value =>
-  value !== null &&
-  typeof value === 'object' &&
-  value.hasOwnProperty('link_type')
-
-// Returns true if the field value appears to be an Image field, false
-// otherwise.
-export const isImageField = value =>
-  value !== null &&
-  typeof value === 'object' &&
-  value.hasOwnProperty('url') &&
-  value.hasOwnProperty('dimensions') &&
-  value.hasOwnProperty('alt') &&
-  value.hasOwnProperty('copyright')
-
-// Returns true if the key and value appear to be from a slice zone field,
-// false otherwise.
-export const isSliceField = value =>
-  Array.isArray(value) &&
-  typeof value[0] === 'object' &&
-  value[0].hasOwnProperty('slice_type') &&
-  (value[0].hasOwnProperty('primary') || value[0].hasOwnProperty('items'))
-
-// Returns true if the field value appears to be a group field, false
-// otherwise.
-// NOTE: This check must be performed after isRichTextField and isSliceField.
-export const isGroupField = value =>
-  Array.isArray(value) && typeof value[0] === 'object'
+// 'store' acts as a cache when we are recursively retrieving documents from
+// Prismic's API. Using Map() combined with Proxy() allows for lazy
+// evaluation of Prismic documents and elimination redundant API calls.
+const store = new Map()
 
 // Normalizes a rich text field by providing HTML and text versions of the
 // value using `prismic-dom` on the `html` and `text` keys, respectively. The
@@ -51,16 +27,45 @@ const normalizeRichTextField = (value, linkResolver, htmlSerializer) => ({
 // the `url` field. If the value is an external link, the value is provided
 // as-is. If the value is a document link, the document's data is provided on
 // the `document` key.
-const normalizeLinkField = (value, linkResolver) => {
+const normalizeLinkField = async args => {
+  const { value, linkResolver, repositoryName, accessToken, fetchLinks } = args
+
   switch (value.link_type) {
     case 'Document':
       if (!value.type || !value.id || value.isBroken) return undefined
-      return {
-        ...value,
-        url: PrismicDOM.Link.url(value, linkResolver),
-        target: value.target || '',
-        raw: value,
+
+      if (!store.has(value.id)) {
+        // Create a key in our cache to prevent infinite recursion.
+        store.set(value.id, {})
+
+        // Query Prismic's API for the actual document node and normalize it.
+        const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
+        const api = await Prismic.api(apiEndpoint, { accessToken })
+        const node = await api.getByID(value.id, { fetchLinks })
+        node.data = await normalizeBrowserFields({
+          ...args,
+          value: node.data,
+          node: node,
+        })
+
+        // Now that we have this node's normallized data, place it in our cache.
+        store.set(value.id, node)
       }
+
+      return new Proxy(
+        {
+          ...value,
+          url: PrismicDOM.Link.url(value, linkResolver),
+          target: value.target || '',
+          raw: value,
+        },
+        {
+          get: (obj, prop) => {
+            if (obj.hasOwnProperty(prop)) return obj[prop]
+            if (prop === 'document') return [store.get(value.id)]
+          },
+        },
+      )
 
     case 'Media':
     case 'Web':
@@ -124,6 +129,10 @@ const normalizeSliceField = async args => {
 
     const entryNode = await EntryNode(entry)
 
+    // At build time, Gatsby adds a __typename key to each node. We're
+    // replicating that here.
+    entryNode.__typename = entryNode.internal.type
+
     return entryNode
   })
 
@@ -141,9 +150,8 @@ const normalizeGroupField = async args =>
 // of it. If the type is not supported or needs no normalizing, it is returned
 // as-is.
 export const normalizeField = async args => {
-  const { key, value, node, nodeHelpers, shouldNormalizeImage } = args
+  const { key, value, node, shouldNormalizeImage } = args
   let { linkResolver, htmlSerializer } = args
-  const { generateNodeId } = nodeHelpers
 
   linkResolver = linkResolver({ node, key, value })
   htmlSerializer = htmlSerializer({ node, key, value })
@@ -151,8 +159,7 @@ export const normalizeField = async args => {
   if (isRichTextField(value))
     return normalizeRichTextField(value, linkResolver, htmlSerializer)
 
-  if (isLinkField(value))
-    return normalizeLinkField(value, linkResolver, generateNodeId)
+  if (isLinkField(value)) return await normalizeLinkField(args)
 
   if (
     isImageField(value) &&
