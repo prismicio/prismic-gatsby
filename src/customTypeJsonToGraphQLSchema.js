@@ -131,7 +131,7 @@ const fieldToGraphQLType = (customTypeId, options = {}) => (field, fieldId) => {
         R.path(['config', 'fields']),
         subfields =>
           new GraphQLObjectType({
-            name: generateInternalTypeName('Group ${fieldId}'),
+            name: generateInternalTypeName(`Group ${fieldId}`),
             fields: R.map(fieldToGraphQLType(customTypeId), subfields),
           }),
       )(field)
