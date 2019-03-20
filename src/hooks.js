@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Prismic from 'prismic-javascript'
 import qs from 'qs'
-import * as Cookies from 'es-cookie'
+import { set as setCookie } from 'es-cookie'
 import camelCase from 'camelcase'
 
 import { normalizeBrowserFields } from './normalizeBrowser'
@@ -13,8 +13,8 @@ import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 // browser. Instead, image nodes return their source URL.
 export const usePrismicPreview = ({
   location,
-  customType = 'page',
-  linkResolver = doc => doc.uid,
+  customType,
+  linkResolver = () => {},
   htmlSerializer = () => {},
   fetchLinks = [],
   accessToken,
@@ -26,57 +26,35 @@ export const usePrismicPreview = ({
 
   // Returns the UID associated with the current preview session and sets the
   // appropriate preview cookie from Prismic.
-  const getPreviewUID = async () => {
-    try {
-      const params = qs.parse(location.search.slice(1))
-      const api = await Prismic.getApi(apiEndpoint, { accessToken })
-      const url = await api.previewSession(params.token, linkResolver, '/')
-      const uid = url === '/' ? 'home' : url.split('/').pop()
-      Cookies.set(Prismic.previewCookie, params.token)
-
-      return { uid, api }
-    } catch (error) {
-      console.error('Error fetching Prismic preview UID: ', error)
-
-      return false
-    }
+  const fetchPreviewUID = async (token, api) => {
+    const url = await api.previewSession(token, linkResolver, '/')
+    return url === '/' ? 'home' : url.split('/').pop()
   }
 
   // Returns the raw preview data from Prismic's API.
-  const getRawPreviewData = async () => {
-    try {
-      const { uid, api } = await getPreviewUID()
-
-      return await api.getByUID(customType, uid, { fetchLinks })
-    } catch (error) {
-      console.error('Error fetching Prismic preview data: ', error)
-
-      return false
-    }
-  }
+  const fetchRawPreviewData = async (uid, api) =>
+    await api.getByUID(customType, uid, { fetchLinks })
 
   // Returns an object containing normalized Prismic Preview data. This data has
   // has the same shape as the queryable graphql data created by Gatsby at build time.
-  const normalizePreviewData = async () => {
-    const doc = await getRawPreviewData()
-
-    const Node = createNodeFactory(doc.type, async node => {
+  const normalizePreviewData = async rawPreviewData => {
+    const Node = createNodeFactory(rawPreviewData.type, async node => {
       node.data = await normalizeBrowserFields({
         value: node.data,
         node,
-        linkResolver: () => linkResolver,
-        htmlSerializer: () => htmlSerializer,
-        nodeHelpers,
+        linkResolver,
+        htmlSerializer,
+        fetchLinks,
         shouldNormalizeImage: () => true,
+        nodeHelpers,
         repositoryName,
         accessToken,
-        fetchLinks,
       })
 
       return node
     })
 
-    const node = await Node(doc)
+    const node = await Node(rawPreviewData)
     const prefixedType = camelCase(node.internal.type)
 
     return {
@@ -86,7 +64,15 @@ export const usePrismicPreview = ({
 
   // Allows for async/await syntax inside of useEffect().
   const asyncEffect = async (setPreviewData, setLoading) => {
-    const data = await normalizePreviewData(location)
+    const api = await Prismic.getApi(apiEndpoint, { accessToken })
+
+    const { token } = qs.parse(location.search.slice(1))
+    const uid = await fetchPreviewUID(token, api)
+    setCookie(Prismic.previewCookie, token) // TODO: write why
+
+    const rawPreviewData = await fetchRawPreviewData(uid, api)
+    const data = await normalizePreviewData(rawPreviewData)
+
     setPreviewData(data)
     setLoading(false)
   }

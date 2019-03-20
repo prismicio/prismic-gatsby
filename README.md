@@ -501,13 +501,8 @@ To learn more about image processing, check the documentation of
 
 ## Previews
 
-To allow for dynamic content previews, we need to query Prismic's API from the
-browser and normalize the API response the same way we do at build time. By
-doing so, we can rely on the same templates and components that we use for
-static data for our preview data.
-
-`gatsby-source-prismic` now exports a `usePrismicPreview()` hook to help with
-querying and normalizing API responses from Prismic. An example is shown below:
+Use the `usePrismicPreview()` hook to help with querying and normalizing API
+responses from Prismic. An example is shown below:
 
 ```js
 // { ... }
