@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useCallback } from 'react'
 import Prismic from 'prismic-javascript'
 import qs from 'qs'
 import { set as setCookie } from 'es-cookie'
@@ -80,9 +81,12 @@ export const usePrismicPreview = ({
   const [previewData, setPreviewData] = useState(null)
   const [isLoading, setLoading] = useState(true)
 
-  useEffect(() => {
-    asyncEffect(setPreviewData, setLoading)
-  }, [])
+  useEffect(
+    () => {
+      asyncEffect(setPreviewData, setLoading)
+    },
+    [asyncEffect],
+  )
 
   return { previewData, isLoading }
 }

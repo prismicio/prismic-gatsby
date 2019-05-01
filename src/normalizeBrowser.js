@@ -11,7 +11,7 @@ import {
 
 // 'store' acts as a cache when we are recursively retrieving documents from
 // Prismic's API. Using Map() combined with Proxy() allows for lazy
-// evaluation of Prismic documents and elimination redundant API calls.
+// evaluation of Prismic documents and eliminates redundant API calls.
 const store = new Map()
 
 // Normalizes a rich text field by providing HTML and text versions of the
