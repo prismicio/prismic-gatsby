@@ -26,11 +26,14 @@
     "asyncro": "^3.0.0",
     "camelcase": "^5.2.0",
     "easygraphql-mock": "^0.1.11",
+    "es-cookie": "^1.2.0",
     "gatsby": "^2.1.17",
     "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.22",
     "prismic-dom": "^2.1.0",
+    "pascalcase": "^0.1.1",
     "prismic-javascript": "^1.1.5",
+    "qs": "^6.7.0",
     "ramda": "^0.26.1"
   },
   "devDependencies": {
@@ -42,6 +45,10 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
-    "prettier": "^1.16.4"
+    "prettier": "^1.16.4",
+    "react": "^16.8.6"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
   }
 }
