@@ -1,8 +1,7 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "2.3.0-previews.9",
+  "version": "2.3.0-alpha.5",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
-  "main": "index.js",
   "scripts": {
     "prepublish": "npm run build",
     "build": "babel src --ignore 'src/__tests__/**/*.js' --out-dir dist",
@@ -27,31 +26,22 @@
     "asyncro": "^3.0.0",
     "camelcase": "^5.2.0",
     "easygraphql-mock": "^0.1.11",
-    "es-cookie": "^1.2.0",
-    "gatsby": "^2.3.25",
+    "gatsby": "^2.1.17",
     "gatsby-node-helpers": "^0.3.0",
-    "gatsby-source-filesystem": "^2.0.29",
-    "pascalcase": "^0.1.1",
+    "gatsby-source-filesystem": "^2.0.22",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
-    "qs": "^6.7.0",
-    "ramda": "^0.26.1",
-    "ramda-adjunct": "^2.9.0"
+    "ramda": "^0.26.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.56",
-    "@babel/core": "^7.0.0-beta.56",
-    "@babel/preset-env": "^7.0.0-beta.56",
-    "babel-core": "^7.0.0-0",
-    "babel-jest": "^23.4.2",
-    "eslint": "^5.16.0",
-    "eslint-plugin-react": "^7.12.4",
-    "eslint-plugin-react-hooks": "^1.6.0",
-    "jest": "^23.4.2",
-    "prettier": "^1.5.3",
-    "react": "^16.8.5"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0"
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "@babel/plugin-transform-async-to-generator": "^7.2.0",
+    "@babel/preset-env": "^7.3.1",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^24.1.0",
+    "jest": "^24.1.0",
+    "prettier": "^1.16.4"
   }
 }
