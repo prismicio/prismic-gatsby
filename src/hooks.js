@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from 'react'
 import Prismic from 'prismic-javascript'
 import qs from 'qs'
@@ -27,66 +26,81 @@ export const usePrismicPreview = ({
 
   // Returns the UID associated with the current preview session and sets the
   // appropriate preview cookie from Prismic.
-  const fetchPreviewUID = async (token, api) => {
-    const url = await api.previewSession(token, linkResolver, '/')
-    return url === '/' ? 'home' : url.split('/').pop()
-  }
+  const fetchPreviewUID = useCallback(
+    async (token, api) => {
+      const url = await api.previewSession(token, linkResolver, '/')
+      return url === '/' ? 'home' : url.split('/').pop()
+    },
+    [linkResolver],
+  )
 
   // Returns the raw preview data from Prismic's API.
-  const fetchRawPreviewData = async (uid, api) =>
-    await api.getByUID(customType, uid, { fetchLinks })
+  const fetchRawPreviewData = useCallback(
+    async (uid, api) => await api.getByUID(customType, uid, { fetchLinks }),
+    [customType, fetchLinks],
+  )
 
   // Returns an object containing normalized Prismic Preview data. This data has
   // has the same shape as the queryable graphql data created by Gatsby at build time.
-  const normalizePreviewData = async rawPreviewData => {
-    const Node = createNodeFactory(rawPreviewData.type, async node => {
-      node.data = await normalizeBrowserFields({
-        value: node.data,
-        node,
-        linkResolver,
-        htmlSerializer,
-        fetchLinks,
-        shouldNormalizeImage: () => true,
-        nodeHelpers,
-        repositoryName,
-        accessToken,
+  const normalizePreviewData = useCallback(
+    async rawPreviewData => {
+      const Node = createNodeFactory(rawPreviewData.type, async node => {
+        node.data = await normalizeBrowserFields({
+          value: node.data,
+          node,
+          linkResolver,
+          htmlSerializer,
+          fetchLinks,
+          shouldNormalizeImage: () => true,
+          nodeHelpers,
+          repositoryName,
+          accessToken,
+        })
+
+        return node
       })
 
-      return node
-    })
+      const node = await Node(rawPreviewData)
+      const prefixedType = camelCase(node.internal.type)
 
-    const node = await Node(rawPreviewData)
-    const prefixedType = camelCase(node.internal.type)
-
-    return {
-      [prefixedType]: node,
-    }
-  }
+      return {
+        [prefixedType]: node,
+      }
+    },
+    [accessToken, fetchLinks, htmlSerializer, linkResolver, repositoryName],
+  )
 
   // Allows for async/await syntax inside of useEffect().
-  const asyncEffect = async (setPreviewData, setLoading) => {
-    const api = await Prismic.getApi(apiEndpoint, { accessToken })
+  const asyncEffect = useCallback(
+    async (setPreviewData, setLoading) => {
+      const api = await Prismic.getApi(apiEndpoint, { accessToken })
 
-    const { token } = qs.parse(location.search.slice(1))
-    const uid = await fetchPreviewUID(token, api)
-    setCookie(Prismic.previewCookie, token) // TODO: write why
+      const { token } = qs.parse(location.search.slice(1))
+      const uid = await fetchPreviewUID(token, api)
+      setCookie(Prismic.previewCookie, token) // TODO: write why
 
-    const rawPreviewData = await fetchRawPreviewData(uid, api)
-    const data = await normalizePreviewData(rawPreviewData)
+      const rawPreviewData = await fetchRawPreviewData(uid, api)
+      const data = await normalizePreviewData(rawPreviewData)
 
-    setPreviewData(data)
-    setLoading(false)
-  }
+      setPreviewData(data)
+      setLoading(false)
+    },
+    [
+      accessToken,
+      apiEndpoint,
+      fetchPreviewUID,
+      fetchRawPreviewData,
+      location.search,
+      normalizePreviewData,
+    ],
+  )
 
   const [previewData, setPreviewData] = useState(null)
   const [isLoading, setLoading] = useState(true)
 
-  useEffect(
-    () => {
-      asyncEffect(setPreviewData, setLoading)
-    },
-    [asyncEffect],
-  )
+  useEffect(() => {
+    asyncEffect(setPreviewData, setLoading)
+  }, [])
 
   return { previewData, isLoading }
 }

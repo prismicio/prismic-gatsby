@@ -30,8 +30,8 @@
     "gatsby": "^2.1.17",
     "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.22",
-    "prismic-dom": "^2.1.0",
     "pascalcase": "^0.1.1",
+    "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
     "qs": "^6.7.0",
     "ramda": "^0.26.1"
@@ -43,7 +43,11 @@
     "@babel/plugin-transform-async-to-generator": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
     "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
     "babel-jest": "^24.1.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.12.4",
+    "eslint-plugin-react-hooks": "^1.6.0",
     "jest": "^24.1.0",
     "prettier": "^1.16.4",
     "react": "^16.8.6"
