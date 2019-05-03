@@ -30,6 +30,7 @@
     "gatsby": "^2.1.17",
     "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.22",
+    "lodash-es": "^4.17.11",
     "pascalcase": "^0.1.1",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
