@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { get, merge } from 'lodash-es'
+import { merge } from 'lodash-es'
 import Prismic from 'prismic-javascript'
 import { set as setCookie } from 'es-cookie'
 import camelCase from 'camelcase'
@@ -7,13 +7,14 @@ import camelCase from 'camelcase'
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 
+// TODO refactor to single useState to prevent re-rendering
+
 // Returns an object containing normalized Prismic preview data directly from
 // the Prismic API. The normalized data object's shape is identical to the shape
 // created by Gatsby at build time minus image processing due to running in the
 // browser. Instead, image nodes return their source URL.
 export const useNewPreview = ({
   location,
-  customType,
   linkResolver = () => {},
   htmlSerializer = () => {},
   fetchLinks = [],
@@ -22,23 +23,16 @@ export const useNewPreview = ({
 }) => {
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
   const [previewData, setPreviewData] = useState(null)
-  const [isLoading, setLoading] = useState(true)
-  const [path, setPath] = useState('/')
-
-  // Returns the UID associated with the current preview session and sets the
-  // appropriate preview cookie from Prismic.
-  const fetchPreviewUID = useCallback(
-    async (token, api) => {
-      const url = await api.previewSession(token, linkResolver, '/')
-      return url === '/' ? 'home' : url.split('/').pop()
-    },
-    [linkResolver],
-  )
+  const [path, setPath] = useState(null)
 
   // Returns the raw preview data from Prismic's API.
   const fetchRawPreviewData = useCallback(
-    async (uid, api) => await api.getByUID(customType, uid, { fetchLinks }),
-    [customType, fetchLinks],
+    async id => {
+      const api = await Prismic.getApi(apiEndpoint, { accessToken })
+
+      return await api.getByID(id, { fetchLinks })
+    },
+    [accessToken, apiEndpoint, fetchLinks],
   )
 
   // Returns an object containing normalized Prismic Preview data. This data has
@@ -72,45 +66,31 @@ export const useNewPreview = ({
   )
 
   // Allows for async/await syntax inside of useEffect().
-  const asyncEffect = useCallback(
-    async (setPreviewData, setLoading) => {
-      const api = await Prismic.getApi(apiEndpoint, { accessToken })
+  const asyncEffect = useCallback(async () => {
+    const searchParams = new URLSearchParams(location.search)
+    const token = searchParams.get('token')
+    const docID = searchParams.get('documentId')
 
-      const searchParams = new URLSearchParams(location.search)
-      const token = searchParams.get('token')
+    setCookie(Prismic.previewCookie, token) // TODO: write why
 
-      const uid = await fetchPreviewUID(token, api)
-      setCookie(Prismic.previewCookie, token) // TODO: write why
+    const rawPreviewData = await fetchRawPreviewData(docID)
+    const resolvedPath = linkResolver(rawPreviewData)
 
-      const rawPreviewData = await fetchRawPreviewData(uid, api)
-      const resolvedPath = linkResolver(rawPreviewData)
+    const data = await normalizePreviewData(rawPreviewData)
 
-      const data = await normalizePreviewData(rawPreviewData)
-
-      setPreviewData(data)
-      setPath(resolvedPath)
-      setLoading(false)
-    },
-    [
-      accessToken,
-      apiEndpoint,
-      fetchPreviewUID,
-      fetchRawPreviewData,
-      linkResolver,
-      location,
-      normalizePreviewData,
-    ],
-  )
+    setPreviewData(data)
+    setPath(resolvedPath)
+  }, [fetchRawPreviewData, linkResolver, location.search, normalizePreviewData])
 
   useEffect(() => {
-    asyncEffect(setPreviewData, setLoading)
+    asyncEffect()
   }, [])
 
-  return { previewData, isLoading, path }
+  return { previewData, path }
 }
 
 export const usePreviewData = (staticData, location) => {
-  const previewData = location.state.previewData
+  const previewData = location.state
     ? JSON.parse(location.state.previewData)
     : null
 
