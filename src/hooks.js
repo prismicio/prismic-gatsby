@@ -25,7 +25,6 @@ export const usePrismicPreview = ({
     path: null,
   })
 
-  // Returns the raw preview data from Prismic's API.
   const fetchRawPreviewData = useCallback(
     async id => {
       const api = await Prismic.getApi(apiEndpoint, { accessToken })
@@ -35,8 +34,6 @@ export const usePrismicPreview = ({
     [accessToken, apiEndpoint, fetchLinks],
   )
 
-  // Returns an object containing normalized Prismic Preview data. This data has
-  // has the same shape as the queryable graphql data created by Gatsby at build time.
   const normalizePreviewData = useCallback(
     async rawPreviewData => {
       const Node = createNodeFactory(rawPreviewData.type, async node => {
@@ -65,7 +62,6 @@ export const usePrismicPreview = ({
     [accessToken, fetchLinks, htmlSerializer, linkResolver, repositoryName],
   )
 
-  // Allows for async/await syntax inside of useEffect().
   const asyncEffect = useCallback(async () => {
     const searchParams = new URLSearchParams(location.search)
     const token = searchParams.get('token')
@@ -91,9 +87,12 @@ export const usePrismicPreview = ({
   return { previewData: state.previewData, path: state.path }
 }
 
+// Helper function that merges gatsby's static data with normalized preview data.
+// If the custom types are the same, just do a simple recursive merge.
+// If the custom types are different, we need to recursively replace
+// any document in the static data with the preview document by
+// comparing IDs.
 export const mergePrismicPreviewData = ({ staticData, previewData }) => {
-  // Traverses an object and replaces any prismic document whose ID
-  // matches the ID of the document we are previewing.
   const complicatedMerge = ({ staticData, previewData, key }) => {
     const { data: previewDocData, id: previewId } = previewData[key]
 
@@ -110,14 +109,12 @@ export const mergePrismicPreviewData = ({ staticData, previewData }) => {
     return traverse(staticData).map(handleNode)
   }
 
-  // Merges two prismic objects whose custom types are the same.
   const mergeStaticData = () => {
     const previewKey = head(Object.keys(previewData))
 
     if (!has(staticData, previewKey))
       return complicatedMerge({ staticData, previewData, key: previewKey })
 
-    // otherwise, just do a simple top level merge.
     return merge(staticData, previewData)
   }
 
