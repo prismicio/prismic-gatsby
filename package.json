@@ -24,7 +24,6 @@
   "license": "MIT",
   "dependencies": {
     "asyncro": "^3.0.0",
-    "camelcase": "^5.2.0",
     "easygraphql-mock": "^0.1.11",
     "es-cookie": "^1.2.0",
     "gatsby": "^2.1.17",

@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
-import { merge, head, isPlainObject, has } from 'lodash-es'
+import { merge, head, isPlainObject, has, camelCase } from 'lodash-es'
 import Prismic from 'prismic-javascript'
 import { set as setCookie } from 'es-cookie'
-import camelCase from 'camelcase'
 import traverse from 'traverse'
 
 import { normalizeBrowserFields } from './normalizeBrowser'
@@ -21,8 +20,10 @@ export const usePrismicPreview = ({
   repositoryName,
 }) => {
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
-  const [previewData, setPreviewData] = useState(null)
-  const [path, setPath] = useState(null)
+  const [state, setState] = useState({
+    previewData: null,
+    path: null,
+  })
 
   // Returns the raw preview data from Prismic's API.
   const fetchRawPreviewData = useCallback(
@@ -77,33 +78,27 @@ export const usePrismicPreview = ({
 
     const data = await normalizePreviewData(rawPreviewData)
 
-    setPreviewData(data)
-    setPath(resolvedPath)
+    setState({
+      path: resolvedPath,
+      previewData: data,
+    })
   }, [fetchRawPreviewData, linkResolver, location.search, normalizePreviewData])
 
   useEffect(() => {
     asyncEffect()
   }, [])
 
-  return { previewData, path }
+  return { previewData: state.previewData, path: state.path }
 }
 
-export const mergePrismicPreviewData = ({ staticData, location }) => {
-  const previewData = has(location, 'state.previewData')
-    ? JSON.parse(location.state.previewData)
-    : null
-
+export const mergePrismicPreviewData = ({ staticData, previewData }) => {
   // Traverses an object and replaces any prismic document whose ID
   // matches the ID of the document we are previewing.
   const complicatedMerge = ({ staticData, previewData, key }) => {
     const { data: previewDocData, id: previewId } = previewData[key]
 
     function handleNode(node) {
-      if (
-        isPlainObject(node) &&
-        node.hasOwnProperty('id') &&
-        node.id === previewId
-      ) {
+      if (isPlainObject(node) && has(node, 'id') && node.id === previewId) {
         this.update(
           merge(node, {
             data: previewDocData,
@@ -119,7 +114,7 @@ export const mergePrismicPreviewData = ({ staticData, location }) => {
   const mergeStaticData = () => {
     const previewKey = head(Object.keys(previewData))
 
-    if (!staticData.hasOwnProperty(previewKey))
+    if (!has(staticData, previewKey))
       return complicatedMerge({ staticData, previewData, key: previewKey })
 
     // otherwise, just do a simple top level merge.

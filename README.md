@@ -18,12 +18,12 @@ repositories.
     - [Query slices](#query-slices)
     - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
     - [Image processing](#image-processing)
-  - [Previews](#previews)
+- [Prismic Previews](#prismic-previews)
+    - [usePrismicPreview()](#useprismicpreview)
+    - [Return Value](#return-value)
+    - [API](#api)
     - [Gotchas](#gotchas)
-      - [Exposed Access Tokens](#exposed-access-tokens)
-      - [Handling Images](#handling-images)
-      - [GraphQL queries with `allPrismicX`](#graphql-queries-with-allprismicx)
-        - [Variables in `allPrismicX` queries](#variables-in-allprismicx-queries)
+      - [Images](#images)
   - [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
 ## Features
@@ -499,91 +499,60 @@ Full example:
 To learn more about image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
 
-## Previews
+# Prismic Previews
 
-Use the `usePrismicPreview()` hook to help with querying and normalizing API
-responses from Prismic. An example is shown below:
+### usePrismicPreview()
 
-```js
-// { ... }
+The `usePrismicPreview()` React hook allows for querying and normalizing
+responses from Prismic's API. An example is shown below:
+
+```jsx
 import { usePrismicPreview } from 'gatsby-source-prismic'
 
 const PreviewPage = ({ location }) => {
-  const { previewData, isLoading } = usePrismicPreview({
+  const { previewData } = usePrismicPreview({
     location,
-    customType: 'page',
     linkResolver: doc => doc.uid,
-    htmlSerializer: () => {},
     fetchLinks: ['page.parent'],
     repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
     accessToken: process.env.GATSBY_PRISMIC_ACCESS_TOKEN,
   })
 
-  return isLoading ? <div>Loading...</div> : <PageTemplate data={previewData} />
+  return previewData ? <Spinner /> : <PageTemplate data={previewData} />
 }
 ```
 
-`usePrismicPreview()` returns an object with `previewData` and `isLoading`.
+### Return Value
 
-- `previewData` is an object containing the normalized API response from
-  Prismic.
-- `isLoading` is a boolean that will be true until the API response from Prismic
-  has been fetched and normalized.
+Returns an object with the following keys:
 
-`usePrismicPreview()` takes the following parameters via an object:
+- `previewData`: An object with the same key-value shape that `gatsby-source-prismic` generates at build time, so it can be provided to templates & pages directly.
+- `path`: A string of the resolved path for the previewed Prismic doc. This is determined via the provided `linkResolver`.
 
-| Param          | Type     | Description                                                                                                                                            |
-| -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| location       | Object   | Location object from `@reach/router`. Used to parse the preview token from Prismic and the `uid` of the page being previewed.                          |
-| customType     | String   | Specifies the custom type from Prismic that we are previewing.                                                                                         |
-| linkResolver   | Function | Determines how link URLs are normalized. Refer to Prismic's docs on link resolving for more info.                                                      |
-| htmlSerializer | Function | Determines how rich text fields are formatted as HTML. Refer to Prismic's docs on html serializing for more info.                                      |
-| fetchLinks     | Array    | List of options to determine the fields to fetch when a field contains a content relationship. Refer to Prismic's docs on query options for more info. |
-| repositoryName | String   | Same as repositorName passed in `options`. Due to restrictions from Gatsby, this must be passed explicitly.                                            |
-| accessToken    | String   | Same as the accessToken passed in `options`.                                                                                                           |
+### API
+
+Accepts the following parameters via an object:
+
+- `location`: **Required**. The location object from `@reach/router`. This is used to read the preview token and doc ID from Prismic to send a preview request.
+- `linkResolver`: **Required**. `usePrismicPreview()` uses this link resolver function to determine the `path` of the previewed doc.
+- `htmlSerializer`: Function that maps rich text fields to HTML. Should be the same function provided to the plugin configuration.
+- `fetchLinks`: A list of links to fetch for the previewed document.
+- `repositoryName`: Your Prismic repository name.
+- `accessToken`: Your prismic access token.
+
+> ⚠️ Since preview API requests are made in the browser, your access token will be exposed to the client.
 
 ### Gotchas
 
-#### Exposed Access Tokens
+#### Images 
 
-`usePrismicPreview()` makes requests to Prismic's API from the browser, so your
-access token and repository names are exposed when preview data is fetched. That
-being said, Prismic's API does not support mutations or deletes, so a client can
-only read data from your CMS.
+Since data normalization happens at run-time, we cannot perform the same image optimizations that we do at build-time. Instead, `usePrismicPreview()` returns the `url` field for an image.
 
-It's left up to the developer on how they wish to handle this, but we do
-recommend keeping your preview-route behind some form of authentication layer.
-(Netlify Identity & Netlify Lambda verification, etc.)
-
-#### Handling Images
-
-Since image preview data is normalized on the fly in the browser, we're unable
-to peform the same optimizations that Gatsby does at build time. Instead,
-`usePrismicPreview()` provides just the image url from Prismic's CDN.
-
-To ensure image parity in previews, it's recommended to create a wrapper around
-`gatsby-image`'s `<Img>` component that can conditionally render an `<Img>` or
-HTML `<img>` based on the presence of the `fluid`/`fixed` and `src` props.
-
-#### GraphQL queries with `allPrismicX`
-
-Pages with graphQL queries that use `allPrismicX` should be refactored to
-utilize Gatsby's `useStaticQuery()` hook instead. This is a known limitation of
-`usePrismicPreview()` since we're querying the Prismic API via `uid`.
-
-If needed, refactor portions of a page to separate components since there can
-only be one root level GraphQL query in any `.js` file. This is a known issue
-with Gatsby v2 and should be resolved in a future release.
-
-##### Variables in `allPrismicX` queries
-
-`useStaticQuery()` should be able to cover *most* use cases where a page would
-rely on a `allPrismicX` GraphQL query. However, If your `allPrismicX` style query does
-require variables, you're out of luck for now.
+> ⚛️ A smart image component that conditionally uses `url` or `gatsby-image` data is recommended for preview parity.
 
 ## Site's `gatsby-node.js` example
 
-```js
+```jsx
 const path = require('path')
 
 exports.createPages = async ({ graphql, actions }) => {
