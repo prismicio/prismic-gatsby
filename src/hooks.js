@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
+import { merge, head, isPlainObject, has } from 'lodash-es'
 import Prismic from 'prismic-javascript'
-import qs from 'qs'
 import { set as setCookie } from 'es-cookie'
 import camelCase from 'camelcase'
+import traverse from 'traverse'
 
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
@@ -11,9 +12,8 @@ import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 // the Prismic API. The normalized data object's shape is identical to the shape
 // created by Gatsby at build time minus image processing due to running in the
 // browser. Instead, image nodes return their source URL.
-export const usePrismicPreview = ({
+export const useNewPreview = ({
   location,
-  customType,
   linkResolver = () => {},
   htmlSerializer = () => {},
   fetchLinks = [],
@@ -21,23 +21,17 @@ export const usePrismicPreview = ({
   repositoryName,
 }) => {
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
-
-  // Hook helpers:
-
-  // Returns the UID associated with the current preview session and sets the
-  // appropriate preview cookie from Prismic.
-  const fetchPreviewUID = useCallback(
-    async (token, api) => {
-      const url = await api.previewSession(token, linkResolver, '/')
-      return url === '/' ? 'home' : url.split('/').pop()
-    },
-    [linkResolver],
-  )
+  const [previewData, setPreviewData] = useState(null)
+  const [path, setPath] = useState(null)
 
   // Returns the raw preview data from Prismic's API.
   const fetchRawPreviewData = useCallback(
-    async (uid, api) => await api.getByUID(customType, uid, { fetchLinks }),
-    [customType, fetchLinks],
+    async id => {
+      const api = await Prismic.getApi(apiEndpoint, { accessToken })
+
+      return await api.getByID(id, { fetchLinks })
+    },
+    [accessToken, apiEndpoint, fetchLinks],
   )
 
   // Returns an object containing normalized Prismic Preview data. This data has
@@ -71,36 +65,70 @@ export const usePrismicPreview = ({
   )
 
   // Allows for async/await syntax inside of useEffect().
-  const asyncEffect = useCallback(
-    async (setPreviewData, setLoading) => {
-      const api = await Prismic.getApi(apiEndpoint, { accessToken })
+  const asyncEffect = useCallback(async () => {
+    const searchParams = new URLSearchParams(location.search)
+    const token = searchParams.get('token')
+    const docID = searchParams.get('documentId')
 
-      const { token } = qs.parse(location.search.slice(1))
-      const uid = await fetchPreviewUID(token, api)
-      setCookie(Prismic.previewCookie, token) // TODO: write why
+    setCookie(Prismic.previewCookie, token) // TODO: write why
 
-      const rawPreviewData = await fetchRawPreviewData(uid, api)
-      const data = await normalizePreviewData(rawPreviewData)
+    const rawPreviewData = await fetchRawPreviewData(docID)
+    const resolvedPath = linkResolver(rawPreviewData)
 
-      setPreviewData(data)
-      setLoading(false)
-    },
-    [
-      accessToken,
-      apiEndpoint,
-      fetchPreviewUID,
-      fetchRawPreviewData,
-      location.search,
-      normalizePreviewData,
-    ],
-  )
+    const data = await normalizePreviewData(rawPreviewData)
 
-  const [previewData, setPreviewData] = useState(null)
-  const [isLoading, setLoading] = useState(true)
+    setPreviewData(data)
+    setPath(resolvedPath)
+  }, [fetchRawPreviewData, linkResolver, location.search, normalizePreviewData])
 
   useEffect(() => {
-    asyncEffect(setPreviewData, setLoading)
+    asyncEffect()
   }, [])
 
-  return { previewData, isLoading }
+  return { previewData, path }
+}
+
+export const usePreviewData = ({ staticData, location }) => {
+  const previewData = has(location, 'state.previewData')
+    ? JSON.parse(location.state.previewData)
+    : null
+
+  // Traverses an object and replaces any prismic document whose ID
+  // matches the ID of the document we are previewing.
+  const complicatedMerge = ({ staticData, previewData, key }) => {
+    const { data: previewDocData, id: previewId } = previewData[key]
+
+    function handleNode(node) {
+      if (
+        isPlainObject(node) &&
+        node.hasOwnProperty('id') &&
+        node.id === previewId
+      ) {
+        this.update(
+          merge(node, {
+            data: previewDocData,
+          }),
+        )
+      }
+    }
+
+    return traverse(staticData).map(handleNode)
+  }
+
+  // Merges two prismic objects whose custom types are the same.
+  const mergeStaticData = () => {
+    const previewKey = head(Object.keys(previewData))
+
+    if (!staticData.hasOwnProperty(previewKey))
+      return complicatedMerge({ staticData, previewData, key: previewKey })
+
+    // otherwise, just do a simple top level merge.
+    return merge(staticData, previewData)
+  }
+
+  const [mergedData] = useState(() =>
+    previewData ? mergeStaticData() : staticData,
+  )
+
+  return mergedData
 }

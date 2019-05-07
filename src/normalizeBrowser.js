@@ -42,6 +42,7 @@ const normalizeLinkField = async args => {
         const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
         const api = await Prismic.api(apiEndpoint, { accessToken })
         const node = await api.getByID(value.id, { fetchLinks })
+
         node.data = await normalizeBrowserFields({
           ...args,
           value: node.data,

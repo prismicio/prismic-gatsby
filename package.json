@@ -35,7 +35,8 @@
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^1.1.5",
     "qs": "^6.7.0",
-    "ramda": "^0.26.1"
+    "ramda": "^0.26.1",
+    "traverse": "^0.6.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
