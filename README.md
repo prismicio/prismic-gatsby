@@ -24,6 +24,7 @@ repositories.
     - [API](#api)
     - [Gotchas](#gotchas)
       - [Images](#images)
+  - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
   - [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
 ## Features
@@ -549,6 +550,10 @@ Accepts the following parameters via an object:
 Since data normalization happens at run-time, we cannot perform the same image optimizations that we do at build-time. Instead, `usePrismicPreview()` returns the `url` field for an image.
 
 > ⚛️ A smart image component that conditionally uses `url` or `gatsby-image` data is recommended for preview parity.
+
+## mergePrismicPreviewData()
+
+A helper function for merging data from Gatsby's graphQL schema and normalized responses from `usePrismicPreview`. An example is shown below:
 
 ## Site's `gatsby-node.js` example
 

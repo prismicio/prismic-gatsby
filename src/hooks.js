@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
-import { merge, head, isPlainObject, has, camelCase } from 'lodash-es'
 import Prismic from 'prismic-javascript'
 import { set as setCookie } from 'es-cookie'
 import traverse from 'traverse'
+import { merge, compose, head, keys, has, isPlainObject } from 'lodash/fp'
+import camelCase from 'camelcase'
 
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
@@ -25,6 +26,7 @@ export const usePrismicPreview = ({
     path: null,
   })
 
+  // Fetches raw preview data directly from Prismic via ID.
   const fetchRawPreviewData = useCallback(
     async id => {
       const api = await Prismic.getApi(apiEndpoint, { accessToken })
@@ -34,6 +36,7 @@ export const usePrismicPreview = ({
     [accessToken, apiEndpoint, fetchLinks],
   )
 
+  // Normalizes preview data using browser-compatible normalize functions.
   const normalizePreviewData = useCallback(
     async rawPreviewData => {
       const Node = createNodeFactory(rawPreviewData.type, async node => {
@@ -62,21 +65,23 @@ export const usePrismicPreview = ({
     [accessToken, fetchLinks, htmlSerializer, linkResolver, repositoryName],
   )
 
+  // Fetches and normalizes preview data from Prismic.
   const asyncEffect = useCallback(async () => {
     const searchParams = new URLSearchParams(location.search)
     const token = searchParams.get('token')
     const docID = searchParams.get('documentId')
 
-    setCookie(Prismic.previewCookie, token) // TODO: write why
+    // Required to send preview cookie on all API requests on future routes.
+    setCookie(Prismic.previewCookie, token)
 
     const rawPreviewData = await fetchRawPreviewData(docID)
-    const resolvedPath = linkResolver(rawPreviewData)
+    const path = linkResolver(rawPreviewData)
 
-    const data = await normalizePreviewData(rawPreviewData)
+    const previewData = await normalizePreviewData(rawPreviewData)
 
     setState({
-      path: resolvedPath,
-      previewData: data,
+      path,
+      previewData,
     })
   }, [fetchRawPreviewData, linkResolver, location.search, normalizePreviewData])
 
@@ -84,20 +89,19 @@ export const usePrismicPreview = ({
     asyncEffect()
   }, [])
 
-  return { previewData: state.previewData, path: state.path }
+  return state
 }
 
-// Helper function that merges gatsby's static data with normalized preview data.
-// If the custom types are the same, just do a simple recursive merge.
-// If the custom types are different, we need to recursively replace
-// any document in the static data with the preview document by
-// comparing IDs.
+// Helper function that merges Gatsby's static data with normalized preview data.
+// If the custom types are the same, deep merge with static data.
+// If the custom types are different, deeply replace any document in the static
+// data that matches the preview document's ID.
 export const mergePrismicPreviewData = ({ staticData, previewData }) => {
-  const complicatedMerge = ({ staticData, previewData, key }) => {
+  const traversalMerge = ({ staticData, previewData, key }) => {
     const { data: previewDocData, id: previewId } = previewData[key]
 
     function handleNode(node) {
-      if (isPlainObject(node) && has(node, 'id') && node.id === previewId) {
+      if (isPlainObject(node) && has('id', node) && node.id === previewId) {
         this.update(
           merge(node, {
             data: previewDocData,
@@ -109,14 +113,17 @@ export const mergePrismicPreviewData = ({ staticData, previewData }) => {
     return traverse(staticData).map(handleNode)
   }
 
-  const mergeStaticData = () => {
-    const previewKey = head(Object.keys(previewData))
+  const mergeStaticData = (staticData, previewData) => {
+    const previewKey = compose(
+      head,
+      keys,
+    )(previewData)
 
-    if (!has(staticData, previewKey))
-      return complicatedMerge({ staticData, previewData, key: previewKey })
+    if (!has(previewKey, staticData))
+      return traversalMerge({ staticData, previewData, key: previewKey })
 
     return merge(staticData, previewData)
   }
 
-  return previewData ? mergeStaticData() : staticData
+  return previewData ? mergeStaticData(staticData, previewData) : staticData
 }
