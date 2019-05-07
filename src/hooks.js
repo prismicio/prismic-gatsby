@@ -12,7 +12,7 @@ import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 // the Prismic API. The normalized data object's shape is identical to the shape
 // created by Gatsby at build time minus image processing due to running in the
 // browser. Instead, image nodes return their source URL.
-export const useNewPreview = ({
+export const usePrismicPreview = ({
   location,
   linkResolver = () => {},
   htmlSerializer = () => {},
@@ -88,7 +88,7 @@ export const useNewPreview = ({
   return { previewData, path }
 }
 
-export const usePreviewData = ({ staticData, location }) => {
+export const mergePrismicPreviewData = ({ staticData, location }) => {
   const previewData = has(location, 'state.previewData')
     ? JSON.parse(location.state.previewData)
     : null
@@ -126,9 +126,5 @@ export const usePreviewData = ({ staticData, location }) => {
     return merge(staticData, previewData)
   }
 
-  const [mergedData] = useState(() =>
-    previewData ? mergeStaticData() : staticData,
-  )
-
-  return mergedData
+  return previewData ? mergeStaticData() : staticData
 }

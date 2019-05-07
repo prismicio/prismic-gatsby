@@ -1,1 +1,1 @@
-export { useNewPreview, usePreviewData } from './hooks'
+export { usePrismicPreview, mergePrismicPreviewData } from './hooks'
