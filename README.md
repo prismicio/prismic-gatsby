@@ -19,11 +19,11 @@ repositories.
     - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
     - [Image processing](#image-processing)
 - [Prismic Previews](#prismic-previews)
-    - [usePrismicPreview()](#useprismicpreview)
-    - [Return Value](#return-value)
-    - [API](#api)
-    - [Gotchas](#gotchas)
-      - [Images](#images)
+  - [usePrismicPreview()](#useprismicpreview)
+  - [Return Value](#return-value)
+  - [API](#api)
+  - [Gotchas](#gotchas)
+    - [Images](#images)
   - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
   - [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
@@ -127,8 +127,8 @@ plugins: [
 ## Providing JSON schemas
 
 When querying for data in Gatsby via GraphQL, the list of available fields is
-dependent on the data provided to Gatsby. By default, this plugin pulls all
-data from Prismic, performs convenient transformations like HTML and link
+dependent on the data provided to Gatsby. By default, this plugin pulls all data
+from Prismic, performs convenient transformations like HTML and link
 conversions, and injects it directly into Gatsby.
 
 For most cases, this works, but there are times when a field will exist in
@@ -308,9 +308,9 @@ the `document` field. The resolved URL to the document using the official
 site's `gatsby-node.js` is also provided at the `url` field.
 
 **Note**: Data within the `document` field is wrapped in an array. Due to the
-method in which Gatsby processes one-to-one node relationships, this
-work-around is necessary to ensure the field can accommodate different content
-types. This may be fixed in a later Gatsby relase.
+method in which Gatsby processes one-to-one node relationships, this work-around
+is necessary to ensure the field can accommodate different content types. This
+may be fixed in a later Gatsby relase.
 
 Querying data on the `document` field is handled the same as querying slices.
 Please read the [Query slices](#query-slices) section for details.
@@ -347,9 +347,9 @@ using the `raw` field, though use of this field is discouraged.
 
 ### Query slices
 
-Prismic slices allow you to build a flexible series of content blocks. Since
-the content structure is dynamic, querying the content is handled differently
-than other fields.
+Prismic slices allow you to build a flexible series of content blocks. Since the
+content structure is dynamic, querying the content is handled differently than
+other fields.
 
 To access slice fields, you need to use GraphQL [inline
 fragments][graphql-inline-fragments]. This requires you to know types of nodes.
@@ -418,8 +418,8 @@ If you find you cannot query the data you need through the GraphQL interface,
 you can get the raw response from the [prismic-javascript][prismic-javascript]
 API using the `dataString` field.
 
-This field contains the whole node's original data before processing as a
-string generated using `JSON.stringify`.
+This field contains the whole node's original data before processing as a string
+generated using `JSON.stringify`.
 
 This is absolutely discouraged as it defeats the purpose of Gatsby's GraphQL
 data interface, but it is available if necessary
@@ -527,33 +527,86 @@ const PreviewPage = ({ location }) => {
 
 Returns an object with the following keys:
 
-- `previewData`: An object with the same key-value shape that `gatsby-source-prismic` generates at build time, so it can be provided to templates & pages directly.
-- `path`: A string of the resolved path for the previewed Prismic doc. This is determined via the provided `linkResolver`.
+- `previewData`: An object with the same key-value shape that
+  `gatsby-source-prismic` generates at build time, so it can be provided to
+  templates & pages directly.
+- `path`: A string of the resolved path for the previewed Prismic doc. This is
+  determined via the provided `linkResolver`.
+- `isInvalid`: A boolean that indicates that a bad token or document ID was
+  resolved from `location`. Is usually only true if a client manually navigates
+  to your preview resolver page.
 
 ### API
 
 Accepts the following parameters via an object:
 
-- `location`: **Required**. The location object from `@reach/router`. This is used to read the preview token and doc ID from Prismic to send a preview request.
-- `linkResolver`: **Required**. `usePrismicPreview()` uses this link resolver function to determine the `path` of the previewed doc.
-- `htmlSerializer`: Function that maps rich text fields to HTML. Should be the same function provided to the plugin configuration.
+- `location`: **Required**. The location object from `@reach/router`. This is
+  used to read the preview token and doc ID from Prismic to send a preview
+  request.
+- `linkResolver`: **Required**. `usePrismicPreview()` uses this link resolver
+  function to determine the `path` of the previewed doc.
+- `htmlSerializer`: Function that maps rich text fields to HTML. Should be the
+  same function provided to the plugin configuration.
 - `fetchLinks`: A list of links to fetch for the previewed document.
 - `repositoryName`: Your Prismic repository name.
 - `accessToken`: Your prismic access token.
 
-> ⚠️ Since preview API requests are made in the browser, your access token will be exposed to the client.
+> ⚠️ Since preview API requests are made in the browser, your access token will
+> be exposed to the client.
 
 ### Gotchas
 
-#### Images 
+#### Images
 
-Since data normalization happens at run-time, we cannot perform the same image optimizations that we do at build-time. Instead, `usePrismicPreview()` returns the `url` field for an image.
+Since data normalization happens at run-time, we cannot perform the same image
+optimizations that we do at build-time. Instead, `usePrismicPreview()` returns
+the `url` field for an image.
 
-> ⚛️ A smart image component that conditionally uses `url` or `gatsby-image` data is recommended for preview parity.
+> ⚛️ A smart image component that conditionally uses `url` or `gatsby-image`
+> data is recommended for preview parity.
 
 ## mergePrismicPreviewData()
 
-A helper function for merging data from Gatsby's graphQL schema and normalized responses from `usePrismicPreview`. An example is shown below:
+A helper function for merging data from Gatsby's graphQL schema and normalized
+responses from `usePrismicPreview`. An example is shown below:
+
+```jsx
+import { mergePrismicPreviewData } from 'gatsby-source-prismic'
+
+export const PageTemplate = ({ data }) => {
+  const mergedData = mergePrismicPreviewData({ staticData: data, previewData }) // previewData comes from usePrismicPreview()
+
+  return <Layout>{/* Do stuff with mergedData */}</Layout>
+}
+```
+
+`mergePrismicPreviewData` is useful when your template components need to use
+data from Prismic that isn't directly coming from the previewed document's
+Prismic ID. This allows us to show fresh preview data for the previewed
+document, but fallback to static graphQL data from Gatsby such as those from
+`allPrismicX` queries.
+
+### Return Value
+
+Returns a deeply merged object containing the key-value pairs from `staticData`
+and `previewData`. If a key between the two objects are shared, values from
+`previewData` are used.
+
+#### If the custom type of the previewed document and the template are different:
+
+Returns a new object by deeply traversing `staticData` and replacing any
+document links of the previewed document's ID with the preview document. This is
+useful for previewing custom-types that would only be displayed via
+`allPrismicX` like in a gallery, etc.
+
+### API
+
+Accepts the following parameters via an object:
+
+- `staticData`. **Required**. Static data from a page's GraphQL query. If
+  `staticData` is falsey, `mergePrismicPreviewData` will return `undefined`.
+- `previewData`. Preview data from `usePrismicPreview()`. If `previewData` is
+  falsey, `mergePrismicPreview` will return `staticData` as is.
 
 ## Site's `gatsby-node.js` example
 
@@ -598,7 +651,10 @@ exports.createPages = async ({ graphql, actions }) => {
 [prismic]: https://prismic.io/
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
-[prismic-version-custom-types]: https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
+[prismic-version-custom-types]:
+  https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
-[gatsby-plugin-sharp]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
-[gatsby-image-fragments]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
+[gatsby-plugin-sharp]:
+  https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
+[gatsby-image-fragments]:
+  https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp

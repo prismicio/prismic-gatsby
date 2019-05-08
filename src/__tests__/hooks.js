@@ -6,6 +6,9 @@ import { mergePrismicPreviewData, usePrismicPreview } from '../hooks'
 jest.mock('prismic-javascript')
 beforeEach(() => (console.error = jest.fn()))
 afterEach(() => console.error.mockClear())
+const mockURLSearchParams = jest
+  .spyOn(URLSearchParams.prototype, 'get')
+  .mockImplementation(key => key)
 
 describe('mergePrismicPreviewData', () => {
   test('returns undefined if staticData is falsey', () => {
@@ -124,6 +127,38 @@ describe('mergePrismicPreviewData', () => {
 })
 
 describe('usePrismicPreview', () => {
+  beforeEach(() => {
+    const api = {
+      getByID: async () => ({
+        id: 'XFyxoxAAACQAIqnY',
+        uid: 'test',
+        type: 'page',
+        data: {
+          title: [{ type: 'heading1', text: 'Test', spans: [] }],
+        },
+        body: [
+          {
+            slice_type: 'description',
+            slice_label: null,
+            items: [{}],
+            primary: {
+              heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
+              text: [
+                {
+                  type: 'paragraph',
+                  text: 'Copy Text.',
+                  spans: [],
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    }
+    Prismic.getApi.mockResolvedValue(api)
+  })
+  afterEach(() => Prismic.getApi.mockClear())
+
   test('throws error if location is falsey', () => {
     const { result } = renderHook(() =>
       usePrismicPreview({
@@ -176,36 +211,21 @@ describe('usePrismicPreview', () => {
     expect(result.error.message).toMatch(/invalid hook parameters!/i)
   })
 
-  test('returns normalized preview data from Prismic', async () => {
-    const api = {
-      getByID: async () => ({
-        id: 'XFyxoxAAACQAIqnY',
-        uid: 'test',
-        type: 'page',
-        data: {
-          title: [{ type: 'heading1', text: 'Test', spans: [] }],
-        },
-        body: [
-          {
-            slice_type: 'description',
-            slice_label: null,
-            items: [{}],
-            primary: {
-              heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
-              text: [
-                {
-                  type: 'paragraph',
-                  text: 'Copy Text.',
-                  spans: [],
-                },
-              ],
-            },
-          },
-        ],
+  test('returns path derived from provided linkResolver function', async () => {
+    const { result, waitForNextUpdate } = renderHook(() =>
+      usePrismicPreview({
+        location: {},
+        accessToken: 'token',
+        repositoryName: 'repo',
+        linkResolver: doc => doc.uid,
       }),
-    }
-    Prismic.getApi.mockResolvedValue(api)
+    )
+    await waitForNextUpdate()
 
+    expect(result.current.path).toMatch('test')
+  })
+
+  test('returns normalized preview data from Prismic', async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       usePrismicPreview({
         location: {
@@ -214,10 +234,9 @@ describe('usePrismicPreview', () => {
         },
         accessToken: 'token',
         repositoryName: 'repo',
-        linkResolver: () => '/',
+        linkResolver: doc => doc.uid,
       }),
     )
-
     await waitForNextUpdate()
 
     expect(result.current.previewData).toMatchObject({
@@ -252,5 +271,22 @@ describe('usePrismicPreview', () => {
         },
       },
     })
+  })
+
+  test('isInvalid state is true when location has no search parameters', () => {
+    mockURLSearchParams.mockRestore()
+
+    const { result } = renderHook(() =>
+      usePrismicPreview({
+        location: {
+          search: 'http://localhost/preview',
+        },
+        accessToken: 'token',
+        repositoryName: 'repo',
+        linkResolver: doc => doc.uid,
+      }),
+    )
+
+    expect(result.current.isInvalid).toBe(true)
   })
 })
