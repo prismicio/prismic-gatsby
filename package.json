@@ -1,14 +1,18 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "2.3.0-previews.11",
+  "version": "2.3.0-beta.0",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
   "scripts": {
+    "build": "NODE_ENV=production rollup -c",
+    "build:watch": "npm run build -- --watch",
+    "format": "prettier --write 'src/**/*.js' 'rollup.config.js' 'README.md'",
+    "prebuild": "rimraf dist",
     "prepublish": "npm run build",
-    "build": "babel src --ignore 'src/__tests__/**/*.js' --out-dir dist",
-    "format": "prettier --trailing-comma all --no-semi --single-quote --write 'src/**/*.js'",
+    "release": "standard-version",
     "test": "jest",
-    "test:watch": "npm run test -- --watch",
-    "watch": "npm run build -- -w"
+    "test:watch": "npm run test -- --watch"
   },
   "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
   "repository": {
@@ -18,7 +22,8 @@
   "keywords": [
     "gatsby",
     "gatsby-plugin",
-    "gatsby-source-plugin"
+    "gatsby-source-plugin",
+    "prismic"
   ],
   "author": "Angelo Ashmore <angelo.ashmore@walltowall.com>",
   "license": "MIT",
@@ -37,11 +42,12 @@
     "traverse": "^0.6.6"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
     "@babel/plugin-transform-async-to-generator": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
+    "@commitlint/cli": "^7.6.0",
+    "@commitlint/config-conventional": "^7.6.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.1.0",
@@ -49,13 +55,18 @@
     "eslint": "^5.16.0",
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-react-hooks": "^1.6.0",
+    "husky": "^2.2.0",
     "jest": "^24.1.0",
     "prettier": "^1.16.4",
     "react": "^16.8.6",
     "react-hooks-testing-library": "^0.5.0",
-    "react-test-renderer": "^16.8.6"
+    "react-test-renderer": "^16.8.6",
+    "rollup": "^1.11.3",
+    "rollup-plugin-babel": "^4.3.2",
+    "standard-version": "^6.0.1"
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "gatsby": ">=2.3.0"
   }
 }
