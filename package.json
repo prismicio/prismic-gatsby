@@ -51,7 +51,9 @@
     "eslint-plugin-react-hooks": "^1.6.0",
     "jest": "^24.1.0",
     "prettier": "^1.16.4",
-    "react": "^16.8.6"
+    "react": "^16.8.6",
+    "react-hooks-testing-library": "^0.5.0",
+    "react-test-renderer": "^16.8.6"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

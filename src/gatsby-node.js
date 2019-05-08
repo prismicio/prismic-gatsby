@@ -1,11 +1,11 @@
 import fetchData from './fetch'
 import { normalizeFields } from './normalize'
-import { nodeHelpers, createNodeFactory, generateTypeName } from './nodeHelpers'
+import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 import { createTemporaryMockNodes } from './createTemporaryMockNodes'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const { actions, createNodeId, store, cache } = gatsbyContext
-  const { createNode, touchNode, deleteNode } = actions
+  const { createNode, touchNode } = actions
   const {
     repositoryName,
     accessToken,

@@ -11,7 +11,7 @@ test('parse schema from provided JSON', () => {
 
   const mockedSchema = easygraphqlMock(printedSchema)
 
-  console.log(printedSchema)
+  // console.log(printedSchema)
 
   // console.log(util.inspect(printedSchema, false, null, true))
 })

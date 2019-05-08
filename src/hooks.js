@@ -1,9 +1,17 @@
 import { useEffect, useState, useCallback } from 'react'
-import Prismic from 'prismic-javascript'
+import {
+  merge,
+  compose,
+  head,
+  keys,
+  has,
+  isPlainObject,
+  isFunction,
+  camelCase,
+} from 'lodash/fp'
 import { set as setCookie } from 'es-cookie'
+import Prismic from 'prismic-javascript'
 import traverse from 'traverse'
-import { merge, compose, head, keys, has, isPlainObject } from 'lodash/fp'
-import camelCase from 'camelcase'
 
 import { normalizeBrowserFields } from './normalizeBrowser'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
@@ -20,10 +28,20 @@ export const usePrismicPreview = ({
   accessToken,
   repositoryName,
 }) => {
+  if (
+    !location ||
+    !accessToken ||
+    !repositoryName ||
+    !isPlainObject(location) ||
+    !isFunction(linkResolver)
+  )
+    throw new Error('Invalid hook parameters!. Check hook call.')
+
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
   const [state, setState] = useState({
     previewData: null,
     path: null,
+    isInvalid: false,
   })
 
   // Fetches raw preview data directly from Prismic via ID.
@@ -71,19 +89,34 @@ export const usePrismicPreview = ({
     const token = searchParams.get('token')
     const docID = searchParams.get('documentId')
 
+    if (!token || !docID) {
+      setState({
+        ...state,
+        isInvalid: true,
+      })
+
+      return
+    }
+
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)
 
     const rawPreviewData = await fetchRawPreviewData(docID)
     const path = linkResolver(rawPreviewData)
-
     const previewData = await normalizePreviewData(rawPreviewData)
 
     setState({
+      ...state,
       path,
       previewData,
     })
-  }, [fetchRawPreviewData, linkResolver, location.search, normalizePreviewData])
+  }, [
+    fetchRawPreviewData,
+    linkResolver,
+    location.search,
+    normalizePreviewData,
+    state,
+  ])
 
   useEffect(() => {
     asyncEffect()
@@ -97,6 +130,9 @@ export const usePrismicPreview = ({
 // If the custom types are different, deeply replace any document in the static
 // data that matches the preview document's ID.
 export const mergePrismicPreviewData = ({ staticData, previewData }) => {
+  if (!staticData) return undefined
+  if (!previewData) return staticData
+
   const traversalMerge = ({ staticData, previewData, key }) => {
     const { data: previewDocData, id: previewId } = previewData[key]
 
@@ -125,5 +161,5 @@ export const mergePrismicPreviewData = ({ staticData, previewData }) => {
     return merge(staticData, previewData)
   }
 
-  return previewData ? mergeStaticData(staticData, previewData) : staticData
+  return mergeStaticData(staticData, previewData)
 }
