@@ -504,7 +504,7 @@ To learn more about image processing, check the documentation of
 
 ### usePrismicPreview()
 
-The `usePrismicPreview()` React hook allows for querying and normalizing
+`usePrismicPreview()` is a React hook that allows for querying and normalizing
 responses from Prismic's API. An example is shown below:
 
 ```jsx
@@ -541,8 +541,8 @@ Returns an object with the following keys:
 Accepts the following parameters via an object:
 
 - `location`: **Required**. The location object from `@reach/router`. This is
-  used to read the preview token and doc ID from Prismic to send a preview
-  request.
+  used to read the preview token and the previewed document's ID to send an API
+  request for preview data.
 - `linkResolver`: **Required**. `usePrismicPreview()` uses this link resolver
   function to determine the `path` of the previewed doc.
 - `htmlSerializer`: Function that maps rich text fields to HTML. Should be the
@@ -574,30 +574,30 @@ responses from `usePrismicPreview`. An example is shown below:
 import { mergePrismicPreviewData } from 'gatsby-source-prismic'
 
 export const PageTemplate = ({ data }) => {
-  const mergedData = mergePrismicPreviewData({ staticData: data, previewData }) // previewData comes from usePrismicPreview()
+  // { ... } previewData comes from usePrismicPreview()
+  const mergedData = mergePrismicPreviewData({ staticData: data, previewData })
 
   return <Layout>{/* Do stuff with mergedData */}</Layout>
 }
 ```
 
-`mergePrismicPreviewData` is useful when your template components need to use
-data from Prismic that isn't directly coming from the previewed document's
-Prismic ID. This allows us to show fresh preview data for the previewed
-document, but fallback to static graphQL data from Gatsby such as those from
-`allPrismicX` queries.
+`mergePrismicPreviewData` is useful when your templates need to use data from
+Prismic that isn't directly coming from the previewed document. This allows us
+to show fresh preview data for the previewed document, but fallback to static
+data from Gatsby such as nodes from `allPrismicX` graphQL queries.
 
 ### Return Value
 
-Returns a deeply merged object containing the key-value pairs from `staticData`
-and `previewData`. If a key between the two objects are shared, values from
+Returns a new object by deeply merging the key-value pairs from `staticData` and
+`previewData`. If a key between the two objects are shared, values from
 `previewData` are used.
 
 #### If the custom type of the previewed document and the template are different:
 
 Returns a new object by deeply traversing `staticData` and replacing any
-document links of the previewed document's ID with the preview document. This is
-useful for previewing custom-types that would only be displayed via
-`allPrismicX` like in a gallery, etc.
+document links with the previewed document's ID with `previewData`. This is
+useful for previewing documents whose data would only be shown on a page via
+`allPrismicX` queries.
 
 ### API
 
@@ -607,6 +607,21 @@ Accepts the following parameters via an object:
   `staticData` is falsey, `mergePrismicPreviewData` will return `undefined`.
 - `previewData`. Preview data from `usePrismicPreview()`. If `previewData` is
   falsey, `mergePrismicPreview` will return `staticData` as is.
+
+## In-depth Guide
+
+When creating `gatsby-source-prismic`'s preview API, we wanted to allow
+developers to be able to reuse as much of their existing templates and
+components as possible. In an ideal scenario, these functions should provide
+"drop-in" preview functionality to most sites using `gatsby-source-prismic`
+without needing to specifically configure components to support it.
+
+That being said, there is some recommended setup like creating a preview
+resolver page, handling preview redirect logic, and creating a smart `<Image />`
+component to dynamically handle `gatsby-image` data or Prismic `url`s.
+
+For an in-depth guide on using Prismic previews with `gatsby-source-prismic`,
+please refer to [this guide](https://github.com). _COMING SOON_
 
 # Site's `gatsby-node.js` example
 
