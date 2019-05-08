@@ -608,7 +608,7 @@ Accepts the following parameters via an object:
 - `previewData`. Preview data from `usePrismicPreview()`. If `previewData` is
   falsey, `mergePrismicPreview` will return `staticData` as is.
 
-## Site's `gatsby-node.js` example
+# Site's `gatsby-node.js` example
 
 ```jsx
 const path = require('path')
