@@ -12,17 +12,29 @@ import {
 // Normalizes a rich text field by providing HTML and text versions of the
 // value using `prismic-dom` on the `html` and `text` keys, respectively. The
 // raw value is provided on the `raw` key.
-const normalizeRichTextField = (value, linkResolver, htmlSerializer) => ({
-  html: PrismicDOM.RichText.asHtml(value, linkResolver, htmlSerializer),
-  text: PrismicDOM.RichText.asText(value),
-  raw: value,
-})
+const normalizeRichTextField = args => {
+  const { value, pluginOptions } = args
+  const {
+    linkResolverForField: linkResolver,
+    htmlSerializerForField: htmlSerializer,
+  } = pluginOptions
+
+  return {
+    html: PrismicDOM.RichText.asHtml(value, linkResolver, htmlSerializer),
+    text: PrismicDOM.RichText.asText(value),
+    raw: value,
+  }
+}
 
 // Normalizes a link field by providing a resolved URL using `prismic-dom` on
 // the `url` field. If the value is an external link, the value is provided
 // as-is. If the value is a document link, the document's data is provided on
 // the `document` key.
-const normalizeLinkField = (value, linkResolver, generateNodeId) => {
+const normalizeLinkField = args => {
+  const { value, pluginOptions, nodeHelpers } = args
+  const { linkResolverForField: linkResolver } = pluginOptions
+  const { generateNodeId } = nodeHelpers
+
   switch (value.link_type) {
     case 'Document':
       if (!value.type || !value.id || value.isBroken) return undefined
@@ -52,7 +64,14 @@ const normalizeLinkField = (value, linkResolver, generateNodeId) => {
 // `gatsby-transformer-sharp` and `gatsby-image` integration. The linked node
 // data is provided on the `localFile` key.
 const normalizeImageField = async args => {
-  const { value, createNode, createNodeId, store, cache, touchNode } = args
+  const { value, gatsbyContext } = args
+  const {
+    actions: { createNode, touchNode },
+    createNodeId,
+    store,
+    cache,
+  } = gatsbyContext
+
   const { alt, dimensions, copyright, ...extraFields } = value
   const url = decodeURIComponent(value.url)
 
@@ -113,7 +132,16 @@ const normalizeImageField = async args => {
 // `primary` keys. It creates a node type for each slice type to ensure the
 // slice key can handle multiple (i.e. union) types.
 const normalizeSliceField = async args => {
-  const { key: sliceKey, value: entries, node, nodeHelpers, createNode } = args
+  const {
+    key: sliceKey,
+    value: entries,
+    node,
+    nodeHelpers,
+    gatsbyContext,
+  } = args
+  const {
+    actions: { createNode },
+  } = gatsbyContext
   const { createNodeFactory } = nodeHelpers
 
   const childrenIds = await reduce(
@@ -161,24 +189,18 @@ export const normalizeGroupField = async args =>
 // of it. If the type is not supported or needs no normalizing, it is returned
 // as-is.
 export const normalizeField = async args => {
-  const { key, value, node, nodeHelpers, shouldNormalizeImage } = args
-  let { linkResolver, htmlSerializer } = args
+  const { key, value, node, nodeHelpers, pluginOptions } = args
+  const { linkResolver, htmlSerializer, shouldNormalizeImage } = pluginOptions
   const { generateNodeId } = nodeHelpers
 
-  linkResolver = linkResolver({ node, key, value })
-  htmlSerializer = htmlSerializer({ node, key, value })
+  pluginOptions.linkResolverForField = linkResolver({ node, key, value })
+  pluginOptions.htmlSerializerForField = htmlSerializer({ node, key, value })
 
-  if (isRichTextField(value))
-    return normalizeRichTextField(value, linkResolver, htmlSerializer)
+  if (isRichTextField(value)) return normalizeRichTextField(args)
 
-  if (isLinkField(value))
-    return normalizeLinkField(value, linkResolver, generateNodeId)
+  if (isLinkField(value)) return normalizeLinkField(args)
 
-  if (
-    isImageField(value) &&
-    typeof shouldNormalizeImage === 'function' &&
-    shouldNormalizeImage({ node, key, value })
-  )
+  if (isImageField(value) && shouldNormalizeImage({ node, key, value }))
     return await normalizeImageField(args)
 
   if (isSliceField(value)) return await normalizeSliceField(args)
