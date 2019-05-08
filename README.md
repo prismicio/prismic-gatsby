@@ -25,7 +25,8 @@ repositories.
   - [Gotchas](#gotchas)
     - [Images](#images)
   - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
-  - [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
+  - [In Depth Guide](#in-depth-guide)
+- [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
 ## Features
 
