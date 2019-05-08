@@ -89,14 +89,14 @@ export const usePrismicPreview = ({
     const token = searchParams.get('token')
     const docID = searchParams.get('documentId')
 
-    if (!token || !docID) {
+    /* if (!token || !docID) {
       setState({
         ...state,
         isInvalid: true,
       })
 
       return
-    }
+    } */
 
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)

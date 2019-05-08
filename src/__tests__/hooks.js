@@ -253,6 +253,4 @@ describe('usePrismicPreview', () => {
       },
     })
   })
-
-  test
 })
