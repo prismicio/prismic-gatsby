@@ -2,8 +2,8 @@
   "name": "gatsby-source-prismic",
   "version": "2.3.0-beta.0",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "index.cjs.js",
+  "module": "index.esm.js",
   "scripts": {
     "build": "NODE_ENV=production rollup -c",
     "build:watch": "npm run build -- --watch",
@@ -43,8 +43,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
-    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
-    "@babel/plugin-transform-async-to-generator": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
     "@commitlint/cli": "^7.6.0",
     "@commitlint/config-conventional": "^7.6.0",
@@ -66,7 +64,7 @@
     "standard-version": "^6.0.1"
   },
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "gatsby": ">=2.3.0"
+    "gatsby": ">=2.3.0",
+    "react": ">=16.8.0"
   }
 }

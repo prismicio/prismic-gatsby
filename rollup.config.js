@@ -18,8 +18,8 @@ export default [
   {
     input: 'src/index.js',
     output: [
-      { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'es' },
+      { file: 'dist/index.cjs.js', format: 'cjs' },
+      { file: 'dist/index.esm.js', format: 'es' },
     ],
     external: externalPkgs,
     plugins: [babel()],
