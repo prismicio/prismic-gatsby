@@ -1,18 +1,24 @@
+import * as R from 'ramda'
+
 import fetchData from './fetch'
 import { normalizeFields } from './normalize'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
-import { createTemporaryMockNodes } from './createTemporaryMockNodes'
+import {
+  generateTypeDefsForCustomType,
+  generateTypeDefsForLinkType,
+  prismicTypeDefs,
+} from './generateTypeDefsForCustomType'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
     schema,
-    actions: { createNode },
+    actions: { createNode, createTypes },
   } = gatsbyContext
 
   // Set default plugin options.
   pluginOptions = {
-    linkResolver: () => undefined,
-    htmlSerializer: () => undefined,
+    linkResolver: () => {},
+    htmlSerializer: () => {},
     fetchLinks: [],
     schemas: {},
     lang: '*',
@@ -28,10 +34,18 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     schemas,
   } = pluginOptions
 
-  await createTemporaryMockNodes({
-    schemas,
-    gatsbyContext,
-  })
+  const typeDefs = R.pipe(
+    R.mapObjIndexed((customTypeJson, customTypeId) =>
+      generateTypeDefsForCustomType(customTypeId, customTypeJson, schema),
+    ),
+    R.values,
+    R.flatten,
+  )(schemas)
+  const linkTypeDefs = generateTypeDefsForLinkType(typeDefs, schema)
+
+  createTypes(prismicTypeDefs)
+  createTypes(linkTypeDefs)
+  createTypes(typeDefs)
 
   const { documents } = await fetchData({
     repositoryName,
@@ -62,10 +76,4 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   await Promise.all(promises)
 
   return
-}
-
-export const onPreExtractQueries = async (gatsbyContext, pluginOptions) => {
-  const { schemas = {} } = pluginOptions
-
-  await createTemporaryMockNodes({ schemas, gatsbyContext })
 }

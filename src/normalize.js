@@ -7,7 +7,7 @@ import {
   isImageField,
   isSliceField,
   isGroupField,
-} from './validations'
+} from './detectors'
 
 // Normalizes a rich text field by providing HTML and text versions of the
 // value using `prismic-dom` on the `html` and `text` keys, respectively. The

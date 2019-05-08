@@ -7,7 +7,7 @@ import {
   isImageField,
   isSliceField,
   isGroupField,
-} from './validations'
+} from './detectors'
 
 // 'store' acts as a cache when we are recursively retrieving documents from
 // Prismic's API. Using Map() combined with Proxy() allows for lazy
