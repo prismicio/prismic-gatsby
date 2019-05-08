@@ -1,21 +1,51 @@
+import * as R from 'ramda'
+
 import fetchData from './fetch'
 import { normalizeFields } from './normalize'
-import { nodeHelpers, createNodeFactory, generateTypeName } from './nodeHelpers'
-import { createTemporaryMockNodes } from './createTemporaryMockNodes'
+import { nodeHelpers, createNodeFactory } from './nodeHelpers'
+import {
+  generateTypeDefsForCustomType,
+  generateTypeDefsForLinkType,
+  prismicTypeDefs,
+} from './generateTypeDefsForCustomType'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
-  const { actions, createNodeId, store, cache } = gatsbyContext
-  const { createNode, touchNode, deleteNode } = actions
+  const {
+    schema,
+    actions: { createNode, createTypes },
+  } = gatsbyContext
+
+  // Set default plugin options.
+  pluginOptions = {
+    linkResolver: () => {},
+    htmlSerializer: () => {},
+    fetchLinks: [],
+    schemas: {},
+    lang: '*',
+    shouldNormalizeImage: () => true,
+    ...pluginOptions,
+  }
+
   const {
     repositoryName,
     accessToken,
-    linkResolver = () => {},
-    htmlSerializer = () => {},
-    fetchLinks = [],
-    lang = '*',
-    shouldNormalizeImage = () => true,
+    fetchLinks,
+    lang,
     schemas,
   } = pluginOptions
+
+  const typeDefs = R.pipe(
+    R.mapObjIndexed((customTypeJson, customTypeId) =>
+      generateTypeDefsForCustomType(customTypeId, customTypeJson, schema),
+    ),
+    R.values,
+    R.flatten,
+  )(schemas)
+  const linkTypeDefs = generateTypeDefsForLinkType(typeDefs, schema)
+
+  createTypes(prismicTypeDefs)
+  createTypes(linkTypeDefs)
+  createTypes(typeDefs)
 
   const { documents } = await fetchData({
     repositoryName,
@@ -24,42 +54,26 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     lang,
   })
 
-  await createTemporaryMockNodes({
-    schemas,
-    gatsbyContext,
-  })
-
-  await Promise.all(
-    documents.map(async doc => {
-      const Node = createNodeFactory(doc.type, async node => {
-        node.dataString = JSON.stringify(node.data)
-        node.data = await normalizeFields({
-          value: node.data,
-          node,
-          linkResolver,
-          htmlSerializer,
-          nodeHelpers,
-          createNode,
-          createNodeId,
-          touchNode,
-          store,
-          cache,
-          shouldNormalizeImage,
-        })
-
-        return node
+  const promises = documents.map(async doc => {
+    const Node = createNodeFactory(doc.type, async node => {
+      node.dataString = JSON.stringify(node.data)
+      node.data = await normalizeFields({
+        value: node.data,
+        node,
+        gatsbyContext,
+        pluginOptions,
+        nodeHelpers,
       })
 
-      const node = await Node(doc)
-      createNode(node)
-    }),
-  )
+      return node
+    })
+
+    const node = await Node(doc)
+
+    createNode(node)
+  })
+
+  await Promise.all(promises)
 
   return
-}
-
-export const onPreExtractQueries = async (gatsbyContext, pluginOptions) => {
-  const { schemas } = pluginOptions
-
-  await createTemporaryMockNodes({ schemas, gatsbyContext })
 }

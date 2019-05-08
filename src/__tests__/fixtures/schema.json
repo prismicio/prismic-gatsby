@@ -1,158 +1,158 @@
 {
-  "Main" : {
-    "uid" : {
-      "type" : "UID",
-      "config" : {
-        "label" : "UID"
+  "Main": {
+    "uid": {
+      "type": "UID",
+      "config": {
+        "label": "UID"
       }
     },
-    "title" : {
-      "type" : "StructuredText",
-      "config" : {
-        "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
-        "label" : "Title"
+    "title": {
+      "type": "StructuredText",
+      "config": {
+        "single": "heading1, heading2, heading3, heading4, heading5, heading6",
+        "label": "Title"
       }
     },
-    "rich_text" : {
-      "type" : "StructuredText",
-      "config" : {
-        "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
-        "label" : "Rich Text"
+    "rich_text": {
+      "type": "StructuredText",
+      "config": {
+        "multi": "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+        "label": "Rich Text"
       }
     },
-    "image" : {
-      "type" : "Image",
-      "config" : {
-        "constraint" : { },
-        "thumbnails" : [ ],
-        "label" : "Image"
+    "image": {
+      "type": "Image",
+      "config": {
+        "constraint": {},
+        "thumbnails": [],
+        "label": "Image"
       }
     },
-    "content_relationship" : {
-      "type" : "Link",
-      "config" : {
-        "select" : "document",
-        "label" : "Content Relationship"
+    "content_relationship": {
+      "type": "Link",
+      "config": {
+        "select": "document",
+        "label": "Content Relationship"
       }
     },
-    "link" : {
-      "type" : "Link",
-      "config" : {
-        "label" : "Link"
+    "link": {
+      "type": "Link",
+      "config": {
+        "label": "Link"
       }
     },
-    "link_to_media" : {
-      "type" : "Link",
-      "config" : {
-        "select" : "media",
-        "label" : "Link to Media"
+    "link_to_media": {
+      "type": "Link",
+      "config": {
+        "select": "media",
+        "label": "Link to Media"
       }
     },
-    "date" : {
-      "type" : "Date",
-      "config" : {
-        "label" : "Date"
+    "date": {
+      "type": "Date",
+      "config": {
+        "label": "Date"
       }
     },
-    "timestamp" : {
-      "type" : "Timestamp",
-      "config" : {
-        "label" : "Timestamp"
+    "timestamp": {
+      "type": "Timestamp",
+      "config": {
+        "label": "Timestamp"
       }
     },
-    "color" : {
-      "type" : "Color",
-      "config" : {
-        "label" : "Color"
+    "color": {
+      "type": "Color",
+      "config": {
+        "label": "Color"
       }
     },
-    "number" : {
-      "type" : "Number",
-      "config" : {
-        "label" : "Number"
+    "number": {
+      "type": "Number",
+      "config": {
+        "label": "Number"
       }
     },
-    "key_text" : {
-      "type" : "Text",
-      "config" : {
-        "label" : "Key Text"
+    "key_text": {
+      "type": "Text",
+      "config": {
+        "label": "Key Text"
       }
     },
-    "select" : {
-      "type" : "Select",
-      "config" : {
-        "options" : [ ],
-        "label" : "Select"
+    "select": {
+      "type": "Select",
+      "config": {
+        "options": [],
+        "label": "Select"
       }
     },
-    "embed" : {
-      "type" : "Embed",
-      "config" : {
-        "label" : "Embed"
+    "embed": {
+      "type": "Embed",
+      "config": {
+        "label": "Embed"
       }
     },
-    "geopoint" : {
-      "type" : "GeoPoint",
-      "config" : {
-        "label" : "GeoPoint"
+    "geopoint": {
+      "type": "GeoPoint",
+      "config": {
+        "label": "GeoPoint"
       }
     },
-    "group" : {
-      "type" : "Group",
-      "config" : {
-        "fields" : {
-          "image_for_group" : {
-            "type" : "Image",
-            "config" : {
-              "constraint" : { },
-              "thumbnails" : [ ],
-              "label" : "Image for Group"
+    "group": {
+      "type": "Group",
+      "config": {
+        "fields": {
+          "image_for_group": {
+            "type": "Image",
+            "config": {
+              "constraint": {},
+              "thumbnails": [],
+              "label": "Image for Group"
             }
           },
-          "title_for_group" : {
-            "type" : "StructuredText",
-            "config" : {
-              "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
-              "label" : "Title for Group"
+          "title_for_group": {
+            "type": "StructuredText",
+            "config": {
+              "single": "heading1, heading2, heading3, heading4, heading5, heading6",
+              "label": "Title for Group"
             }
           },
-          "rich_text_for_group" : {
-            "type" : "StructuredText",
-            "config" : {
-              "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
-              "label" : "Rich Text for Group"
+          "rich_text_for_group": {
+            "type": "StructuredText",
+            "config": {
+              "multi": "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+              "label": "Rich Text for Group"
             }
           }
         },
-        "label" : "Group"
+        "label": "Group"
       }
     },
-    "body" : {
-      "type" : "Slices",
-      "fieldset" : "Slice zone",
-      "config" : {
-        "choices" : {
-          "text" : {
-            "type" : "Slice",
-            "fieldset" : "Text",
-            "description" : "Rich Text Section",
-            "icon" : "text_fields",
-            "non-repeat" : {
-              "text" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
-                  "label" : "text",
-                  "placeholder" : "Your content here"
+    "body": {
+      "type": "Slices",
+      "fieldset": "Slice zone",
+      "config": {
+        "choices": {
+          "text": {
+            "type": "Slice",
+            "fieldset": "Text",
+            "description": "Rich Text Section",
+            "icon": "text_fields",
+            "non-repeat": {
+              "text": {
+                "type": "StructuredText",
+                "config": {
+                  "multi": "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+                  "label": "text",
+                  "placeholder": "Your content here"
                 }
               }
             },
-            "repeat" : {
-              "repeatable_title" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
-                  "label" : "Repeatable Title"
+            "repeat": {
+              "repeatable_title": {
+                "type": "StructuredText",
+                "config": {
+                  "single": "heading1, heading2, heading3, heading4, heading5, heading6",
+                  "label": "Repeatable Title"
                 }
               }
             }
@@ -161,55 +161,55 @@
       }
     }
   },
-  "Secondary" : {
-    "title_for_secondary" : {
-      "type" : "StructuredText",
-      "config" : {
-        "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
-        "label" : "Title for Secondary"
+  "Secondary": {
+    "title_for_secondary": {
+      "type": "StructuredText",
+      "config": {
+        "single": "heading1, heading2, heading3, heading4, heading5, heading6",
+        "label": "Title for Secondary"
       }
     },
-    "rich_text_for_secondary" : {
-      "type" : "StructuredText",
-      "config" : {
-        "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
-        "label" : "Rich Text for Secondary"
+    "rich_text_for_secondary": {
+      "type": "StructuredText",
+      "config": {
+        "multi": "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+        "label": "Rich Text for Secondary"
       }
     },
-    "image_for_secondary" : {
-      "type" : "Image",
-      "config" : {
-        "constraint" : { },
-        "thumbnails" : [ ],
-        "label" : "Image for Secondary"
+    "image_for_secondary": {
+      "type": "Image",
+      "config": {
+        "constraint": {},
+        "thumbnails": [],
+        "label": "Image for Secondary"
       }
     },
-    "body1" : {
-      "type" : "Slices",
-      "fieldset" : "Slice zone",
-      "config" : {
-        "choices" : {
-          "text" : {
-            "type" : "Slice",
-            "fieldset" : "Text",
-            "description" : "Rich Text Section",
-            "icon" : "text_fields",
-            "non-repeat" : {
-              "text" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "multi" : "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
-                  "label" : "text",
-                  "placeholder" : "Your content here"
+    "body1": {
+      "type": "Slices",
+      "fieldset": "Slice zone",
+      "config": {
+        "choices": {
+          "text": {
+            "type": "Slice",
+            "fieldset": "Text",
+            "description": "Rich Text Section",
+            "icon": "text_fields",
+            "non-repeat": {
+              "text": {
+                "type": "StructuredText",
+                "config": {
+                  "multi": "paragraph, preformatted, heading1, heading2, heading3, heading4, heading5, heading6, strong, em, hyperlink, image, embed, list-item, o-list-item, o-list-item",
+                  "label": "text",
+                  "placeholder": "Your content here"
                 }
               }
             },
-            "repeat" : {
-              "repeatable_title" : {
-                "type" : "StructuredText",
-                "config" : {
-                  "single" : "heading1, heading2, heading3, heading4, heading5, heading6",
-                  "label" : "Repeatable Title"
+            "repeat": {
+              "repeatable_title": {
+                "type": "StructuredText",
+                "config": {
+                  "single": "heading1, heading2, heading3, heading4, heading5, heading6",
+                  "label": "Repeatable Title"
                 }
               }
             }

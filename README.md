@@ -5,18 +5,27 @@ repositories.
 
 ## Table of Contents
 
-- [Features](#features)
-- [Install](#install)
-- [How to use](#how-to-use)
-- [Providing JSON schemas](#providing-json-schemas)
-- [How to query](#how-to-query)
-  - [Query Rich Text fields](#query-right-text-fields)
-  - [Query Link fields](#query-link-fields)
-  - [Query Content Relation fields](#query-content-relation-fields)
-  - [Query Slices](#query-slices)
-  - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
-  - [Image processing](#image-processing)
-- [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
+- [gatsby-source-prismic](#gatsby-source-prismic)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Install](#install)
+  - [How to use](#how-to-use)
+  - [Providing JSON schemas](#providing-json-schemas)
+  - [How to query](#how-to-query)
+    - [Query Rich Text fields](#query-rich-text-fields)
+    - [Query Link fields](#query-link-fields)
+    - [Query Content Relation fields](#query-content-relation-fields)
+    - [Query slices](#query-slices)
+    - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
+    - [Image processing](#image-processing)
+- [Prismic Previews](#prismic-previews)
+    - [usePrismicPreview()](#useprismicpreview)
+    - [Return Value](#return-value)
+    - [API](#api)
+    - [Gotchas](#gotchas)
+      - [Images](#images)
+  - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
+  - [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
 ## Features
 
@@ -24,6 +33,7 @@ repositories.
 - Supports `gatsby-transformer-sharp` and `gatsby-image` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
+- Supports Prismic previews
 
 ## Install
 
@@ -490,9 +500,64 @@ Full example:
 To learn more about image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
 
+# Prismic Previews
+
+### usePrismicPreview()
+
+The `usePrismicPreview()` React hook allows for querying and normalizing
+responses from Prismic's API. An example is shown below:
+
+```jsx
+import { usePrismicPreview } from 'gatsby-source-prismic'
+
+const PreviewPage = ({ location }) => {
+  const { previewData } = usePrismicPreview({
+    location,
+    linkResolver: doc => doc.uid,
+    fetchLinks: ['page.parent'],
+    repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
+    accessToken: process.env.GATSBY_PRISMIC_ACCESS_TOKEN,
+  })
+
+  return previewData ? <Spinner /> : <PageTemplate data={previewData} />
+}
+```
+
+### Return Value
+
+Returns an object with the following keys:
+
+- `previewData`: An object with the same key-value shape that `gatsby-source-prismic` generates at build time, so it can be provided to templates & pages directly.
+- `path`: A string of the resolved path for the previewed Prismic doc. This is determined via the provided `linkResolver`.
+
+### API
+
+Accepts the following parameters via an object:
+
+- `location`: **Required**. The location object from `@reach/router`. This is used to read the preview token and doc ID from Prismic to send a preview request.
+- `linkResolver`: **Required**. `usePrismicPreview()` uses this link resolver function to determine the `path` of the previewed doc.
+- `htmlSerializer`: Function that maps rich text fields to HTML. Should be the same function provided to the plugin configuration.
+- `fetchLinks`: A list of links to fetch for the previewed document.
+- `repositoryName`: Your Prismic repository name.
+- `accessToken`: Your prismic access token.
+
+> ⚠️ Since preview API requests are made in the browser, your access token will be exposed to the client.
+
+### Gotchas
+
+#### Images 
+
+Since data normalization happens at run-time, we cannot perform the same image optimizations that we do at build-time. Instead, `usePrismicPreview()` returns the `url` field for an image.
+
+> ⚛️ A smart image component that conditionally uses `url` or `gatsby-image` data is recommended for preview parity.
+
+## mergePrismicPreviewData()
+
+A helper function for merging data from Gatsby's graphQL schema and normalized responses from `usePrismicPreview`. An example is shown below:
+
 ## Site's `gatsby-node.js` example
 
-```js
+```jsx
 const path = require('path')
 
 exports.createPages = async ({ graphql, actions }) => {

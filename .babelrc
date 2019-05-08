@@ -1,12 +1,13 @@
 {
   "sourceMaps": true,
+  "plugins": ["lodash"],
   "presets": [
     [
       "@babel/preset-env",
       {
         "targets": {
-          "node": 'current',
-        },
+          "browsers": ["last 2 Chrome versions"]
+        }
       }
     ]
   ]

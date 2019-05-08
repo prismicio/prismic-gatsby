@@ -1,0 +1,128 @@
+[
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeGroup",
+      "fields": {
+        "image_for_group": "PrismicImageType",
+        "rich_text_for_group": "PrismicStructuredTextType",
+        "title_for_group": "PrismicStructuredTextType"
+      }
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeBodyTextItem",
+      "fields": {
+        "repeatable_title": "PrismicStructuredTextType"
+      }
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeBodyTextPrimary",
+      "fields": {
+        "text": "PrismicStructuredTextType"
+      }
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeBodyText",
+      "fields": {
+        "id": "String",
+        "items": "[PrismicMyCustomTypeBodyTextItem]",
+        "primary": "PrismicMyCustomTypeBodyTextPrimary",
+        "slice_type": "String"
+      },
+      "interfaces": ["Node"]
+    }
+  },
+  {
+    "kind": "UNION",
+    "config": {
+      "name": "PrismicMyCustomTypeBodySlices",
+      "types": ["PrismicMyCustomTypeBodyText"]
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeBody1TextItem",
+      "fields": {
+        "repeatable_title": "PrismicStructuredTextType"
+      }
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeBody1TextPrimary",
+      "fields": {
+        "text": "PrismicStructuredTextType"
+      }
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeBody1Text",
+      "fields": {
+        "id": "String",
+        "items": "[PrismicMyCustomTypeBody1TextItem]",
+        "primary": "PrismicMyCustomTypeBody1TextPrimary",
+        "slice_type": "String"
+      },
+      "interfaces": ["Node"]
+    }
+  },
+  {
+    "kind": "UNION",
+    "config": {
+      "name": "PrismicMyCustomTypeBody1Slices",
+      "types": ["PrismicMyCustomTypeBody1Text"]
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomTypeData",
+      "fields": {
+        "body": "[PrismicMyCustomTypeBodySlices]",
+        "body1": "[PrismicMyCustomTypeBody1Slices]",
+        "color": "String",
+        "content_relationship": "PrismicLinkType",
+        "date": "Date",
+        "embed": "PrismicEmbedType",
+        "geopoint": "PrismicGeoPointType",
+        "group": "[PrismicMyCustomTypeGroup]",
+        "image": "PrismicImageType",
+        "image_for_secondary": "PrismicImageType",
+        "key_text": "String",
+        "link": "PrismicLinkType",
+        "link_to_media": "PrismicLinkType",
+        "number": "Float",
+        "rich_text": "PrismicStructuredTextType",
+        "rich_text_for_secondary": "PrismicStructuredTextType",
+        "select": "String",
+        "timestamp": "Date",
+        "title": "PrismicStructuredTextType",
+        "title_for_secondary": "PrismicStructuredTextType"
+      }
+    }
+  },
+  {
+    "kind": "OBJECT",
+    "config": {
+      "name": "PrismicMyCustomType",
+      "fields": {
+        "uid": "String",
+        "data": "PrismicMyCustomTypeData"
+      },
+      "interfaces": ["PrismicDocument", "Node"]
+    }
+  }
+]
