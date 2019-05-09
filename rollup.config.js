@@ -1,4 +1,5 @@
 import babel from 'rollup-plugin-babel'
+import { string } from 'rollup-plugin-string'
 import pkg from './package.json'
 
 const makeExternalPredicate = externalArr => {
@@ -28,6 +29,6 @@ export default [
     input: 'src/gatsby-node.js',
     output: { file: 'dist/gatsby-node.js', format: 'cjs' },
     external: externalPkgs,
-    plugins: [babel()],
+    plugins: [babel(), string({ include: '**/*.graphql' })],
   },
 ]

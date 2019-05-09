@@ -5,15 +5,10 @@ import PrismicDOM from 'prismic-dom'
 
 import { generateTypeName, generateNodeId } from './nodeHelpers'
 
-export const resolvePathToArray = pathNode => {
-  if (typeof pathNode.prev === 'undefined') return [pathNode.key]
-  return [...resolvePathToArray(pathNode.prev), pathNode.key]
-}
-
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
 // provided queue to be created at a later time.
-const fieldToTypeName = args => {
+const fieldToType = args => {
   const {
     id,
     field,
@@ -36,14 +31,19 @@ const fieldToTypeName = args => {
     case 'StructuredText':
       return {
         type: 'PrismicStructuredTextType',
-        resolve: parent => ({
-          html: PrismicDOM.RichText.asHtml(
-            parent[id],
-            linkResolver,
-            htmlSerializer,
-          ),
-          text: PrismicDOM.RichText.asText(parent[id]),
-        }),
+        resolve: (parent, args, context, info) => {
+          const key = info.path.key
+          const value = parent[key]
+
+          return {
+            html: PrismicDOM.RichText.asHtml(
+              value,
+              linkResolver({ key, value }),
+              htmlSerializer({ key, value }),
+            ),
+            text: PrismicDOM.RichText.asText(value),
+          }
+        },
       }
 
     case 'Number':
@@ -65,13 +65,18 @@ const fieldToTypeName = args => {
     case 'Link':
       return {
         type: 'PrismicLinkType',
-        resolve: (parent, args, context) => ({
-          ...parent[id],
-          url: PrismicDOM.Link.url(parent[id], linkResolver()),
-          document: context.nodeModel.getNodeById({
-            id: generateNodeId(parent[id].type, parent[id].id),
-          }),
-        }),
+        resolve: (parent, args, context, info) => {
+          const key = info.path.key
+          const value = parent[key]
+
+          return {
+            ...value,
+            url: PrismicDOM.Link.url(value, linkResolver({ key, value })),
+            document: context.nodeModel.getNodeById({
+              id: generateNodeId(value.type, value.id),
+            }),
+          }
+        },
       }
 
     case 'Group':
@@ -83,7 +88,7 @@ const fieldToTypeName = args => {
           name: groupName,
           fields: R.mapObjIndexed(
             (subfield, subfieldId) =>
-              fieldToTypeName({ ...args, id: subfieldId, field: subfield }),
+              fieldToType({ ...args, id: subfieldId, field: subfield }),
             subfields,
           ),
         }),
@@ -110,7 +115,7 @@ const fieldToTypeName = args => {
             name: primaryName,
             fields: R.mapObjIndexed(
               (primaryField, primaryFieldId) =>
-                fieldToTypeName({
+                fieldToType({
                   ...args,
                   id: primaryFieldId,
                   field: primaryField,
@@ -133,7 +138,7 @@ const fieldToTypeName = args => {
             name: itemsName,
             fields: R.mapObjIndexed(
               (itemField, itemFieldId) =>
-                fieldToTypeName({ ...args, id: itemFieldId, field: itemField }),
+                fieldToType({ ...args, id: itemFieldId, field: itemField }),
               itemsFields,
             ),
           }),
@@ -157,7 +162,7 @@ const fieldToTypeName = args => {
     case 'Slices':
       const choiceTypes = R.pipe(
         R.mapObjIndexed((choice, choiceId) =>
-          fieldToTypeName({
+          fieldToType({
             ...args,
             id: choiceId,
             field: choice,
@@ -178,10 +183,11 @@ const fieldToTypeName = args => {
 
       return {
         type: `[${slicesName}]`,
-        resolve: (parent, args, context) =>
-          context.nodeModel.getNodesByIds({
-            ids: R.pathOr([], ['parent', 'data', id]),
-          }),
+        resolve: (parent, args, context, info) => {
+          return context.nodeModel.getNodesByIds({
+            ids: parent[info.path.key],
+          })
+        },
       }
 
     default:
@@ -201,7 +207,7 @@ export const generateTypeDefsForCustomType = args => {
     R.values,
     R.mergeAll,
     R.mapObjIndexed((field, fieldId) =>
-      fieldToTypeName({
+      fieldToType({
         ...args,
         id: fieldId,
         field,
@@ -234,7 +240,7 @@ export const generateTypeDefsForCustomType = args => {
   return typeDefs
 }
 
-export const generateTypeDefsForLinkType = (allTypeDefs, gatsbySchema) => {
+export const generateTypeDefForLinkType = (allTypeDefs, gatsbySchema) => {
   const documentTypeNames = R.pipe(
     R.filter(
       R.pipe(
@@ -245,77 +251,8 @@ export const generateTypeDefsForLinkType = (allTypeDefs, gatsbySchema) => {
     R.map(R.path(['config', 'name'])),
   )(allTypeDefs)
 
-  return [
-    gatsbySchema.buildUnionType({
-      name: 'PrismicAllDocumentTypes',
-      types: documentTypeNames,
-    }),
-    gatsbySchema.buildObjectType({
-      name: 'PrismicLinkType',
-      fields: {
-        id: 'String',
-        type: 'String',
-        tags: '[String]',
-        slug: 'String',
-        uid: 'String',
-        link_type: 'String',
-        isBroken: 'Boolean',
-        url: 'String',
-        target: 'String',
-        document: 'PrismicAllDocumentTypes',
-      },
-    }),
-  ]
+  return gatsbySchema.buildUnionType({
+    name: 'PrismicAllDocumentTypes',
+    types: documentTypeNames,
+  })
 }
-
-export const prismicTypeDefs = `
-  type PrismicStructuredTextType {
-    html: String
-    text: String
-  }
-
-  type PrismicGeoPointType {
-    latitude: Float
-    longitude: Float
-  }
-
-  type PrismicEmbedType {
-    author_name: String,
-    author_url: String,
-    cache_age: String,
-    embed_url: String,
-    html: String,
-    name: String,
-    provider_name: String,
-    provider_url: String,
-    thumbnail_height: Int,
-    thumbnail_url: String,
-    thumbnail_width: Int,
-    title: String,
-    type: String,
-    version: String,
-  }
-
-  type PrismicImageDimensionsType {
-    width: Int
-    height: Int
-  }
-
-  type PrismicImageType {
-    alt: String
-    copyright: String
-    dimensions: PrismicImageDimensionsType
-    url: String
-  }
-
-  interface PrismicDocument {
-    dataString: String
-    first_publication_date: Date,
-    href: String,
-    id: ID!,
-    lang: String,
-    last_publication_date: Date,
-    # tags: [String],
-    type: String,
-  }
-`

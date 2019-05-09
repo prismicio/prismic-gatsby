@@ -5,9 +5,10 @@ import { normalizeFields } from './normalize'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 import {
   generateTypeDefsForCustomType,
-  generateTypeDefsForLinkType,
-  prismicTypeDefs,
+  generateTypeDefForLinkType,
 } from './generateTypeDefsForCustomType'
+import standardTypes from './standardTypes.graphql'
+// import { documentToNode } from './generateNodes'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
@@ -46,10 +47,10 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     R.values,
     R.flatten,
   )(schemas)
-  const linkTypeDefs = generateTypeDefsForLinkType(typeDefs, schema)
+  const linkTypeDef = generateTypeDefForLinkType(typeDefs, schema)
 
-  createTypes(prismicTypeDefs)
-  createTypes(linkTypeDefs)
+  createTypes(standardTypes)
+  createTypes(linkTypeDef)
   createTypes(typeDefs)
 
   const { documents } = await fetchData({
@@ -58,6 +59,13 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     fetchLinks,
     lang,
   })
+
+  // const nodes = await generateNodes(documents, { gatsbyContext, pluginOptions })
+  // const nodes = documents.map(doc =>
+  //   documentToNode(doc, { gatsbyContext, pluginOptions }),
+  // )
+
+  // nodes.forEach(node => createNode(node))
 
   const promises = documents.map(async doc => {
     const Node = createNodeFactory(doc.type, async node => {

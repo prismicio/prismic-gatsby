@@ -28,7 +28,7 @@ afterEach(() => {
 })
 
 describe('resolvePathToArray', () => {
-  test.only('returns a list of paths', () => {
+  test('returns a list of paths', () => {
     const result = resolvePathToArray({
       key: 'title',
       prev: {
