@@ -1,6 +1,14 @@
+import util from 'util'
 import * as R from 'ramda'
 
-import { generateTypeName } from './nodeHelpers'
+import PrismicDOM from 'prismic-dom'
+
+import { generateTypeName, generateNodeId } from './nodeHelpers'
+
+export const resolvePathToArray = pathNode => {
+  if (typeof pathNode.prev === 'undefined') return [pathNode.key]
+  return [...resolvePathToArray(pathNode.prev), pathNode.key]
+}
 
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
@@ -9,11 +17,14 @@ const fieldToTypeName = args => {
   const {
     id,
     field,
-    context,
     customTypeId,
+    context,
     enqueueTypeDef,
-    gatsbySchema,
+    pluginOptions,
+    gatsbyContext,
   } = args
+  const { schema: gatsbySchema } = gatsbyContext
+  const { linkResolver, htmlSerializer } = pluginOptions
 
   switch (field.type) {
     case 'Color':
@@ -23,7 +34,17 @@ const fieldToTypeName = args => {
       return 'String'
 
     case 'StructuredText':
-      return 'PrismicStructuredTextType'
+      return {
+        type: 'PrismicStructuredTextType',
+        resolve: parent => ({
+          html: PrismicDOM.RichText.asHtml(
+            parent[id],
+            linkResolver,
+            htmlSerializer,
+          ),
+          text: PrismicDOM.RichText.asText(parent[id]),
+        }),
+      }
 
     case 'Number':
       return 'Float'
@@ -42,10 +63,19 @@ const fieldToTypeName = args => {
       return 'PrismicImageType'
 
     case 'Link':
-      return 'PrismicLinkType'
+      return {
+        type: 'PrismicLinkType',
+        resolve: (parent, args, context) => ({
+          ...parent[id],
+          url: PrismicDOM.Link.url(parent[id], linkResolver()),
+          document: context.nodeModel.getNodeById({
+            id: generateNodeId(parent[id].type, parent[id].id),
+          }),
+        }),
+      }
 
     case 'Group':
-      const groupName = generateTypeName(`${customTypeId} ${id}`)
+      const groupName = generateTypeName(`${customTypeId} ${id} Group Type`)
       const subfields = field.config.fields
 
       enqueueTypeDef(
@@ -72,7 +102,7 @@ const fieldToTypeName = args => {
 
       if (primaryFields && !R.isEmpty(primaryFields)) {
         const primaryName = generateTypeName(
-          `${customTypeId} ${sliceZoneId} ${id} Primary`,
+          `${customTypeId} ${sliceZoneId} ${id} Primary Type`,
         )
 
         enqueueTypeDef(
@@ -95,7 +125,7 @@ const fieldToTypeName = args => {
 
       if (itemsFields && !R.isEmpty(itemsFields)) {
         const itemsName = generateTypeName(
-          `${customTypeId} ${sliceZoneId} ${id} Item`,
+          `${customTypeId} ${sliceZoneId} ${id} Item Type`,
         )
 
         enqueueTypeDef(
@@ -137,7 +167,7 @@ const fieldToTypeName = args => {
         R.values,
       )(field.config.choices)
 
-      const slicesName = generateTypeName(`${customTypeId} ${id} Slices`)
+      const slicesName = generateTypeName(`${customTypeId} ${id} Slices Type`)
 
       enqueueTypeDef(
         gatsbySchema.buildUnionType({
@@ -146,7 +176,13 @@ const fieldToTypeName = args => {
         }),
       )
 
-      return `[${slicesName}]`
+      return {
+        type: `[${slicesName}]`,
+        resolve: (parent, args, context) =>
+          context.nodeModel.getNodesByIds({
+            ids: R.pathOr([], ['parent', 'data', id]),
+          }),
+      }
 
     default:
       console.log(`UNPROCESSED FIELD for type "${field.type}"`, id)
@@ -154,11 +190,10 @@ const fieldToTypeName = args => {
   }
 }
 
-export const generateTypeDefsForCustomType = (
-  customTypeId,
-  customTypeJson,
-  gatsbySchema,
-) => {
+export const generateTypeDefsForCustomType = args => {
+  const { customTypeId, customTypeJson, gatsbyContext } = args
+  const { schema: gatsbySchema } = gatsbyContext
+
   const typeDefs = []
   const enqueueTypeDef = typeDef => typeDefs.push(typeDef)
 
@@ -167,12 +202,11 @@ export const generateTypeDefsForCustomType = (
     R.mergeAll,
     R.mapObjIndexed((field, fieldId) =>
       fieldToTypeName({
-        customTypeId,
+        ...args,
         id: fieldId,
         field,
         context: {},
         enqueueTypeDef,
-        gatsbySchema,
       }),
     ),
   )(customTypeJson)
@@ -220,9 +254,14 @@ export const generateTypeDefsForLinkType = (allTypeDefs, gatsbySchema) => {
       name: 'PrismicLinkType',
       fields: {
         id: 'String',
-        // link_type: 'String',
-        // url: String,
-        // target: String,
+        type: 'String',
+        tags: '[String]',
+        slug: 'String',
+        uid: 'String',
+        link_type: 'String',
+        isBroken: 'Boolean',
+        url: 'String',
+        target: 'String',
         document: 'PrismicAllDocumentTypes',
       },
     }),

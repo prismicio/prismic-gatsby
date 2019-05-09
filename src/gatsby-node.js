@@ -36,7 +36,12 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
 
   const typeDefs = R.pipe(
     R.mapObjIndexed((customTypeJson, customTypeId) =>
-      generateTypeDefsForCustomType(customTypeId, customTypeJson, schema),
+      generateTypeDefsForCustomType({
+        customTypeId,
+        customTypeJson,
+        gatsbyContext,
+        pluginOptions,
+      }),
     ),
     R.values,
     R.flatten,

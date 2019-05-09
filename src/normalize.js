@@ -9,56 +9,6 @@ import {
   isGroupField,
 } from './detectors'
 
-// Normalizes a rich text field by providing HTML and text versions of the
-// value using `prismic-dom` on the `html` and `text` keys, respectively. The
-// raw value is provided on the `raw` key.
-const normalizeRichTextField = args => {
-  const { value, pluginOptions } = args
-  const {
-    linkResolverForField: linkResolver,
-    htmlSerializerForField: htmlSerializer,
-  } = pluginOptions
-
-  return {
-    html: PrismicDOM.RichText.asHtml(value, linkResolver, htmlSerializer),
-    text: PrismicDOM.RichText.asText(value),
-    raw: value,
-  }
-}
-
-// Normalizes a link field by providing a resolved URL using `prismic-dom` on
-// the `url` field. If the value is an external link, the value is provided
-// as-is. If the value is a document link, the document's data is provided on
-// the `document` key.
-const normalizeLinkField = args => {
-  const { value, pluginOptions, nodeHelpers } = args
-  const { linkResolverForField: linkResolver } = pluginOptions
-  const { generateNodeId } = nodeHelpers
-
-  switch (value.link_type) {
-    case 'Document':
-      if (!value.type || !value.id || value.isBroken) return undefined
-      return {
-        ...value,
-        document___NODE: [generateNodeId(value.type, value.id)],
-        url: PrismicDOM.Link.url(value, linkResolver),
-        target: value.target || '',
-        raw: value,
-      }
-
-    case 'Media':
-    case 'Web':
-      return {
-        ...value,
-        target: value.target || '',
-        raw: value,
-      }
-
-    default:
-      return undefined
-  }
-}
-
 // Normalizes an Image field by downloading the remote image and creating a
 // File node using `gatsby-source-filesystem`. This allows for
 // `gatsby-transformer-sharp` and `gatsby-image` integration. The linked node
@@ -72,7 +22,12 @@ const normalizeImageField = async args => {
     cache,
   } = gatsbyContext
 
-  const { alt, dimensions, copyright, ...extraFields } = value
+  const {
+    alt: _alt,
+    dimensions: _dimensions,
+    copyright: _copyright,
+    ...extraFields
+  } = value
   const url = decodeURIComponent(value.url)
 
   let fileNodeID
@@ -119,8 +74,6 @@ const normalizeImageField = async args => {
   if (fileNodeID) {
     return {
       ...value,
-      alt: alt || '',
-      copyright: copyright || '',
       localFile___NODE: fileNodeID,
     }
   }
@@ -173,9 +126,7 @@ const normalizeSliceField = async args => {
     [],
   )
 
-  // TODO: Remove hard-coded setter
-  node.data[`${sliceKey}___NODE`] = childrenIds
-  return undefined
+  return childrenIds
 }
 
 // Normalizes a group field by recursively normalizing each entry.
@@ -195,10 +146,6 @@ export const normalizeField = async args => {
 
   pluginOptions.linkResolverForField = linkResolver({ node, key, value })
   pluginOptions.htmlSerializerForField = htmlSerializer({ node, key, value })
-
-  if (isRichTextField(value)) return normalizeRichTextField(args)
-
-  if (isLinkField(value)) return normalizeLinkField(args)
 
   if (isImageField(value) && shouldNormalizeImage({ node, key, value }))
     return await normalizeImageField(args)
