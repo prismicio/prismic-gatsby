@@ -8,7 +8,7 @@ import {
   generateTypeDefForLinkType,
 } from './generateTypeDefsForCustomType'
 import standardTypes from './standardTypes.graphql'
-// import { documentToNode } from './generateNodes'
+import { documentToNode } from './documentToNode'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
@@ -35,7 +35,7 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     schemas,
   } = pluginOptions
 
-  const typeDefs = R.pipe(
+  const typeVals = R.pipe(
     R.mapObjIndexed((customTypeJson, customTypeId) =>
       generateTypeDefsForCustomType({
         customTypeId,
@@ -45,8 +45,18 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
       }),
     ),
     R.values,
-    R.flatten,
   )(schemas)
+
+  const typeDefs = R.pipe(
+    R.map(R.prop('typeDefs')),
+    R.flatten,
+  )(typeVals)
+
+  const typePaths = R.pipe(
+    R.map(R.prop('typePaths')),
+    R.flatten,
+  )(typeVals)
+
   const linkTypeDef = generateTypeDefForLinkType(typeDefs, schema)
 
   createTypes(standardTypes)
@@ -60,33 +70,32 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     lang,
   })
 
-  // const nodes = await generateNodes(documents, { gatsbyContext, pluginOptions })
-  // const nodes = documents.map(doc =>
-  //   documentToNode(doc, { gatsbyContext, pluginOptions }),
-  // )
+  const nodes = documents.map(doc =>
+    documentToNode(doc, { typePaths, gatsbyContext, pluginOptions }),
+  )
 
-  // nodes.forEach(node => createNode(node))
+  R.flatten(nodes).forEach(node => createNode(node))
 
-  const promises = documents.map(async doc => {
-    const Node = createNodeFactory(doc.type, async node => {
-      node.dataString = JSON.stringify(node.data)
-      node.data = await normalizeFields({
-        value: node.data,
-        node,
-        gatsbyContext,
-        pluginOptions,
-        nodeHelpers,
-      })
+  // const promises = documents.map(async doc => {
+  //   const Node = createNodeFactory(doc.type, async node => {
+  //     node.dataString = JSON.stringify(node.data)
+  //     node.data = await normalizeFields({
+  //       value: node.data,
+  //       node,
+  //       gatsbyContext,
+  //       pluginOptions,
+  //       nodeHelpers,
+  //     })
 
-      return node
-    })
+  //     return node
+  //   })
 
-    const node = await Node(doc)
+  //   const node = await Node(doc)
 
-    createNode(node)
-  })
+  //   createNode(node)
+  // })
 
-  await Promise.all(promises)
+  // await Promise.all(promises)
 
   return
 }

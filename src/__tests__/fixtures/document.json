@@ -1,0 +1,201 @@
+{
+  "id": "W2Yr0yoAAP3jrsi1",
+  "uid": "uid",
+  "type": "all_field_types",
+  "href": "https://ww-prismic-demo.cdn.prismic.io/api/v2/documents/search?ref=XK_8URIAAFCLfU-y&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22W2Yr0yoAAP3jrsi1%22%29+%5D%5D",
+  "tags": [],
+  "first_publication_date": "2018-08-04T22:42:44+0000",
+  "last_publication_date": "2019-04-12T02:47:45+0000",
+  "slugs": ["title"],
+  "linked_documents": [],
+  "lang": "en-us",
+  "alternate_languages": [],
+  "data": {
+    "title": [{ "type": "heading1", "text": "Title", "spans": [] }],
+    "rich_text": [{ "type": "paragraph", "text": "Rich Text", "spans": [] }],
+    "image": {
+      "dimensions": { "width": 1500, "height": 1000 },
+      "alt": null,
+      "copyright": null,
+      "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo/9dd3f51a41cddb017cdf65fcb65b68cbb6070ac9_azhrjl-257040-unsplash.jpg",
+      "Tablet": {
+        "dimensions": { "width": 900, "height": 300 },
+        "alt": null,
+        "copyright": null,
+        "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo/61bd91db3830785cf8ccb7398470de2f7b1932a9_azhrjl-257040-unsplash.jpg"
+      },
+      "Mobile": {
+        "dimensions": { "width": 400, "height": 300 },
+        "alt": null,
+        "copyright": null,
+        "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo/206b33bb3c42dc877d8f881d4aff2336355af599_azhrjl-257040-unsplash.jpg"
+      }
+    },
+    "content_relationship": {
+      "id": "W0bjwSMAABUd5P6j",
+      "type": "flex_page",
+      "tags": [],
+      "slug": "projects",
+      "lang": "en-us",
+      "uid": "hello",
+      "link_type": "Document",
+      "isBroken": false
+    },
+    "link": {
+      "id": "Wza6LB4AAGSAVdbw",
+      "type": "news_post",
+      "tags": [],
+      "slug": "mason-turns-100-years-old",
+      "lang": "en-us",
+      "link_type": "Document",
+      "isBroken": false
+    },
+    "link_to_media": {
+      "link_type": "Media",
+      "name": "azhrjl-257040-unsplash.jpg",
+      "kind": "image",
+      "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo%2F989402b9-98f8-4b3b-9b64-ba368137ce46_azhrjl-257040-unsplash.jpg",
+      "size": "3558876",
+      "height": "4800",
+      "width": "7200"
+    },
+    "date": "2018-08-04",
+    "timestamp": "2018-08-09T10:03:04+0000",
+    "color": "#ff00ff",
+    "number": 1.0,
+    "key_text": "Key Text",
+    "select": null,
+    "embed": {
+      "gist": "angeloashmore/f7a2566b65de04b0810df4c6f92cf382",
+      "embed_url": "https://gist.github.com/angeloashmore/f7a2566b65de04b0810df4c6f92cf382",
+      "type": "rich",
+      "version": "1.0",
+      "title": "React Preload Component",
+      "author_name": null,
+      "author_url": null,
+      "provider_name": "GitHub",
+      "provider_url": "https://gist.github.com",
+      "cache_age": null,
+      "thumbnail_url": "https://gist.github.com/fluidicon.png",
+      "thumbnail_width": null,
+      "thumbnail_height": null,
+      "html": "<script src=\"https://gist.github.com/angeloashmore/f7a2566b65de04b0810df4c6f92cf382.js\"></script>"
+    },
+    "geopoint": {
+      "latitude": -5.9657536710655235,
+      "longitude": -18.45703125
+    },
+    "group": [
+      {
+        "image_for_group": {
+          "dimensions": { "width": 3543, "height": 2362 },
+          "alt": null,
+          "copyright": null,
+          "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo/5cdff57a5eeb0e178556c0e83951d89622b5cd77_kees-kortmulder-119965-unsplash.jpg"
+        },
+        "title_for_group": [
+          { "type": "heading1", "text": "Title for Group 1", "spans": [] }
+        ],
+        "rich_text_for_group": [
+          {
+            "type": "paragraph",
+            "text": "Rich Text for Group 1",
+            "spans": []
+          }
+        ]
+      },
+      {
+        "image_for_group": {
+          "dimensions": { "width": 5828, "height": 3449 },
+          "alt": null,
+          "copyright": null,
+          "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo/f24e62106b5007f41c16f1d6fd388667231efcf5_hussain-ibrahim-355102-unsplash.jpg"
+        },
+        "title_for_group": [
+          { "type": "heading1", "text": "Title for Group 2", "spans": [] }
+        ],
+        "rich_text_for_group": [
+          {
+            "type": "paragraph",
+            "text": "Rich Text for Group 2",
+            "spans": []
+          }
+        ]
+      }
+    ],
+    "body": [
+      {
+        "slice_type": "text",
+        "slice_label": null,
+        "items": [
+          {
+            "repeatable_title": [
+              {
+                "type": "heading1",
+                "text": "Repeatable Title 1",
+                "spans": []
+              }
+            ]
+          },
+          {
+            "repeatable_title": [
+              {
+                "type": "heading1",
+                "text": "Repeatable Title 2",
+                "spans": []
+              }
+            ]
+          }
+        ],
+        "primary": {
+          "text": [{ "type": "paragraph", "text": "Text", "spans": [] }]
+        }
+      }
+    ],
+    "title_for_secondary": [
+      { "type": "heading1", "text": "Title for Secondary", "spans": [] }
+    ],
+    "rich_text_for_secondary": [
+      {
+        "type": "paragraph",
+        "text": "Rich Text for Secondary",
+        "spans": []
+      }
+    ],
+    "image_for_secondary": {
+      "dimensions": { "width": 4896, "height": 3264 },
+      "alt": null,
+      "copyright": null,
+      "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo/c1e86929bacdb72be5ae2bfd7fb92771cf39db3c_samuel-zeller-362749-unsplash.jpg"
+    },
+    "body1": [
+      {
+        "slice_type": "text",
+        "slice_label": null,
+        "items": [
+          {
+            "repeatable_title": [
+              {
+                "type": "heading1",
+                "text": "Repeatable Title 1",
+                "spans": []
+              }
+            ]
+          },
+          {
+            "repeatable_title": [
+              {
+                "type": "heading1",
+                "text": "Repeatable Title 2",
+                "spans": []
+              }
+            ]
+          }
+        ],
+        "primary": {
+          "text": [{ "type": "paragraph", "text": "Text", "spans": [] }]
+        }
+      }
+    ]
+  }
+}

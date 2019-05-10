@@ -5,6 +5,8 @@ import PrismicDOM from 'prismic-dom'
 
 import { generateTypeName, generateNodeId } from './nodeHelpers'
 
+const prettyLog = x => console.log(util.inspect(x, false, null, true))
+
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
 // provided queue to be created at a later time.
@@ -15,6 +17,7 @@ const fieldToType = args => {
     customTypeId,
     context,
     enqueueTypeDef,
+    enqueueTypePath,
     pluginOptions,
     gatsbyContext,
   } = args
@@ -26,9 +29,17 @@ const fieldToType = args => {
     case 'Select':
     case 'Text':
     case 'UID':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'String',
+      })
       return 'String'
 
     case 'StructuredText':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'PrismicStructuredTextType',
+      })
       return {
         type: 'PrismicStructuredTextType',
         resolve: (parent, args, context, info) => {
@@ -47,22 +58,46 @@ const fieldToType = args => {
       }
 
     case 'Number':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'Float',
+      })
       return 'Float'
 
     case 'Date':
     case 'Timestamp':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'Date',
+      })
       return 'Date'
 
     case 'GeoPoint':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'PrismicGeoPointType',
+      })
       return 'PrismicGeoPointType'
 
     case 'Embed':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'PrismicEmbedType',
+      })
       return 'PrismicEmbedType'
 
     case 'Image':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'PrismicImageType',
+      })
       return 'PrismicImageType'
 
     case 'Link':
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: 'PrismicLinkType',
+      })
       return {
         type: 'PrismicLinkType',
         resolve: (parent, args, context, info) => {
@@ -83,6 +118,8 @@ const fieldToType = args => {
       const groupName = generateTypeName(`${customTypeId} ${id} Group Type`)
       const subfields = field.config.fields
 
+      context.depth = [...context.depth, id]
+
       enqueueTypeDef(
         gatsbySchema.buildObjectType({
           name: groupName,
@@ -93,6 +130,13 @@ const fieldToType = args => {
           ),
         }),
       )
+
+      context.depth.pop()
+
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: `[${groupName}]`,
+      })
 
       return `[${groupName}]`
 
@@ -110,6 +154,8 @@ const fieldToType = args => {
           `${customTypeId} ${sliceZoneId} ${id} Primary Type`,
         )
 
+        context.depth = [...context.depth, id, 'primary']
+
         enqueueTypeDef(
           gatsbySchema.buildObjectType({
             name: primaryName,
@@ -125,6 +171,14 @@ const fieldToType = args => {
           }),
         )
 
+        enqueueTypePath({
+          path: [...context.depth],
+          type: primaryName,
+        })
+
+        context.depth.pop()
+        context.depth.pop()
+
         sliceFields.primary = `${primaryName}`
       }
 
@@ -132,6 +186,8 @@ const fieldToType = args => {
         const itemsName = generateTypeName(
           `${customTypeId} ${sliceZoneId} ${id} Item Type`,
         )
+
+        context.depth = [...context.depth, id, 'items']
 
         enqueueTypeDef(
           gatsbySchema.buildObjectType({
@@ -143,6 +199,14 @@ const fieldToType = args => {
             ),
           }),
         )
+
+        enqueueTypePath({
+          path: [...context.depth],
+          type: `[${itemsName}]`,
+        })
+
+        context.depth.pop()
+        context.depth.pop()
 
         sliceFields.items = `[${itemsName}]`
       }
@@ -157,20 +221,29 @@ const fieldToType = args => {
         }),
       )
 
-      return `${sliceName}`
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: sliceName,
+      })
+
+      return sliceName
 
     case 'Slices':
+      context.depth = [...context.depth, id]
+
       const choiceTypes = R.pipe(
         R.mapObjIndexed((choice, choiceId) =>
           fieldToType({
             ...args,
             id: choiceId,
             field: choice,
-            context: { sliceZoneId: id },
+            context: { ...context, sliceZoneId: id },
           }),
         ),
         R.values,
       )(field.config.choices)
+
+      context.depth.pop()
 
       const slicesName = generateTypeName(`${customTypeId} ${id} Slices Type`)
 
@@ -180,6 +253,11 @@ const fieldToType = args => {
           types: choiceTypes,
         }),
       )
+
+      enqueueTypePath({
+        path: [...context.depth, id],
+        type: `[${slicesName}]`,
+      })
 
       return {
         type: `[${slicesName}]`,
@@ -203,41 +281,76 @@ export const generateTypeDefsForCustomType = args => {
   const typeDefs = []
   const enqueueTypeDef = typeDef => typeDefs.push(typeDef)
 
-  const { uid, ...dataFields } = R.pipe(
+  const typePaths = []
+  const enqueueTypePath = typePath => typePaths.push(typePath)
+
+  // UID fields are defined at the same level as data fields, but are a level
+  // about data in API responses. Pulling it out separately here allows us to
+  // process the UID field differently than the data fields.
+  const { uid: uidField, ...dataFields } = R.pipe(
     R.values,
     R.mergeAll,
-    R.mapObjIndexed((field, fieldId) =>
+  )(customTypeJson)
+
+  // UID fields must be conditionally processed since not all custom types
+  // implement a UID field.
+  let uidFieldType
+  if (uidField)
+    uidFieldType = fieldToType({
+      ...args,
+      id: 'uid',
+      field: uidField,
+      context: { depth: [customTypeId] },
+      enqueueTypePath,
+    })
+
+  const dataFieldTypes = R.mapObjIndexed(
+    (field, fieldId) =>
       fieldToType({
         ...args,
         id: fieldId,
         field,
-        context: {},
+        context: {
+          depth: [customTypeId, 'data'],
+        },
         enqueueTypeDef,
+        enqueueTypePath,
       }),
-    ),
-  )(customTypeJson)
+    dataFields,
+  )
 
   const dataName = generateTypeName(`${customTypeId} Data`)
+
+  enqueueTypePath({
+    path: [customTypeId, 'data'],
+    type: dataName,
+  })
+
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
       name: dataName,
-      fields: dataFields,
+      fields: dataFieldTypes,
     }),
   )
 
   const customTypeName = generateTypeName(customTypeId)
+  const customTypeFields = { data: dataName }
+  if (uidFieldType) customTypeFields.uid = uidFieldType
+
+  enqueueTypePath({
+    path: [customTypeId],
+    type: customTypeName,
+  })
+
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
       name: customTypeName,
-      fields: {
-        uid: 'String',
-        data: dataName,
-      },
+      fields: customTypeFields,
       interfaces: ['PrismicDocument', 'Node'],
     }),
   )
 
-  return typeDefs
+  return { typeDefs, typePaths }
 }
 
 export const generateTypeDefForLinkType = (allTypeDefs, gatsbySchema) => {
