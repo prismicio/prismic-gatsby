@@ -2,7 +2,6 @@ import * as R from 'ramda'
 import { map } from 'asyncro'
 
 import fetchData from './fetch'
-import { normalizeFields } from './normalize'
 import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 import {
   generateTypeDefsForCustomType,
@@ -78,27 +77,6 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   )
 
   R.flatten(nodes).forEach(node => createNode(node))
-
-  // const promises = documents.map(async doc => {
-  //   const Node = createNodeFactory(doc.type, async node => {
-  //     node.dataString = JSON.stringify(node.data)
-  //     node.data = await normalizeFields({
-  //       value: node.data,
-  //       node,
-  //       gatsbyContext,
-  //       pluginOptions,
-  //       nodeHelpers,
-  //     })
-
-  //     return node
-  //   })
-
-  //   const node = await Node(doc)
-
-  //   createNode(node)
-  // })
-
-  // await Promise.all(promises)
 
   return
 }
