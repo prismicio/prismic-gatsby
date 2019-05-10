@@ -1,4 +1,4 @@
-import { documentToNode } from '../documentToNode'
+import { documentToNodes } from '../documentToNodes'
 import { generateTypeDefsForCustomType } from '../generateTypeDefsForCustomType'
 import document from './fixtures/document.json'
 import documentNormalizedNodes from './fixtures/documentNormalizedNodes.json'
@@ -19,8 +19,8 @@ const gatsbyContext = {
 
 const pluginOptions = {}
 
-describe('documentToNode', () => {
-  test.only('returns a list of normalized nodes to create', () => {
+describe('documentToNodes', () => {
+  test.only('returns a list of normalized nodes to create', async () => {
     const { typePaths } = generateTypeDefsForCustomType({
       customTypeId,
       customTypeJson,
@@ -28,7 +28,7 @@ describe('documentToNode', () => {
       pluginOptions,
     })
 
-    const result = documentToNode(document, {
+    const result = await documentToNodes(document, {
       typePaths,
       gatsbyContext,
       pluginOptions,

@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import { map } from 'asyncro'
 
 import fetchData from './fetch'
 import { normalizeFields } from './normalize'
@@ -8,7 +9,7 @@ import {
   generateTypeDefForLinkType,
 } from './generateTypeDefsForCustomType'
 import standardTypes from './standardTypes.graphql'
-import { documentToNode } from './documentToNode'
+import { documentToNodes } from './documentToNodes'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
@@ -70,8 +71,10 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     lang,
   })
 
-  const nodes = documents.map(doc =>
-    documentToNode(doc, { typePaths, gatsbyContext, pluginOptions }),
+  const nodes = await map(
+    documents,
+    async doc =>
+      await documentToNodes(doc, { typePaths, gatsbyContext, pluginOptions }),
   )
 
   R.flatten(nodes).forEach(node => createNode(node))

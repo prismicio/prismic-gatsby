@@ -35,6 +35,7 @@ type PrismicImageType {
   copyright: String
   dimensions: PrismicImageDimensionsType
   url: String
+  localFile: File
 }
 
 type PrismicLinkType {

@@ -5,8 +5,6 @@ import PrismicDOM from 'prismic-dom'
 
 import { generateTypeName, generateNodeId } from './nodeHelpers'
 
-const prettyLog = x => console.log(util.inspect(x, false, null, true))
-
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
 // provided queue to be created at a later time.
@@ -91,7 +89,21 @@ const fieldToType = args => {
         path: [...context.depth, id],
         type: 'PrismicImageType',
       })
-      return 'PrismicImageType'
+      return {
+        type: 'PrismicImageType',
+        resolve: (parent, args, context, info) => {
+          const key = info.path.key
+          const value = parent[key]
+
+          return {
+            ...value,
+            localFile: context.nodeModel.getNodeById({
+              id: value.localFile,
+              type: 'File',
+            }),
+          }
+        },
+      }
 
     case 'Link':
       enqueueTypePath({
