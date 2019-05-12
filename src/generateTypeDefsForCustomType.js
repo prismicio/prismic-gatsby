@@ -271,6 +271,8 @@ const fieldToType = args => {
         type: `[${slicesName}]`,
       })
 
+      // return `[${slicesName}]`
+
       return {
         type: `[${slicesName}]`,
         resolve: (parent, args, context, info) => {
