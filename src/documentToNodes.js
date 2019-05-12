@@ -1,37 +1,56 @@
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
 import { map, reduce } from 'asyncro'
 import { createRemoteFileNode } from 'gatsby-source-filesystem'
 
-const getTypeForPath = (path, typePaths) => {
-  const type = R.pipe(
-    R.find(R.propEq('path', path)),
+const getTypeForPath = (path, typePaths) =>
+  R.compose(
+    R.cond([
+      [R.test(/^\[.*GroupType\]$/), R.always('Group')],
+      [R.test(/^\[.*SlicesType\]$/), R.always('Slices')],
+      [R.T, R.identity],
+    ]),
     R.prop('type'),
+    R.find(R.propEq('path', path)),
   )(typePaths)
 
-  if (!type) return undefined
+const createRemoteFileNodeForUrl = async (url, context) => {
+  const { docNodeId, gatsbyContext } = context
+  const { createNodeId, store, cache, actions } = gatsbyContext
+  const { createNode } = actions
 
-  return R.cond([
-    [R.endsWith('GroupType]'), R.always('Group')],
-    [R.endsWith('SlicesType]'), R.always('Slices')],
-    [R.endsWith('ItemType]'), R.always('SliceItems')],
-    [R.endsWith('PrimaryType'), R.always('SlicePrimary')],
-    [R.endsWith('Data'), R.always('Data')],
-    [R.T, R.always(type)],
-  ])(type)
+  let fileNode
+
+  try {
+    fileNode = await createRemoteFileNode({
+      url,
+      parentNodeId: docNodeId,
+      store,
+      cache,
+      createNode,
+      createNodeId,
+    })
+  } catch (error) {
+    console.error(error)
+  }
+
+  return fileNode
 }
 
-const normalizeField = async args => {
-  const {
-    id,
-    value,
-    doc,
-    docNodeId,
-    depth,
-    enqueueNode,
-    typePaths,
-    gatsbyContext,
-  } = args
+const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
+
+const normalizeImageField = async (_id, value, _depth, context) => {
+  const localFile = await createRemoteFileNodeForUrl(value.url, context)
+
+  return {
+    ...value,
+    localFile: localFile ? localFile.id : null,
+  }
+}
+
+const normalizeField = async (id, value, depth, context) => {
+  const { doc, docNodeId, enqueueNode, typePaths, gatsbyContext } = context
   const {
     createNodeId,
     createContentDigest,
@@ -44,100 +63,77 @@ const normalizeField = async args => {
   const type = getTypeForPath([...depth, id], typePaths)
 
   switch (type) {
-    case 'Data':
-      const normalizedData = await normalizeFields(value, {
-        ...args,
-        depth: [...depth, 'data'],
-      })
-
-      return normalizedData
-
     case 'PrismicImageType':
-      let fileNode
+      const base = await R.compose(
+        async baseValue =>
+          await normalizeImageField(id, baseValue, depth, context),
+        R.pick(IMAGE_FIELD_KEYS),
+      )(value)
 
-      try {
-        fileNode = await createRemoteFileNode({
-          url: value.url,
-          parentNodeId: docNodeId,
-          store,
-          cache,
-          createNode,
-          createNodeId,
-        })
-      } catch (_error) {
-        // Ignore
-        console.error(_error)
+      // Thumbnail image data are siblings of the base image data so we need to
+      // smartly extract and normalize the key-value pairs.
+      const thumbs = await R.compose(
+        R.then(R.fromPairs),
+        RA.allP,
+        R.map(async ([k, v]) => [
+          k,
+          await normalizeImageField(id, v, depth, context),
+        ]),
+        R.toPairs,
+        R.omit(IMAGE_FIELD_KEYS),
+      )(value)
+
+      return {
+        ...base,
+        ...thumbs,
       }
 
-      const normalizedImageValue = { ...value }
-
-      if (fileNode) normalizedImageValue.localFile = fileNode.id
-
-      return normalizedImageValue
-
     case 'Group':
-      const normalizedGroupValue = await map(
-        value,
-        async groupValue =>
-          await normalizeFields(groupValue, { ...args, depth: [...depth, id] }),
-      )
-
-      return normalizedGroupValue
-
-    case 'SlicePrimary':
-      const normalizedSlicePrimaryValue = await normalizeFields(value, {
-        ...args,
-        depth: [...depth, id],
-      })
-
-      return normalizedSlicePrimaryValue
-
-    case 'SliceItems':
-      const normalizedSliceItemsValue = await map(
-        value,
-        async itemValue =>
-          await normalizeFields(itemValue, {
-            ...args,
-            depth: [...depth, id],
-          }),
-      )
-
-      return normalizedSliceItemsValue
+      return normalizeObjs(value, [...depth, id], context)
 
     case 'Slices':
       const normalizedSlicesValue = await map(
         value,
         async (sliceValue, index) => {
+          // const normalizedPrimary = await normalizeObj(
+          //   R.propOr([], 'primary', sliceValue),
+          //   [...depth, id, sliceValue.slice_type, 'primary'],
+          //   context,
+          // )
+
+          // const normalizedItems = await normalizeObjs(
+          //   R.propOr([], 'items', sliceValue),
+          //   [...depth, id, sliceValue.slice_type, 'items'],
+          //   context,
+          // )
+
+          // return {
+          //   ...sliceValue,
+          //   primary: normalizedPrimary,
+          //   items: normalizedItems,
+          // }
+
           const sliceNodeId = createNodeId(
             `${doc.type} ${doc.id} ${id} ${index}`,
           )
 
-          const normalizedSliceValue = {
-            slice_type: sliceValue.slice_type,
-          }
+          const normalizedPrimary = await normalizeObj(
+            R.propOr([], 'primary', sliceValue),
+            [...depth, id, sliceValue.slice_type, 'primary'],
+            context,
+          )
 
-          if (sliceValue.primary && !R.isEmpty(sliceValue.primary)) {
-            normalizedSliceValue.primary = await normalizeField({
-              ...args,
-              id: 'primary',
-              value: sliceValue.primary,
-              depth: [...depth, id, sliceValue.slice_type],
-            })
-          }
-
-          if (sliceValue.primary && !R.isEmpty(sliceValue.primary)) {
-            normalizedSliceValue.items = await normalizeField({
-              ...args,
-              id: 'items',
-              value: sliceValue.items,
-              depth: [...depth, id, sliceValue.slice_type],
-            })
-          }
+          const normalizedItems = await normalizeObjs(
+            R.propOr([], 'items', sliceValue),
+            [...depth, id, sliceValue.slice_type, 'items'],
+            context,
+          )
 
           enqueueNode({
-            ...normalizedSliceValue,
+            ...sliceValue,
             id: sliceNodeId,
-            prismicId: value.id,
+            primary: normalizedPrimary,
+            items: normalizedItems,
             internal: {
               type: pascalcase(
                 `Prismic ${doc.type} ${id} ${sliceValue.slice_type}`,
@@ -157,36 +153,35 @@ const normalizeField = async args => {
   }
 }
 
-export const normalizeFields = async (fields, args) => {
-  return await reduce(
-    Object.entries(fields),
-    async (acc, [id, value]) => {
-      acc[id] = await normalizeField({
-        ...args,
-        id,
-        value,
-      })
-      return acc
-    },
-    fields,
-  )
-}
+// Returns a promise that resolves after normalizing each property in an
+// object.
+const normalizeObj = (obj, depth, context) =>
+  R.compose(
+    R.then(R.fromPairs),
+    RA.allP,
+    R.map(async ([k, v]) => [k, await normalizeField(k, v, depth, context)]),
+    R.toPairs,
+  )(obj)
 
-export const documentToNodes = async (doc, args) => {
-  const { gatsbyContext, typePaths } = args
+// Returns a promise that resolves after normalizing a list of objects.
+const normalizeObjs = (objs, depth, context) =>
+  R.compose(
+    RA.allP,
+    R.map(obj => normalizeObj(obj, depth, context)),
+  )(objs)
+
+export const documentToNodes = async (doc, context) => {
+  const { gatsbyContext, typePaths } = context
   const { createNodeId, createContentDigest } = gatsbyContext
 
   const nodes = []
   const enqueueNode = node => nodes.push(node)
 
   const docNodeId = createNodeId(`${doc.type} ${doc.id}`)
-  const normalizedData = await normalizeField({
-    ...args,
-    id: 'data',
-    value: doc.data,
+  const normalizedData = await normalizeObj(doc.data, [doc.type, 'data'], {
+    ...context,
     doc,
     docNodeId,
-    depth: [doc.type],
     enqueueNode,
   })
 

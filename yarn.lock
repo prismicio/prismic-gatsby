@@ -9832,6 +9832,11 @@ quick-lru@^1.0.0:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-1.1.0.tgz#4360b17c61136ad38078397ff11416e186dcfbb8"
   integrity sha1-Q2CxfGETatOAeDl/8RQW4Ybc+7g=
 
+ramda-adjunct@^2.17.0:
+  version "2.17.0"
+  resolved "https://registry.yarnpkg.com/ramda-adjunct/-/ramda-adjunct-2.17.0.tgz#a74254361fec763073afd9ef94606f09e4776d0a"
+  integrity sha512-mUPRb3yL3V1Kf2jSzpYnuZeiUhg9UC3uAImQMoOIZJ6Umim8CQa2PRjG2xPDEfP3xPNURlFQwLk60mNczkghAA==
+
 ramda@^0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
