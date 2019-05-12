@@ -1,9 +1,6 @@
-import util from 'util'
 import * as R from 'ramda'
-
+import pascalcase from 'pascalcase'
 import PrismicDOM from 'prismic-dom'
-
-import { generateTypeName, generateNodeId } from './nodeHelpers'
 
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
@@ -19,7 +16,7 @@ const fieldToType = args => {
     pluginOptions,
     gatsbyContext,
   } = args
-  const { schema: gatsbySchema } = gatsbyContext
+  const { schema: gatsbySchema, createNodeId } = gatsbyContext
   const { linkResolver, htmlSerializer } = pluginOptions
 
   switch (field.type) {
@@ -116,18 +113,22 @@ const fieldToType = args => {
           const key = info.path.key
           const value = parent[key]
 
+          let documentNode
+          if (value.link_type === 'Document')
+            documentNode = context.nodeModel.getNodeById({
+              id: createNodeId(`${value.type} ${value.id}`),
+            })
+
           return {
             ...value,
             url: PrismicDOM.Link.url(value, linkResolver({ key, value })),
-            document: context.nodeModel.getNodeById({
-              id: generateNodeId(value.type, value.id),
-            }),
+            document: documentNode,
           }
         },
       }
 
     case 'Group':
-      const groupName = generateTypeName(`${customTypeId} ${id} Group Type`)
+      const groupName = pascalcase(`Prismic ${customTypeId} ${id} Group Type`)
       const subfields = field.config.fields
 
       context.depth = [...context.depth, id]
@@ -162,8 +163,8 @@ const fieldToType = args => {
       }
 
       if (primaryFields && !R.isEmpty(primaryFields)) {
-        const primaryName = generateTypeName(
-          `${customTypeId} ${sliceZoneId} ${id} Primary Type`,
+        const primaryName = pascalcase(
+          `Prismic ${customTypeId} ${sliceZoneId} ${id} Primary Type`,
         )
 
         context.depth = [...context.depth, id, 'primary']
@@ -195,8 +196,8 @@ const fieldToType = args => {
       }
 
       if (itemsFields && !R.isEmpty(itemsFields)) {
-        const itemsName = generateTypeName(
-          `${customTypeId} ${sliceZoneId} ${id} Item Type`,
+        const itemsName = pascalcase(
+          `Prismic ${customTypeId} ${sliceZoneId} ${id} Item Type`,
         )
 
         context.depth = [...context.depth, id, 'items']
@@ -223,7 +224,9 @@ const fieldToType = args => {
         sliceFields.items = `[${itemsName}]`
       }
 
-      const sliceName = generateTypeName(`${customTypeId} ${sliceZoneId} ${id}`)
+      const sliceName = pascalcase(
+        `Prismic ${customTypeId} ${sliceZoneId} ${id}`,
+      )
 
       enqueueTypeDef(
         gatsbySchema.buildObjectType({
@@ -257,7 +260,7 @@ const fieldToType = args => {
 
       context.depth.pop()
 
-      const slicesName = generateTypeName(`${customTypeId} ${id} Slices Type`)
+      const slicesName = pascalcase(`Prismic ${customTypeId} ${id} Slices Type`)
 
       enqueueTypeDef(
         gatsbySchema.buildUnionType({
@@ -270,8 +273,6 @@ const fieldToType = args => {
         path: [...context.depth, id],
         type: `[${slicesName}]`,
       })
-
-      // return `[${slicesName}]`
 
       return {
         type: `[${slicesName}]`,
@@ -333,7 +334,7 @@ export const generateTypeDefsForCustomType = args => {
     dataFields,
   )
 
-  const dataName = generateTypeName(`${customTypeId} Data`)
+  const dataName = pascalcase(`Prismic ${customTypeId} Data`)
 
   enqueueTypePath({
     path: [customTypeId, 'data'],
@@ -347,7 +348,7 @@ export const generateTypeDefsForCustomType = args => {
     }),
   )
 
-  const customTypeName = generateTypeName(customTypeId)
+  const customTypeName = pascalcase(`Prismic ${customTypeId}`)
   const customTypeFields = { data: dataName }
   if (uidFieldType) customTypeFields.uid = uidFieldType
 

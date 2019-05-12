@@ -1,8 +1,9 @@
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
-import { map, reduce } from 'asyncro'
 import { createRemoteFileNode } from 'gatsby-source-filesystem'
+
+const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
 
 const getTypeForPath = (path, typePaths) =>
   R.compose(
@@ -15,7 +16,7 @@ const getTypeForPath = (path, typePaths) =>
     R.find(R.propEq('path', path)),
   )(typePaths)
 
-const createRemoteFileNodeForUrl = async (url, context) => {
+const normalizeImageField = async (_id, value, _depth, context) => {
   const { docNodeId, gatsbyContext } = context
   const { createNodeId, store, cache, actions } = gatsbyContext
   const { createNode } = actions
@@ -24,7 +25,7 @@ const createRemoteFileNodeForUrl = async (url, context) => {
 
   try {
     fileNode = await createRemoteFileNode({
-      url,
+      url: value.url,
       parentNodeId: docNodeId,
       store,
       cache,
@@ -35,17 +36,9 @@ const createRemoteFileNodeForUrl = async (url, context) => {
     console.error(error)
   }
 
-  return fileNode
-}
-
-const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
-
-const normalizeImageField = async (_id, value, _depth, context) => {
-  const localFile = await createRemoteFileNodeForUrl(value.url, context)
-
   return {
     ...value,
-    localFile: localFile ? localFile.id : null,
+    localFile: fileNode ? fileNode.id : null,
   }
 }
 
@@ -92,61 +85,37 @@ const normalizeField = async (id, value, depth, context) => {
       return normalizeObjs(value, [...depth, id], context)
 
     case 'Slices':
-      const normalizedSlicesValue = await map(
-        value,
-        async (sliceValue, index) => {
-          // const normalizedPrimary = await normalizeObj(
-          //   R.propOr([], 'primary', sliceValue),
-          //   [...depth, id, sliceValue.slice_type, 'primary'],
-          //   context,
-          // )
-
-          // const normalizedItems = await normalizeObjs(
-          //   R.propOr([], 'items', sliceValue),
-          //   [...depth, id, sliceValue.slice_type, 'items'],
-          //   context,
-          // )
-
-          // return {
-          //   ...sliceValue,
-          //   primary: normalizedPrimary,
-          //   items: normalizedItems,
-          // }
-
-          const sliceNodeId = createNodeId(
-            `${doc.type} ${doc.id} ${id} ${index}`,
-          )
+      return R.compose(
+        RA.allP,
+        RA.mapIndexed(async (v, idx) => {
+          const sliceNodeId = createNodeId(`${doc.type} ${doc.id} ${id} ${idx}`)
 
           const normalizedPrimary = await normalizeObj(
-            R.propOr([], 'primary', sliceValue),
-            [...depth, id, sliceValue.slice_type, 'primary'],
+            R.propOr({}, 'primary', v),
+            [...depth, id, v.slice_type, 'primary'],
             context,
           )
 
           const normalizedItems = await normalizeObjs(
-            R.propOr([], 'items', sliceValue),
-            [...depth, id, sliceValue.slice_type, 'items'],
+            R.propOr([], 'items', v),
+            [...depth, id, v.slice_type, 'items'],
             context,
           )
 
           enqueueNode({
-            ...sliceValue,
+            ...v,
             id: sliceNodeId,
             primary: normalizedPrimary,
             items: normalizedItems,
             internal: {
-              type: pascalcase(
-                `Prismic ${doc.type} ${id} ${sliceValue.slice_type}`,
-              ),
-              contentDigest: createContentDigest(value),
+              type: pascalcase(`Prismic ${doc.type} ${id} ${v.slice_type}`),
+              contentDigest: createContentDigest(v),
             },
           })
 
           return sliceNodeId
-        },
-      )
-
-      return normalizedSlicesValue
+        }),
+      )(value)
 
     default:
       return value

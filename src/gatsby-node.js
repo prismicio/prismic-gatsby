@@ -1,14 +1,13 @@
 import * as R from 'ramda'
-import { map } from 'asyncro'
+import * as RA from 'ramda-adjunct'
 
 import fetchData from './fetch'
-import { nodeHelpers, createNodeFactory } from './nodeHelpers'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
 } from './generateTypeDefsForCustomType'
-import standardTypes from './standardTypes.graphql'
 import { documentToNodes } from './documentToNodes'
+import standardTypes from './standardTypes.graphql'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
@@ -18,12 +17,12 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
 
   // Set default plugin options.
   pluginOptions = {
-    linkResolver: () => {},
-    htmlSerializer: () => {},
+    linkResolver: RA.noop,
+    htmlSerializer: RA.noop,
     fetchLinks: [],
     schemas: {},
     lang: '*',
-    shouldNormalizeImage: () => true,
+    shouldNormalizeImage: R.always(true),
     ...pluginOptions,
   }
 
@@ -35,7 +34,8 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     schemas,
   } = pluginOptions
 
-  const typeVals = R.pipe(
+  const typeVals = R.compose(
+    R.values,
     R.mapObjIndexed((customTypeJson, customTypeId) =>
       generateTypeDefsForCustomType({
         customTypeId,
@@ -44,17 +44,16 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
         pluginOptions,
       }),
     ),
-    R.values,
   )(schemas)
 
-  const typeDefs = R.pipe(
-    R.map(R.prop('typeDefs')),
+  const typeDefs = R.compose(
     R.flatten,
+    R.map(R.prop('typeDefs')),
   )(typeVals)
 
-  const typePaths = R.pipe(
-    R.map(R.prop('typePaths')),
+  const typePaths = R.compose(
     R.flatten,
+    R.map(R.prop('typePaths')),
   )(typeVals)
 
   const linkTypeDef = generateTypeDefForLinkType(typeDefs, schema)
@@ -70,13 +69,12 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     lang,
   })
 
-  const nodes = await map(
-    documents,
-    async doc =>
-      await documentToNodes(doc, { typePaths, gatsbyContext, pluginOptions }),
-  )
-
-  R.flatten(nodes).forEach(node => createNode(node))
-
-  return
+  await R.compose(
+    R.then(R.forEach(createNode)),
+    R.then(R.flatten),
+    RA.allP,
+    R.map(doc =>
+      documentToNodes(doc, { typePaths, gatsbyContext, pluginOptions }),
+    ),
+  )(documents)
 }
