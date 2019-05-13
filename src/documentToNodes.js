@@ -1,5 +1,6 @@
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import PrismicDOM from 'prismic-dom'
 import pascalcase from 'pascalcase'
 import { createRemoteFileNode } from 'gatsby-source-filesystem'
 
@@ -43,15 +44,12 @@ const normalizeImageField = async (_id, value, _depth, context) => {
 }
 
 const normalizeField = async (id, value, depth, context) => {
-  const { doc, docNodeId, enqueueNode, typePaths, gatsbyContext } = context
-  const {
-    createNodeId,
-    createContentDigest,
-    store,
-    cache,
-    actions,
-  } = gatsbyContext
-  const { createNode } = actions
+  const { doc, enqueueNode, typePaths, gatsbyContext, pluginOptions } = context
+  const { createNodeId, createContentDigest } = gatsbyContext
+  const { linkResolver, htmlSerializer } = pluginOptions
+
+  const linkResolverForField = linkResolver({ key: id, value, node: doc })
+  const htmlSerializerForField = htmlSerializer({ key: id, value, node: doc })
 
   const type = getTypeForPath([...depth, id], typePaths)
 
@@ -79,6 +77,23 @@ const normalizeField = async (id, value, depth, context) => {
       return {
         ...base,
         ...thumbs,
+      }
+
+    case 'PrismicStructuredTextType':
+      return {
+        html: PrismicDOM.RichText.asHtml(
+          value,
+          linkResolverForField,
+          htmlSerializerForField,
+        ),
+        text: PrismicDOM.RichText.asText(value),
+        raw: value,
+      }
+
+    case 'PrismicLinkType':
+      return {
+        ...value,
+        url: PrismicDOM.Link.url(value, linkResolverForField),
       }
 
     case 'Group':
@@ -140,7 +155,7 @@ const normalizeObjs = (objs, depth, context) =>
   )(objs)
 
 export const documentToNodes = async (doc, context) => {
-  const { gatsbyContext, typePaths } = context
+  const { gatsbyContext } = context
   const { createNodeId, createContentDigest } = gatsbyContext
 
   const nodes = []

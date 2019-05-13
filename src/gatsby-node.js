@@ -36,10 +36,8 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
 
   const typeVals = R.compose(
     R.values,
-    R.mapObjIndexed((customTypeJson, customTypeId) =>
-      generateTypeDefsForCustomType({
-        customTypeId,
-        customTypeJson,
+    R.mapObjIndexed((json, id) =>
+      generateTypeDefsForCustomType(id, json, {
         gatsbyContext,
         pluginOptions,
       }),

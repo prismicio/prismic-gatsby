@@ -1,8 +1,10 @@
+import * as RA from 'ramda-adjunct'
+
 import { documentToNodes } from '../documentToNodes'
 import { generateTypeDefsForCustomType } from '../generateTypeDefsForCustomType'
 import document from './fixtures/document.json'
 import documentNormalizedNodes from './fixtures/documentNormalizedNodes.json'
-import customTypeJson from './fixtures/customTypeSchema.json'
+import customTypeSchema from './fixtures/customTypeSchema.json'
 
 jest.mock('gatsby-source-filesystem')
 
@@ -24,16 +26,21 @@ const gatsbyContext = {
   cache: {},
 }
 
-const pluginOptions = {}
+const pluginOptions = {
+  linkResolver: () => () => 'result of linkResolver',
+  htmlSerializer: RA.noop,
+}
 
 describe('documentToNodes', () => {
   test('returns a list of normalized nodes to create', async () => {
-    const { typePaths } = generateTypeDefsForCustomType({
+    const { typePaths } = generateTypeDefsForCustomType(
       customTypeId,
-      customTypeJson,
-      gatsbyContext,
-      pluginOptions,
-    })
+      customTypeSchema,
+      {
+        gatsbyContext,
+        pluginOptions,
+      },
+    )
 
     const result = await documentToNodes(document, {
       typePaths,
@@ -45,12 +52,14 @@ describe('documentToNodes', () => {
   })
 
   test.skip('dataString is equal to data stringified', async () => {
-    const { typePaths } = generateTypeDefsForCustomType({
+    const { typePaths } = generateTypeDefsForCustomType(
       customTypeId,
-      customTypeJson,
-      gatsbyContext,
-      pluginOptions,
-    })
+      customTypeSchema,
+      {
+        gatsbyContext,
+        pluginOptions,
+      },
+    )
 
     const result = await documentToNodes(document, {
       typePaths,
@@ -63,5 +72,9 @@ describe('documentToNodes', () => {
     const parsedDataString = JSON.parse(result[result.length - 1].dataString)
 
     expect(parsedDataString).toEqual(data)
+  })
+
+  test.skip('PrismicStructuredTextType field returns HTML, text, and raw versions', async () => {
+    // Implement
   })
 })

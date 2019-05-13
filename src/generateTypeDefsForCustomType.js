@@ -1,91 +1,49 @@
 import * as R from 'ramda'
 import pascalcase from 'pascalcase'
-import PrismicDOM from 'prismic-dom'
 
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
 // provided queue to be created at a later time.
-const fieldToType = args => {
+const fieldToType = (id, value, depth, context) => {
   const {
-    id,
-    field,
     customTypeId,
-    context,
     enqueueTypeDef,
     enqueueTypePath,
-    pluginOptions,
     gatsbyContext,
-  } = args
+  } = context
   const { schema: gatsbySchema, createNodeId } = gatsbyContext
-  const { linkResolver, htmlSerializer } = pluginOptions
 
-  switch (field.type) {
+  switch (value.type) {
     case 'Color':
     case 'Select':
     case 'Text':
     case 'UID':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'String',
-      })
+      enqueueTypePath([...depth, id], 'String')
       return 'String'
 
     case 'StructuredText':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'PrismicStructuredTextType',
-      })
-      return {
-        type: 'PrismicStructuredTextType',
-        resolve: (parent, args, context, info) => {
-          const key = info.path.key
-          const value = parent[key]
-
-          return {
-            html: PrismicDOM.RichText.asHtml(
-              value,
-              linkResolver({ key, value }),
-              htmlSerializer({ key, value }),
-            ),
-            text: PrismicDOM.RichText.asText(value),
-          }
-        },
-      }
+      enqueueTypePath([...depth, id], 'PrismicStructuredTextType')
+      return 'PrismicStructuredTextType'
 
     case 'Number':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'Float',
-      })
+      enqueueTypePath([...depth, id], 'Float')
       return 'Float'
 
     case 'Date':
     case 'Timestamp':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'Date',
-      })
+      enqueueTypePath([...depth, id], 'Date')
       return 'Date'
 
     case 'GeoPoint':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'PrismicGeoPointType',
-      })
+      enqueueTypePath([...depth, id], 'PrismicGeoPointType')
       return 'PrismicGeoPointType'
 
     case 'Embed':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'PrismicEmbedType',
-      })
+      enqueueTypePath([...depth, id], 'PrismicEmbedType')
       return 'PrismicEmbedType'
 
     case 'Image':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'PrismicImageType',
-      })
+      enqueueTypePath([...depth, id], 'PrismicImageType')
       return {
         type: 'PrismicImageType',
         resolve: (parent, args, context, info) => {
@@ -103,59 +61,45 @@ const fieldToType = args => {
       }
 
     case 'Link':
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: 'PrismicLinkType',
-      })
+      enqueueTypePath([...depth, id], 'PrismicLinkType')
       return {
         type: 'PrismicLinkType',
         resolve: (parent, args, context, info) => {
           const key = info.path.key
           const value = parent[key]
 
-          let documentNode
-          if (value.link_type === 'Document')
-            documentNode = context.nodeModel.getNodeById({
-              id: createNodeId(`${value.type} ${value.id}`),
-            })
-
           return {
             ...value,
-            url: PrismicDOM.Link.url(value, linkResolver({ key, value })),
-            document: documentNode,
+            document: context.nodeModel.getNodeById({
+              id: createNodeId(`${value.type} ${value.id}`),
+              type: pascalcase(`Prismic ${value.type}`),
+            }),
           }
         },
       }
 
     case 'Group':
       const groupName = pascalcase(`Prismic ${customTypeId} ${id} Group Type`)
-      const subfields = field.config.fields
-
-      context.depth = [...context.depth, id]
+      const subfields = value.config.fields
 
       enqueueTypeDef(
         gatsbySchema.buildObjectType({
           name: groupName,
           fields: R.mapObjIndexed(
             (subfield, subfieldId) =>
-              fieldToType({ ...args, id: subfieldId, field: subfield }),
+              fieldToType(subfieldId, subfield, [...depth, id], context),
             subfields,
           ),
         }),
       )
 
-      context.depth.pop()
-
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: `[${groupName}]`,
-      })
+      enqueueTypePath([...depth, id], `[${groupName}]`)
 
       return `[${groupName}]`
 
     case 'Slice':
       const { sliceZoneId } = context
-      const { 'non-repeat': primaryFields, repeat: itemsFields } = field
+      const { 'non-repeat': primaryFields, repeat: itemsFields } = value
 
       const sliceFields = {
         id: 'String',
@@ -167,61 +111,51 @@ const fieldToType = args => {
           `Prismic ${customTypeId} ${sliceZoneId} ${id} Primary Type`,
         )
 
-        context.depth = [...context.depth, id, 'primary']
-
         enqueueTypeDef(
           gatsbySchema.buildObjectType({
             name: primaryName,
             fields: R.mapObjIndexed(
               (primaryField, primaryFieldId) =>
-                fieldToType({
-                  ...args,
-                  id: primaryFieldId,
-                  field: primaryField,
-                }),
+                fieldToType(
+                  primaryFieldId,
+                  primaryField,
+                  [...depth, id, 'primary'],
+                  context,
+                ),
               primaryFields,
             ),
           }),
         )
 
-        enqueueTypePath({
-          path: [...context.depth],
-          type: primaryName,
-        })
-
-        context.depth.pop()
-        context.depth.pop()
+        enqueueTypePath([...depth, id, 'primary'], primaryName)
 
         sliceFields.primary = `${primaryName}`
       }
 
       if (itemsFields && !R.isEmpty(itemsFields)) {
-        const itemsName = pascalcase(
+        const itemName = pascalcase(
           `Prismic ${customTypeId} ${sliceZoneId} ${id} Item Type`,
         )
 
-        context.depth = [...context.depth, id, 'items']
-
         enqueueTypeDef(
           gatsbySchema.buildObjectType({
-            name: itemsName,
+            name: itemName,
             fields: R.mapObjIndexed(
               (itemField, itemFieldId) =>
-                fieldToType({ ...args, id: itemFieldId, field: itemField }),
+                fieldToType(
+                  itemFieldId,
+                  itemField,
+                  [...depth, id, 'items'],
+                  context,
+                ),
               itemsFields,
             ),
           }),
         )
 
-        enqueueTypePath({
-          path: [...context.depth],
-          type: `[${itemsName}]`,
-        })
+        enqueueTypePath([...depth, id, 'items'], `[${itemName}]`)
 
-        context.depth.pop()
-        context.depth.pop()
-
-        sliceFields.items = `[${itemsName}]`
+        sliceFields.items = `[${itemName}]`
       }
 
       const sliceName = pascalcase(
@@ -236,29 +170,20 @@ const fieldToType = args => {
         }),
       )
 
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: sliceName,
-      })
+      enqueueTypePath([...depth, id], sliceName)
 
       return sliceName
 
     case 'Slices':
-      context.depth = [...context.depth, id]
-
-      const choiceTypes = R.pipe(
+      const choiceTypes = R.compose(
+        R.values,
         R.mapObjIndexed((choice, choiceId) =>
-          fieldToType({
-            ...args,
-            id: choiceId,
-            field: choice,
-            context: { ...context, sliceZoneId: id },
+          fieldToType(choiceId, choice, [...depth, id], {
+            ...context,
+            sliceZoneId: id,
           }),
         ),
-        R.values,
-      )(field.config.choices)
-
-      context.depth.pop()
+      )(value.config.choices)
 
       const slicesName = pascalcase(`Prismic ${customTypeId} ${id} Slices Type`)
 
@@ -269,77 +194,64 @@ const fieldToType = args => {
         }),
       )
 
-      enqueueTypePath({
-        path: [...context.depth, id],
-        type: `[${slicesName}]`,
-      })
+      enqueueTypePath([...depth, id], `[${slicesName}]`)
 
       return {
         type: `[${slicesName}]`,
-        resolve: (parent, args, context, info) => {
-          return context.nodeModel.getNodesByIds({
+        resolve: (parent, args, context, info) =>
+          context.nodeModel.getNodesByIds({
             ids: parent[info.path.key],
-          })
-        },
+          }),
       }
 
     default:
-      console.log(`UNPROCESSED FIELD for type "${field.type}"`, id)
+      console.log(`UNPROCESSED FIELD for type "${value.type}"`, id)
       return null
   }
 }
 
-export const generateTypeDefsForCustomType = args => {
-  const { customTypeId, customTypeJson, gatsbyContext } = args
+export const generateTypeDefsForCustomType = (id, json, context) => {
+  const { gatsbyContext } = context
   const { schema: gatsbySchema } = gatsbyContext
 
   const typeDefs = []
   const enqueueTypeDef = typeDef => typeDefs.push(typeDef)
 
   const typePaths = []
-  const enqueueTypePath = typePath => typePaths.push(typePath)
+  const enqueueTypePath = (path, type) => typePaths.push({ path, type })
 
   // UID fields are defined at the same level as data fields, but are a level
   // about data in API responses. Pulling it out separately here allows us to
   // process the UID field differently than the data fields.
-  const { uid: uidField, ...dataFields } = R.pipe(
-    R.values,
+  const { uid: uidField, ...dataFields } = R.compose(
     R.mergeAll,
-  )(customTypeJson)
+    R.values,
+  )(json)
 
   // UID fields must be conditionally processed since not all custom types
   // implement a UID field.
   let uidFieldType
   if (uidField)
-    uidFieldType = fieldToType({
-      ...args,
-      id: 'uid',
-      field: uidField,
-      context: { depth: [customTypeId] },
+    uidFieldType = fieldToType('uid', uidField, [id], {
+      ...context,
+      customTypeId: id,
       enqueueTypePath,
     })
 
   const dataFieldTypes = R.mapObjIndexed(
     (field, fieldId) =>
-      fieldToType({
-        ...args,
-        id: fieldId,
-        field,
-        context: {
-          depth: [customTypeId, 'data'],
-        },
+      fieldToType(fieldId, field, [id, 'data'], {
+        ...context,
+        customTypeId: id,
         enqueueTypeDef,
         enqueueTypePath,
       }),
     dataFields,
   )
 
-  const dataName = pascalcase(`Prismic ${customTypeId} Data`)
+  const dataName = pascalcase(`Prismic ${id} Data`)
 
-  enqueueTypePath({
-    path: [customTypeId, 'data'],
-    type: dataName,
-  })
+  enqueueTypePath([id, 'data'], dataName)
 
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
@@ -348,14 +260,11 @@ export const generateTypeDefsForCustomType = args => {
     }),
   )
 
-  const customTypeName = pascalcase(`Prismic ${customTypeId}`)
+  const customTypeName = pascalcase(`Prismic ${id}`)
   const customTypeFields = { data: dataName }
   if (uidFieldType) customTypeFields.uid = uidFieldType
 
-  enqueueTypePath({
-    path: [customTypeId],
-    type: customTypeName,
-  })
+  enqueueTypePath([id], customTypeName)
 
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
@@ -369,14 +278,14 @@ export const generateTypeDefsForCustomType = args => {
 }
 
 export const generateTypeDefForLinkType = (allTypeDefs, gatsbySchema) => {
-  const documentTypeNames = R.pipe(
+  const documentTypeNames = R.compose(
+    R.map(R.path(['config', 'name'])),
     R.filter(
-      R.pipe(
-        R.pathOr([], ['config', 'interfaces']),
+      R.compose(
         R.contains('PrismicDocument'),
+        R.pathOr([], ['config', 'interfaces']),
       ),
     ),
-    R.map(R.path(['config', 'name'])),
   )(allTypeDefs)
 
   return gatsbySchema.buildUnionType({

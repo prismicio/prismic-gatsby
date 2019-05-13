@@ -1,15 +1,11 @@
-import util from 'util'
 import * as R from 'ramda'
 
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
-  resolvePathToArray,
 } from '../generateTypeDefsForCustomType'
 import customTypeSchema from './fixtures/customTypeSchema.json'
 import customTypeTypeDefs from './fixtures/customTypeTypeDefs.json'
-
-const prettyLog = x => console.log(util.inspect(x, false, null, true))
 
 const customTypeId = 'my_custom_type'
 
@@ -28,9 +24,7 @@ afterEach(() => {
 })
 
 describe('generateTypeDefsForCustomType', () => {
-  const result = generateTypeDefsForCustomType({
-    customTypeId,
-    customTypeJson: customTypeSchema,
+  const result = generateTypeDefsForCustomType(customTypeId, customTypeSchema, {
     gatsbyContext: { schema },
     pluginOptions: {},
   })
@@ -39,17 +33,13 @@ describe('generateTypeDefsForCustomType', () => {
     const { typeDefs } = result
 
     test('is a list of type definitions', () => {
-      expect(Array.isArray(result.typeDefs)).toBe(true)
+      expect(Array.isArray(typeDefs)).toBe(true)
     })
 
     test.skip('return value includes type definitions for all types and subtypes', () => {
       customTypeTypeDefs.forEach(typeDef => {
         expect(result).toContainEqual(typeDef)
       })
-    })
-
-    test.skip('PrismicStructuredTextType resolver returns HTML and text values', () => {
-      // Implement
     })
 
     test.skip('PrismicLinkType document field resolver gets document node by ID', () => {
@@ -69,7 +59,7 @@ describe('generateTypeDefsForCustomType', () => {
         },
       }
 
-      const resolverResult = resolver(parent, undefined, context)
+      resolver(parent, undefined, context)
 
       expect(context.nodeModel.getNodeById).toHaveBeenCalledWith({
         id: parent.id,
@@ -95,7 +85,7 @@ describe('generateTypeDefsForCustomType', () => {
 
       const info = { path: { key: 'body' } }
 
-      const resolverResult = resolver(parent, undefined, context, info)
+      resolver(parent, undefined, context, info)
 
       expect(context.nodeModel.getNodesByIds).toHaveBeenCalledWith({
         ids: ['id1', 'id2'],
@@ -104,15 +94,17 @@ describe('generateTypeDefsForCustomType', () => {
   })
 
   describe('return value typePaths', () => {
+    const { typePaths } = result
+
     test('returns a list of type paths', () => {
-      expect(Array.isArray(result.typePaths)).toBe(true)
+      expect(Array.isArray(typePaths)).toBe(true)
     })
   })
 })
 
 describe('generateTypeDefForLinkType', () => {
   test('returns PrismicAllDocumentTypes definition including all PrismicDocument types', () => {
-    const result = generateTypeDefForLinkType(customTypeTypeDefs, schema)
+    generateTypeDefForLinkType(customTypeTypeDefs, schema)
 
     expect(schema.buildUnionType).toHaveBeenCalledWith({
       name: 'PrismicAllDocumentTypes',
