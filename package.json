@@ -30,7 +30,6 @@
   "dependencies": {
     "asyncro": "^3.0.0",
     "es-cookie": "^1.2.0",
-    "gatsby": "^2.1.17",
     "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.22",
     "lodash": "^4.17.11",
