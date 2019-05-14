@@ -124,7 +124,8 @@
         "uid": "hello",
         "link_type": "Document",
         "isBroken": false,
-        "url": "result of linkResolver"
+        "url": "result of linkResolver",
+        "document": "result of createNodeId"
       },
       "link": {
         "id": "Wza6LB4AAGSAVdbw",
@@ -134,7 +135,8 @@
         "lang": "en-us",
         "link_type": "Document",
         "isBroken": false,
-        "url": "result of linkResolver"
+        "url": "result of linkResolver",
+        "document": "result of createNodeId"
       },
       "link_to_media": {
         "link_type": "Media",
@@ -143,7 +145,8 @@
         "url": "https://ww-prismic-demo.cdn.prismic.io/ww-prismic-demo%2F989402b9-98f8-4b3b-9b64-ba368137ce46_azhrjl-257040-unsplash.jpg",
         "size": "3558876",
         "height": "4800",
-        "width": "7200"
+        "width": "7200",
+        "document": "result of createNodeId"
       },
       "date": "2018-08-04",
       "timestamp": "2018-08-09T10:03:04+0000",

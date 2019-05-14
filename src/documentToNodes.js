@@ -1,8 +1,12 @@
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import PrismicDOM from 'prismic-dom'
 import pascalcase from 'pascalcase'
-import { createRemoteFileNode } from 'gatsby-source-filesystem'
+
+import {
+  normalizeImageField,
+  normalizeLinkField,
+  normalizeStructuredTextField,
+} from './nodeNormalizers'
 
 const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
 
@@ -17,39 +21,9 @@ const getTypeForPath = (path, typePaths) =>
     R.find(R.propEq('path', path)),
   )(typePaths)
 
-const normalizeImageField = async (_id, value, _depth, context) => {
-  const { docNodeId, gatsbyContext } = context
-  const { createNodeId, store, cache, actions } = gatsbyContext
-  const { createNode } = actions
-
-  let fileNode
-
-  try {
-    fileNode = await createRemoteFileNode({
-      url: value.url,
-      parentNodeId: docNodeId,
-      store,
-      cache,
-      createNode,
-      createNodeId,
-    })
-  } catch (error) {
-    console.error(error)
-  }
-
-  return {
-    ...value,
-    localFile: fileNode ? fileNode.id : null,
-  }
-}
-
 const normalizeField = async (id, value, depth, context) => {
-  const { doc, enqueueNode, typePaths, gatsbyContext, pluginOptions } = context
+  const { doc, enqueueNode, typePaths, gatsbyContext } = context
   const { createNodeId, createContentDigest } = gatsbyContext
-  const { linkResolver, htmlSerializer } = pluginOptions
-
-  const linkResolverForField = linkResolver({ key: id, value, node: doc })
-  const htmlSerializerForField = htmlSerializer({ key: id, value, node: doc })
 
   const type = getTypeForPath([...depth, id], typePaths)
 
@@ -80,21 +54,10 @@ const normalizeField = async (id, value, depth, context) => {
       }
 
     case 'PrismicStructuredTextType':
-      return {
-        html: PrismicDOM.RichText.asHtml(
-          value,
-          linkResolverForField,
-          htmlSerializerForField,
-        ),
-        text: PrismicDOM.RichText.asText(value),
-        raw: value,
-      }
+      return normalizeStructuredTextField(id, value, depth, context)
 
     case 'PrismicLinkType':
-      return {
-        ...value,
-        url: PrismicDOM.Link.url(value, linkResolverForField),
-      }
+      return normalizeLinkField(id, value, depth, context)
 
     case 'Group':
       return normalizeObjs(value, [...depth, id], context)
