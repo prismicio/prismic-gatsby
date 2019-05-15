@@ -1,6 +1,8 @@
 import * as R from 'ramda'
 import pascalcase from 'pascalcase'
 
+const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
+
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
 // provided queue to be created at a later time.
@@ -50,12 +52,27 @@ const fieldToType = (id, value, depth, context) => {
           const key = info.path.key
           const value = parent[key]
 
-          return {
-            ...value,
-            localFile: context.nodeModel.getNodeById({
-              id: value.localFile,
+          const getFileNode = id =>
+            context.nodeModel.getNodeById({
+              id,
               type: 'File',
-            }),
+            })
+
+          const baseValue = R.compose(
+            R.assoc('localFile', getFileNode(value.localFile)),
+            R.pick(IMAGE_FIELD_KEYS),
+          )(value)
+
+          const thumbValues = R.compose(
+            R.mapObjIndexed(v =>
+              R.assoc('localFile', getFileNode(v.localFile), v),
+            ),
+            R.omit(IMAGE_FIELD_KEYS),
+          )(value)
+
+          return {
+            ...baseValue,
+            ...thumbValues,
           }
         },
       }

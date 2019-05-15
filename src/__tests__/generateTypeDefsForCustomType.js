@@ -7,7 +7,7 @@ import {
 import customTypeSchema from './fixtures/customTypeSchema.json'
 import customTypeTypeDefs from './fixtures/customTypeTypeDefs.json'
 
-const customTypeId = 'my_custom_type'
+const customTypeId = 'custom_type'
 
 const schema = {
   buildObjectType: jest
@@ -18,97 +18,545 @@ const schema = {
     .mockImplementation(config => ({ kind: 'UNION', config })),
 }
 
+const context = {
+  gatsbyContext: {
+    schema,
+    createNodeId: jest.fn().mockReturnValue('result of createNodeId'),
+  },
+}
+
 afterEach(() => {
-  schema.buildObjectType.mockReset()
-  schema.buildUnionType.mockReset()
+  schema.buildObjectType.mockClear()
+  schema.buildUnionType.mockClear()
 })
 
 describe('generateTypeDefsForCustomType', () => {
-  const result = generateTypeDefsForCustomType(customTypeId, customTypeSchema, {
-    gatsbyContext: { schema },
-    pluginOptions: {},
-  })
+  const result = generateTypeDefsForCustomType(
+    customTypeId,
+    customTypeSchema,
+    context,
+  )
 
-  describe('return value typeDefs', () => {
+  describe('typeDefs', () => {
     const { typeDefs } = result
 
     test('is a list of type definitions', () => {
       expect(Array.isArray(typeDefs)).toBe(true)
     })
 
-    test.skip('return value includes type definitions for all types and subtypes', () => {
-      customTypeTypeDefs.forEach(typeDef => {
-        expect(result).toContainEqual(typeDef)
+    test('Color type returns String', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'Select' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('String')
+    })
+
+    test('Select type returns String', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'Select' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('String')
+    })
+
+    test('Text type returns String', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'Text' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('String')
+    })
+
+    test('UID type returns String', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'UID' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('String')
+    })
+
+    test('StructuredText type returns PrismicStructuredTextType', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'StructuredText' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('PrismicStructuredTextType')
+    })
+
+    test('Number type returns Float', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'Number' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('Float')
+    })
+
+    test('Date type returns Date', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'Date' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('Date')
+    })
+
+    test('Timestamp type returns Date', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'Timestamp' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('Date')
+    })
+
+    test('GeoPoint type returns PrismicGeoPointType', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'GeoPoint' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('PrismicGeoPointType')
+    })
+
+    test('Embed type returns PrismicEmbedType', () => {
+      const { typeDefs } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { key: { type: 'Embed' } } },
+        context,
+      )
+
+      expect(typeDefs[0].config.fields.key).toEqual('PrismicEmbedType')
+    })
+
+    describe('Group', () => {
+      test('Group type returns namespaced GroupType', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { key: { type: 'Group', config: { fields: {} } } } },
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeData'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.fields.key).toBe(
+          '[PrismicCustomTypeKeyGroupType]',
+        )
+      })
+
+      test('namespaced GroupType returns field types', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          {
+            Main: {
+              key: {
+                type: 'Group',
+                config: { fields: { text: { type: 'Text' } } },
+              },
+            },
+          },
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeKeyGroupType'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.fields).toMatchObject({
+          text: 'String',
+        })
       })
     })
 
-    test.skip('PrismicLinkType document field resolver gets document node by ID', () => {
-      const resolver = R.pipe(
-        R.find(R.pathEq(['config', 'name'], 'PrismicLinkType')),
-        R.path(['config', 'fields', 'document', 'resolve']),
-      )(result)
+    describe('Image', () => {
+      test('Image type returns PrismicImageType', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { key: { type: 'Image' } } },
+          context,
+        )
 
-      const parent = {
-        id: 'id',
-        type: 'my_custom_type',
-      }
+        expect(typeDefs[0].config.fields.key).toMatchObject({
+          type: 'PrismicImageType',
+        })
+      })
 
-      const context = {
-        nodeModel: {
-          getNodeById: jest.fn(),
-        },
-      }
+      test('PrismicImageType resolver gets base image File node by ID', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { key: { type: 'Image' } } },
+          context,
+        )
 
-      resolver(parent, undefined, context)
+        const resolver = typeDefs[0].config.fields.key.resolve
+        const getNodeById = jest.fn()
 
-      expect(context.nodeModel.getNodeById).toHaveBeenCalledWith({
-        id: parent.id,
-        type: 'PrismicMyCustomType',
+        resolver(
+          { image: { localFile: 'baseId' } },
+          undefined,
+          { nodeModel: { getNodeById } },
+          { path: { key: 'image' } },
+        )
+
+        expect(getNodeById).toHaveBeenCalledWith({
+          id: 'baseId',
+          type: 'File',
+        })
+      })
+
+      test('PrismicImageType resolver gets thumbnail image File nodes by ID', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { key: { type: 'Image' } } },
+          context,
+        )
+
+        const resolver = typeDefs[0].config.fields.key.resolve
+        const getNodeById = jest.fn()
+
+        resolver(
+          {
+            image: {
+              Thumb1: { localFile: 'thumb1Id' },
+              Thumb2: { localFile: 'thumb2Id' },
+            },
+          },
+          undefined,
+          { nodeModel: { getNodeById } },
+          { path: { key: 'image' } },
+        )
+
+        expect(getNodeById).toHaveBeenCalledWith({
+          id: 'thumb1Id',
+          type: 'File',
+        })
+
+        expect(getNodeById).toHaveBeenCalledWith({
+          id: 'thumb2Id',
+          type: 'File',
+        })
       })
     })
 
-    test('slices field resolver gets slice nodes by IDs', () => {
-      const resolver = R.pipe(
-        R.find(R.pathEq(['config', 'name'], 'PrismicMyCustomTypeData')),
-        R.path(['config', 'fields', 'body', 'resolve']),
-      )(result.typeDefs)
+    describe('Link', () => {
+      test('Link type returns PrismicLinkType', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { key: { type: 'Link' } } },
+          context,
+        )
 
-      const parent = {
-        body: ['id1', 'id2'],
-      }
+        expect(typeDefs[0].config.fields.key).toMatchObject({
+          type: 'PrismicLinkType',
+        })
+      })
 
-      const context = {
-        nodeModel: {
-          getNodesByIds: jest.fn(),
+      test('PrismicLinkType resolver gets document node by ID', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { key: { type: 'Link' } } },
+          context,
+        )
+
+        const resolver = typeDefs[0].config.fields.key.resolve
+        const getNodeById = jest.fn()
+
+        resolver(
+          { link: { id: 'id', type: 'custom_type' } },
+          undefined,
+          { nodeModel: { getNodeById } },
+          { path: { key: 'link' } },
+        )
+
+        expect(getNodeById).toHaveBeenCalledWith({
+          id: 'result of createNodeId',
+          type: 'PrismicCustomType',
+        })
+      })
+    })
+
+    describe('Slice', () => {
+      const customTypeJson = {
+        Main: {
+          body: {
+            type: 'Slices',
+            config: {
+              choices: {
+                slice: {
+                  type: 'Slice',
+                  'non-repeat': { key: { type: 'Text' } },
+                  repeat: { key: { type: 'Text' } },
+                },
+              },
+            },
+          },
         },
       }
 
-      const info = { path: { key: 'body' } }
+      test('Slice type returns namespaced PrimaryType for primary field', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          customTypeJson,
+          context,
+        )
 
-      resolver(parent, undefined, context, info)
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeBodySlice'),
+          typeDefs,
+        )
 
-      expect(context.nodeModel.getNodesByIds).toHaveBeenCalledWith({
-        ids: ['id1', 'id2'],
+        expect(typeDef.config.fields.primary).toBe(
+          'PrismicCustomTypeBodySlicePrimaryType',
+        )
+      })
+
+      test('Slice type returns namespaced ItemType for items field', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          customTypeJson,
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeBodySlice'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.fields.items).toBe(
+          '[PrismicCustomTypeBodySliceItemType]',
+        )
+      })
+
+      test('namespaced PrimaryType returns types', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          customTypeJson,
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeBodySlicePrimaryType'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.fields.key).toBe('String')
+      })
+
+      test('namespaced ItemType returns types', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          customTypeJson,
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeBodySliceItemType'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.fields.key).toBe('String')
+      })
+
+      test('namespaced SliceType implements Node interface', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          customTypeJson,
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeBodySlice'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.interfaces).toContain('Node')
+      })
+    })
+
+    describe('Slices', () => {
+      const customTypeJson = {
+        Main: {
+          body: {
+            type: 'Slices',
+            config: {
+              choices: {
+                slice: {
+                  type: 'Slice',
+                  'non-repeat': { key: { type: 'Text' } },
+                  repeat: { key: { type: 'Text' } },
+                },
+              },
+            },
+          },
+        },
+      }
+
+      test('Slices type returns namespaced SlicesType', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          customTypeJson,
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeData'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.fields.body).toMatchObject({
+          type: '[PrismicCustomTypeBodySlicesType]',
+        })
+      })
+
+      test('namespaced SlicesType resolver gets slice node by ID', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          customTypeJson,
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeData'),
+          typeDefs,
+        )
+
+        const resolver = typeDef.config.fields.body.resolve
+        const getNodesByIds = jest.fn()
+
+        resolver(
+          { body: ['id1', 'id2'] },
+          undefined,
+          { nodeModel: { getNodesByIds } },
+          { path: { key: 'body' } },
+        )
+
+        expect(getNodesByIds).toHaveBeenCalledWith({
+          ids: ['id1', 'id2'],
+        })
+      })
+    })
+
+    describe('Document', () => {
+      test('root document returns namespaced document type', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { uid: { type: 'UID' } } },
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomType'),
+          typeDefs,
+        )
+
+        expect(typeDef).toBeDefined()
+      })
+
+      test('namespaced document type implements PrismicDocument and Node interfaces', () => {
+        const { typeDefs } = generateTypeDefsForCustomType(
+          customTypeId,
+          { Main: { uid: { type: 'UID' } } },
+          context,
+        )
+
+        const typeDef = R.find(
+          R.pathEq(['config', 'name'], 'PrismicCustomType'),
+          typeDefs,
+        )
+
+        expect(typeDef.config.interfaces).toContain('Node')
+        expect(typeDef.config.interfaces).toContain('PrismicDocument')
       })
     })
   })
 
-  describe('return value typePaths', () => {
+  describe('typePaths', () => {
     const { typePaths } = result
 
-    test('returns a list of type paths', () => {
+    test('is a list of type paths', () => {
       expect(Array.isArray(typePaths)).toBe(true)
+    })
+
+    test('returns paths to types', () => {
+      const { typePaths } = generateTypeDefsForCustomType(
+        customTypeId,
+        { Main: { uid: { type: 'UID' }, text: { type: 'Text' } } },
+        context,
+      )
+
+      expect(typePaths).toContainEqual({
+        path: ['custom_type'],
+        type: 'PrismicCustomType',
+      })
+
+      expect(typePaths).toContainEqual({
+        path: ['custom_type', 'uid'],
+        type: 'String',
+      })
+
+      expect(typePaths).toContainEqual({
+        path: ['custom_type', 'data'],
+        type: 'PrismicCustomTypeData',
+      })
+
+      expect(typePaths).toContainEqual({
+        path: ['custom_type', 'data', 'text'],
+        type: 'String',
+      })
     })
   })
 })
 
 describe('generateTypeDefForLinkType', () => {
   test('returns PrismicAllDocumentTypes definition including all PrismicDocument types', () => {
-    generateTypeDefForLinkType(customTypeTypeDefs, schema)
+    const result = generateTypeDefForLinkType(
+      [
+        {
+          type: 'OBJECT',
+          config: {
+            name: 'PrismicCustomType',
+            interfaces: ['PrismicDocument', 'Node'],
+          },
+        },
+        {
+          type: 'OBJECT',
+          config: {
+            name: 'PrismicCustomType2',
+            interfaces: ['PrismicDocument', 'Node'],
+          },
+        },
+        {
+          type: 'OBJECT',
+          config: {
+            name: 'PrismicCustomTypeData',
+          },
+        },
+      ],
+      schema,
+    )
 
-    expect(schema.buildUnionType).toHaveBeenCalledWith({
-      name: 'PrismicAllDocumentTypes',
-      types: ['PrismicMyCustomType'],
-    })
+    expect(result.config.types).toEqual([
+      'PrismicCustomType',
+      'PrismicCustomType2',
+    ])
   })
 })
