@@ -18,6 +18,8 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
     schema,
     actions: { createNode, createTypes },
+    createNodeId,
+    createContentDigest,
   } = gatsbyContext
 
   // Set default plugin options.
@@ -80,8 +82,8 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
       documentToNodes(doc, {
         typePaths,
         gatsbyContext,
-        createNodeId: gatsbyContext.createNodeId,
-        createContentDigest: gatsbyContext.createContentDigest,
+        createNodeId,
+        createContentDigest,
         pluginOptions,
         normalizeImageField,
         normalizeLinkField,
