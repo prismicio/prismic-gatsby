@@ -4,8 +4,6 @@ import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
 } from '../generateTypeDefsForCustomType'
-import customTypeSchema from './fixtures/customTypeSchema.json'
-import customTypeTypeDefs from './fixtures/customTypeTypeDefs.json'
 
 const customTypeId = 'custom_type'
 
@@ -31,14 +29,12 @@ afterEach(() => {
 })
 
 describe('generateTypeDefsForCustomType', () => {
-  const result = generateTypeDefsForCustomType(
-    customTypeId,
-    customTypeSchema,
-    context,
-  )
-
   describe('typeDefs', () => {
-    const { typeDefs } = result
+    const { typeDefs } = generateTypeDefsForCustomType(
+      customTypeId,
+      { Main: { key: { type: 'Text' } } },
+      context,
+    )
 
     test('is a list of type definitions', () => {
       expect(Array.isArray(typeDefs)).toBe(true)
@@ -490,7 +486,11 @@ describe('generateTypeDefsForCustomType', () => {
   })
 
   describe('typePaths', () => {
-    const { typePaths } = result
+    const { typePaths } = generateTypeDefsForCustomType(
+      customTypeId,
+      { Main: { key: { type: 'Text' } } },
+      context,
+    )
 
     test('is a list of type paths', () => {
       expect(Array.isArray(typePaths)).toBe(true)
