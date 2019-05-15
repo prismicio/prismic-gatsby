@@ -20,12 +20,12 @@ const normalizeField = async (id, value, depth, context) => {
     doc,
     enqueueNode,
     typePaths,
-    gatsbyContext,
+    createNodeId,
+    createContentDigest,
     normalizeImageField,
     normalizeLinkField,
     normalizeStructuredTextField,
   } = context
-  const { createNodeId, createContentDigest } = gatsbyContext
 
   const type = getTypeForPath([...depth, id], typePaths)
 
@@ -120,8 +120,7 @@ const normalizeObjs = (objs, depth, context) =>
   )(objs)
 
 export const documentToNodes = async (doc, context) => {
-  const { gatsbyContext } = context
-  const { createNodeId, createContentDigest } = gatsbyContext
+  const { createNodeId, createContentDigest } = context
 
   const nodes = []
   const enqueueNode = node => nodes.push(node)

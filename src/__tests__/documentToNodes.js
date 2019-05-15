@@ -1,10 +1,14 @@
 import { documentToNodes } from '../documentToNodes'
 
+const createNodeId = jest.fn().mockReturnValue('result of createNodeId')
+
+const createContentDigest = jest
+  .fn()
+  .mockReturnValue('result of createContentDigest')
+
 const gatsbyContext = {
-  createNodeId: jest.fn().mockReturnValue('result of createNodeId'),
-  createContentDigest: jest
-    .fn()
-    .mockReturnValue('result of createContentDigest'),
+  createNodeId,
+  createContentDigest,
   actions: {},
   schema: {},
   store: {},
@@ -22,6 +26,8 @@ const normalizeLinkField = jest
 
 const baseContext = {
   gatsbyContext,
+  createNodeId,
+  createContentDigest,
   normalizeLinkField,
   normalizeImageField,
   normalizeStructuredTextField,
@@ -37,14 +43,14 @@ describe('documentToNodes', () => {
   })
 
   describe('PrismicDocument', () => {
-    test('sets document id as prismicId', async () => {
+    test('sets prismicId as document id', async () => {
       const result = await documentToNodes(baseDoc, baseContext)
 
       expect(result[0].id).toBe('result of createNodeId')
       expect(result[0].prismicId).toBe('id')
     })
 
-    test('dataString is equal to data stringified pre-normalization', async () => {
+    test('sets dataString to data stringified pre-normalization', async () => {
       const data = { link: { type: 'custom_type' } }
       const result = await documentToNodes(
         { ...baseDoc, data },
@@ -60,7 +66,7 @@ describe('documentToNodes', () => {
       expect(result[0].dataString).toEqual(JSON.stringify(data))
     })
 
-    test('dataRaw is equal to data', async () => {
+    test('sets dataRaw to data pre-normalization', async () => {
       const data = { link: { type: 'custom_type' } }
       const result = await documentToNodes(
         { ...baseDoc, data },

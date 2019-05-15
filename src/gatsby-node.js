@@ -80,6 +80,8 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
       documentToNodes(doc, {
         typePaths,
         gatsbyContext,
+        createNodeId: gatsbyContext.createNodeId,
+        createContentDigest: gatsbyContext.createContentDigest,
         pluginOptions,
         normalizeImageField,
         normalizeLinkField,
