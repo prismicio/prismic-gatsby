@@ -2,12 +2,6 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
 
-import {
-  normalizeImageField,
-  normalizeLinkField,
-  normalizeStructuredTextField,
-} from './nodeNormalizers'
-
 const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
 
 const getTypeForPath = (path, typePaths) =>
@@ -22,7 +16,15 @@ const getTypeForPath = (path, typePaths) =>
   )(typePaths)
 
 const normalizeField = async (id, value, depth, context) => {
-  const { doc, enqueueNode, typePaths, gatsbyContext } = context
+  const {
+    doc,
+    enqueueNode,
+    typePaths,
+    gatsbyContext,
+    normalizeImageField,
+    normalizeLinkField,
+    normalizeStructuredTextField,
+  } = context
   const { createNodeId, createContentDigest } = gatsbyContext
 
   const type = getTypeForPath([...depth, id], typePaths)
@@ -138,6 +140,7 @@ export const documentToNodes = async (doc, context) => {
     prismicId: doc.id,
     data: normalizedData,
     dataString: JSON.stringify(doc.data),
+    dataRaw: doc.data,
     internal: {
       type: pascalcase(`Prismic ${doc.type}`),
       contentDigest: createContentDigest(doc),

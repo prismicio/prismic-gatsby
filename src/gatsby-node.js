@@ -8,6 +8,11 @@ import {
 } from './generateTypeDefsForCustomType'
 import { documentToNodes } from './documentToNodes'
 import standardTypes from './standardTypes.graphql'
+import {
+  normalizeImageField,
+  normalizeLinkField,
+  normalizeStructuredTextField,
+} from './nodeNormalizers'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
@@ -72,7 +77,14 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     R.then(R.flatten),
     RA.allP,
     R.map(doc =>
-      documentToNodes(doc, { typePaths, gatsbyContext, pluginOptions }),
+      documentToNodes(doc, {
+        typePaths,
+        gatsbyContext,
+        pluginOptions,
+        normalizeImageField,
+        normalizeLinkField,
+        normalizeStructuredTextField,
+      }),
     ),
   )(documents)
 }
