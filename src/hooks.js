@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useContext } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   camelCase,
   compose,
@@ -38,6 +38,7 @@ export const usePrismicPreview = (location, overrides) => {
   if (!location) throw new Error('Invalid location object!. Check hook call.')
 
   const { pluginOptions: options, typePaths } = usePreviewContext()
+
   const pluginOptions = { ...options, ...overrides }
   const {
     fetchLinks,

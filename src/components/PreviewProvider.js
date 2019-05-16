@@ -18,7 +18,6 @@ export const PreviewProvider = ({ children, pluginOptions, ...props }) => {
       `${__PATH_PREFIX__}/prismic__${repositoryName}__typeDefs.json`,
     )
     const data = await req.text()
-    console.log(data)
     const typePaths = JSON.parse(data)
 
     setTypePaths(typePaths)
