@@ -1,3 +1,4 @@
+import fs from 'fs'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
@@ -92,4 +93,9 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
       }),
     ),
   )(documents)
+
+  fs.writeFileSync(
+    `public/prismic__${repositoryName}__typeDefs.json`,
+    JSON.stringify(typePaths),
+  )
 }
