@@ -1,58 +1,75 @@
+import * as R from 'ramda'
 import { documentToNodes } from '../documentToNodes'
 
-const createNodeId = jest.fn().mockReturnValue('result of createNodeId')
+let nodeStore = []
+const createNode = node => nodeStore.push(node)
 
+const createNodeIdReturnValue = 'result of createNodeId'
+const createNodeId = jest.fn().mockReturnValue(createNodeIdReturnValue)
+
+const createContentDigestReturnValue = 'result of createContentDigest'
 const createContentDigest = jest
   .fn()
-  .mockReturnValue('result of createContentDigest')
+  .mockReturnValue(createContentDigestReturnValue)
 
-const gatsbyContext = {
-  createNodeId,
-  createContentDigest,
-  actions: {},
-  schema: {},
-  store: {},
-  cache: {},
+const normalizeImageFieldReturnValue = {
+  value: 'result of normalizeImageField',
 }
+const normalizeImageField = jest
+  .fn()
+  .mockReturnValue(normalizeImageFieldReturnValue)
 
-const normalizedImageValue = { value: 'result of normalizeImageField' }
-const normalizeImageField = jest.fn().mockReturnValue(normalizedImageValue)
+const normalizeStructuredTextFieldReturnValue =
+  'result of normalizeStructuredTextField'
 const normalizeStructuredTextField = jest
   .fn()
-  .mockReturnValue('result of normalizeStructuredTextField')
+  .mockReturnValue(normalizeStructuredTextFieldReturnValue)
+
+const normalizeLinkFieldReturnValue = 'result of normalizeLinkField'
 const normalizeLinkField = jest
   .fn()
-  .mockReturnValue('result of normalizeLinkField')
+  .mockReturnValue(normalizeLinkFieldReturnValue)
+
+const normalizeSlicesFieldReturnValue = 'result of normalizeSlicesField'
+const normalizeSlicesField = jest
+  .fn()
+  .mockReturnValue(normalizeSlicesFieldReturnValue)
 
 const baseContext = {
-  gatsbyContext,
+  createNode,
   createNodeId,
   createContentDigest,
-  normalizeLinkField,
   normalizeImageField,
+  normalizeLinkField,
+  normalizeSlicesField,
   normalizeStructuredTextField,
 }
 
 const baseDoc = { id: 'id', type: 'custom_type' }
 
-describe('documentToNodes', () => {
-  test('returns a list of normalized nodes', async () => {
-    const result = await documentToNodes(baseDoc, baseContext)
+beforeEach(() => {
+  nodeStore = []
+})
 
-    expect(Array.isArray(result)).toBe(true)
+describe('documentToNodes', () => {
+  test('creates normalized nodes for a given document', async () => {
+    await documentToNodes(baseDoc, baseContext)
+
+    expect(nodeStore).toHaveLength(1)
   })
 
   describe('PrismicDocument', () => {
     test('sets prismicId as document id', async () => {
-      const result = await documentToNodes(baseDoc, baseContext)
+      await documentToNodes(baseDoc, baseContext)
 
-      expect(result[0].id).toBe('result of createNodeId')
-      expect(result[0].prismicId).toBe('id')
+      expect(nodeStore[0].id).toBe(createNodeIdReturnValue)
+      expect(nodeStore[0].prismicId).toBe('id')
     })
 
     test('sets dataString to data stringified pre-normalization', async () => {
       const data = { link: { type: 'custom_type' } }
-      const result = await documentToNodes(
+
+      await documentToNodes(
         { ...baseDoc, data },
         {
           ...baseContext,
@@ -63,12 +80,13 @@ describe('documentToNodes', () => {
         },
       )
 
-      expect(result[0].dataString).toEqual(JSON.stringify(data))
+      expect(nodeStore[0].dataString).toEqual(JSON.stringify(data))
     })
 
     test('sets dataRaw to data pre-normalization', async () => {
       const data = { link: { type: 'custom_type' } }
-      const result = await documentToNodes(
+
+      await documentToNodes(
         { ...baseDoc, data },
         {
           ...baseContext,
@@ -79,7 +97,7 @@ describe('documentToNodes', () => {
         },
       )
 
-      expect(result[0].dataRaw).toEqual(data)
+      expect(nodeStore[0].dataRaw).toEqual(data)
     })
   })
 
@@ -101,30 +119,25 @@ describe('documentToNodes', () => {
     }
 
     test('normalizes image fields', async () => {
-      const result = await documentToNodes(
-        { ...baseDoc, data: { image } },
-        context,
-      )
+      await documentToNodes({ ...baseDoc, data: { image } }, context)
 
-      expect(result[0].data.image).toEqual(normalizedImageValue)
+      expect(nodeStore[0].data.image).toEqual(normalizeImageFieldReturnValue)
     })
 
     test('normalizes image field thumbnail images', async () => {
-      const result = await documentToNodes(
+      await documentToNodes(
         { ...baseDoc, data: { image: { ...image, Thumb: image } } },
         context,
       )
 
-      expect(result[0].data.image).toEqual({
-        ...normalizedImageValue,
-        Thumb: normalizedImageValue,
+      expect(nodeStore[0].data.image).toEqual({
+        ...normalizeImageFieldReturnValue,
+        Thumb: normalizeImageFieldReturnValue,
       })
     })
   })
 
   describe('PrismicStructuredTextType', () => {
-    const normalizedStructuredTextValue =
-      'result of normalizeStructuredTextField'
     const context = {
       ...baseContext,
       typePaths: [
@@ -133,21 +146,21 @@ describe('documentToNodes', () => {
           type: 'PrismicStructuredTextType',
         },
       ],
-      normalizeStructuredTextField: () => normalizedStructuredTextValue,
     }
 
     test('normalizes structured text fields', async () => {
-      const result = await documentToNodes(
+      await documentToNodes(
         { ...baseDoc, data: { text: { spans: [] } } },
         context,
       )
 
-      expect(result[0].data.text).toEqual(normalizedStructuredTextValue)
+      expect(nodeStore[0].data.text).toEqual(
+        normalizeStructuredTextFieldReturnValue,
+      )
     })
   })
 
   describe('PrismicLinkType', () => {
-    const normalizedLinkValue = 'result of normalizeLinkField'
     const context = {
       ...baseContext,
       typePaths: [
@@ -156,21 +169,19 @@ describe('documentToNodes', () => {
           type: 'PrismicLinkType',
         },
       ],
-      normalizeLinkField: () => normalizedLinkValue,
     }
 
     test('normalizes link fields', async () => {
-      const result = await documentToNodes(
+      await documentToNodes(
         { ...baseDoc, data: { link: { type: 'custom_type' } } },
         context,
       )
 
-      expect(result[0].data.link).toEqual(normalizedLinkValue)
+      expect(nodeStore[0].data.link).toEqual(normalizeLinkFieldReturnValue)
     })
   })
 
   describe('GroupType', () => {
-    const normalizedLinkValue = 'result of normalizeLinkField'
     const context = {
       ...baseContext,
       typePaths: [
@@ -183,11 +194,10 @@ describe('documentToNodes', () => {
           type: 'PrismicLinkType',
         },
       ],
-      normalizeLinkField: () => normalizedLinkValue,
     }
 
     test('normalizes group fields by normalzing each entry', async () => {
-      const result = await documentToNodes(
+      await documentToNodes(
         {
           ...baseDoc,
           data: {
@@ -200,9 +210,9 @@ describe('documentToNodes', () => {
         context,
       )
 
-      expect(result[0].data.group).toEqual([
-        { link: 'result of normalizeLinkField' },
-        { link: 'result of normalizeLinkField' },
+      expect(nodeStore[0].data.group).toEqual([
+        { link: normalizeLinkFieldReturnValue },
+        { link: normalizeLinkFieldReturnValue },
       ])
     })
   })
@@ -220,7 +230,6 @@ describe('documentToNodes', () => {
       items: [linkField, linkField],
     }
 
-    const normalizedLinkValue = 'result of normalizeLinkField'
     const context = {
       ...baseContext,
       typePaths: [
@@ -259,11 +268,10 @@ describe('documentToNodes', () => {
           type: 'PrismicLinkType',
         },
       ],
-      normalizeLinkField: () => normalizedLinkValue,
     }
 
-    test('normalizes slices fields by normalizing to the entry node ID', async () => {
-      const result = await documentToNodes(
+    test('normalizes slices fields', async () => {
+      await documentToNodes(
         {
           ...baseDoc,
           data: { body: [primarySliceEntry] },
@@ -271,11 +279,30 @@ describe('documentToNodes', () => {
         context,
       )
 
-      expect(result[1].data.body).toEqual(['result of createNodeId'])
+      expect(nodeStore[1].data.body).toEqual(normalizeSlicesFieldReturnValue)
+    })
+
+    test('creates nodes for each slice entry', async () => {
+      await documentToNodes(
+        {
+          ...baseDoc,
+          data: { body: [primarySliceEntry, itemsSliceEntry] },
+        },
+        context,
+      )
+
+      const isSliceField = R.compose(
+        R.startsWith('PrismicCustomTypeBody'),
+        R.path(['internal', 'type']),
+      )
+
+      const sliceNodes = R.filter(isSliceField, nodeStore)
+
+      expect(sliceNodes).toHaveLength(2)
     })
 
     test('normalizes slices field entries with primary fields', async () => {
-      const result = await documentToNodes(
+      await documentToNodes(
         {
           ...baseDoc,
           data: { body: [primarySliceEntry] },
@@ -283,15 +310,15 @@ describe('documentToNodes', () => {
         context,
       )
 
-      expect(result[0]).toMatchObject({
-        id: 'result of createNodeId',
+      expect(nodeStore[0]).toMatchObject({
+        id: createNodeIdReturnValue,
         slice_type: 'link_with_primary',
-        primary: { link: normalizedLinkValue },
+        primary: { link: normalizeLinkFieldReturnValue },
       })
     })
 
     test('normalizes slices field entries with items fields', async () => {
-      const result = await documentToNodes(
+      await documentToNodes(
         {
           ...baseDoc,
           data: { body: [itemsSliceEntry] },
@@ -299,10 +326,13 @@ describe('documentToNodes', () => {
         context,
       )
 
-      expect(result[0]).toMatchObject({
-        id: 'result of createNodeId',
+      expect(nodeStore[0]).toMatchObject({
+        id: createNodeIdReturnValue,
         slice_type: 'link_with_items',
-        items: [{ link: normalizedLinkValue }, { link: normalizedLinkValue }],
+        items: [
+          { link: normalizeLinkFieldReturnValue },
+          { link: normalizeLinkFieldReturnValue },
+        ],
       })
     })
   })

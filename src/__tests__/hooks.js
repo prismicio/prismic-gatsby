@@ -184,24 +184,24 @@ describe('usePrismicPreview', () => {
         type: 'page',
         data: {
           title: [{ type: 'heading1', text: 'Test', spans: [] }],
-        },
-        body: [
-          {
-            slice_type: 'description',
-            slice_label: null,
-            items: [{}],
-            primary: {
-              heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
-              text: [
-                {
-                  type: 'paragraph',
-                  text: 'Copy Text.',
-                  spans: [],
-                },
-              ],
+          body: [
+            {
+              slice_type: 'description',
+              slice_label: null,
+              items: [],
+              primary: {
+                heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
+                text: [
+                  {
+                    type: 'paragraph',
+                    text: 'Copy Text.',
+                    spans: [],
+                  },
+                ],
+              },
             },
-          },
-        ],
+          ],
+        },
       }),
     }
     Prismic.getApi.mockResolvedValue(api)
@@ -230,25 +230,31 @@ describe('usePrismicPreview', () => {
             text: 'Test',
             raw: [{ type: 'heading1', text: 'Test', spans: [] }],
           },
-        },
-        body: [
-          {
-            slice_type: 'description',
-            slice_label: null,
-            items: [{}],
-            primary: {
-              heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
-              text: [{ type: 'paragraph', text: 'Copy Text.', spans: [] }],
+          body: [
+            {
+              slice_type: 'description',
+              slice_label: null,
+              items: [],
+              primary: {
+                heading: {
+                  text: 'Heading',
+                  html: '<h1>Heading</h1>',
+                  raw: [{ type: 'heading1', text: 'Heading', spans: [] }],
+                },
+                text: {
+                  text: 'Copy Text.',
+                  html: '<p>Copy Text.</p>',
+                  raw: [{ type: 'paragraph', text: 'Copy Text.', spans: [] }],
+                },
+              },
             },
-          },
-        ],
+          ],
+        },
         prismicId: 'XFyxoxAAACQAIqnY',
-        id: 'Prismic__Page__XFyxoxAAACQAIqnY',
-        parent: '__SOURCE__',
-        children: [],
+        id: '969133b6-03e3-5b18-9152-f2a6e96796e8',
         internal: {
           type: 'PrismicPage',
-          contentDigest: '4a506118c38b6adf9e5ec8dd9748479e',
+          contentDigest: '3061931390fa8405bfb7b946d5e4105d',
         },
       },
     })

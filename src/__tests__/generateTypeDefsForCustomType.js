@@ -499,29 +499,57 @@ describe('generateTypeDefsForCustomType', () => {
     test('returns paths to types', () => {
       const { typePaths } = generateTypeDefsForCustomType(
         customTypeId,
-        { Main: { uid: { type: 'UID' }, text: { type: 'Text' } } },
+        {
+          Main: {
+            uid: { type: 'UID' },
+            text: { type: 'Text' },
+            body: {
+              type: 'Slices',
+              config: {
+                choices: {
+                  slice: {
+                    type: 'Slice',
+                    'non-repeat': { key: { type: 'Text' } },
+                    repeat: { key: { type: 'Text' } },
+                  },
+                },
+              },
+            },
+          },
+        },
         context,
       )
 
-      expect(typePaths).toContainEqual({
-        path: ['custom_type'],
-        type: 'PrismicCustomType',
-      })
-
-      expect(typePaths).toContainEqual({
-        path: ['custom_type', 'uid'],
-        type: 'String',
-      })
-
-      expect(typePaths).toContainEqual({
-        path: ['custom_type', 'data'],
-        type: 'PrismicCustomTypeData',
-      })
-
-      expect(typePaths).toContainEqual({
-        path: ['custom_type', 'data', 'text'],
-        type: 'String',
-      })
+      expect(typePaths).toEqual([
+        { path: ['custom_type', 'uid'], type: 'String' },
+        { path: ['custom_type', 'data', 'text'], type: 'String' },
+        {
+          path: ['custom_type', 'data', 'body', 'slice', 'primary', 'key'],
+          type: 'String',
+        },
+        {
+          path: ['custom_type', 'data', 'body', 'slice', 'primary'],
+          type: 'PrismicCustomTypeBodySlicePrimaryType',
+        },
+        {
+          path: ['custom_type', 'data', 'body', 'slice', 'items', 'key'],
+          type: 'String',
+        },
+        {
+          path: ['custom_type', 'data', 'body', 'slice', 'items'],
+          type: '[PrismicCustomTypeBodySliceItemType]',
+        },
+        {
+          path: ['custom_type', 'data', 'body', 'slice'],
+          type: 'PrismicCustomTypeBodySlice',
+        },
+        {
+          path: ['custom_type', 'data', 'body'],
+          type: '[PrismicCustomTypeBodySlicesType]',
+        },
+        { path: ['custom_type', 'data'], type: 'PrismicCustomTypeData' },
+        { path: ['custom_type'], type: 'PrismicCustomType' },
+      ])
     })
   })
 })

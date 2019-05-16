@@ -13,6 +13,7 @@ const makeExternalPredicate = externalArr => {
 const externalPkgs = makeExternalPredicate([
   ...Object.keys(pkg.dependencies || {}),
   ...Object.keys(pkg.peerDependencies || {}),
+  'fs',
 ])
 
 export default [

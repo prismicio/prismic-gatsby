@@ -1,20 +1,31 @@
 import { useEffect, useState, useCallback } from 'react'
 import {
-  merge,
-  compose,
-  head,
-  keys,
-  has,
-  isPlainObject,
-  isFunction,
   camelCase,
+  compose,
+  has,
+  head,
+  isFunction,
+  isPlainObject,
+  keys,
+  last,
+  merge,
 } from 'lodash/fp'
 import { set as setCookie } from 'es-cookie'
 import Prismic from 'prismic-javascript'
+import uuidv5 from 'uuid/v5'
+import md5 from 'md5'
 import traverse from 'traverse'
 
-import { normalizeBrowserFields } from './normalizeBrowser'
-import { nodeHelpers, createNodeFactory } from './nodeHelpers'
+import { documentToNodes } from './documentToNodes'
+import { normalizeImageField } from './browser/normalizeImageField'
+import { normalizeLinkField } from './browser/normalizeLinkField'
+import { normalizeSlicesField } from './browser/normalizeSlicesField'
+import { normalizeStructuredTextField } from './browser/normalizeStructuredTextField'
+
+const seedConstant = `638f7a53-c567-4eca-8fc1-b23efb1cfb2b`
+const createNodeId = id =>
+  uuidv5(id, uuidv5('gatsby-source-prismic', seedConstant))
+const createContentDigest = obj => md5(JSON.stringify(obj))
 
 // Returns an object containing normalized Prismic preview data directly from
 // the Prismic API. The normalized data object's shape is identical to the shape
@@ -57,27 +68,90 @@ export const usePrismicPreview = ({
   // Normalizes preview data using browser-compatible normalize functions.
   const normalizePreviewData = useCallback(
     async rawPreviewData => {
-      const Node = createNodeFactory(rawPreviewData.type, async node => {
-        node.data = await normalizeBrowserFields({
-          value: node.data,
-          node,
-          linkResolver,
-          htmlSerializer,
-          fetchLinks,
-          shouldNormalizeImage: () => true,
-          nodeHelpers,
-          repositoryName,
-          accessToken,
-        })
+      const nodeStore = new Map()
+      const createNode = node => nodeStore.set(node.id, node)
 
-        return node
+      const rootNodeId = await documentToNodes(rawPreviewData, {
+        typePaths: [
+          {
+            path: [rawPreviewData.type, 'data', 'title'],
+            type: 'PrismicStructuredTextType',
+          },
+          {
+            path: [rawPreviewData.type, 'data', 'body'],
+            type: '[PrismicPageDataBodySlicesType]',
+          },
+          {
+            path: [rawPreviewData.type, 'data', 'body', 'description'],
+            type: 'PrismicPageBodyDescription',
+          },
+          {
+            path: [
+              rawPreviewData.type,
+              'data',
+              'body',
+              'description',
+              'primary',
+            ],
+            type: 'PrismicPageBodyDescriptionPrimaryType',
+          },
+          {
+            path: [
+              rawPreviewData.type,
+              'data',
+              'body',
+              'description',
+              'primary',
+              'heading',
+            ],
+            type: 'PrismicStructuredTextType',
+          },
+          {
+            path: [
+              rawPreviewData.type,
+              'data',
+              'body',
+              'description',
+              'primary',
+              'text',
+            ],
+            type: 'PrismicStructuredTextType',
+          },
+        ],
+        createNode,
+        createNodeId,
+        createContentDigest,
+        pluginOptions: { linkResolver, htmlSerializer },
+        nodeStore,
+        normalizeImageField,
+        normalizeLinkField,
+        normalizeSlicesField,
+        normalizeStructuredTextField,
       })
 
-      const node = await Node(rawPreviewData)
-      const prefixedType = camelCase(node.internal.type)
+      const rootNode = nodeStore.get(rootNodeId)
+
+      // const Node = createNodeFactory(rawPreviewData.type, async node => {
+      //   node.data = await normalizeBrowserFields({
+      //     value: node.data,
+      //     node,
+      //     linkResolver,
+      //     htmlSerializer,
+      //     fetchLinks,
+      //     shouldNormalizeImage: () => true,
+      //     nodeHelpers,
+      //     repositoryName,
+      //     accessToken,
+      //   })
+
+      //   return node
+      // })
+
+      // const node = await Node(rawPreviewData)
+      const prefixedType = camelCase(rootNode.internal.type)
 
       return {
-        [prefixedType]: node,
+        [prefixedType]: rootNode,
       }
     },
     [accessToken, fetchLinks, htmlSerializer, linkResolver, repositoryName],

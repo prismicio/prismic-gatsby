@@ -18,12 +18,13 @@ const getTypeForPath = (path, typePaths) =>
 const normalizeField = async (id, value, depth, context) => {
   const {
     doc,
-    enqueueNode,
     typePaths,
+    createNode,
     createNodeId,
     createContentDigest,
     normalizeImageField,
     normalizeLinkField,
+    normalizeSlicesField,
     normalizeStructuredTextField,
   } = context
 
@@ -65,7 +66,7 @@ const normalizeField = async (id, value, depth, context) => {
       return normalizeObjs(value, [...depth, id], context)
 
     case 'Slices':
-      return R.compose(
+      const sliceNodeIds = await R.compose(
         RA.allP,
         RA.mapIndexed(async (v, idx) => {
           const sliceNodeId = createNodeId(`${doc.type} ${doc.id} ${id} ${idx}`)
@@ -82,7 +83,7 @@ const normalizeField = async (id, value, depth, context) => {
             context,
           )
 
-          enqueueNode({
+          createNode({
             ...v,
             id: sliceNodeId,
             primary: normalizedPrimary,
@@ -96,6 +97,8 @@ const normalizeField = async (id, value, depth, context) => {
           return sliceNodeId
         }),
       )(value)
+
+      return normalizeSlicesField(id, sliceNodeIds, [...depth, id], context)
 
     default:
       return value
@@ -120,20 +123,16 @@ const normalizeObjs = (objs, depth, context) =>
   )(objs)
 
 export const documentToNodes = async (doc, context) => {
-  const { createNodeId, createContentDigest } = context
-
-  const nodes = []
-  const enqueueNode = node => nodes.push(node)
+  const { createNodeId, createContentDigest, createNode } = context
 
   const docNodeId = createNodeId(`${doc.type} ${doc.id}`)
   const normalizedData = await normalizeObj(doc.data, [doc.type, 'data'], {
     ...context,
     doc,
     docNodeId,
-    enqueueNode,
   })
 
-  enqueueNode({
+  createNode({
     ...doc,
     id: docNodeId,
     prismicId: doc.id,
@@ -146,5 +145,5 @@ export const documentToNodes = async (doc, context) => {
     },
   })
 
-  return nodes
+  return docNodeId
 }
