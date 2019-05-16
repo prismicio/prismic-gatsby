@@ -37,9 +37,9 @@ const createContentDigest = obj => md5(JSON.stringify(obj))
 export const usePrismicPreview = (location, overrides) => {
   if (!location) throw new Error('Invalid location object!. Check hook call.')
 
-  const { pluginOptions: options, typePaths } = usePreviewContext()
+  // const { pluginOptions: options, typePaths } = usePreviewContext()
 
-  const pluginOptions = { ...options, ...overrides }
+  const pluginOptions = { ...overrides }
   const {
     fetchLinks,
     accessToken,
@@ -67,6 +67,10 @@ export const usePrismicPreview = (location, overrides) => {
   // Normalizes preview data using browser-compatible normalize functions.
   const normalizePreviewData = useCallback(
     async rawPreviewData => {
+      const req = await fetch(`/prismic__${repositoryName}__typeDefs.json`)
+      const data = await req.text()
+      const typePaths = JSON.parse(data)
+
       const nodeStore = new Map()
       const createNode = node => nodeStore.set(node.id, node)
       const hasNodeById = id => nodeStore.has(id)
@@ -94,7 +98,7 @@ export const usePrismicPreview = (location, overrides) => {
         [prefixedType]: rootNode,
       }
     },
-    [pluginOptions, typePaths],
+    [pluginOptions, repositoryName],
   )
 
   // Fetches and normalizes preview data from Prismic.
