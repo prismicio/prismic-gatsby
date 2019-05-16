@@ -1,11 +1,56 @@
+import React from 'react'
 import { renderHook } from 'react-hooks-testing-library'
 import Prismic from 'prismic-javascript'
 
 import { mergePrismicPreviewData, usePrismicPreview } from '../hooks'
+import { PreviewProvider } from '../components/PreviewProvider'
 
 jest.mock('prismic-javascript')
 beforeEach(() => (console.error = jest.fn()))
 afterEach(() => console.error.mockClear())
+
+const renderHookWithProvider = (callback, pluginOverrides) =>
+  renderHook(callback, {
+    wrapper: props => (
+      <PreviewProvider
+        pluginOptions={{
+          accessToken: 'token',
+          repositoryName: 'repository',
+          linkResolver: doc => doc.uid,
+          htmlSerializer: () => {},
+          fetchLinks: [],
+          ...pluginOverrides,
+        }}
+        typePaths={[
+          {
+            path: ['page', 'data', 'title'],
+            type: 'PrismicStructuredTextType',
+          },
+          {
+            path: ['page', 'data', 'body'],
+            type: '[PrismicPageDataBodySlicesType]',
+          },
+          {
+            path: ['page', 'data', 'body', 'description'],
+            type: 'PrismicPageBodyDescription',
+          },
+          {
+            path: ['page', 'data', 'body', 'description', 'primary'],
+            type: 'PrismicPageBodyDescriptionPrimaryType',
+          },
+          {
+            path: ['page', 'data', 'body', 'description', 'primary', 'heading'],
+            type: 'PrismicStructuredTextType',
+          },
+          {
+            path: ['page', 'data', 'body', 'description', 'primary', 'text'],
+            type: 'PrismicStructuredTextType',
+          },
+        ]}
+        {...props}
+      />
+    ),
+  })
 
 describe('mergePrismicPreviewData', () => {
   test('returns undefined if staticData is falsey', () => {
@@ -125,69 +170,11 @@ describe('mergePrismicPreviewData', () => {
 
 describe('usePrismicPreview', () => {
   test('throws error if location is falsey', () => {
-    const { result } = renderHook(() =>
-      usePrismicPreview({
-        location: undefined,
-        accessToken: 'token',
-        repositoryName: 'repo-name',
-        linkResolver: doc => doc.uid,
-      }),
+    const { result } = renderHookWithProvider(() =>
+      usePrismicPreview(undefined),
     )
 
-    expect(result.error.message).toMatch(/invalid hook parameters!/i)
-  })
-
-  test('throws error if accessToken is falsey', () => {
-    const { result } = renderHook(() =>
-      usePrismicPreview({
-        location: {},
-        accessToken: undefined,
-        repositoryName: 'repo-name',
-        linkResolver: doc => doc.uid,
-      }),
-    )
-
-    expect(result.error.message).toMatch(/invalid hook parameters!/i)
-  })
-
-  test('throws error if repositoryName is falsey', () => {
-    const { result } = renderHook(() =>
-      usePrismicPreview({
-        location: {},
-        accessToken: 'token',
-        repositoryName: undefined,
-        linkResolver: doc => doc.uid,
-      }),
-    )
-
-    expect(result.error.message).toMatch(/invalid hook parameters!/i)
-  })
-
-  test('throws error if linkResolver is not a function', () => {
-    const { result } = renderHook(() =>
-      usePrismicPreview({
-        location: {},
-        accessToken: 'token',
-        repositoryName: 'repo',
-        linkResolver: 'hello world',
-      }),
-    )
-
-    expect(result.error.message).toMatch(/invalid hook parameters!/i)
-  })
-
-  test('returns path derived from provided linkResolver function', async () => {
-    const { result, waitForNextUpdate } = renderHook(() =>
-      usePrismicPreview({
-        location: {},
-        accessToken: 'token',
-        repositoryName: 'repo',
-        linkResolver: doc => doc.uid,
-      }),
-    )
-    await waitForNextUpdate()
-
-    expect(result.current.path).toMatch('test')
+    expect(result.error.message).toMatch(/invalid location object!/i)
   })
 
   test('returns normalized preview data from Prismic', async () => {
@@ -220,7 +207,7 @@ describe('usePrismicPreview', () => {
     }
     Prismic.getApi.mockResolvedValue(api)
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHookWithProvider(() =>
       usePrismicPreview({
         location: {
           search:

@@ -31,4 +31,10 @@ export default [
     external: externalPkgs,
     plugins: [babel(), string({ include: '**/*.graphql' })],
   },
+  {
+    input: 'src/gatsby-browser.js',
+    output: { file: 'dist/gatsby-browser.js', format: 'cjs' },
+    external: externalPkgs,
+    plugins: [babel()],
+  },
 ]

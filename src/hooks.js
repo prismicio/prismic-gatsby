@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
 import {
   camelCase,
   compose,
@@ -15,6 +15,7 @@ import Prismic from 'prismic-javascript'
 import uuidv5 from 'uuid/v5'
 import md5 from 'md5'
 import traverse from 'traverse'
+import { usePreviewContext } from './components/PreviewProvider'
 
 import { documentToNodes } from './documentToNodes'
 import {
@@ -33,22 +34,17 @@ const createContentDigest = obj => md5(JSON.stringify(obj))
 // the Prismic API. The normalized data object's shape is identical to the shape
 // created by Gatsby at build time minus image processing due to running in the
 // browser. Instead, image nodes return their source URL.
-export const usePrismicPreview = ({
-  location,
-  linkResolver = () => {},
-  htmlSerializer = () => {},
-  fetchLinks = [],
-  accessToken,
-  repositoryName,
-}) => {
-  if (
-    !location ||
-    !accessToken ||
-    !repositoryName ||
-    !isPlainObject(location) ||
-    !isFunction(linkResolver)
-  )
-    throw new Error('Invalid hook parameters!. Check hook call.')
+export const usePrismicPreview = (location, overrides) => {
+  if (!location) throw new Error('Invalid location object!. Check hook call.')
+
+  const { pluginOptions: options, typePaths } = usePreviewContext()
+  const pluginOptions = { ...options, ...overrides }
+  const {
+    fetchLinks,
+    accessToken,
+    repositoryName,
+    linkResolver,
+  } = pluginOptions
 
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
   const [state, setState] = useState({
@@ -76,59 +72,13 @@ export const usePrismicPreview = ({
       const getNodeById = id => nodeStore.get(id)
 
       const rootNodeId = await documentToNodes(rawPreviewData, {
-        typePaths: [
-          {
-            path: [rawPreviewData.type, 'data', 'title'],
-            type: 'PrismicStructuredTextType',
-          },
-          {
-            path: [rawPreviewData.type, 'data', 'body'],
-            type: '[PrismicPageDataBodySlicesType]',
-          },
-          {
-            path: [rawPreviewData.type, 'data', 'body', 'description'],
-            type: 'PrismicPageBodyDescription',
-          },
-          {
-            path: [
-              rawPreviewData.type,
-              'data',
-              'body',
-              'description',
-              'primary',
-            ],
-            type: 'PrismicPageBodyDescriptionPrimaryType',
-          },
-          {
-            path: [
-              rawPreviewData.type,
-              'data',
-              'body',
-              'description',
-              'primary',
-              'heading',
-            ],
-            type: 'PrismicStructuredTextType',
-          },
-          {
-            path: [
-              rawPreviewData.type,
-              'data',
-              'body',
-              'description',
-              'primary',
-              'text',
-            ],
-            type: 'PrismicStructuredTextType',
-          },
-        ],
+        typePaths,
         createNode,
         createNodeId,
         createContentDigest,
         hasNodeById,
         getNodeById,
-        pluginOptions: { linkResolver, htmlSerializer },
-        nodeStore,
+        pluginOptions,
         normalizeImageField,
         normalizeLinkField,
         normalizeSlicesField,
@@ -137,30 +87,13 @@ export const usePrismicPreview = ({
 
       const rootNode = nodeStore.get(rootNodeId)
 
-      // const Node = createNodeFactory(rawPreviewData.type, async node => {
-      //   node.data = await normalizeBrowserFields({
-      //     value: node.data,
-      //     node,
-      //     linkResolver,
-      //     htmlSerializer,
-      //     fetchLinks,
-      //     shouldNormalizeImage: () => true,
-      //     nodeHelpers,
-      //     repositoryName,
-      //     accessToken,
-      //   })
-
-      //   return node
-      // })
-
-      // const node = await Node(rawPreviewData)
       const prefixedType = camelCase(rootNode.internal.type)
 
       return {
         [prefixedType]: rootNode,
       }
     },
-    [accessToken, fetchLinks, htmlSerializer, linkResolver, repositoryName],
+    [pluginOptions, typePaths],
   )
 
   // Fetches and normalizes preview data from Prismic.
@@ -168,15 +101,6 @@ export const usePrismicPreview = ({
     const searchParams = new URLSearchParams(location.search)
     const token = searchParams.get('token')
     const docID = searchParams.get('documentId')
-
-    if (!token || !docID) {
-      setState({
-        ...state,
-        isInvalid: true,
-      })
-
-      return
-    }
 
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)
