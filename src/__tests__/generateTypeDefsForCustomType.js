@@ -204,7 +204,7 @@ describe('generateTypeDefsForCustomType', () => {
         )
 
         const resolver = typeDefs[0].config.fields.key.resolve
-        const getNodeById = jest.fn()
+        const getNodeById = jest.fn().mockReturnValue({ type: 'File' })
 
         resolver(
           { image: { localFile: 'baseId' } },
@@ -227,7 +227,7 @@ describe('generateTypeDefsForCustomType', () => {
         )
 
         const resolver = typeDefs[0].config.fields.key.resolve
-        const getNodeById = jest.fn()
+        const getNodeById = jest.fn().mockReturnValue({ type: 'File' })
 
         resolver(
           {

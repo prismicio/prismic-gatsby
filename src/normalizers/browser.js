@@ -1,8 +1,33 @@
 import Prismic from 'prismic-javascript'
+import PrismicDOM from 'prismic-dom'
 
 import { documentToNodes } from '../documentToNodes'
 
-export { normalizeStructuredTextField } from './node'
+// Normalizes a PrismicStructuredTextType field by providing HTML and text
+// versions of the value using `prismic-dom` on the `html` and `text` keys,
+// respectively. The raw value is provided on the `raw` key.
+export const normalizeStructuredTextField = async (
+  id,
+  value,
+  _depth,
+  context,
+) => {
+  const { doc, pluginOptions } = context
+  const { linkResolver, htmlSerializer } = pluginOptions
+
+  const linkResolverForField = linkResolver({ key: id, value, node: doc })
+  const htmlSerializerForField = htmlSerializer({ key: id, value, node: doc })
+
+  return {
+    html: PrismicDOM.RichText.asHtml(
+      value,
+      linkResolverForField,
+      htmlSerializerForField,
+    ),
+    text: PrismicDOM.RichText.asText(value),
+    raw: value,
+  }
+}
 
 const fetchAndCreateDocumentNodes = async (id, context) => {
   const { hasNodeById, pluginOptions } = context
