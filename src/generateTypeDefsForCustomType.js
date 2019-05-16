@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import pascalcase from 'pascalcase'
 
-const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
+const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url', 'localFile']
 
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the

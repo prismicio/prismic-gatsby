@@ -2,7 +2,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
 
-const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url']
+const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url', 'localFile']
 
 const getTypeForPath = (path, typePaths) =>
   R.compose(
