@@ -17,10 +17,12 @@ import md5 from 'md5'
 import traverse from 'traverse'
 
 import { documentToNodes } from './documentToNodes'
-import { normalizeImageField } from './browser/normalizeImageField'
-import { normalizeLinkField } from './browser/normalizeLinkField'
-import { normalizeSlicesField } from './browser/normalizeSlicesField'
-import { normalizeStructuredTextField } from './browser/normalizeStructuredTextField'
+import {
+  normalizeImageField,
+  normalizeLinkField,
+  normalizeSlicesField,
+  normalizeStructuredTextField,
+} from './normalizers/browser'
 
 const seedConstant = `638f7a53-c567-4eca-8fc1-b23efb1cfb2b`
 const createNodeId = id =>
@@ -70,6 +72,8 @@ export const usePrismicPreview = ({
     async rawPreviewData => {
       const nodeStore = new Map()
       const createNode = node => nodeStore.set(node.id, node)
+      const hasNodeById = id => nodeStore.has(id)
+      const getNodeById = id => nodeStore.get(id)
 
       const rootNodeId = await documentToNodes(rawPreviewData, {
         typePaths: [
@@ -121,6 +125,8 @@ export const usePrismicPreview = ({
         createNode,
         createNodeId,
         createContentDigest,
+        hasNodeById,
+        getNodeById,
         pluginOptions: { linkResolver, htmlSerializer },
         nodeStore,
         normalizeImageField,

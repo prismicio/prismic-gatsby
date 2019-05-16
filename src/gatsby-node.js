@@ -7,11 +7,13 @@ import {
   generateTypeDefForLinkType,
 } from './generateTypeDefsForCustomType'
 import { documentToNodes } from './documentToNodes'
+import {
+  normalizeImageField,
+  normalizeLinkField,
+  normalizeSlicesField,
+  normalizeStructuredTextField,
+} from './normalizers/node'
 import standardTypes from './standardTypes.graphql'
-import { normalizeImageField } from './node/normalizeImageField'
-import { normalizeLinkField } from './node/normalizeLinkField'
-import { normalizeSlicesField } from './node/normalizeSlicesField'
-import { normalizeStructuredTextField } from './node/normalizeStructuredTextField'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
@@ -74,13 +76,12 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   })
 
   await R.compose(
-    R.then(R.forEach(createNode)),
-    R.then(R.flatten),
     RA.allP,
     R.map(doc =>
       documentToNodes(doc, {
         typePaths,
         gatsbyContext,
+        createNode,
         createNodeId,
         createContentDigest,
         pluginOptions,
