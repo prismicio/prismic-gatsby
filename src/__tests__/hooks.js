@@ -6,9 +6,6 @@ import { mergePrismicPreviewData, usePrismicPreview } from '../hooks'
 jest.mock('prismic-javascript')
 beforeEach(() => (console.error = jest.fn()))
 afterEach(() => console.error.mockClear())
-const mockURLSearchParams = jest
-  .spyOn(URLSearchParams.prototype, 'get')
-  .mockImplementation(key => key)
 
 describe('mergePrismicPreviewData', () => {
   test('returns undefined if staticData is falsey', () => {
@@ -127,38 +124,6 @@ describe('mergePrismicPreviewData', () => {
 })
 
 describe('usePrismicPreview', () => {
-  beforeEach(() => {
-    const api = {
-      getByID: async () => ({
-        id: 'XFyxoxAAACQAIqnY',
-        uid: 'test',
-        type: 'page',
-        data: {
-          title: [{ type: 'heading1', text: 'Test', spans: [] }],
-        },
-        body: [
-          {
-            slice_type: 'description',
-            slice_label: null,
-            items: [{}],
-            primary: {
-              heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
-              text: [
-                {
-                  type: 'paragraph',
-                  text: 'Copy Text.',
-                  spans: [],
-                },
-              ],
-            },
-          },
-        ],
-      }),
-    }
-    Prismic.getApi.mockResolvedValue(api)
-  })
-  afterEach(() => Prismic.getApi.mockClear())
-
   test('throws error if location is falsey', () => {
     const { result } = renderHook(() =>
       usePrismicPreview({
@@ -226,6 +191,35 @@ describe('usePrismicPreview', () => {
   })
 
   test('returns normalized preview data from Prismic', async () => {
+    const api = {
+      getByID: async () => ({
+        id: 'XFyxoxAAACQAIqnY',
+        uid: 'test',
+        type: 'page',
+        data: {
+          title: [{ type: 'heading1', text: 'Test', spans: [] }],
+          body: [
+            {
+              slice_type: 'description',
+              slice_label: null,
+              items: [],
+              primary: {
+                heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
+                text: [
+                  {
+                    type: 'paragraph',
+                    text: 'Copy Text.',
+                    spans: [],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      }),
+    }
+    Prismic.getApi.mockResolvedValue(api)
+
     const { result, waitForNextUpdate } = renderHook(() =>
       usePrismicPreview({
         location: {
@@ -234,9 +228,10 @@ describe('usePrismicPreview', () => {
         },
         accessToken: 'token',
         repositoryName: 'repo',
-        linkResolver: doc => doc.uid,
+        linkResolver: () => '/',
       }),
     )
+
     await waitForNextUpdate()
 
     expect(result.current.previewData).toMatchObject({
@@ -249,44 +244,33 @@ describe('usePrismicPreview', () => {
             text: 'Test',
             raw: [{ type: 'heading1', text: 'Test', spans: [] }],
           },
-        },
-        body: [
-          {
-            slice_type: 'description',
-            slice_label: null,
-            items: [{}],
-            primary: {
-              heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
-              text: [{ type: 'paragraph', text: 'Copy Text.', spans: [] }],
+          body: [
+            {
+              slice_type: 'description',
+              slice_label: null,
+              items: [],
+              primary: {
+                heading: {
+                  text: 'Heading',
+                  html: '<h1>Heading</h1>',
+                  raw: [{ type: 'heading1', text: 'Heading', spans: [] }],
+                },
+                text: {
+                  text: 'Copy Text.',
+                  html: '<p>Copy Text.</p>',
+                  raw: [{ type: 'paragraph', text: 'Copy Text.', spans: [] }],
+                },
+              },
             },
-          },
-        ],
+          ],
+        },
         prismicId: 'XFyxoxAAACQAIqnY',
-        id: 'Prismic__Page__XFyxoxAAACQAIqnY',
-        parent: '__SOURCE__',
-        children: [],
+        id: '969133b6-03e3-5b18-9152-f2a6e96796e8',
         internal: {
           type: 'PrismicPage',
-          contentDigest: '4a506118c38b6adf9e5ec8dd9748479e',
+          contentDigest: '3061931390fa8405bfb7b946d5e4105d',
         },
       },
     })
-  })
-
-  test('isInvalid state is true when location has no search parameters', () => {
-    mockURLSearchParams.mockRestore()
-
-    const { result } = renderHook(() =>
-      usePrismicPreview({
-        location: {
-          search: 'http://localhost/preview',
-        },
-        accessToken: 'token',
-        repositoryName: 'repo',
-        linkResolver: doc => doc.uid,
-      }),
-    )
-
-    expect(result.current.isInvalid).toBe(true)
   })
 })

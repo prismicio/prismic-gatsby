@@ -1,0 +1,63 @@
+type PrismicStructuredTextType {
+  html: String
+  text: String
+}
+
+type PrismicGeoPointType {
+  latitude: Float
+  longitude: Float
+}
+
+type PrismicEmbedType {
+  author_name: String
+  author_url: String
+  cache_age: String
+  embed_url: String
+  html: String
+  name: String
+  provider_name: String
+  provider_url: String
+  thumbnail_height: Int
+  thumbnail_url: String
+  thumbnail_width: Int
+  title: String
+  type: String
+  version: String
+}
+
+type PrismicImageDimensionsType {
+  width: Int
+  height: Int
+}
+
+type PrismicImageType {
+  alt: String
+  copyright: String
+  dimensions: PrismicImageDimensionsType
+  url: String
+  localFile: File
+}
+
+type PrismicLinkType {
+  id: String
+  type: String
+  tags: [String]
+  slug: String
+  uid: String
+  link_type: String
+  isBroken: String
+  url: String
+  target: String
+  document: PrismicAllDocumentTypes
+}
+
+interface PrismicDocument {
+  dataString: String
+  first_publication_date: Date
+  href: String
+  id: ID!
+  lang: String
+  last_publication_date: Date
+  # tags: [String]
+  type: String
+}

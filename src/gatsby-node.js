@@ -1,22 +1,36 @@
+import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
+
 import fetchData from './fetch'
-import { normalizeFields } from './normalize'
-import { nodeHelpers, createNodeFactory } from './nodeHelpers'
-import { createTemporaryMockNodes } from './createTemporaryMockNodes'
+import {
+  generateTypeDefsForCustomType,
+  generateTypeDefForLinkType,
+} from './generateTypeDefsForCustomType'
+import { documentToNodes } from './documentToNodes'
+import {
+  normalizeImageField,
+  normalizeLinkField,
+  normalizeSlicesField,
+  normalizeStructuredTextField,
+} from './normalizers/node'
+import standardTypes from './standardTypes.graphql'
 
 export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   const {
     schema,
-    actions: { createNode },
+    actions: { createNode, createTypes },
+    createNodeId,
+    createContentDigest,
   } = gatsbyContext
 
   // Set default plugin options.
   pluginOptions = {
-    linkResolver: () => undefined,
-    htmlSerializer: () => undefined,
+    linkResolver: RA.noop,
+    htmlSerializer: RA.noop,
     fetchLinks: [],
     schemas: {},
     lang: '*',
-    shouldNormalizeImage: () => true,
+    shouldNormalizeImage: R.always(true),
     ...pluginOptions,
   }
 
@@ -28,10 +42,31 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     schemas,
   } = pluginOptions
 
-  await createTemporaryMockNodes({
-    schemas,
-    gatsbyContext,
-  })
+  const typeVals = R.compose(
+    R.values,
+    R.mapObjIndexed((json, id) =>
+      generateTypeDefsForCustomType(id, json, {
+        gatsbyContext,
+        pluginOptions,
+      }),
+    ),
+  )(schemas)
+
+  const typeDefs = R.compose(
+    R.flatten,
+    R.map(R.prop('typeDefs')),
+  )(typeVals)
+
+  const typePaths = R.compose(
+    R.flatten,
+    R.map(R.prop('typePaths')),
+  )(typeVals)
+
+  const linkTypeDef = generateTypeDefForLinkType(typeDefs, schema)
+
+  createTypes(standardTypes)
+  createTypes(linkTypeDef)
+  createTypes(typeDefs)
 
   const { documents } = await fetchData({
     repositoryName,
@@ -40,32 +75,21 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
     lang,
   })
 
-  const promises = documents.map(async doc => {
-    const Node = createNodeFactory(doc.type, async node => {
-      node.dataString = JSON.stringify(node.data)
-      node.data = await normalizeFields({
-        value: node.data,
-        node,
+  await R.compose(
+    RA.allP,
+    R.map(doc =>
+      documentToNodes(doc, {
+        typePaths,
         gatsbyContext,
+        createNode,
+        createNodeId,
+        createContentDigest,
         pluginOptions,
-        nodeHelpers,
-      })
-
-      return node
-    })
-
-    const node = await Node(doc)
-
-    createNode(node)
-  })
-
-  await Promise.all(promises)
-
-  return
-}
-
-export const onPreExtractQueries = async (gatsbyContext, pluginOptions) => {
-  const { schemas = {} } = pluginOptions
-
-  await createTemporaryMockNodes({ schemas, gatsbyContext })
+        normalizeImageField,
+        normalizeLinkField,
+        normalizeSlicesField,
+        normalizeStructuredTextField,
+      }),
+    ),
+  )(documents)
 }
