@@ -225,11 +225,18 @@ describe('usePrismicPreview', () => {
     linkResolver: () => () => '/',
     pathResolver: () => () => '/',
     htmlSerializer: () => {},
-    repositoryName: 'Testing',
-    token: 'token',
   }
 
   global.fetch = mockFetch(typePaths)
+  global.___PRISMIC___ = {
+    pluginOptions: {
+      repositoryName: 'repo',
+      accessToken: 'token',
+      fetchLinks: '',
+      schemas: {},
+    },
+    schemasDigest: '',
+  }
 
   const api = {
     getByID: async () => rawPreviewData,
