@@ -1,31 +1,38 @@
-import { createRemoteFileNode } from 'gatsby-source-filesystem'
+import util from 'util'
 
 import {
   normalizeImageField,
   normalizeLinkField,
   normalizeSlicesField,
   normalizeStructuredTextField,
-} from '../../normalizers/node'
+} from '../../normalizers/browser'
 
 const createNodeIdReturnValue = 'result of createNodeId'
 const createNodeId = jest.fn().mockReturnValue(createNodeIdReturnValue)
 
+const createContentDigestReturnValue = 'result of createContentDigest'
+const createContentDigest = jest
+  .fn()
+  .mockReturnValue(createContentDigestReturnValue)
+
 const context = {
   doc: { id: 'id' },
   createNodeId,
+  hasNodeById: () => {},
   gatsbyContext: { actions: {} },
   pluginOptions: { linkResolver: () => {}, htmlSerializer: () => {} },
+  createContentDigest,
 }
 
 describe('normalizeImageField', () => {
-  const value = {
-    url: 'url',
-    dimensions: 'dimensions',
-    alt: 'alt',
-    copyright: 'copyright',
-  }
+  test('returns localFile field alongside base fields with null value', async () => {
+    const value = {
+      url: 'url',
+      dimensions: 'dimensions',
+      alt: 'alt',
+      copyright: 'copyright',
+    }
 
-  test('returns localFile field alongside base fields', async () => {
     const result = await normalizeImageField(
       undefined,
       value,
@@ -35,31 +42,21 @@ describe('normalizeImageField', () => {
 
     expect(result).toEqual({
       ...value,
-      localFile: 'remoteFileNodeId',
+      localFile: null,
     })
-  })
-
-  test('localFile field is null if file node could not be created', async () => {
-    createRemoteFileNode.mockImplementation(async () => {
-      throw new Error()
-    })
-
-    const result = await normalizeImageField(
-      undefined,
-      value,
-      undefined,
-      context,
-    )
-
-    createRemoteFileNode.mockReset()
-
-    expect(result.localFile).toBeNull()
   })
 })
 
 describe('normalizeLinkField', () => {
-  test('returns url, document, and raw fields alongside base fields', async () => {
-    const value = { link_type: 'Document', id: 'id' }
+  test('returns a proxy', async () => {
+    const result = await normalizeLinkField(undefined, {}, undefined, context)
+
+    expect(util.types.isProxy(result)).toBe(true)
+  })
+
+  test('returns url and raw fields alongside base fields', async () => {
+    const value = { link_type: 'Web', url: 'http://example.com' }
+
     const result = await normalizeLinkField(
       undefined,
       value,
@@ -69,22 +66,54 @@ describe('normalizeLinkField', () => {
 
     expect(result).toEqual({
       ...value,
-      url: '',
-      document: createNodeIdReturnValue,
       raw: value,
     })
   })
 
-  test('document field is node id of linked document if document link', async () => {
-    const value = { link_type: 'Document', id: 'id' }
-    const result = await normalizeLinkField(
-      undefined,
-      value,
-      undefined,
-      context,
-    )
+  test('document field returns node from node store', async () => {
+    const node = { id: createNodeIdReturnValue }
+    const nodeStore = new Map([[node.id, node]])
+    const hasNodeById = id => nodeStore.has(id)
+    const getNodeById = id => nodeStore.get(id)
 
-    expect(result.document).toEqual(createNodeIdReturnValue)
+    const value = { link_type: 'Document', id: 'id' }
+
+    const result = await normalizeLinkField(undefined, value, undefined, {
+      ...context,
+      hasNodeById,
+      getNodeById,
+    })
+
+    expect(result.document).toEqual(node)
+  })
+
+  test('fetches and creates normalized node for document link if not in node store', async () => {
+    const nodeStore = new Map()
+    const createNode = node => nodeStore.set(node.id, node)
+    const hasNodeById = id => nodeStore.has(id)
+    const getNodeById = id => nodeStore.get(id)
+
+    const value = { link_type: 'Document', id: 'id', type: 'custom_type' }
+
+    const result = await normalizeLinkField(undefined, value, undefined, {
+      ...context,
+      createNode,
+      hasNodeById,
+      getNodeById,
+    })
+
+    expect(result.document).toEqual({
+      id: createNodeIdReturnValue,
+      prismicId: 'id',
+      type: 'custom_type',
+      data: {},
+      dataRaw: undefined,
+      dataString: undefined,
+      internal: {
+        contentDigest: createContentDigestReturnValue,
+        type: 'PrismicCustomType',
+      },
+    })
   })
 
   test('document field is null if not document link', async () => {
@@ -111,6 +140,7 @@ describe('normalizeLinkField', () => {
         linkResolver: ({ key, value, node }) => () =>
           `${key} ${JSON.stringify(value)} ${JSON.stringify(node)}`,
       },
+      hasNodeById: () => true,
     })
 
     expect(result.url).toBe(
@@ -120,11 +150,47 @@ describe('normalizeLinkField', () => {
 })
 
 describe('normalizeSlicesField', () => {
-  test('returns value as-is', async () => {
-    const value = ['id1', 'id2']
-    const result = await normalizeSlicesField(undefined, value)
+  test('returns a proxy', async () => {
+    const result = await normalizeSlicesField(
+      undefined,
+      ['id1', 'id2'],
+      undefined,
+      context,
+    )
 
-    expect(result).toEqual(value)
+    expect(util.types.isProxy(result)).toBe(true)
+  })
+
+  test('proxy returns slice node with __typename if in node store', async () => {
+    const baseSlice = { internal: { type: 'custom_type' } }
+    const slice1 = { ...baseSlice, id: 'id1' }
+    const slice2 = { ...baseSlice, id: 'id2' }
+    const nodeStore = [slice1, slice2]
+    const hasNodeById = id => nodeStore.some(node => node.id === id)
+    const getNodeById = id => nodeStore.find(node => node.id === id)
+
+    const result = await normalizeSlicesField(
+      undefined,
+      ['id1', 'id2'],
+      undefined,
+      { ...context, hasNodeById, getNodeById },
+    )
+
+    expect(result[0]).toEqual({ ...slice1, __typename: 'custom_type' })
+    expect(result[1]).toEqual({ ...slice2, __typename: 'custom_type' })
+  })
+
+  test('proxy returns default value if not in node store', async () => {
+    const result = await normalizeSlicesField(
+      undefined,
+      ['id1', 'id2'],
+      undefined,
+      { ...context, hasNodeById: () => false },
+    )
+
+    expect(result[0]).toEqual('id1')
+    expect(result[1]).toEqual('id2')
+    expect(result[2]).toEqual(undefined)
   })
 })
 
