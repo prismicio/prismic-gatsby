@@ -12,12 +12,12 @@
       - [Return Value](#return-value)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
       - [Return Value](#return-value-1)
-        - [If `previewData` is falsey](#if-previewdata-is-falsey)
-        - [If `previewData` and `staticData` have the same custom type](#if-previewdata-and-staticdata-have-the-same-custom-type)
-        - [If the custom type of `previewData` and `staticData` are different](#if-the-custom-type-of-previewdata-and-staticdata-are-different)
+        - [If `previewData` is falsey:](#if-previewdata-is-falsey)
+        - [If `previewData` and `staticData` have the same top level keys:](#if-previewdata-and-staticdata-have-the-same-top-level-keys)
+        - [If `previewData` and `staticData` have different top level keys:](#if-previewdata-and-staticdata-have-different-top-level-keys)
   - [Limitations](#limitations)
     - [Images](#images)
-    - [GraphQL Aliases](#aliases)
+    - [Aliases](#aliases)
 
 ## Why previews are useful
 
@@ -67,10 +67,10 @@ have the same shape as the data provided at build-time.
 
 This means that data returned from `usePrismicPreview` can be dropped into your
 templates and pages _as is_. In most cases, `usePrismicPreview` will be called
-on the page you create as the endpoint you specify in Prismic as your preview
-resolver.
+on the page component that matches the preview resolver endpoint you specify in
+Prismic.
 
-Here is an example of calling the `usePrismicPreview` hook on a page at
+Here is an example using the `usePrismicPreview` hook on a page component at
 `/preview`.
 
 ```jsx
@@ -116,8 +116,8 @@ Let's breakdown what's happening here:
    is also normalized to have the same key-value data shape as what we get at
    build-time.
 4. From `usePrismicPreview`, we receive `path`. `path` is a string determined by
-   running `linkResolver` with the previewed document. If for some reason you
-   would need to have different logic to determine the path of your preview
+   running `linkResolver` with the raw previewed document. If for some reason
+   you would need to have different logic to determine the path of your preview
    document, you can provide an optional `pathResolver` function that will be
    used instead.
 5. In `useEffect`, once `previewData` is available, we navigate the user to the
@@ -125,6 +125,8 @@ Let's breakdown what's happening here:
    it since `@reach/router` doesn't allow you to pass objects in
    `location.state`. We navigate to `path` to ensure that we are using the
    appropriate page or template component for the document we're previewing.
+6. While all of the above is happening, we can display a loading indicator or
+   spinner to our users for a good UX.
 
 ### mergePrismicPreviewData
 
@@ -141,7 +143,7 @@ needed.
 Once we've navigated to our appropriate template, we need to conditionally
 handle reading `previewData` from `location.state`.
 
-Below is an example template:
+Below is an example template component:
 
 ```jsx
 import React from 'react'
@@ -168,9 +170,9 @@ export const query = graphql`` // query for your static data...
 
 Just like last time, let's break this down:
 
-1. Just like in normal Gatsby-land, we have a `graphql` query that fetches our
-   static data from Gatsby and passes it to our template as the `data` prop. In
-   this case, we're destructuring it and naming it `staticData`.
+1. Like in normal Gatsby-land, we have a `graphql` query that fetches our static
+   data and passes it to our template as the `data` prop. In this case, we're
+   destructuring it and naming it `staticData`.
 2. If `location.state` has `previewData` in it, let's `JSON.parse` the
    stringified data. Otherwise, we didn't come from a preview, and we're viewing
    this template normally.
@@ -191,21 +193,26 @@ Just like last time, let's break this down:
 
 ### usePrismicPreview
 
+`usePrismicPreview` is a React hook, so all of the conventions and restrictions
+of hooks apply to its use. It accepts the following function parameters as
+defined below:
+
 | Parameter | Required? |  Type  | Description                                                                                                                                                                                                                                                         |
 | :-------: | :-------: | :----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | location  |    ✅     | Object | The location object from `@reach/router`. Used to determine the preview token and document ID from search parameters.                                                                                                                                               |
 | overrides |    ✅     | Object | An object that allows you to override any of the `gatsby-source-prismic` plugin options _only_ for previews. Due to limitations in Gatsby, you are **required** to provide a `linkResolver` and `htmlSerializer` here again if you specified it in `gatsby-config`. |
 
-The `overrides` object can be passed any of the following keys:
+The `overrides` object can be passed any of the following keys. Please keep in
+mind that specifying your `linkResolver` and `htmlSerializer` is **required**.
 
-|      Key       | Required? |       Type        | Description                                                                                                                                                                                                                                                                     |
-| :------------: | :-------: | :---------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  linkResolver  |    ✅     |     Function      | Determines how links in your preview content are resolved to URLs. If `pathResolver` is not defined, `linkResolver` is used to determine the `path` returned by `usePrismicPreview`. Generally, this should be the same function as the one provided in `gatsby-config`.        |
-| htmlSerializer |    ✅     |     Function      | Determines how rich text fields are resolved to HTML. Generally, this should be the same function as the one provided in `gatsby-config`.                                                                                                                                       |
-|  pathResolver  |           |     Function      | Function that allows for custom preview `path` resolving logic. This is useful if your `linkResolver` logic may be different than how you generate URLs or paths for your pages. `pathResolver` receives the previewed document's raw API response from Prismic as an argument. |
-|   fetchLinks   |           | String or Array[] | Determines which link fields are fetched for the previewed document. For more information, refer to Prismic's docs on fetchLinks: https://prismic.io/docs/javascript/query-the-api/fetch-linked-document-fields                                                                 |
-| repositoryName |           |      String       | Your Prismic repository name. Only provide this if you need to use a different repository name than the one you provided in `gatsby-config`.                                                                                                                                    |
-|  accessToken   |           |      String       | Your Prismic access token. Only provide this if you need to use a different token than the one provided in `gatsby-config`.                                                                                                                                                     |
+|      Key       | Required? |       Type        | Description                                                                                                                                                                                                                                                                 |
+| :------------: | :-------: | :---------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  linkResolver  |    ✅     |     Function      | Determines how links in your preview content are resolved to URLs. If `pathResolver` is not defined, `linkResolver` is used to determine the `path` returned by `usePrismicPreview`. Generally, this should be the same function as the one provided in `gatsby-config`.    |
+| htmlSerializer |    ✅     |     Function      | Determines how rich text fields are resolved to HTML. Generally, this should be the same function as the one provided in `gatsby-config`.                                                                                                                                   |
+|  pathResolver  |           |     Function      | Function that allows for custom preview `path` resolving logic. This is useful if your `linkResolver` logic is different than how you generate URLs or paths for your pages. `pathResolver` receives the previewed document's raw API response from Prismic as an argument. |
+|   fetchLinks   |           | String or Array[] | Determines which link fields are fetched for the previewed document. For more information, refer to Prismic's docs on fetchLinks: https://prismic.io/docs/javascript/query-the-api/fetch-linked-document-fields                                                             |
+| repositoryName |           |      String       | Your Prismic repository name. Only provide this if you need to use a different repository name than the one you provided in `gatsby-config`.                                                                                                                                |
+|  accessToken   |           |      String       | Your Prismic access token. Only provide this if you need to use a different token than the one provided in `gatsby-config`.                                                                                                                                                 |
 
 #### Return Value
 
@@ -227,17 +234,17 @@ Receives a single object as a parameter:
 
 #### Return Value
 
-##### If `previewData` is falsey
+##### If `previewData` is falsey:
 
 Returns `staticData` as is.
 
-##### If `previewData` and `staticData` have the same custom type
+##### If `previewData` and `staticData` have the same top level keys:
 
 Returns a new object by deeply merging the key-value pairs from `staticData` and
 `previewData`. If a key between the two objects are shared, values from
 `previewData` are used.
 
-##### If the custom type of `previewData` and `staticData` are different
+##### If `previewData` and `staticData` have different top level keys:
 
 Returns a new object by deeply traversing `staticData` and replacing any
 document data nodes with the previewed document's ID with `previewData`. This is
@@ -291,17 +298,18 @@ Let's break this down:
 1. If the `src` prop is present, we know that we're on a preview, so we want to
    use a regular `<img />` tag. We provide a few additional props and attributes
    like `objectFit`, `objectPosition` and `width` and `height` with values that
-   keep it consistent with the `<Img />` component from `gatsby-image`. As a
-   bonus for users on _very_ new browsers, we can also progressively enhance our
-   base `<img />` and provide the `loading="lazy"` attribute too!
+   keep it consistent with the `<Img />` component from `gatsby-image`.
+
+   As a bonus for users on _very_ new browsers, we can also progressively
+   enhance our base `<img />` and provide the `loading="lazy"` attribute too!
 
 2. Otherwise, we know we're viewing this image statically, so use the `<Img />`
    component from `gatsby-image` and provide either the `fixed` or `fluid` props
    as preferred.
 
-Feel free to build upon the above example to make it work in a way you prefer.
-We don't recommend using the above _as is_. (Though if it works enough for you,
-great!)
+Feel free to build upon the above example to make it work in any way you prefer.
+We don't recommend using the above _as is_. (Though if it works well enough for
+you, great!)
 
 CSS-in-JS solutions will work just as well here, or you can even leverage the
 `<picture>` tag with a `srcset` you get from Prismic!
