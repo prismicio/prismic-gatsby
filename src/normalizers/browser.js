@@ -1,4 +1,3 @@
-import * as R from 'ramda'
 import Prismic from 'prismic-javascript'
 import PrismicDOM from 'prismic-dom'
 
@@ -18,6 +17,8 @@ export const normalizeStructuredTextField = async (
 
   const linkResolverForField = linkResolver({ key: id, value, node: doc })
   const htmlSerializerForField = htmlSerializer({ key: id, value, node: doc })
+
+  console.log(value)
 
   return {
     html: PrismicDOM.RichText.asHtml(

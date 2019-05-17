@@ -7,6 +7,14 @@ jest.mock('prismic-javascript')
 beforeEach(() => (console.error = jest.fn()))
 afterEach(() => console.error.mockClear())
 
+const mockFetch = data =>
+  jest.fn().mockImplementation(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => data,
+    }),
+  )
+
 describe('mergePrismicPreviewData', () => {
   test('returns undefined if staticData is falsey', () => {
     expect(
@@ -129,7 +137,7 @@ describe('usePrismicPreview', () => {
       'http://localhost:8000/preview?token=https%3A%2F%2Ftest.prismic.io%2Fpreviews%2FXNIWYywAADkA7fH_&documentId=XFyi2hAAACIAImfA',
   }
 
-  const mockTypePathsResponse = [
+  const typePaths = [
     {
       path: ['page', ' uid'],
       type: 'String',
@@ -155,12 +163,8 @@ describe('usePrismicPreview', () => {
       type: 'PrismicStructuredTextType',
     },
   ]
-  const mockTextPromise = Promise.resolve(mockTypePathsResponse)
-  const mockFetchPromise = Promise.resolve({
-    text: () => mockTextPromise,
-  })
 
-  jest.spyOn(global, 'fetch').mockImplementation(() => mockFetchPromise)
+  global.fetch = mockFetch(typePaths)
 
   test('throws error if location is falsey', () => {
     const { result } = renderHook(() => usePrismicPreview(undefined))
@@ -283,4 +287,6 @@ describe('usePrismicPreview', () => {
       },
     })
   })
+
+  global.fetch.mockClear()
 })

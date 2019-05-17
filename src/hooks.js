@@ -81,7 +81,6 @@ export const usePrismicPreview = (location, overrides) => {
   const normalizePreviewData = useCallback(
     async rawPreviewData => {
       const typePaths = await fetchTypePaths()
-      console.log(typePaths)
 
       const nodeStore = new Map()
       const createNode = node => nodeStore.set(node.id, node)
