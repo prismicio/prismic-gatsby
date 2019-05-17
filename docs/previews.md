@@ -316,4 +316,29 @@ CSS-in-JS solutions will work just as well here, or you can even leverage the
 
 ### Aliases
 
-TODO
+Since normalized previews rely on the inferred graphQL schemas that are provided
+to Gatsby, graphQL aliases are currently unsupported.
+
+This means that if you perform anything like this in your graphQL queries:
+
+```graphql
+query {
+  prismicPage(uid: { eq: $uid }) {
+    uid
+    data {
+      myTitle: title {
+        text
+      }
+    }
+    meta_title
+    meta_description
+  }
+}
+```
+
+Previews _will not_ function properly since `previewData` objects are unable to
+know about these key changes.
+
+⚠️ If you attempt to merge a `previewData` with a `staticData` object with
+aliased fields with `mergePrismicPreviewData`, the resulting merged object will
+be incorrect.
