@@ -1,5 +1,8 @@
-const dummyApi = { getByID: id => ({ id, type: 'custom_type' }) }
+const dummyApi = {
+  getByID: jest.fn().mockImplementation(id => ({ id, type: 'custom_type' })),
+}
 
 export default {
-  api: () => dummyApi,
+  getApi: jest.fn(),
+  api: jest.fn().mockImplementation(() => dummyApi),
 }
