@@ -29,9 +29,7 @@
   "license": "MIT",
   "dependencies": {
     "@hapi/joi": "^15.0.3",
-    "asyncro": "^3.0.0",
     "es-cookie": "^1.2.0",
-    "gatsby-node-helpers": "^0.3.0",
     "gatsby-source-filesystem": "^2.0.33",
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
