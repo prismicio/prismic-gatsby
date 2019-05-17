@@ -121,8 +121,8 @@ plugins: [
       },
 
       // Set the prefix for the filename where type paths for your schemas are
-      // stored. The filename will include the MD5 hash of your type paths
-      // after the prefix.
+      // stored. The filename will include the MD5 hash of your schemas after
+      // the prefix.
       // This defaults to 'prismic-typepaths---${repositoryName}'.
       typePathsFilenamePrefix: 'prismic-typepaths---gatsby-source-prismic-test-site',
     },
