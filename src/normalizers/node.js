@@ -58,25 +58,27 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
 //
 // NOTE: The document field is set to a node ID but this will be resolved to
 // the node in the GraphQL resolver.
-export const normalizeImageField = async (_id, value, _depth, context) => {
-  const { docNodeId, gatsbyContext } = context
+export const normalizeImageField = async (id, value, _depth, context) => {
+  const { doc, docNodeId, gatsbyContext, pluginOptions } = context
   const { createNodeId, store, cache, actions } = gatsbyContext
   const { createNode } = actions
+  const { shouldNormalizeImage } = pluginOptions
 
   let fileNode
 
-  try {
-    fileNode = await createRemoteFileNode({
-      url: value.url,
-      parentNodeId: docNodeId,
-      store,
-      cache,
-      createNode,
-      createNodeId,
-    })
-  } catch (error) {
-    // Ignore
-  }
+  if (shouldNormalizeImage({ key: id, value, node: doc }))
+    try {
+      fileNode = await createRemoteFileNode({
+        url: value.url,
+        parentNodeId: docNodeId,
+        store,
+        cache,
+        createNode,
+        createNodeId,
+      })
+    } catch (error) {
+      // Ignore
+    }
 
   return {
     ...value,

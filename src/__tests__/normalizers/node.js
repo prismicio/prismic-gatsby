@@ -14,7 +14,11 @@ const context = {
   doc: { id: 'id' },
   createNodeId,
   gatsbyContext: { actions: {} },
-  pluginOptions: { linkResolver: () => {}, htmlSerializer: () => {} },
+  pluginOptions: {
+    linkResolver: () => {},
+    htmlSerializer: () => {},
+    shouldNormalizeImage: () => true,
+  },
 }
 
 describe('normalizeImageField', () => {
@@ -40,7 +44,7 @@ describe('normalizeImageField', () => {
   })
 
   test('localFile field is null if file node could not be created', async () => {
-    createRemoteFileNode.mockImplementation(async () => {
+    createRemoteFileNode.mockImplementationOnce(async () => {
       throw new Error()
     })
 
@@ -51,9 +55,37 @@ describe('normalizeImageField', () => {
       context,
     )
 
-    createRemoteFileNode.mockReset()
+    expect(result.localFile).toBeNull()
+  })
+
+  test('localFile field is null if shouldNormalizeImage returns false', async () => {
+    const result = await normalizeImageField(undefined, value, undefined, {
+      ...context,
+      pluginOptions: {
+        ...context.pluginOptions,
+        shouldNormalizeImage: () => false,
+      },
+    })
 
     expect(result.localFile).toBeNull()
+  })
+
+  test('provides key, value, node values to linkResolver', async () => {
+    const key = 'key'
+    const node = context.doc
+    const result = await normalizeImageField(key, value, undefined, {
+      ...context,
+      pluginOptions: {
+        ...context.pluginOptions,
+        shouldNormalizeImage: ({
+          key: scopedKey,
+          value: scopedValue,
+          node: scopedNode,
+        }) => scopedKey === key && scopedValue === value && scopedNode === node,
+      },
+    })
+
+    expect(result.localFile).toEqual('remoteFileNodeId')
   })
 })
 
