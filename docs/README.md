@@ -7,6 +7,7 @@ repositories.
 
 - [Features](#features)
 - [Install](#install)
+- [Migration Guide](#migration-guides)
 - [How to use](#how-to-use)
 - [Providing JSON schemas](#providing-json-schemas)
 - [How to query](#how-to-query)
@@ -32,6 +33,14 @@ repositories.
 ```sh
 npm install --save gatsby-source-prismic
 ```
+
+## Migration Guide
+
+Read the migration guide to learn why and how to upgrade from v2 to v3. Then
+read the previews guide to learn how to setup previews.
+
+- [Migrating from v2 to v3](./migrating-from-v2-to-v3.md)
+- [Previews](./previews.md)
 
 ## How to use
 
@@ -118,8 +127,8 @@ plugins: [
 ## Providing JSON schemas
 
 In order for Gatsby to know about your Prismic custom types, you must provide
-the full JSON schema of each custom type from Prismic to the source plugin via
-the `schemas` option in `gatsby-config.js`.
+the full JSON schema of each custom type. This is done via the plugin's
+`schemas` option in `gatsby-config.js`.
 
 The recommended approach is to create a `schemas` directory in your project and
 import them into your `gatsby-config.js` file.
