@@ -11,8 +11,8 @@
     - [Accessing linked documents](#accessing-linked-documents)
   - [Setting up previews](#setting-up-previews)
   - [Things to know](#things-to-know)
-    - [Type paths file in public](#type-paths-file-in-public)
-    - [Plugin options available in `window`](#plugin-options-available-in-window)
+    - [Type paths file in `/public`](#type-paths-file-in-public)
+    - [Plugin options in `window`](#plugin-options-in-window)
 
 ## Why you should migrate
 
@@ -161,10 +161,10 @@ feature in v3.
 
 ## Things to know
 
-### Type paths file in public
+### Type paths file in `/public`
 
 The new schema system builds a map of your custom types' fields to their GraphQL
-type. This is used internally to ensure fields are transformed and returned
+type. This is used internally to ensure fields are transformed correctly
 depending on their type.
 
 The same map is used in the front-end when previewing documents. In order for
@@ -174,7 +174,7 @@ folder. This file is then fetched in the browser during a preview.
 The type paths file looks something like this:
 
 ```json
-// prismic-typepaths---my-repo-md5hash2049b789871e9494879b29464.json
+// public/prismic-typepaths---my-repo-md5hash2049b789871e9494879b29464.json
 
 [
   { "path": ["page"], "type": "PrismicPage" },
@@ -205,7 +205,10 @@ The type paths file looks something like this:
 ]
 ```
 
-### Plugin options available in `window`
+You can override the filename's prefix in your plugin options with the
+`typePathsFilenamePrefix` option.
+
+### Plugin options in `window`
 
 The new preview system replicates Gatsby's data system as closely as possible in
 the browser. This means minimal changes are necessary to implement previews on

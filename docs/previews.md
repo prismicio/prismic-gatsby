@@ -17,6 +17,7 @@
       - [If the custom type of `previewData` and `staticData` are different (e.g. `prismicAuthor` & `prismicBook`):](#if-the-custom-type-of-previewdata-and-staticdata-are-different-eg-prismicauthor--prismicbook)
   - [Limitations](#limitations)
     - [Images](#images)
+    - [GraphQL Aliases](#aliases)
 
 ## Why previews are useful
 
@@ -306,3 +307,7 @@ great!)
 
 CSS-in-JS solutions will work just as well here, or you can even leverage the
 `<picture>` tag with a `srcset` you get from Prismic!
+
+### Aliases
+
+TODO
