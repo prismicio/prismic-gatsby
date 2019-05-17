@@ -481,7 +481,7 @@ Full example:
 To learn more about image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
 
-## Prismic Previews
+## Previews
 
 ### usePrismicPreview()
 
@@ -492,15 +492,16 @@ responses from Prismic's API. An example is shown below:
 import { usePrismicPreview } from 'gatsby-source-prismic'
 
 const PreviewPage = ({ location }) => {
-  const { previewData } = usePrismicPreview({
-    location,
+  const { previewData } = usePrismicPreview(location, {
     linkResolver: doc => doc.uid,
-    fetchLinks: ['page.parent'],
-    repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
-    accessToken: process.env.GATSBY_PRISMIC_ACCESS_TOKEN,
+    htmlSerializer: () => {},
   })
 
-  return previewData ? <Spinner /> : <PageTemplate data={previewData} />
+  return previewData ? (
+    <PageTemplate data={previewData} />
+  ) : (
+    <div>Loading...</div>
+  )
 }
 ```
 
@@ -508,29 +509,36 @@ const PreviewPage = ({ location }) => {
 
 Returns an object with the following keys:
 
-- `previewData`: An object with the same key-value shape that
-  `gatsby-source-prismic` generates at build time, so it can be provided to
-  templates & pages directly.
+- `previewData`: An object with the same data shape that `gatsby-source-prismic`
+  generates at build time. As such, it can be provided to templates & pages
+  directly.
 - `path`: A string of the resolved path for the previewed Prismic doc. This is
-  determined via the provided `linkResolver`.
+  determined via the provided `linkResolver` function _or_ an optional
+  `pathResolver` function.
 - `isInvalid`: A boolean that indicates that a bad token or document ID was
-  resolved from `location`. Is usually only true if a client manually navigates
-  to your preview resolver page.
+  resolved from `location`. Typically only true if a client manually navigates
+  to a preview resolver page.
 
 ### API
 
-Accepts the following parameters via an object:
+`usePrismicPreview` Accepts the following parameters:
 
 - `location`: **Required**. The location object from `@reach/router`. This is
   used to read the preview token and the previewed document's ID to send an API
   request for preview data.
-- `linkResolver`: **Required**. `usePrismicPreview()` uses this link resolver
-  function to determine the `path` of the previewed doc.
-- `htmlSerializer`: Function that maps rich text fields to HTML. Should be the
-  same function provided to the plugin configuration.
-- `fetchLinks`: A list of links to fetch for the previewed document.
-- `repositoryName`: Your Prismic repository name.
-- `accessToken`: Your prismic access token.
+- `overrides`: An object that allows for preview specific overrides of
+  `gatsby-source-prismic` config options:
+  - `linkResolver`: **Required**. Determines how links in your preview content
+    are resolved to URLs. If `pathResolver` is not defined, `linkResolver` is
+    used to determine the `path` return value.
+  - `htmlSerializer`: **Required**. Function that maps rich text fields to HTML.
+    Should be the same function provided to the plugin configuration.
+  - `fetchLinks`: Allows you to specify the link fields to fetch for the
+    previewed document.
+  - `repositoryName`: Your Prismic repository name if it's different from the
+    one in `gatsby-config.js`
+  - `accessToken`: Your prismic access token if it's different from the one in
+    `gatsby-config.js`
 
 > ⚠️ Since preview API requests are made in the browser, your access token will
 > be exposed to the client.
@@ -539,8 +547,8 @@ Accepts the following parameters via an object:
 
 #### Images
 
-Since data normalization happens at run-time, we cannot perform the same image
-optimizations that we do at build-time. Instead, `usePrismicPreview()` returns
+Since data normalization happens at runtime, we cannot perform the same image
+optimizations that we do at buildtime. Instead, `usePrismicPreview()` returns
 the `url` field for an image.
 
 > ⚛️ A smart image component that conditionally uses `url` or `gatsby-image`
@@ -562,10 +570,14 @@ export const PageTemplate = ({ data }) => {
 }
 ```
 
-`mergePrismicPreviewData` is useful when your templates need to use data from
-Prismic that isn't directly coming from the previewed document. This allows us
-to show fresh preview data for the previewed document, but fallback to static
-data from Gatsby such as nodes from `allPrismicX` graphQL queries.
+`mergePrismicPreviewData` is useful when your previewed templates or pages need
+to use data from Prismic that arent't directly provided by the previewed
+document. An example of this is if a previewed document's template or page also
+uses data from `allPrismicX` queries.
+
+`mergePrismicPreviewData` allows us to show fresh preview data where applicable
+for the previewed document on a template, but also fallback to static data from
+Gatsby.
 
 ### Return Value
 
@@ -592,17 +604,18 @@ Accepts the following parameters via an object:
 ## In-depth Guide
 
 When creating `gatsby-source-prismic`'s preview API, we wanted to allow
-developers to be able to reuse as much of their existing templates and
-components as possible. In an ideal scenario, these functions should provide
-"drop-in" preview functionality to most sites using `gatsby-source-prismic`
-without needing to specifically configure components to support it.
+developers to reuse as much of their existing templates and components as much
+as possible.
 
-That being said, there is some recommended setup like creating a preview
-resolver page, handling preview redirect logic, and creating a smart `<Image />`
-component to dynamically handle `gatsby-image` data or Prismic `url`s.
+In an ideal scenario, these functions and hooks should provide "drop-in" preview
+functionality to most sites using `gatsby-source-prismic` without needing to
+specifically configure components to support it.
 
-For an in-depth guide on using Prismic previews with `gatsby-source-prismic`,
-please refer to [this guide](https://github.com). _COMING SOON_
+That being said, there are some recommended guidelines like creating a preview
+resolver page, handling preview redirect logic, and handling previewed images.
+
+For an in-depth guide on using previews with `gatsby-source-prismic`, please
+refer to [this guide](./previews.md).
 
 ## Site's `gatsby-node.js` example
 
