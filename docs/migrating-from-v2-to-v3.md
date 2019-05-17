@@ -1,6 +1,14 @@
 # Migrating from v2 to v3
 
-The following **breaking changes** will need to be handled in your code.
+- [Why you should migrate](#why-you-should-migrate)
+- [Updating your dependencies](#updating-your-dependencies)
+  - [Update Gatsby version](#update-hatsby-version)
+  - [Update `gatsby-source-prismic` version](#update-gatsby-source-prismic-version)
+  - [Update React version](#update-React-version)
+- [Handling breaking changes](#handling-breaking-changes)
+  - [Provide custom type schemas](#provide-custom-type-schemas)
+  - [Accessing linked documents](#accessing-linked-documents)
+- [Setting up previews](#setting-up-previews)
 
 ## Why you should migrate
 
@@ -141,3 +149,7 @@ direct reference to the linked document.
    - const uid = data.prismicPage.data.linkField.document[0].uid
    + const uid = data.prismicPage.data.linkField.document.uid
    ```
+
+## Setting up previews
+
+TODO
