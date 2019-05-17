@@ -9,12 +9,12 @@
     - [mergePrismicPreviewData](#mergeprismicpreviewdata)
   - [API](#api)
     - [usePrismicPreview](#useprismicpreview-1)
-    - [Return Value](#return-value)
+      - [Return Value](#return-value)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
-    - [Return Value](#return-value-1)
-      - [If `previewData` is falsey:](#if-previewdata-is-falsey)
-      - [If `previewData` and `staticData` have the same custom type (e.g. `prismicAuthor`):](#if-previewdata-and-staticdata-have-the-same-custom-type-eg-prismicauthor)
-      - [If the custom type of `previewData` and `staticData` are different (e.g. `prismicAuthor` & `prismicBook`):](#if-the-custom-type-of-previewdata-and-staticdata-are-different-eg-prismicauthor--prismicbook)
+      - [Return Value](#return-value-1)
+        - [If `previewData` is falsey:](#if-previewdata-is-falsey)
+        - [If `previewData` and `staticData` have the same custom type:](#if-previewdata-and-staticdata-have-the-same-custom-type)
+        - [If the custom type of `previewData` and `staticData` are different:](#if-the-custom-type-of-previewdata-and-staticdata-are-different)
   - [Limitations](#limitations)
     - [Images](#images)
     - [GraphQL Aliases](#aliases)
@@ -231,13 +231,13 @@ Receives a single object as a parameter:
 
 Returns `staticData` as is.
 
-##### If `previewData` and `staticData` have the same custom type (e.g. `prismicAuthor`):
+##### If `previewData` and `staticData` have the same custom type:
 
 Returns a new object by deeply merging the key-value pairs from `staticData` and
 `previewData`. If a key between the two objects are shared, values from
 `previewData` are used.
 
-##### If the custom type of `previewData` and `staticData` are different (e.g. `prismicAuthor` & `prismicBook`):
+##### If the custom type of `previewData` and `staticData` are different:
 
 Returns a new object by deeply traversing `staticData` and replacing any
 document data nodes with the previewed document's ID with `previewData`. This is
