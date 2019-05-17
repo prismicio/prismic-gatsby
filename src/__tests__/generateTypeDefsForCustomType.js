@@ -149,7 +149,7 @@ describe('generateTypeDefsForCustomType', () => {
         )
 
         const typeDef = R.find(
-          R.pathEq(['config', 'name'], 'PrismicCustomTypeData'),
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeDataType'),
           typeDefs,
         )
 
@@ -414,7 +414,7 @@ describe('generateTypeDefsForCustomType', () => {
         )
 
         const typeDef = R.find(
-          R.pathEq(['config', 'name'], 'PrismicCustomTypeData'),
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeDataType'),
           typeDefs,
         )
 
@@ -431,7 +431,7 @@ describe('generateTypeDefsForCustomType', () => {
         )
 
         const typeDef = R.find(
-          R.pathEq(['config', 'name'], 'PrismicCustomTypeData'),
+          R.pathEq(['config', 'name'], 'PrismicCustomTypeDataType'),
           typeDefs,
         )
 
@@ -547,7 +547,7 @@ describe('generateTypeDefsForCustomType', () => {
           path: ['custom_type', 'data', 'body'],
           type: '[PrismicCustomTypeBodySlicesType]',
         },
-        { path: ['custom_type', 'data'], type: 'PrismicCustomTypeData' },
+        { path: ['custom_type', 'data'], type: 'PrismicCustomTypeDataType' },
         { path: ['custom_type'], type: 'PrismicCustomType' },
       ])
     })
@@ -575,7 +575,7 @@ describe('generateTypeDefForLinkType', () => {
         {
           type: 'OBJECT',
           config: {
-            name: 'PrismicCustomTypeData',
+            name: 'PrismicCustomTypeDataType',
           },
         },
       ],
