@@ -10,6 +10,9 @@
     - [Provide custom type schemas](#provide-custom-type-schemas)
     - [Accessing linked documents](#accessing-linked-documents)
   - [Setting up previews](#setting-up-previews)
+  - [Things to know](#things-to-know)
+    - [Type paths file in `/public`](#type-paths-file-in-public)
+    - [Plugin options in `window`](#plugin-options-in-window)
 
 ## Why you should migrate
 
@@ -65,7 +68,7 @@ Update your `package.json` to use v3 of `gatsby-source-prismic`.
 
 Previewing Prismic documents before publishing requires [React
 hooks][react-hooks]. If you project is not already on a release of React that
-includes hooks, upgrade your version of `react` and `react-dom`.
+includes hooks, update your version of `react` and `react-dom`.
 
 ```js
 // package.json
@@ -155,3 +158,69 @@ See the [Previews guide](./previews.md) to learn how to setup previews, a new
 feature in v3.
 
 [react-hooks]: https://reactjs.org/docs/hooks-intro.html
+
+## Things to know
+
+### Type paths file in `/public`
+
+The new schema system builds a map of your custom types' fields to their GraphQL
+type. This is used internally to ensure fields are transformed correctly
+depending on their type.
+
+The same map is used in the front-end when previewing documents. In order for
+the preview system to use the map, the plugin saves a JSON file in your public
+folder. This file is then fetched in the browser during a preview.
+
+The type paths file looks something like this:
+
+```json
+// public/prismic-typepaths---my-repo-md5hash2049b789871e9494879b29464.json
+
+[
+  { "path": ["page"], "type": "PrismicPage" },
+  { "path": ["page", "uid"], "type": "String" },
+  { "path": ["page", "data"], "type": "PrismicPageDataType" },
+  {
+    "path": ["page", "data", "parent"],
+    "type": "PrismicLinkType"
+  },
+  {
+    "path": ["page", "data", "title"],
+    "type": "PrismicStructuredTextType"
+  },
+  { "path": ["page", "data", "featured_image"], "type": "PrismicImageType" },
+  {
+    "path": ["page", "data", "body"],
+    "type": "[PrismicPageBodySlicesType]"
+  },
+  { "path": ["page", "data", "body", "text"], "type": "PrismicPageBodyText" },
+  {
+    "path": ["page", "data", "body", "text", "primary"],
+    "type": "PrismicPageBodyTextPrimaryType"
+  },
+  {
+    "path": ["page", "data", "body", "text", "primary", "text"],
+    "type": "PrismicStructuredTextType"
+  }
+]
+```
+
+You can override the filename's prefix in your plugin options with the
+`typePathsFilenamePrefix` option.
+
+### Plugin options in `window`
+
+The new preview system replicates Gatsby's data system as closely as possible in
+the browser. This means minimal changes are necessary to implement previews on
+sites that are already developed.
+
+To perform previews, your site's Prismic plugin options, such as
+`repositoryName`, `accessToken`, and `fetchLinks`, are needed again for the
+Prismic API to fetch the preview data. Plugin options are automatically assigned
+to a `window` property to allow the preview hook to reuse the options.
+
+All options _except your custom type schemas_ are set on
+`window.___PRISMIC___.pluginOptions`.
+
+Additionally, the MD5 digest of your custom type schemas is set on
+`window.___PRISMIC___.schemasDigest`.

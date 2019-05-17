@@ -266,7 +266,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
     dataFields,
   )
 
-  const dataName = pascalcase(`Prismic ${id} Data`)
+  const dataName = pascalcase(`Prismic ${id} Data Type`)
 
   enqueueTypePath([id, 'data'], dataName)
 
