@@ -2,7 +2,7 @@
 
 - [Why you should migrate](#why-you-should-migrate)
 - [Updating your dependencies](#updating-your-dependencies)
-  - [Update Gatsby version](#update-hatsby-version)
+  - [Update Gatsby version](#update-gatsby-version)
   - [Update `gatsby-source-prismic` version](#update-gatsby-source-prismic-version)
   - [Update React version](#update-React-version)
 - [Handling breaking changes](#handling-breaking-changes)
