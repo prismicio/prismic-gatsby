@@ -20,12 +20,10 @@ content editor experience.
 - **Previews**: Content editors can preview content before publishing without
   the need to rebuild the entire site.
 
-The two new features were built side-by-side to ensure
-
 This release also fixes several long-standing issues as a result of the new
 schema processing.
 
-- Gatsby now knows about fields that are defined on a custom type, but have no
+- Gatsby now knows about fields that are defined on a custom type but have no
   content. This previously required developers to create "placeholder" documents
   with every field filled in with dummy content.
 - Rich Text and Title fields always return the expected result. Adding an image
