@@ -150,4 +150,5 @@ direct reference to the linked document.
 
 ## Setting up previews
 
-TODO
+See the [Previews guide](./previews.md) to learn how to setup previews, a new
+feature in v3.
