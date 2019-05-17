@@ -4,10 +4,8 @@ import {
   compose,
   has,
   head,
-  isFunction,
   isPlainObject,
   keys,
-  last,
   merge,
 } from 'lodash/fp'
 import { set as setCookie } from 'es-cookie'
@@ -15,7 +13,6 @@ import Prismic from 'prismic-javascript'
 import uuidv5 from 'uuid/v5'
 import md5 from 'md5'
 import traverse from 'traverse'
-import { usePreviewContext } from './components/PreviewProvider'
 
 import { documentToNodes } from './documentToNodes'
 import {
@@ -37,22 +34,23 @@ const createContentDigest = obj => md5(JSON.stringify(obj))
 export const usePrismicPreview = (location, overrides) => {
   if (!location) throw new Error('Invalid location object!. Check hook call.')
 
-  // const { pluginOptions: options, typePaths } = usePreviewContext()
-
-  const pluginOptions = { ...overrides }
-  const {
-    fetchLinks,
-    accessToken,
-    repositoryName,
-    linkResolver,
-  } = pluginOptions
-
-  const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
   const [state, setState] = useState({
     previewData: null,
     path: null,
     isInvalid: false,
   })
+
+  const configOptions = window.___prismicPluginOptions___
+  const pluginOptions = { ...configOptions, ...overrides }
+
+  const {
+    fetchLinks,
+    accessToken,
+    repositoryName,
+    pathResolver,
+    linkResolver,
+  } = pluginOptions
+  const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
 
   // Fetches raw preview data directly from Prismic via ID.
   const fetchRawPreviewData = useCallback(
@@ -64,12 +62,18 @@ export const usePrismicPreview = (location, overrides) => {
     [accessToken, apiEndpoint, fetchLinks],
   )
 
+  // Fetches and parses the JSON file of the typePaths we write at build time.
+  const fetchTypePaths = useCallback(async () => {
+    const req = await fetch(`/prismic__${repositoryName}__typeDefs.json`)
+    const data = await req.text()
+
+    return JSON.parse(data)
+  }, [repositoryName])
+
   // Normalizes preview data using browser-compatible normalize functions.
   const normalizePreviewData = useCallback(
     async rawPreviewData => {
-      const req = await fetch(`/prismic__${repositoryName}__typeDefs.json`)
-      const data = await req.text()
-      const typePaths = JSON.parse(data)
+      const typePaths = fetchTypePaths()
 
       const nodeStore = new Map()
       const createNode = node => nodeStore.set(node.id, node)
@@ -98,7 +102,7 @@ export const usePrismicPreview = (location, overrides) => {
         [prefixedType]: rootNode,
       }
     },
-    [pluginOptions, repositoryName],
+    [fetchTypePaths, pluginOptions],
   )
 
   // Fetches and normalizes preview data from Prismic.
@@ -111,7 +115,9 @@ export const usePrismicPreview = (location, overrides) => {
     setCookie(Prismic.previewCookie, token)
 
     const rawPreviewData = await fetchRawPreviewData(docID)
-    const path = linkResolver(rawPreviewData)
+    const path = pathResolver
+      ? pathResolver(rawPreviewData)
+      : linkResolver(rawPreviewData)
     const previewData = await normalizePreviewData(rawPreviewData)
 
     setState({
@@ -124,6 +130,7 @@ export const usePrismicPreview = (location, overrides) => {
     linkResolver,
     location.search,
     normalizePreviewData,
+    pathResolver,
     state,
   ])
 
