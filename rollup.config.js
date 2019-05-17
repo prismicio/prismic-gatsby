@@ -1,4 +1,5 @@
 import babel from 'rollup-plugin-babel'
+import json from 'rollup-plugin-json'
 import { string } from 'rollup-plugin-string'
 import pkg from './package.json'
 
@@ -14,6 +15,7 @@ const externalPkgs = makeExternalPredicate([
   ...Object.keys(pkg.dependencies || {}),
   ...Object.keys(pkg.peerDependencies || {}),
   'fs',
+  'path',
 ])
 
 export default [
@@ -24,18 +26,18 @@ export default [
       { file: 'dist/index.esm.js', format: 'es' },
     ],
     external: externalPkgs,
-    plugins: [babel()],
+    plugins: [babel(), json()],
   },
   {
     input: 'src/gatsby-node.js',
     output: { file: 'dist/gatsby-node.js', format: 'cjs' },
     external: externalPkgs,
-    plugins: [babel(), string({ include: '**/*.graphql' })],
+    plugins: [babel(), json(), string({ include: '**/*.graphql' })],
   },
   {
     input: 'src/gatsby-browser.js',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs' },
     external: externalPkgs,
-    plugins: [babel()],
+    plugins: [babel(), json()],
   },
 ]

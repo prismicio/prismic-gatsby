@@ -119,6 +119,12 @@ plugins: [
       shouldNormalizeImage: ({ node, key, value }) => {
         // Return true to normalize the image or false to skip.
       },
+
+      // Set the prefix for the filename where type paths for your schemas are
+      // stored. The filename will include the MD5 hash of your type paths
+      // after the prefix.
+      // This defaults to 'prismic-typepaths---${repositoryName}'.
+      typePathsFilenamePrefix: 'prismic-typepaths---gatsby-source-prismic-test-site',
     },
   },
 ]
