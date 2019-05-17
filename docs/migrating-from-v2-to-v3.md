@@ -67,7 +67,7 @@ Update your `package.json` to use v3 of `gatsby-source-prismic`.
 ### Update React version
 
 Previewing Prismic documents before publishing requires [React
-hooks][react-hooks]. If you project is not already on a release of React that
+hooks][react-hooks]. If your project is not already on a release of React that
 includes hooks, update your version of `react` and `react-dom`.
 
 ```js
