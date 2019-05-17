@@ -10,8 +10,8 @@ The following documentation is for the stable v2 version.
 If you are starting a new project or want to try out the new schema and preview
 features, check out the v3 beta.
 
-- [Documentation for v3 beta](./tree/v3-beta)
-- [Migrating from v2 to v3](./tree/v3-beta/docs/migrating-from-v2-to-v3.md)
+- [Documentation for v3 beta](https://github.com/angeloashmore/gatsby-source-prismic/tree/v3-beta/docs)
+- [Migrating from v2 to v3](https://github.com/angeloashmore/gatsby-source-prismic/tree/v3-beta/docs/migrating-from-v2-to-v3.md)
 
 ## Features
 
