@@ -126,8 +126,8 @@ You may be wondering:
 
 For these cases, we provide a helper function `mergePrismicPreviewData` to
 handle just that. This allows us to display fresh preview data on templates
-where `previewData` "fits", but fallback gracefully to static data wherever else
-it's needed.
+where `previewData` "fits", but fallback to static data wherever else it's
+needed.
 
 Once we've navigated to our appropriate template, we need to conditionally
 handle reading `previewData` from `location.state`.
@@ -174,6 +174,9 @@ Just like last time, let's break this down:
    `previewData` is any falsey value, we shouldn't do any processing and just
    return `staticData` _as is_. This prevents us from doing any extra work when
    we're not previewing this template.
+
+4. Now, use your merged `data` object as you normally would! Since we have the
+   same key-value structure for previews, things should "just work"!
 
 ## API
 
