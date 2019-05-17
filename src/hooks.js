@@ -5,6 +5,7 @@ import {
   has,
   head,
   isPlainObject,
+  isFunction,
   keys,
   merge,
 } from 'lodash/fp'
@@ -33,6 +34,10 @@ const createContentDigest = obj => md5(JSON.stringify(obj))
 // browser. Instead, image nodes return their source URL.
 export const usePrismicPreview = (location, overrides) => {
   if (!location) throw new Error('Invalid location object!. Check hook call.')
+  if (!overrides.linkResolver || !isFunction(overrides.linkResolver))
+    throw new Error('Invalid linkResolver!')
+  if (overrides.pathResolver && !isFunction(overrides.pathResolver))
+    throw new Error('pathResolver is not a function!')
 
   const [state, setState] = useState({
     previewData: null,

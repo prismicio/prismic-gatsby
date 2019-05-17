@@ -1,56 +1,11 @@
-import React from 'react'
 import { renderHook } from 'react-hooks-testing-library'
 import Prismic from 'prismic-javascript'
 
 import { mergePrismicPreviewData, usePrismicPreview } from '../hooks'
-import { PreviewProvider } from '../components/PreviewProvider'
 
 jest.mock('prismic-javascript')
 beforeEach(() => (console.error = jest.fn()))
 afterEach(() => console.error.mockClear())
-
-const renderHookWithProvider = (callback, pluginOverrides) =>
-  renderHook(callback, {
-    wrapper: props => (
-      <PreviewProvider
-        pluginOptions={{
-          accessToken: 'token',
-          repositoryName: 'repository',
-          linkResolver: doc => doc.uid,
-          htmlSerializer: () => {},
-          fetchLinks: [],
-          ...pluginOverrides,
-        }}
-        typePaths={[
-          {
-            path: ['page', 'data', 'title'],
-            type: 'PrismicStructuredTextType',
-          },
-          {
-            path: ['page', 'data', 'body'],
-            type: '[PrismicPageDataBodySlicesType]',
-          },
-          {
-            path: ['page', 'data', 'body', 'description'],
-            type: 'PrismicPageBodyDescription',
-          },
-          {
-            path: ['page', 'data', 'body', 'description', 'primary'],
-            type: 'PrismicPageBodyDescriptionPrimaryType',
-          },
-          {
-            path: ['page', 'data', 'body', 'description', 'primary', 'heading'],
-            type: 'PrismicStructuredTextType',
-          },
-          {
-            path: ['page', 'data', 'body', 'description', 'primary', 'text'],
-            type: 'PrismicStructuredTextType',
-          },
-        ]}
-        {...props}
-      />
-    ),
-  })
 
 describe('mergePrismicPreviewData', () => {
   test('returns undefined if staticData is falsey', () => {
@@ -169,12 +124,49 @@ describe('mergePrismicPreviewData', () => {
 })
 
 describe('usePrismicPreview', () => {
+  const location = {
+    search:
+      'http://localhost:8000/preview?token=https%3A%2F%2Ftest.prismic.io%2Fpreviews%2FXNIWYywAADkA7fH_&documentId=XFyi2hAAACIAImfA',
+  }
+
   test('throws error if location is falsey', () => {
-    const { result } = renderHookWithProvider(() =>
-      usePrismicPreview(undefined),
-    )
+    const { result } = renderHook(() => usePrismicPreview(undefined))
 
     expect(result.error.message).toMatch(/invalid location object!/i)
+  })
+
+  test('throws error if there is no defined linkResolver', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        htmlSerializer: () => {},
+        linkResolver: undefined,
+      }),
+    )
+
+    expect(result.error.message).toMatch(/invalid linkResolver/i)
+  })
+
+  test('throws error if linkResolver is not a function', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        htmlSerializer: () => {},
+        linkResolver: 'linkResolver',
+      }),
+    )
+
+    expect(result.error.message).toMatch(/invalid linkResolver/i)
+  })
+
+  test('throws error if pathResolver is not a function', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        htmlSerializer: () => {},
+        linkResolver: () => {},
+        pathResolver: 'pathResolver',
+      }),
+    )
+
+    expect(result.error.message).toMatch(/pathResolver is not a function/i)
   })
 
   test('returns normalized preview data from Prismic', async () => {
@@ -207,15 +199,13 @@ describe('usePrismicPreview', () => {
     }
     Prismic.getApi.mockResolvedValue(api)
 
-    const { result, waitForNextUpdate } = renderHookWithProvider(() =>
-      usePrismicPreview({
-        location: {
-          search:
-            'http://localhost:8000/preview?token=https%3A%2F%2Ftest.prismic.io%2Fpreviews%2FXNIWYywAADkA7fH_&documentId=XFyi2hAAACIAImfA',
-        },
-        accessToken: 'token',
-        repositoryName: 'repo',
+    const { result, waitForNextUpdate } = renderHook(() =>
+      usePrismicPreview(location, {
         linkResolver: () => '/',
+        pathResolver: () => '/',
+        htmlSerializer: () => '/',
+        repositoryName: 'Testing',
+        token: 'token',
       }),
     )
 
