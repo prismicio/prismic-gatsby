@@ -19,7 +19,7 @@ schema processing.
 
 - Gatsby now knows about fields that are defined on a custom type, but have no
   content. This previously required developers to create "placeholder" documents
-  will every field filled in with dummy content.
+  with every field filled in with dummy content.
 - Rich Text and Title fields always return the expected result. Adding an image
   or embed as the first piece of content to a Rich Text field will not confuse
   the plugin.
@@ -32,9 +32,11 @@ The very first thing you will need to do is update your dependencies.
 
 ### Update Gatsby version
 
-You need update your `package.json` to use at least `v2.5` of Gatsby.
+You need update your `package.json` to use at least `v2.5.0` of Gatsby.
 
 ```json
+// package.json
+
 "dependencies": {
   "gatsby": "^2.5.0",
 }
@@ -45,6 +47,8 @@ You need update your `package.json` to use at least `v2.5` of Gatsby.
 Update your `package.json` to use v3 of `gatsby-source-prismic`.
 
 ```json
+// package.json
+
 "dependencies": {
   "gatsby-source-prismic": "^3.0.0",
 }
@@ -52,11 +56,13 @@ Update your `package.json` to use v3 of `gatsby-source-prismic`.
 
 ### Update React version
 
-Preview Prismic documents before publishing requires React hooks. If you project
-is not already on a release of React that includes hooks, upgrade your version
-of `react` and `react-dom`.
+Previewing Prismic documents before publishing requires React hooks. If you
+project is not already on a release of React that includes hooks, upgrade your
+version of `react` and `react-dom`.
 
 ```json
+// package.json
+
 "dependencies": {
   "react": "^16.8.0",
   "react-dom": "^16.8.0",
