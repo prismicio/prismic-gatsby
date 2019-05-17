@@ -294,7 +294,10 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
   return { typeDefs, typePaths }
 }
 
-export const generateTypeDefForLinkType = (allTypeDefs, gatsbySchema) => {
+export const generateTypeDefForLinkType = (allTypeDefs, context) => {
+  const { gatsbyContext } = context
+  const { schema: gatsbySchema } = gatsbyContext
+
   const documentTypeNames = R.compose(
     R.map(R.path(['config', 'name'])),
     R.filter(

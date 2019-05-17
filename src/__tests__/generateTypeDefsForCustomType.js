@@ -579,7 +579,7 @@ describe('generateTypeDefForLinkType', () => {
           },
         },
       ],
-      schema,
+      context,
     )
 
     expect(result.config.types).toEqual([

@@ -23,11 +23,8 @@ import { name as pkgName } from '../package.json'
 const msg = s => `${pkgName} - ${s}`
 
 export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
-  const {
-    schema,
-    actions: { createTypes },
-    reporter,
-  } = gatsbyContext
+  const { actions, reporter } = gatsbyContext
+  const { createTypes } = actions
 
   const createTypesActivity = reporter.activityTimer(msg('create types'))
   const fetchDocumentsActivity = reporter.activityTimer(msg('fetch documents'))
@@ -56,6 +53,7 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
    */
 
   createTypesActivity.start()
+  reporter.verbose(msg('starting to create types'))
 
   const typeVals = R.compose(
     R.values,
@@ -77,7 +75,7 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
     R.map(R.prop('typePaths')),
   )(typeVals)
 
-  const linkTypeDef = generateTypeDefForLinkType(typeDefs, schema)
+  const linkTypeDef = generateTypeDefForLinkType(typeDefs, { gatsbyContext })
 
   createTypes(standardTypes)
   createTypes(linkTypeDef)
@@ -90,6 +88,7 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
    */
 
   fetchDocumentsActivity.start()
+  reporter.verbose(msg('starting to fetch documents'))
 
   const documents = await fetchAllDocuments(gatsbyContext, pluginOptions)
 
@@ -100,6 +99,7 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
    */
 
   createNodesActivity.start()
+  reporter.verbose(msg('starting to create nodes'))
 
   await R.compose(
     RA.allP,
@@ -126,14 +126,16 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
    */
 
   writeTypePathsActivity.start()
+  reporter.verbose(msg('starting to write out type paths'))
 
   const typePathsString = JSON.stringify(typePaths)
   const typePathsDigest = md5(typePathsString)
-  const typePathsFilename = path.join(
+  const typePathsFilename = path.resolve(
     'public',
     pluginOptions.typePathsFilenamePrefix + typePathsDigest + '.json',
   )
 
+  reporter.verbose(msg(`writing out type paths to: ${typePathsFilename}`))
   fs.writeFileSync(typePathsFilename, typePathsString)
 
   writeTypePathsActivity.end()
