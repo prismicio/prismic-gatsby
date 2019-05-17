@@ -7,8 +7,6 @@ import {
   normalizeStructuredTextField,
 } from '../../normalizers/node'
 
-jest.mock('gatsby-source-filesystem')
-
 const createNodeIdReturnValue = 'result of createNodeId'
 const createNodeId = jest.fn().mockReturnValue(createNodeIdReturnValue)
 
