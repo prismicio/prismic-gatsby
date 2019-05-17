@@ -139,20 +139,12 @@ describe('usePrismicPreview', () => {
 
   const typePaths = [
     {
-      path: ['page', ' uid'],
-      type: 'String',
-    },
-    {
       path: ['page', 'data', 'title'],
       type: 'PrismicStructuredTextType',
     },
     {
-      path: ['page', 'data', 'body', 'description', 'primary'],
-      type: 'PrismicPageBodyDescriptionPrimaryType',
-    },
-    {
-      path: ['page', 'data', 'body', 'description'],
-      type: 'PrismicPageBodyDescription',
+      path: ['page', 'data', 'body'],
+      type: 'Slices',
     },
     {
       path: ['page', 'data', 'body', 'description', 'primary', 'heading'],
@@ -164,7 +156,85 @@ describe('usePrismicPreview', () => {
     },
   ]
 
+  const rawPreviewData = {
+    id: 'XFyxoxAAACQAIqnY',
+    uid: 'test',
+    type: 'page',
+    data: {
+      title: [{ type: 'heading1', text: 'Test', spans: [] }],
+      body: [
+        {
+          slice_type: 'description',
+          slice_label: null,
+          items: [],
+          primary: {
+            heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
+            text: [
+              {
+                type: 'paragraph',
+                text: 'Copy Text.',
+                spans: [],
+              },
+            ],
+          },
+        },
+      ],
+    },
+  }
+
+  const normalizedPreviewData = {
+    prismicPage: {
+      uid: 'test',
+      type: 'page',
+      data: {
+        title: {
+          html: '<h1>Test</h1>',
+          text: 'Test',
+          raw: [{ type: 'heading1', text: 'Test', spans: [] }],
+        },
+        body: [
+          {
+            slice_type: 'description',
+            slice_label: null,
+            items: [],
+            primary: {
+              heading: {
+                text: 'Heading',
+                html: '<h1>Heading</h1>',
+                raw: [{ type: 'heading1', text: 'Heading', spans: [] }],
+              },
+              text: {
+                text: 'Copy Text.',
+                html: '<p>Copy Text.</p>',
+                raw: [{ type: 'paragraph', text: 'Copy Text.', spans: [] }],
+              },
+            },
+          },
+        ],
+      },
+      prismicId: 'XFyxoxAAACQAIqnY',
+      id: '969133b6-03e3-5b18-9152-f2a6e96796e8',
+      internal: {
+        type: 'PrismicPage',
+        contentDigest: '3061931390fa8405bfb7b946d5e4105d',
+      },
+    },
+  }
+
+  const overrides = {
+    linkResolver: () => () => '/',
+    pathResolver: () => () => '/',
+    htmlSerializer: () => {},
+    repositoryName: 'Testing',
+    token: 'token',
+  }
+
   global.fetch = mockFetch(typePaths)
+
+  const api = {
+    getByID: async () => rawPreviewData,
+  }
+  Prismic.getApi.mockResolvedValue(api)
 
   test('throws error if location is falsey', () => {
     const { result } = renderHook(() => usePrismicPreview(undefined))
@@ -206,87 +276,65 @@ describe('usePrismicPreview', () => {
     expect(result.error.message).toMatch(/pathResolver is not a function/i)
   })
 
-  test('returns normalized preview data from Prismic', async () => {
-    const api = {
-      getByID: async () => ({
-        id: 'XFyxoxAAACQAIqnY',
-        uid: 'test',
-        type: 'page',
-        data: {
-          title: [{ type: 'heading1', text: 'Test', spans: [] }],
-          body: [
-            {
-              slice_type: 'description',
-              slice_label: null,
-              items: [],
-              primary: {
-                heading: [{ type: 'heading1', text: 'Heading', spans: [] }],
-                text: [
-                  {
-                    type: 'paragraph',
-                    text: 'Copy Text.',
-                    spans: [],
-                  },
-                ],
-              },
-            },
-          ],
-        },
+  test('throws error if there is no defined htmlSerializer', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        htmlSerializer: undefined,
+        linkResolver: () => {},
       }),
-    }
-    Prismic.getApi.mockResolvedValue(api)
+    )
 
+    expect(result.error.message).toMatch(/invalid htmlSerializer/i)
+  })
+
+  test('throws error if htmlSerializer is not a function', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        htmlSerializer: 'HTMLSERIALIZER STRING',
+        linkResolver: () => {},
+      }),
+    )
+
+    expect(result.error.message).toMatch(/invalid htmlSerializer/i)
+  })
+
+  test('returns normalized preview data from Prismic', async () => {
+    const { result, waitForNextUpdate } = renderHook(() =>
+      usePrismicPreview(location, overrides),
+    )
+
+    await waitForNextUpdate()
+
+    expect(result.current.previewData).toMatchObject(normalizedPreviewData)
+  })
+
+  test('returns a path derived from linkResolver if pathResolver is not defined', async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       usePrismicPreview(location, {
-        linkResolver: () => '/',
-        pathResolver: () => '/',
-        htmlSerializer: () => '/',
-        repositoryName: 'Testing',
-        token: 'token',
+        ...overrides,
+        pathResolver: undefined,
+        linkResolver: () => 'LINK',
       }),
     )
 
     await waitForNextUpdate()
 
-    expect(result.current.previewData).toMatchObject({
-      prismicPage: {
-        uid: 'test',
-        type: 'page',
-        data: {
-          title: {
-            html: '<h1>Test</h1>',
-            text: 'Test',
-            raw: [{ type: 'heading1', text: 'Test', spans: [] }],
-          },
-          body: [
-            {
-              slice_type: 'description',
-              slice_label: null,
-              items: [],
-              primary: {
-                heading: {
-                  text: 'Heading',
-                  html: '<h1>Heading</h1>',
-                  raw: [{ type: 'heading1', text: 'Heading', spans: [] }],
-                },
-                text: {
-                  text: 'Copy Text.',
-                  html: '<p>Copy Text.</p>',
-                  raw: [{ type: 'paragraph', text: 'Copy Text.', spans: [] }],
-                },
-              },
-            },
-          ],
-        },
-        prismicId: 'XFyxoxAAACQAIqnY',
-        id: '969133b6-03e3-5b18-9152-f2a6e96796e8',
-        internal: {
-          type: 'PrismicPage',
-          contentDigest: '3061931390fa8405bfb7b946d5e4105d',
-        },
-      },
-    })
+    expect(result.current.path).toBe('LINK')
+  })
+
+  test('returns a path derived from pathResolver if it is defined', async () => {
+    const { result, waitForNextUpdate } = renderHook(() =>
+      usePrismicPreview(location, {
+        ...overrides,
+        pathResolver: () => 'PATH RESOLVER',
+      }),
+    )
+
+    await waitForNextUpdate()
+
+    expect(result.current.path).toBe('PATH RESOLVER')
   })
 
   global.fetch.mockClear()
+  Prismic.getApi.mockClear()
 })

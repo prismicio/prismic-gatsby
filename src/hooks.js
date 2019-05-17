@@ -33,11 +33,18 @@ const createContentDigest = obj => md5(JSON.stringify(obj))
 // created by Gatsby at build time minus image processing due to running in the
 // browser. Instead, image nodes return their source URL.
 export const usePrismicPreview = (location, overrides) => {
-  if (!location) throw new Error('Invalid location object!. Check hook call.')
+  if (!location)
+    throw new Error(
+      'Invalid location object!. Please provide the location object from @reach/router.',
+    )
   if (!overrides.linkResolver || !isFunction(overrides.linkResolver))
-    throw new Error('Invalid linkResolver!')
+    throw new Error('Invalid linkResolver! Please provide a function.')
   if (overrides.pathResolver && !isFunction(overrides.pathResolver))
-    throw new Error('pathResolver is not a function!')
+    throw new Error(
+      'pathResolver is not a function! Please provide a function.',
+    )
+  if (!overrides.htmlSerializer || !isFunction(overrides.htmlSerializer))
+    throw new Error('Invalid htmlSerializer! Please provide a function.')
 
   const [state, setState] = useState({
     previewData: null,
