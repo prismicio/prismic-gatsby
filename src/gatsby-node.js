@@ -1,8 +1,11 @@
 import fs from 'fs'
+import path from 'path'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import md5 from 'md5'
 
-import fetchData from './fetch'
+import { validatePluginOptions } from './validatePluginOptions'
+import { fetchAllDocuments } from './fetchAllDocuments'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
@@ -15,33 +18,44 @@ import {
   normalizeStructuredTextField,
 } from './normalizers/node'
 import standardTypes from './standardTypes.graphql'
+import { name as pkgName } from '../package.json'
 
-export const sourceNodes = async (gatsbyContext, pluginOptions) => {
+const msg = s => `${pkgName} - ${s}`
+
+export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   const {
     schema,
-    actions: { createNode, createTypes },
-    createNodeId,
-    createContentDigest,
+    actions: { createTypes },
+    reporter,
   } = gatsbyContext
 
-  // Set default plugin options.
-  pluginOptions = {
-    linkResolver: RA.noop,
-    htmlSerializer: RA.noop,
-    fetchLinks: [],
-    schemas: {},
-    lang: '*',
-    shouldNormalizeImage: R.always(true),
-    ...pluginOptions,
-  }
+  const createTypesActivity = reporter.activityTimer(msg('create types'))
+  const fetchDocumentsActivity = reporter.activityTimer(msg('fetch documents'))
+  const createNodesActivity = reporter.activityTimer(msg('create nodes'))
+  const writeTypePathsActivity = reporter.activityTimer(
+    msg('write out type paths'),
+  )
+
+  /***
+   * Validate plugin options. Set default options where necessary. If any
+   * plugin options are invalid, stop immediately.
+   */
 
   const {
-    repositoryName,
-    accessToken,
-    fetchLinks,
-    lang,
-    schemas,
-  } = pluginOptions
+    error: validationError,
+    value: pluginOptions,
+  } = validatePluginOptions(rawPluginOptions)
+
+  if (validationError) {
+    reporter.error(`${pkg.name} - invalid plugin options`)
+    reporter.panic(`${pkg.name} - ${validationError}`)
+  }
+
+  /***
+   * Create types derived from Prismic custom type schemas.
+   */
+
+  createTypesActivity.start()
 
   const typeVals = R.compose(
     R.values,
@@ -51,7 +65,7 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
         pluginOptions,
       }),
     ),
-  )(schemas)
+  )(pluginOptions.schemas)
 
   const typeDefs = R.compose(
     R.flatten,
@@ -69,33 +83,58 @@ export const sourceNodes = async (gatsbyContext, pluginOptions) => {
   createTypes(linkTypeDef)
   createTypes(typeDefs)
 
-  const { documents } = await fetchData({
-    repositoryName,
-    accessToken,
-    fetchLinks,
-    lang,
-  })
+  createTypesActivity.end()
+
+  /***
+   * Fetch documents from Prismic.
+   */
+
+  fetchDocumentsActivity.start()
+
+  const documents = await fetchAllDocuments(gatsbyContext, pluginOptions)
+
+  fetchDocumentsActivity.end()
+
+  /***
+   * Create nodes for all documents
+   */
+
+  createNodesActivity.start()
 
   await R.compose(
     RA.allP,
     R.map(doc =>
       documentToNodes(doc, {
-        typePaths,
-        gatsbyContext,
-        createNode,
-        createNodeId,
-        createContentDigest,
-        pluginOptions,
+        createNode: gatsbyContext.actions.createNode,
+        createNodeId: gatsbyContext.createNodeId,
+        createContentDigest: gatsbyContext.createContentDigest,
         normalizeImageField,
         normalizeLinkField,
         normalizeSlicesField,
         normalizeStructuredTextField,
+        typePaths,
+        gatsbyContext,
+        pluginOptions,
       }),
     ),
   )(documents)
 
-  fs.writeFileSync(
-    `public/prismic__${repositoryName}__typeDefs.json`,
-    JSON.stringify(typePaths),
+  createNodesActivity.end()
+
+  /***
+   * Write type paths to public for use in Prismic previews.
+   */
+
+  writeTypePathsActivity.start()
+
+  const typePathsString = JSON.stringify(typePaths)
+  const typePathsDigest = md5(typePathsString)
+  const typePathsFilename = path.join(
+    'public',
+    pluginOptions.typePathsFilenamePrefix + typePathsDigest + '.json',
   )
+
+  fs.writeFileSync(typePathsFilename, typePathsString)
+
+  writeTypePathsActivity.end()
 }
