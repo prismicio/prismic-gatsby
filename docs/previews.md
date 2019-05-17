@@ -12,9 +12,9 @@
       - [Return Value](#return-value)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
       - [Return Value](#return-value-1)
-        - [If `previewData` is falsey:](#if-previewdata-is-falsey)
-        - [If `previewData` and `staticData` have the same custom type:](#if-previewdata-and-staticdata-have-the-same-custom-type)
-        - [If the custom type of `previewData` and `staticData` are different:](#if-the-custom-type-of-previewdata-and-staticdata-are-different)
+        - [If `previewData` is falsey](#if-previewdata-is-falsey)
+        - [If `previewData` and `staticData` have the same custom type](#if-previewdata-and-staticdata-have-the-same-custom-type)
+        - [If the custom type of `previewData` and `staticData` are different](#if-the-custom-type-of-previewdata-and-staticdata-are-different)
   - [Limitations](#limitations)
     - [Images](#images)
     - [GraphQL Aliases](#aliases)
@@ -227,17 +227,17 @@ Receives a single object as a parameter:
 
 #### Return Value
 
-##### If `previewData` is falsey:
+##### If `previewData` is falsey
 
 Returns `staticData` as is.
 
-##### If `previewData` and `staticData` have the same custom type:
+##### If `previewData` and `staticData` have the same custom type
 
 Returns a new object by deeply merging the key-value pairs from `staticData` and
 `previewData`. If a key between the two objects are shared, values from
 `previewData` are used.
 
-##### If the custom type of `previewData` and `staticData` are different:
+##### If the custom type of `previewData` and `staticData` are different
 
 Returns a new object by deeply traversing `staticData` and replacing any
 document data nodes with the previewed document's ID with `previewData`. This is
