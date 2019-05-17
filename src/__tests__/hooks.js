@@ -129,7 +129,7 @@ describe('usePrismicPreview', () => {
       'http://localhost:8000/preview?token=https%3A%2F%2Ftest.prismic.io%2Fpreviews%2FXNIWYywAADkA7fH_&documentId=XFyi2hAAACIAImfA',
   }
 
-  const mockTypePathsResponse = JSON.stringify([
+  const mockTypePathsResponse = [
     {
       path: ['page', ' uid'],
       type: 'String',
@@ -154,7 +154,7 @@ describe('usePrismicPreview', () => {
       path: ['page', 'data', 'body', 'description', 'primary', 'text'],
       type: 'PrismicStructuredTextType',
     },
-  ])
+  ]
   const mockTextPromise = Promise.resolve(mockTypePathsResponse)
   const mockFetchPromise = Promise.resolve({
     text: () => mockTextPromise,
