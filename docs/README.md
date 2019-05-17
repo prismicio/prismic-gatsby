@@ -5,27 +5,18 @@ repositories.
 
 ## Table of Contents
 
-- [gatsby-source-prismic](#gatsby-source-prismic)
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [Install](#install)
-  - [How to use](#how-to-use)
-  - [Providing JSON schemas](#providing-json-schemas)
-  - [How to query](#how-to-query)
-    - [Query Rich Text fields](#query-rich-text-fields)
-    - [Query Link fields](#query-link-fields)
-    - [Query Content Relation fields](#query-content-relation-fields)
-    - [Query slices](#query-slices)
-    - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
-    - [Image processing](#image-processing)
-- [Prismic Previews](#prismic-previews)
-  - [usePrismicPreview()](#useprismicpreview)
-  - [Return Value](#return-value)
-  - [API](#api)
-  - [Gotchas](#gotchas)
-    - [Images](#images)
-  - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
-  - [In Depth Guide](#in-depth-guide)
+- [Features](#features)
+- [Install](#install)
+- [How to use](#how-to-use)
+- [Providing JSON schemas](#providing-json-schemas)
+- [How to query](#how-to-query)
+  - [Query Rich Text fields](#query-rich-text-fields)
+  - [Query Link fields](#query-link-fields)
+  - [Query Content Relation fields](#query-content-relation-fields)
+  - [Query slices](#query-slices)
+  - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
+  - [Image processing](#image-processing)
+- [Previews](#previews)
 - [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
 ## Features
@@ -100,8 +91,7 @@ plugins: [
       },
 
       // Provide an object of Prismic custom type JSON schemas to load into
-      // Gatsby. Providing the schemas allows you to query for fields present in
-      // your custom types even if they are unused in your documents.
+      // Gatsby. This is required.
       schemas: {
         // Your custom types mapped to schemas
       }
@@ -127,29 +117,9 @@ plugins: [
 
 ## Providing JSON schemas
 
-When querying for data in Gatsby via GraphQL, the list of available fields is
-dependent on the data provided to Gatsby. By default, this plugin pulls all data
-from Prismic, performs convenient transformations like HTML and link
-conversions, and injects it directly into Gatsby.
-
-For most cases, this works, but there are times when a field will exist in
-Prismic, but not in Gatsby. You may come across this GraphQL error:
-
-```
-Cannot query field "my_field_id" on type "data_XX".
-```
-
-This happens when no documents in your Prismic repository uses the field being
-queried.
-
-To get around this, you can perform one of the following:
-
-- **Recommended**: Provide the full JSON schema from Prismic to the source
-  plugin via the `schemas` option in `gatsby-config.js`.
-
-- Create a "placeholder" document for each custom type that has all values for
-  all fields. In your `gatsby-node.js` file, set a way to find these documents
-  and skip creating pages or delete them from the GraphQL store.
+In order for Gatsby to know about your Prismic custom types, you must provide
+the full JSON schema of each custom type from Prismic to the source plugin via
+the `schemas` option in `gatsby-config.js`.
 
 The recommended approach is to create a `schemas` directory in your project and
 import them into your `gatsby-config.js` file.
@@ -163,7 +133,7 @@ plugins: [
       // ...
       schemas: {
         page: require('./src/schemas/page.json'),
-        blogPost: require('./src/schemas/blogPost.json'),
+        blog_post: require('./src/schemas/blog_post.json'),
       },
       // ...
     },
@@ -174,8 +144,8 @@ plugins: [
 Each schema file should be populated with the contents of the "JSON editor" tab
 in the Prismic Custom Type editor.
 
-See the official docs for more details: [How to version custom
-types][prismic-version-custom-types].
+See the official docs for more details on version controlling your custom types:
+[How to version custom types][prismic-version-custom-types].
 
 ## How to query
 
@@ -307,11 +277,6 @@ within the related document is often needed, the document data is provided at
 the `document` field. The resolved URL to the document using the official
 [prismic-dom][prismic-dom] library and the `linkResolver` function from your
 site's `gatsby-node.js` is also provided at the `url` field.
-
-**Note**: Data within the `document` field is wrapped in an array. Due to the
-method in which Gatsby processes one-to-one node relationships, this work-around
-is necessary to ensure the field can accommodate different content types. This
-may be fixed in a later Gatsby relase.
 
 Querying data on the `document` field is handled the same as querying slices.
 Please read the [Query slices](#query-slices) section for details.
@@ -501,7 +466,7 @@ Full example:
 To learn more about image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
 
-# Prismic Previews
+## Prismic Previews
 
 ### usePrismicPreview()
 
@@ -624,7 +589,7 @@ component to dynamically handle `gatsby-image` data or Prismic `url`s.
 For an in-depth guide on using Prismic previews with `gatsby-source-prismic`,
 please refer to [this guide](https://github.com). _COMING SOON_
 
-# Site's `gatsby-node.js` example
+## Site's `gatsby-node.js` example
 
 ```jsx
 const path = require('path')
