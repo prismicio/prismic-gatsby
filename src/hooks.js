@@ -69,11 +69,13 @@ export const usePrismicPreview = (location, overrides) => {
 
   // Fetches and parses the JSON file of the typePaths we write at build time.
   const fetchTypePaths = useCallback(async () => {
-    const req = await fetch(`/prismic__${repositoryName}__typeDefs.json`)
-    const data = await req.text()
+    const req = await fetch(
+      `/prismic-typepaths---${pluginOptions.repositoryName}-.json`,
+      { headers: { 'Content-Type': 'application/json' } },
+    )
 
-    return JSON.parse(data)
-  }, [repositoryName])
+    return await req.json()
+  }, [pluginOptions])
 
   // Normalizes preview data using browser-compatible normalize functions.
   const normalizePreviewData = useCallback(

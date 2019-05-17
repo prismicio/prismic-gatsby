@@ -132,7 +132,7 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   const typePathsDigest = md5(typePathsString)
   const typePathsFilename = path.resolve(
     'public',
-    pluginOptions.typePathsFilenamePrefix + typePathsDigest + '.json',
+    pluginOptions.typePathsFilenamePrefix + '.json',
   )
 
   reporter.verbose(msg(`writing out type paths to: ${typePathsFilename}`))
