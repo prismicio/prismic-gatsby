@@ -12,9 +12,9 @@
     - [Return Value](#return-value)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
     - [Return Value](#return-value-1)
-      - [If previewData is falsey:](#if-previewdata-is-falsey)
+      - [If `previewData` is falsey:](#if-previewdata-is-falsey)
       - [If `previewData` and `staticData` have the same custom type (e.g. `prismicAuthor`):](#if-previewdata-and-staticdata-have-the-same-custom-type-eg-prismicauthor)
-      - [If the custom type of the previewed document and static data are different (e.g. prismicAuthor & prismicBook):](#if-the-custom-type-of-the-previewed-document-and-static-data-are-different-eg-prismicauthor--prismicbook)
+      - [If the custom type of `previewData` and `staticData` are different (e.g. `prismicAuthor` & `prismicBook`):](#if-the-custom-type-of-previewdata-and-staticdata-are-different-eg-prismicauthor--prismicbook)
   - [Limitations](#limitations)
     - [Images](#images)
 
@@ -228,7 +228,7 @@ Receives a single object as a parameter:
 
 ### Return Value
 
-#### If previewData is falsey:
+#### If `previewData` is falsey:
 
 Returns `staticData` as is.
 
@@ -238,7 +238,7 @@ Returns a new object by deeply merging the key-value pairs from `staticData` and
 `previewData`. If a key between the two objects are shared, values from
 `previewData` are used.
 
-#### If the custom type of the previewed document and static data are different (e.g. prismicAuthor & prismicBook):
+#### If the custom type of `previewData` and `staticData` are different (e.g. `prismicAuthor` & `prismicBook`):
 
 Returns a new object by deeply traversing `staticData` and replacing any
 document data nodes with the previewed document's ID with `previewData`. This is
@@ -279,15 +279,15 @@ export const Image = ({
       height="100%"
       src={src}
       loading="lazy"
-      {...props}
       style={{ objectFit, objectPosition }}
+      {...props}
     />
   ) : (
     <Img {...props} fluid={fluid} fixed={fixed} />
   )
 ```
 
-Breaking this down:
+Let's break this down:
 
 1. If the `src` prop is present, we know that we're on a preview, so we want to
    use a regular `<img />` tag. We provide a few additional props and attributes
@@ -304,5 +304,5 @@ Feel free to build upon the above example to make it work in a way you prefer.
 We don't recommend using the above _as is_. (Though if it works enough for you,
 great!)
 
-CSS-in-JS solutions work just as well here, or you can even leverage the
+CSS-in-JS solutions will work just as well here, or you can even leverage the
 `<picture>` tag with a `srcset` you get from Prismic!
