@@ -34,7 +34,7 @@ The very first thing you will need to do is update your dependencies.
 
 You need update your `package.json` to use at least `v2.5.0` of Gatsby.
 
-```json
+```js
 // package.json
 
 "dependencies": {
@@ -46,7 +46,7 @@ You need update your `package.json` to use at least `v2.5.0` of Gatsby.
 
 Update your `package.json` to use v3 of `gatsby-source-prismic`.
 
-```json
+```js
 // package.json
 
 "dependencies": {
@@ -60,7 +60,7 @@ Previewing Prismic documents before publishing requires React hooks. If you
 project is not already on a release of React that includes hooks, upgrade your
 version of `react` and `react-dom`.
 
-```json
+```js
 // package.json
 
 "dependencies": {
