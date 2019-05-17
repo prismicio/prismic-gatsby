@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import Prismic from 'prismic-javascript'
 import PrismicDOM from 'prismic-dom'
 
@@ -29,19 +30,21 @@ export const normalizeStructuredTextField = async (
   }
 }
 
-const fetchAndCreateDocumentNodes = async (id, nodeId, context) => {
-  const { createNode, hasNodeById, pluginOptions } = context
+const fetchAndCreateDocumentNodes = async (value, context) => {
+  const { createNode, createNodeId, hasNodeById, pluginOptions } = context
   const { repositoryName, accessToken, fetchLinks } = pluginOptions
 
-  if (hasNodeById(nodeId)) return
+  const linkedDocId = createNodeId(`${value.type} ${value.id}`)
+
+  if (hasNodeById(linkedDocId)) return
 
   // Create a key in our cache to prevent infinite recursion.
-  createNode({ id: nodeId })
+  createNode({ id: linkedDocId })
 
   // Query Prismic's API for the actual document node.
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
   const api = await Prismic.api(apiEndpoint, { accessToken })
-  const doc = await api.getByID(id, { fetchLinks })
+  const doc = await api.getByID(value.id, { fetchLinks })
 
   // Normalize the document.
   await documentToNodes(doc, context)
@@ -56,12 +59,15 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
 
   // Fetches, normalizes, and caches linked document if not present in cache.
   if (value.link_type === 'Document' && value.id)
-    await fetchAndCreateDocumentNodes(value.id, linkedDocId, context)
+    await fetchAndCreateDocumentNodes(value, context)
 
   const proxyHandler = {
     get: (obj, prop) => {
-      if (value.link_type === 'Document' && prop === 'document')
-        return getNodeById(linkedDocId)
+      if (prop === 'document') {
+        if (value.link_type === 'Document') return getNodeById(linkedDocId)
+
+        return null
+      }
 
       return obj[prop]
     },
@@ -77,7 +83,7 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
   )
 }
 
-export const normalizeSlicesField = (_id, value, _depth, context) => {
+export const normalizeSlicesField = async (_id, value, _depth, context) => {
   const { hasNodeById, getNodeById } = context
 
   return new Proxy(value, {
