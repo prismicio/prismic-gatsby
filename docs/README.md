@@ -7,7 +7,7 @@ repositories.
 
 - [Features](#features)
 - [Install](#install)
-- [Migration Guide](#migration-guides)
+- [Migration Guide](#migration-guide)
 - [How to use](#how-to-use)
 - [Providing JSON schemas](#providing-json-schemas)
 - [How to query](#how-to-query)
