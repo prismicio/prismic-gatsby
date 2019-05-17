@@ -38,7 +38,7 @@ The very first thing you will need to do is update your dependencies.
 
 ### Update Gatsby version
 
-You need update your `package.json` to use at least `v2.5.0` of Gatsby.
+You need to update your `package.json` to use at least `v2.5.0` of Gatsby.
 
 ```js
 // package.json
