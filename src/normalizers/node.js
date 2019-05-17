@@ -39,10 +39,14 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
 
   const linkResolverForField = linkResolver({ key: id, value, node: doc })
 
+  let documentId = null
+  if (value.link_type === 'Document')
+    documentId = createNodeId(`${value.type} ${value.id}`)
+
   return {
     ...value,
     url: PrismicDOM.Link.url(value, linkResolverForField),
-    document: createNodeId(`${value.type} ${value.id}`),
+    document: documentId,
     raw: value,
   }
 }
@@ -71,7 +75,7 @@ export const normalizeImageField = async (_id, value, _depth, context) => {
       createNodeId,
     })
   } catch (error) {
-    console.error(error)
+    // Ignore
   }
 
   return {

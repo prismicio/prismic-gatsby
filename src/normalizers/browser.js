@@ -29,33 +29,34 @@ export const normalizeStructuredTextField = async (
   }
 }
 
-const fetchAndCreateDocumentNodes = async (id, context) => {
-  const { hasNodeById, pluginOptions } = context
+const fetchAndCreateDocumentNodes = async (id, nodeId, context) => {
+  const { createNode, hasNodeById, pluginOptions } = context
   const { repositoryName, accessToken, fetchLinks } = pluginOptions
 
-  if (hasNodeById(id)) return
+  if (hasNodeById(nodeId)) return
 
   // Create a key in our cache to prevent infinite recursion.
-  nodeStore.set(id, {})
+  createNode({ id: nodeId })
 
   // Query Prismic's API for the actual document node.
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
   const api = await Prismic.api(apiEndpoint, { accessToken })
-  const doc = await api.getByID(value.id, { fetchLinks })
+  const doc = await api.getByID(id, { fetchLinks })
 
   // Normalize the document.
   await documentToNodes(doc, context)
 }
 
 export const normalizeLinkField = async (id, value, _depth, context) => {
-  const { doc, getNodeById, createNodeId, linkResolver } = context
+  const { doc, getNodeById, createNodeId, pluginOptions } = context
+  const { linkResolver } = pluginOptions
 
   const linkResolverForField = linkResolver({ key: id, value, node: doc })
   const linkedDocId = createNodeId(`${value.type} ${value.id}`)
 
   // Fetches, normalizes, and caches linked document if not present in cache.
-  if (value.link_type === 'Document')
-    await fetchAndCreateDocumentNodes(linkedDocId, context)
+  if (value.link_type === 'Document' && value.id)
+    await fetchAndCreateDocumentNodes(value.id, linkedDocId, context)
 
   const proxyHandler = {
     get: (obj, prop) => {
@@ -81,7 +82,14 @@ export const normalizeSlicesField = (_id, value, _depth, context) => {
 
   return new Proxy(value, {
     get: (obj, prop) => {
-      if (hasNodeById(obj[prop])) return getNodeById(obj[prop])
+      if (hasNodeById(obj[prop])) {
+        const node = getNodeById(obj[prop])
+
+        return {
+          ...node,
+          __typename: node.internal.type,
+        }
+      }
 
       return obj[prop]
     },
