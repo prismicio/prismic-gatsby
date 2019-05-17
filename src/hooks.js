@@ -45,16 +45,21 @@ export const usePrismicPreview = (location, overrides) => {
     isInvalid: false,
   })
 
-  const configOptions = window.___prismicPluginOptions___
-  const pluginOptions = { ...configOptions, ...overrides }
+  const {
+    pluginOptions: rawPluginOptions,
+    schemasDigest,
+  } = window.___PRISMIC___
 
+  const pluginOptions = { ...rawPluginOptions, ...overrides }
   const {
     fetchLinks,
     accessToken,
     repositoryName,
     pathResolver,
     linkResolver,
+    typePathsFilenamePrefix,
   } = pluginOptions
+
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
 
   // Fetches raw preview data directly from Prismic via ID.
@@ -70,18 +75,17 @@ export const usePrismicPreview = (location, overrides) => {
   // Fetches and parses the JSON file of the typePaths we write at build time.
   const fetchTypePaths = useCallback(async () => {
     const req = await fetch(
-      `/prismic-typepaths---${pluginOptions.repositoryName}-.json`,
+      `/${typePathsFilenamePrefix}${schemasDigest}.json`,
       { headers: { 'Content-Type': 'application/json' } },
     )
 
     return await req.json()
-  }, [pluginOptions])
+  }, [typePathsFilenamePrefix, schemasDigest])
 
   // Normalizes preview data using browser-compatible normalize functions.
   const normalizePreviewData = useCallback(
     async rawPreviewData => {
       const typePaths = await fetchTypePaths()
-      console.log(typePaths)
 
       const nodeStore = new Map()
       const createNode = node => nodeStore.set(node.id, node)

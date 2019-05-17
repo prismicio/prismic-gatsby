@@ -38,14 +38,13 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
    * plugin options are invalid, stop immediately.
    */
 
-  const {
-    error: validationError,
-    value: pluginOptions,
-  } = validatePluginOptions(rawPluginOptions)
+  let pluginOptions
 
-  if (validationError) {
-    reporter.error(`${pkg.name} - invalid plugin options`)
-    reporter.panic(`${pkg.name} - ${validationError}`)
+  try {
+    pluginOptions = await validatePluginOptions(rawPluginOptions)
+  } catch (error) {
+    reporter.error(msg('invalid plugin options'))
+    reporter.panic(msg(error.errors.join(', ')))
   }
 
   /***
@@ -128,15 +127,14 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   writeTypePathsActivity.start()
   reporter.verbose(msg('starting to write out type paths'))
 
-  const typePathsString = JSON.stringify(typePaths)
-  const typePathsDigest = md5(typePathsString)
+  const schemasDigest = md5(JSON.stringify(pluginOptions.schemas))
   const typePathsFilename = path.resolve(
     'public',
-    pluginOptions.typePathsFilenamePrefix + '.json',
+    pluginOptions.typePathsFilenamePrefix + schemasDigest + '.json',
   )
 
   reporter.verbose(msg(`writing out type paths to: ${typePathsFilename}`))
-  fs.writeFileSync(typePathsFilename, typePathsString)
+  fs.writeFileSync(typePathsFilename, JSON.stringify(typePaths))
 
   writeTypePathsActivity.end()
 }

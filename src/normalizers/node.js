@@ -64,9 +64,15 @@ export const normalizeImageField = async (id, value, _depth, context) => {
   const { createNode } = actions
   const { shouldNormalizeImage } = pluginOptions
 
+  const shouldAttemptToCreateRemoteFileNode = await shouldNormalizeImage({
+    key: id,
+    value,
+    node: doc,
+  })
+
   let fileNode
 
-  if (shouldNormalizeImage({ key: id, value, node: doc }))
+  if (shouldAttemptToCreateRemoteFileNode)
     try {
       fileNode = await createRemoteFileNode({
         url: value.url,
