@@ -57,13 +57,13 @@ const normalizeField = async (id, value, depth, context) => {
       }
 
     case 'PrismicStructuredTextType':
-      return normalizeStructuredTextField(id, value, depth, context)
+      return await normalizeStructuredTextField(id, value, depth, context)
 
     case 'PrismicLinkType':
-      return normalizeLinkField(id, value, depth, context)
+      return await normalizeLinkField(id, value, depth, context)
 
     case 'Group':
-      return normalizeObjs(value, [...depth, id], context)
+      return await normalizeObjs(value, [...depth, id], context)
 
     case 'Slices':
       const sliceNodeIds = await R.compose(
@@ -98,7 +98,12 @@ const normalizeField = async (id, value, depth, context) => {
         }),
       )(value)
 
-      return normalizeSlicesField(id, sliceNodeIds, [...depth, id], context)
+      return await normalizeSlicesField(
+        id,
+        sliceNodeIds,
+        [...depth, id],
+        context,
+      )
 
     default:
       return value
