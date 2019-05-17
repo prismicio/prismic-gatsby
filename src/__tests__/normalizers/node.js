@@ -102,8 +102,11 @@ describe('normalizeLinkField', () => {
   })
 
   test('provides key, value, node values to linkResolver', async () => {
+    const key = 'key'
     const value = { link_type: 'Document', id: 'id' }
-    const result = await normalizeLinkField(undefined, value, undefined, {
+    const node = context.doc
+
+    const result = await normalizeLinkField(key, value, node, {
       ...context,
       pluginOptions: {
         ...context.pluginOptions,
