@@ -1,6 +1,7 @@
 # Previews
 
 - [Previews](#previews)
+  - [Requirements](#requirements)
   - [Why previews are useful](#why-previews-are-useful)
   - [How to use previews](#how-to-use-previews)
     - [TL;DR](#tldr)
@@ -18,6 +19,13 @@
   - [Limitations](#limitations)
     - [Images](#images)
     - [Aliases](#aliases)
+
+## Requirements
+
+Prismic previews makes use of `URLSearchParams` to read querystring parameters
+from URLs. If needed you need to support older browsers, we recommend
+polyfillying it via:
+[`url-search-params-polyfill`](https://www.npmjs.com/package/url-search-params-polyfill)
 
 ## Why previews are useful
 

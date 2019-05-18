@@ -28,6 +28,8 @@ const createNodeId = id =>
   uuidv5(id, uuidv5('gatsby-source-prismic', seedConstant))
 const createContentDigest = obj => md5(JSON.stringify(obj))
 
+const isBrowser = typeof window !== 'undefined'
+
 // Returns an object containing normalized Prismic preview data directly from
 // the Prismic API. The normalized data object's shape is identical to the shape
 // created by Gatsby at build time minus image processing due to running in the
@@ -52,10 +54,9 @@ export const usePrismicPreview = (location, overrides) => {
     isInvalid: false,
   })
 
-  const {
-    pluginOptions: rawPluginOptions,
-    schemasDigest,
-  } = window.___PRISMIC___
+  const { pluginOptions: rawPluginOptions, schemasDigest } = isBrowser
+    ? window.___PRISMIC___
+    : { pluginOptions: {}, schemasDigest: '' }
 
   const pluginOptions = { ...rawPluginOptions, ...overrides }
   const {
