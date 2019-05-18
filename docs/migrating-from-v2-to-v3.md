@@ -1,18 +1,17 @@
 # Migrating from v2 to v3
 
-- [Migrating from v2 to v3](#migrating-from-v2-to-v3)
-  - [Why you should migrate](#why-you-should-migrate)
-  - [Updating your dependencies](#updating-your-dependencies)
-    - [Update Gatsby version](#update-gatsby-version)
-    - [Update `gatsby-source-prismic` version](#update-gatsby-source-prismic-version)
-    - [Update React version](#update-react-version)
-  - [Handling breaking changes](#handling-breaking-changes)
-    - [Provide custom type schemas](#provide-custom-type-schemas)
-    - [Accessing linked documents](#accessing-linked-documents)
-  - [Setting up previews](#setting-up-previews)
-  - [Things to know](#things-to-know)
-    - [Type paths file in `/public`](#type-paths-file-in-public)
-    - [Plugin options in `window`](#plugin-options-in-window)
+- [Why you should migrate](#why-you-should-migrate)
+- [Updating your dependencies](#updating-your-dependencies)
+  - [Update Gatsby version](#update-gatsby-version)
+  - [Update `gatsby-source-prismic` version](#update-gatsby-source-prismic-version)
+  - [Update React version](#update-react-version)
+- [Handling breaking changes](#handling-breaking-changes)
+  - [Provide custom type schemas](#provide-custom-type-schemas)
+  - [Accessing linked documents](#accessing-linked-documents)
+- [Setting up previews](#setting-up-previews)
+- [Things to know](#things-to-know)
+  - [Type paths file in `/public`](#type-paths-file-in-public)
+  - [Plugin options in `window`](#plugin-options-in-window)
 
 ## Why you should migrate
 
