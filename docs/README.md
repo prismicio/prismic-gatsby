@@ -21,15 +21,15 @@ repositories.
     - [Image processing](#image-processing)
   - [Previews](#previews)
     - [usePrismicPreview()](#useprismicpreview)
-    - [Return Value](#return-value)
-    - [API](#api)
-    - [Gotchas](#gotchas)
-      - [Images](#images)
-  - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
-    - [Return Value](#return-value-1)
-      - [If the custom type of the previewed document and the template are different:](#if-the-custom-type-of-the-previewed-document-and-the-template-are-different)
-    - [API](#api-1)
-  - [In-depth Guide](#in-depth-guide)
+      - [Return Value](#return-value)
+      - [API](#api)
+      - [Gotchas](#gotchas)
+        - [Images](#images)
+    - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
+      - [Return Value](#return-value-1)
+        - [If the custom type of the previewed document and the template are different](#if-the-custom-type-of-the-previewed-document-and-the-template-are-different)
+      - [API](#api-1)
+    - [In-depth Guide](#in-depth-guide)
   - [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
 ## Features
@@ -517,7 +517,7 @@ const PreviewPage = ({ location }) => {
 }
 ```
 
-### Return Value
+#### Return Value
 
 Returns an object with the following keys:
 
@@ -531,7 +531,7 @@ Returns an object with the following keys:
   resolved from `location`. Typically only true if a client manually navigates
   to a preview resolver page.
 
-### API
+#### API
 
 `usePrismicPreview` Accepts the following parameters:
 
@@ -555,9 +555,9 @@ Returns an object with the following keys:
 > ⚠️ Since preview API requests are made in the browser, your access token will
 > be exposed to the client.
 
-### Gotchas
+#### Gotchas
 
-#### Images
+##### Images
 
 Since data normalization happens at runtime, we cannot perform the same image
 optimizations that we do at buildtime. Instead, `usePrismicPreview()` returns
@@ -566,7 +566,7 @@ the `url` field for an image.
 > ⚛️ A smart image component that conditionally uses `url` or `gatsby-image`
 > data is recommended for preview parity.
 
-## mergePrismicPreviewData()
+### mergePrismicPreviewData()
 
 A helper function for merging data from Gatsby's graphQL schema and normalized
 responses from `usePrismicPreview`. An example is shown below:
@@ -591,20 +591,20 @@ uses data from `allPrismicX` queries.
 for the previewed document on a template, but also fallback to static data from
 Gatsby.
 
-### Return Value
+#### Return Value
 
 Returns a new object by deeply merging the key-value pairs from `staticData` and
 `previewData`. If a key between the two objects are shared, values from
 `previewData` are used.
 
-#### If the custom type of the previewed document and the template are different:
+##### If the custom type of the previewed document and the template are different
 
 Returns a new object by deeply traversing `staticData` and replacing any
 document links with the previewed document's ID with `previewData`. This is
 useful for previewing documents whose data would only be shown on a page via
 `allPrismicX` queries.
 
-### API
+#### API
 
 Accepts the following parameters via an object:
 
@@ -613,7 +613,7 @@ Accepts the following parameters via an object:
 - `previewData`. Preview data from `usePrismicPreview()`. If `previewData` is
   falsey, `mergePrismicPreview` will return `staticData` as is.
 
-## In-depth Guide
+### In-depth Guide
 
 When creating `gatsby-source-prismic`'s preview API, we wanted to allow
 developers to reuse as much of their existing templates and components as much
