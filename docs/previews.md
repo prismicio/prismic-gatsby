@@ -13,9 +13,9 @@
       - [Return Value](#return-value)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
       - [Return Value](#return-value-1)
-        - [If `previewData` is falsey:](#if-previewdata-is-falsey)
-        - [If `previewData` and `staticData` have the same top level keys:](#if-previewdata-and-staticdata-have-the-same-top-level-keys)
-        - [If `previewData` and `staticData` have different top level keys:](#if-previewdata-and-staticdata-have-different-top-level-keys)
+        - [If `previewData` is falsey](#if-previewdata-is-falsey)
+        - [If `previewData` and `staticData` have the same top level keys](#if-previewdata-and-staticdata-have-the-same-top-level-keys)
+        - [If `previewData` and `staticData` have different top level keys](#if-previewdata-and-staticdata-have-different-top-level-keys)
   - [Limitations](#limitations)
     - [Images](#images)
     - [Aliases](#aliases)
@@ -242,17 +242,17 @@ Receives a single object as a parameter:
 
 #### Return Value
 
-##### If `previewData` is falsey:
+##### If `previewData` is falsey
 
 Returns `staticData` as is.
 
-##### If `previewData` and `staticData` have the same top level keys:
+##### If `previewData` and `staticData` have the same top level keys
 
 Returns a new object by deeply merging the key-value pairs from `staticData` and
 `previewData`. If a key between the two objects are shared, values from
 `previewData` are used.
 
-##### If `previewData` and `staticData` have different top level keys:
+##### If `previewData` and `staticData` have different top level keys
 
 Returns a new object by deeply traversing `staticData` and replacing any
 document data nodes with the previewed document's ID with `previewData`. This is
