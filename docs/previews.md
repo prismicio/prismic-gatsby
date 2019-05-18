@@ -82,8 +82,8 @@ import { Spinner } from '../components/Spinner'
 
 const PreviewPage = ({ location }) => {
   const { previewData, path } = usePrismicPreview(location, {
-    linkResolver: doc => doc.uid,
-    htmlSerializer: () => {},
+    linkResolver: ({ node, key, value }) => doc => doc.uid,
+    htmlSerializer: ({ node, key, value }) => () => {},
   })
 
   useEffect(() => {
