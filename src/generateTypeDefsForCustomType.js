@@ -16,10 +16,17 @@ const fieldToType = (id, value, depth, context) => {
   const { schema: gatsbySchema, createNodeId } = gatsbyContext
 
   switch (value.type) {
+    case 'UID':
+      enqueueTypePath([...depth, id], 'String!')
+      return {
+        type: 'String!',
+        description:
+          "The document's unique identifier. Unique among all instances of the document's type.",
+      }
+
     case 'Color':
     case 'Select':
     case 'Text':
-    case 'UID':
       enqueueTypePath([...depth, id], 'String')
       return 'String'
 
@@ -278,7 +285,44 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
   )
 
   const customTypeName = pascalcase(`Prismic ${id}`)
-  const customTypeFields = { data: dataName }
+  const customTypeFields = {
+    data: { type: dataName, description: "The document's data fields." },
+    dataRaw: {
+      type: 'JSON!',
+      description:
+        "The document's data object without transformations exactly as it comes from the Prismic API.",
+    },
+    dataString: {
+      type: 'String!',
+      description:
+        "The document's data object without transformations. The object is stringified via `JSON.stringify` to eliminate the need to declare subfields.",
+      deprecationReason: 'Use `dataRaw` instead which returns JSON.',
+    },
+    first_publication_date: {
+      type: 'Date!',
+      description: "The document's initial publication date.",
+    },
+    href: {
+      type: 'String!',
+      description: "The document's URL derived via the link resolver.",
+    },
+    id: {
+      type: 'ID!',
+      description:
+        'Globally unique identifier. Note that this differs from the `prismicID` field.',
+    },
+    lang: { type: 'String!', description: "The document's language." },
+    last_publication_date: {
+      type: 'Date!',
+      description: "The document's most recent publication date",
+    },
+    tags: { type: '[String!]!', description: "The document's list of tags." },
+    type: {
+      type: 'String!',
+      description: "The document's Prismic API ID type.",
+    },
+    prismicId: { type: 'ID!', description: "The document's Prismic ID." },
+  }
   if (uidFieldType) customTypeFields.uid = uidFieldType
 
   enqueueTypePath([id], customTypeName)

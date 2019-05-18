@@ -1,54 +1,113 @@
+"A text field with formatting options."
 type PrismicStructuredTextType {
+  "The HTML value of the text using `prismic-dom` and the HTML serializer."
   html: String
+  "The plain text value of the text using `prismic-dom`."
   text: String
+  "The field's value without transformations exactly as it comes from the Prismic API."
+  raw: JSON
 }
 
+"A field for storing geo-coordinates."
 type PrismicGeoPointType {
+  "The latitude value of the geo-coordinate."
   latitude: Float
+  "The longitude value of the geo-coordinate."
   longitude: Float
 }
 
+"Embed videos, songs, tweets, slices, etc."
 type PrismicEmbedType {
+  "The name of the author/owner of the resource. Fetched via oEmbed data."
   author_name: String
+  "A URL for the author/owner of the resource. Fetched via oEmbed data."
   author_url: String
+  "The suggested cache lifetime for this resource, in seconds. Consumers may choose to use this value or not. Fetched via oEmbed data."
   cache_age: String
+  "The URL of the resource."
   embed_url: String
+  "The HTML required to display the resource. The HTML should have no padding or margins. Consumers may wish to load the HTML in an off-domain iframe to avoid XSS vulnerabilities. Fetched via oEmbed data."
   html: String
+  "The name of the resource."
   name: String
+  "The name of the resource provider. Fetched via oEmbed data."
   provider_name: String
+  "The URL of the resource provider. Fetched via oEmbed data."
   provider_url: String
+  "The width of the resource's thumbnail. Fetched via oEmbed data."
   thumbnail_height: Int
+  "A URL to a thumbnail image representing the resource. Fetched via oEmbed data."
   thumbnail_url: String
+  "The width of the resource's thumbnail. Fetched via oEmbed data."
   thumbnail_width: Int
+  "A text title, describing the resource. Fetched via oEmbed data."
   title: String
+  "The resource type. Fetched via oEmbed data."
   type: String
+  "The oEmbed version number."
   version: String
 }
 
+"Dimensions for images."
 type PrismicImageDimensionsType {
-  width: Int
-  height: Int
+  "Width of the image in pixels."
+  width: Int!
+  "Height of the image in pixels."
+  height: Int!
 }
 
+"A responsive image field with constraints."
 type PrismicImageType {
+  "The image's alternative text."
   alt: String
+  "The image's copyright text."
   copyright: String
-  dimensions: PrismicImageDimensionsType
-  url: String
+  "The image's dimensions."
+  dimensions: PrismicImageDimensionsType!
+  "The image's URL on Prismic's CDN."
+  url: String!
+  "The locally downloaded image if `shouldNormalizeImage` returns true."
   localFile: File
 }
 
+"Types of links."
+enum PrismicLinkTypes {
+  "Any of the other types"
+  Any
+  "Internal content"
+  Document
+  "Internal media content"
+  Media
+  "URL"
+  Web
+}
+
+"Link to web, media, and internal content."
 type PrismicLinkType {
-  id: String
-  type: String
-  tags: [String]
-  slug: String
-  uid: String
-  link_type: String
-  isBroken: String
+  "The type of link."
+  link_type: PrismicLinkTypes!
+  "If a Document link, `true` if linked document does not exist, `false` otherwise."
+  isBroken: Boolean
+  "The link URL using `prismic-dom` the link resolver."
   url: String
+  "The link's target."
   target: String
+  "If a Document link, the linked document's Prismic ID."
+  id: ID
+  "If a Document link, the linked document's Prismic custom type API ID"
+  type: String
+  "If a Document link, the linked document's list of tags."
+  tags: [String]
+  "If a Document link, the linked document's language."
+  lang: String
+  "If a Document link, the linked document's slug."
+  slug: String
+  "If a Document link, the linked document's UID."
+  uid: String
+  "If a Document link, the linked document."
   document: PrismicAllDocumentTypes
+  "The field's value without transformations exactly as it comes from the Prismic API."
+  raw: JSON
 }
 
 interface PrismicDocument {
