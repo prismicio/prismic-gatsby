@@ -339,6 +339,6 @@ query {
 Previews _will not_ function properly since `previewData` objects are unable to
 know about these key changes.
 
-⚠️ If you attempt to merge a `previewData` with a `staticData` object with
-aliased fields with `mergePrismicPreviewData`, the resulting merged object will
-be incorrect.
+> ⚠️ If you attempt to merge a `previewData` with a `staticData` object with
+> aliased fields with `mergePrismicPreviewData`, the resulting merged object
+> will be incorrect.
