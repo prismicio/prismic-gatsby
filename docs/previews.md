@@ -23,8 +23,8 @@
 ## Requirements
 
 Prismic previews makes use of `URLSearchParams` to read querystring parameters
-from URLs. If needed you need to support older browsers, we recommend
-polyfillying it via:
+from URLs. If you need to support older browsers, we recommend polyfillying it
+via:
 [`url-search-params-polyfill`](https://www.npmjs.com/package/url-search-params-polyfill)
 
 ## Why previews are useful
