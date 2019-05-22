@@ -237,7 +237,8 @@ transformed to provide HTML and text versions. This uses the official
 functions from your site's `gatsby-node.js` to create the HTML and text fields.
 
 **Note**: If you need to access the raw data, the original data is accessible
-using the `raw` field, though use of this field is discouraged.
+using the `raw` field, though use of this field is discouraged. The field
+returns JSON, thus does not require you to list individual child fields.
 
 ```graphql
 {
@@ -271,11 +272,9 @@ provided without additional processing.
 All other URL fields, such as `target`, `lang`, and `isBroken`, are provided on
 the field, as well.
 
-The `target` field defaults to an empty string. This allows you to always query
-the `target` field even if it is not set in Prismic.
-
 **Note**: If you need to access the raw data, the original data is accessible
-using the `raw` field, though use of this field is discouraged.
+using the `raw` field, though use of this field is discouraged. The field
+returns JSON, thus does not require you to list individual child fields.
 
 ```graphql
 {
@@ -307,7 +306,8 @@ Querying data on the `document` field is handled the same as querying slices.
 Please read the [Query slices](#query-slices) section for details.
 
 **Note**: If you need to access the raw data, the original data is accessible
-using the `raw` field, though use of this field is discouraged.
+using the `raw` field, though use of this field is discouraged. The field
+returns JSON, thus does not require you to list individual child fields.
 
 ```graphql
 {
@@ -407,13 +407,13 @@ Full example:
 
 If you find you cannot query the data you need through the GraphQL interface,
 you can get the raw response from the [prismic-javascript][prismic-javascript]
-API using the `dataString` field.
+API using the `dataRaw` field.
 
-This field contains the whole node's original data before processing as a string
-generated using `JSON.stringify`.
+This field contains the whole node's original data before processing. Also note
+that this field returns JSON so you do not need to list individual child fields.
 
-This is absolutely discouraged as it defeats the purpose of Gatsby's GraphQL
-data interface, but it is available if necessary
+Use of this field is absolutely discouraged as it defeats the purpose of
+Gatsby's GraphQL data interface, but it is available if necessary
 
 ```graphql
 {
@@ -421,7 +421,7 @@ data interface, but it is available if necessary
     edges {
       node {
         id
-        dataString
+        dataRaw
       }
     }
   }
