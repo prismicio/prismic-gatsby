@@ -91,6 +91,7 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
 
   const documents = await fetchAllDocuments(gatsbyContext, pluginOptions)
 
+  reporter.verbose(msg(`fetched ${documents.length} documents`))
   fetchDocumentsActivity.end()
 
   /***
@@ -104,7 +105,16 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
     RA.allP,
     R.map(doc =>
       documentToNodes(doc, {
-        createNode: gatsbyContext.actions.createNode,
+        createNode: node => {
+          reporter.verbose(
+            msg(
+              `creating node { id: "${node.id}", type: "${
+                node.internal.type
+              }" } `,
+            ),
+          )
+          gatsbyContext.actions.createNode(node)
+        },
         createNodeId: gatsbyContext.createNodeId,
         createContentDigest: gatsbyContext.createContentDigest,
         normalizeImageField,
