@@ -163,9 +163,10 @@ import { mergePrismicPreviewData } from 'gatsby-source-prismic'
 import { Layout } from '../components/Layout'
 
 const AuthorTemplate = ({ location, data: staticData }) => {
-  const previewData = location.state.hasOwnProperty('previewData')
-    ? JSON.parse(location.state.previewData)
-    : null
+  const previewData =
+    location.state && location.state.hasOwnProperty('previewData')
+      ? JSON.parse(location.state.previewData)
+      : null
   const data = mergePrismicPreviewData({ staticData, previewData })
 
   return (
