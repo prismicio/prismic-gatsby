@@ -8,12 +8,14 @@
     - [Guide](#guide)
     - [usePrismicPreview](#useprismicpreview)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata)
+    - [Previewing un-published pages](#previewing-un-published-pages)
   - [API](#api)
     - [usePrismicPreview](#useprismicpreview-1)
       - [Return Value](#return-value)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
       - [Return Value](#return-value-1)
         - [If `previewData` is falsey](#if-previewdata-is-falsey)
+        - [If `staticData` is falsey](#if-staticdata-is-falsey)
         - [If `previewData` and `staticData` have the same top level keys](#if-previewdata-and-staticdata-have-the-same-top-level-keys)
         - [If `previewData` and `staticData` have different top level keys](#if-previewdata-and-staticdata-have-different-top-level-keys)
   - [Limitations](#limitations)
@@ -23,7 +25,7 @@
 ## Requirements
 
 Prismic previews makes use of `URLSearchParams` to read querystring parameters
-from URLs. If you need to support older browsers, we recommend polyfillying it
+from URLs. If you need to support older browsers, we recommend polyfilling it
 via:
 [`url-search-params-polyfill`](https://www.npmjs.com/package/url-search-params-polyfill)
 
@@ -161,9 +163,10 @@ import { mergePrismicPreviewData } from 'gatsby-source-prismic'
 import { Layout } from '../components/Layout'
 
 const AuthorTemplate = ({ location, data: staticData }) => {
-  const previewData = location.state.hasOwnProperty('previewData')
-    ? JSON.parse(location.state.previewData)
-    : null
+  const previewData =
+    location.state && location.state.hasOwnProperty('previewData')
+      ? JSON.parse(location.state.previewData)
+      : null
   const data = mergePrismicPreviewData({ staticData, previewData })
 
   return (
@@ -196,6 +199,10 @@ Just like last time, let's break this down:
 
 4. Now, use your merged `data` object as you normally would! Since we have the
    same key-value structure for previews, things should "just work"!
+
+### Previewing un-published pages
+
+TODO
 
 ## API
 
@@ -237,7 +244,7 @@ Receives a single object as a parameter:
 
 |     Key     | Required? |  Type  | Description                                                                                                                        |
 | :---------: | :-------: | :----: | ---------------------------------------------------------------------------------------------------------------------------------- |
-| staticData  |    ✅     | Object | Static data from Gatsby. Typically this is the data that Gatsby provides to your pages from `graphql` queries via the `data` prop. |
+| staticData  |           | Object | Static data from Gatsby. Typically this is the data that Gatsby provides to your pages from `graphql` queries via the `data` prop. |
 | previewData |           | Object | Preview data from `usePrismicPreview`.                                                                                             |
 
 #### Return Value
@@ -245,6 +252,10 @@ Receives a single object as a parameter:
 ##### If `previewData` is falsey
 
 Returns `staticData` as is.
+
+##### If `staticData` is falsey
+
+Returns `previewData` as is.
 
 ##### If `previewData` and `staticData` have the same top level keys
 

@@ -16,16 +16,31 @@ const mockFetch = data =>
   )
 
 describe('mergePrismicPreviewData', () => {
-  test('returns undefined if staticData is falsey', () => {
+  test('throws if staticData and previewData are falsey', () => {
+    expect(() =>
+      mergePrismicPreviewData({
+        staticData: undefined,
+        previewData: undefined,
+      }),
+    ).toThrow(/invalid data/i)
+  })
+
+  test('returns previewData if staticData is falsey', () => {
     expect(
-      mergePrismicPreviewData({ staticData: undefined, previewData: {} }),
-    ).toBeUndefined()
+      mergePrismicPreviewData({
+        staticData: undefined,
+        previewData: { test: 'DATA' },
+      }),
+    ).toMatchObject({ test: 'DATA' })
   })
 
   test('returns staticData if previewData is falsey', () => {
     expect(
-      mergePrismicPreviewData({ staticData: {}, previewData: undefined }),
-    ).toMatchObject({})
+      mergePrismicPreviewData({
+        staticData: { test: 'DATA' },
+        previewData: undefined,
+      }),
+    ).toMatchObject({ test: 'DATA' })
   })
 
   test('returns merged object given static and preview data with same custom type', () => {
