@@ -14,6 +14,7 @@
     - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
       - [Return Value](#return-value-1)
         - [If `previewData` is falsey](#if-previewdata-is-falsey)
+        - [If `staticData` is falsey](#if-staticdata-is-falsey)
         - [If `previewData` and `staticData` have the same top level keys](#if-previewdata-and-staticdata-have-the-same-top-level-keys)
         - [If `previewData` and `staticData` have different top level keys](#if-previewdata-and-staticdata-have-different-top-level-keys)
   - [Limitations](#limitations)
@@ -237,7 +238,7 @@ Receives a single object as a parameter:
 
 |     Key     | Required? |  Type  | Description                                                                                                                        |
 | :---------: | :-------: | :----: | ---------------------------------------------------------------------------------------------------------------------------------- |
-| staticData  |    ✅     | Object | Static data from Gatsby. Typically this is the data that Gatsby provides to your pages from `graphql` queries via the `data` prop. |
+| staticData  |           | Object | Static data from Gatsby. Typically this is the data that Gatsby provides to your pages from `graphql` queries via the `data` prop. |
 | previewData |           | Object | Preview data from `usePrismicPreview`.                                                                                             |
 
 #### Return Value
@@ -245,6 +246,10 @@ Receives a single object as a parameter:
 ##### If `previewData` is falsey
 
 Returns `staticData` as is.
+
+##### If `staticData` is falsey
+
+Returns `previewData` as is.
 
 ##### If `previewData` and `staticData` have the same top level keys
 
