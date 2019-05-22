@@ -8,6 +8,7 @@
     - [Guide](#guide)
     - [usePrismicPreview](#useprismicpreview)
     - [mergePrismicPreviewData](#mergeprismicpreviewdata)
+    - [Previewing un-published pages](#previewing-un-published-pages)
   - [API](#api)
     - [usePrismicPreview](#useprismicpreview-1)
       - [Return Value](#return-value)
@@ -197,6 +198,10 @@ Just like last time, let's break this down:
 
 4. Now, use your merged `data` object as you normally would! Since we have the
    same key-value structure for previews, things should "just work"!
+
+### Previewing un-published pages
+
+TODO
 
 ## API
 
