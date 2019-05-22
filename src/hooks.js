@@ -161,41 +161,59 @@ export const usePrismicPreview = (location, overrides) => {
   return state
 }
 
+// @private
+// Returns a new object containing the traversally merged key-value
+// pairs from previewData and staticData.
+//
+// We determine when to merge by comparingthe document id from previewData
+// and replacing staticData's corresponding data object with
+// the one from previewData.
+const _traversalMerge = (staticData, previewData, key) => {
+  const { data: previewDocData, id: previewId } = previewData[key]
+
+  function handleNode(node) {
+    if (isPlainObject(node) && has('id', node) && node.id === previewId) {
+      this.update(
+        merge(node, {
+          data: previewDocData,
+        }),
+      )
+    }
+  }
+
+  return traverse(staticData).map(handleNode)
+}
+
+// @private
+// Returns an object containing the merged contents of staticData
+// and previewData based on the provided key.
+//
+// If the objects share the same top level key, perform a recursive
+// merge. If the objects do not share the same top level key,
+// traversally merge them.
+const _mergeStaticData = (staticData, previewData) => {
+  const previewKey = compose(
+    head,
+    keys,
+  )(previewData)
+
+  if (!has(previewKey, staticData))
+    return _traversalMerge(staticData, previewData, previewKey)
+
+  return merge(staticData, previewData)
+}
+
 // Helper function that merges Gatsby's static data with normalized preview data.
 // If the custom types are the same, deep merge with static data.
 // If the custom types are different, deeply replace any document in the static
 // data that matches the preview document's ID.
 export const mergePrismicPreviewData = ({ staticData, previewData }) => {
-  if (!staticData) return undefined
+  if (!staticData && !previewData)
+    throw new Error(
+      'Invalid data! Please provide at least staticData or previewData.',
+    )
+  if (!staticData) return previewData
   if (!previewData) return staticData
 
-  const traversalMerge = ({ staticData, previewData, key }) => {
-    const { data: previewDocData, id: previewId } = previewData[key]
-
-    function handleNode(node) {
-      if (isPlainObject(node) && has('id', node) && node.id === previewId) {
-        this.update(
-          merge(node, {
-            data: previewDocData,
-          }),
-        )
-      }
-    }
-
-    return traverse(staticData).map(handleNode)
-  }
-
-  const mergeStaticData = (staticData, previewData) => {
-    const previewKey = compose(
-      head,
-      keys,
-    )(previewData)
-
-    if (!has(previewKey, staticData))
-      return traversalMerge({ staticData, previewData, key: previewKey })
-
-    return merge(staticData, previewData)
-  }
-
-  return mergeStaticData(staticData, previewData)
+  return _mergeStaticData(staticData, previewData)
 }
