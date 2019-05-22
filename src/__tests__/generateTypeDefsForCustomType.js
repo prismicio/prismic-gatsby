@@ -77,7 +77,7 @@ describe('generateTypeDefsForCustomType', () => {
         context,
       )
 
-      expect(typeDefs[0].config.fields.key).toEqual('String')
+      expect(typeDefs[0].config.fields.key.type).toEqual('String')
     })
 
     test('StructuredText type returns PrismicStructuredTextType', () => {
