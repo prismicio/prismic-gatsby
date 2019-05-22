@@ -111,6 +111,7 @@ type PrismicLinkType {
 }
 
 interface PrismicDocument {
+  dataRaw: JSON
   dataString: String
   first_publication_date: Date
   href: String
