@@ -20,7 +20,7 @@ const pagedGet = async (
 
   acc = acc.concat(response.results)
 
-  if (queryOptions.page * queryOptions.pageSize < response.total_results_size)
+  if (page * pageSize < response.total_results_size)
     return pagedGet(client, queryOptions, context, pageSize, page + 1, acc)
 
   return acc
