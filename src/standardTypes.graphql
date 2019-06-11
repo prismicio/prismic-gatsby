@@ -65,7 +65,7 @@ type PrismicImageType {
   "The image's dimensions."
   dimensions: PrismicImageDimensionsType!
   "The image's URL on Prismic's CDN."
-  url: String!
+  url: String
   "The locally downloaded image if `shouldNormalizeImage` returns true."
   localFile: File
 }
