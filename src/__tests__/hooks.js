@@ -48,6 +48,7 @@ describe('mergePrismicPreviewData', () => {
       prismicPage: {
         foo: 'bar',
         hello: 'world',
+        repeatable: ['1', '2'],
       },
       allPrismicPage: {
         foo: 'bar',
@@ -58,6 +59,7 @@ describe('mergePrismicPreviewData', () => {
       prismicPage: {
         foo: 'bar',
         hello: 'CHANGED_VALUE',
+        repeatable: ['2', '3', '4', '5'],
       },
     }
 
@@ -70,6 +72,7 @@ describe('mergePrismicPreviewData', () => {
       prismicPage: {
         foo: 'bar',
         hello: 'CHANGED_VALUE',
+        repeatable: ['2', '3', '4', '5'],
       },
       allPrismicPage: {
         foo: 'bar',

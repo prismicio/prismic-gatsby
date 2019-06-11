@@ -6,8 +6,9 @@ import {
   head,
   isPlainObject,
   isFunction,
+  isArray,
   keys,
-  merge,
+  mergeWith,
 } from 'lodash/fp'
 import { set as setCookie } from 'es-cookie'
 import Prismic from 'prismic-javascript'
@@ -162,6 +163,14 @@ export const usePrismicPreview = (location, overrides) => {
 }
 
 // @private
+// Function that is passed to lodash's mergeWith() to replace arrays during
+// object merges instead of actually merging them. This fixes unintended behavior
+// when merging repeater fields from previews.
+const mergeCopyArrays = (obj, src) => {
+  if (isArray(obj)) return src
+}
+
+// @private
 // Returns a new object containing the traversally merged key-value
 // pairs from previewData and staticData.
 //
@@ -174,7 +183,7 @@ const _traversalMerge = (staticData, previewData, key) => {
   function handleNode(node) {
     if (isPlainObject(node) && has('id', node) && node.id === previewId) {
       this.update(
-        merge(node, {
+        mergeWith(mergeCopyArrays, node, {
           data: previewDocData,
         }),
       )
@@ -200,7 +209,7 @@ const _mergeStaticData = (staticData, previewData) => {
   if (!has(previewKey, staticData))
     return _traversalMerge(staticData, previewData, previewKey)
 
-  return merge(staticData, previewData)
+  return mergeWith(mergeCopyArrays, staticData, previewData)
 }
 
 // Helper function that merges Gatsby's static data with normalized preview data.
