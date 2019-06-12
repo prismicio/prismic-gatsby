@@ -9,6 +9,7 @@
     "build:watch": "yarn build --watch",
     "format": "prettier --write 'src/**/*.js' 'rollup.config.js' 'docs/**/*.md'",
     "prebuild": "rimraf dist",
+    "prepare": "yarn build",
     "prepublish": "yarn build",
     "release": "standard-version",
     "test": "jest",
