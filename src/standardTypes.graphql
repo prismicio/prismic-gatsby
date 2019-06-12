@@ -63,7 +63,7 @@ type PrismicImageType {
   "The image's copyright text."
   copyright: String
   "The image's dimensions."
-  dimensions: PrismicImageDimensionsType!
+  dimensions: PrismicImageDimensionsType
   "The image's URL on Prismic's CDN."
   url: String
   "The locally downloaded image if `shouldNormalizeImage` returns true."
