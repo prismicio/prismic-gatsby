@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "3.0.0-alpha.3",
+  "version": "3.0.0-alpha.4",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "main": "index.cjs.js",
   "module": "index.esm.js",
