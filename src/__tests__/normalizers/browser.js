@@ -66,6 +66,7 @@ describe('normalizeLinkField', () => {
 
     expect(result).toEqual({
       ...value,
+      document: null,
       raw: value,
     })
   })
