@@ -5,6 +5,7 @@ import {
   mixed as yupMixed,
   object as yupObject,
   string as yupString,
+  number as yupNumber,
 } from 'yup'
 
 const baseValidations = {
@@ -41,6 +42,7 @@ const baseValidations = {
   repositoryName: yupString()
     .nullable()
     .required(),
+  concurrentFileRequests: yupNumber().default(20),
 }
 
 export const validatePluginOptions = (pluginOptions, requireSchemas = true) => {

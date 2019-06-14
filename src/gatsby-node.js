@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
+import asyncPool from 'tiny-async-pool'
+
 import md5 from 'md5'
 
 import { validatePluginOptions } from './validatePluginOptions'
@@ -101,32 +102,27 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   createNodesActivity.start()
   reporter.verbose(msg('starting to create nodes'))
 
-  await R.compose(
-    RA.allP,
-    R.map(doc =>
-      documentToNodes(doc, {
-        createNode: node => {
-          reporter.verbose(
-            msg(
-              `creating node { id: "${node.id}", type: "${
-                node.internal.type
-              }" } `,
-            ),
-          )
-          gatsbyContext.actions.createNode(node)
-        },
-        createNodeId: gatsbyContext.createNodeId,
-        createContentDigest: gatsbyContext.createContentDigest,
-        normalizeImageField,
-        normalizeLinkField,
-        normalizeSlicesField,
-        normalizeStructuredTextField,
-        typePaths,
-        gatsbyContext,
-        pluginOptions,
-      }),
-    ),
-  )(documents)
+  await asyncPool(pluginOptions.concurrentFileRequests, documents, async doc =>
+    documentToNodes(doc, {
+      createNode: node => {
+        reporter.verbose(
+          msg(
+            `creating node { id: "${node.id}", type: "${node.internal.type}" }`,
+          ),
+        )
+        gatsbyContext.actions.createNode(node)
+      },
+      createNodeId: gatsbyContext.createNodeId,
+      createContentDigest: gatsbyContext.createContentDigest,
+      normalizeImageField,
+      normalizeLinkField,
+      normalizeSlicesField,
+      normalizeStructuredTextField,
+      typePaths,
+      gatsbyContext,
+      pluginOptions,
+    }),
+  )
 
   createNodesActivity.end()
 
