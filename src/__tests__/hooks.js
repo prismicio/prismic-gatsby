@@ -1,6 +1,8 @@
 import { renderHook } from 'react-hooks-testing-library'
 import Prismic from 'prismic-javascript'
+import { encode as qsEncode } from 'querystring'
 
+import { GLOBAL_STORE_KEY } from '../constants'
 import { mergePrismicPreviewData, usePrismicPreview } from '../hooks'
 
 jest.mock('prismic-javascript')
@@ -8,12 +10,10 @@ beforeEach(() => (console.error = jest.fn()))
 afterEach(() => console.error.mockClear())
 
 const mockFetch = data =>
-  jest.fn().mockImplementation(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => data,
-    }),
-  )
+  jest.fn().mockImplementation(() => ({
+    ok: true,
+    json: () => data,
+  }))
 
 describe('mergePrismicPreviewData', () => {
   test('throws if staticData and previewData are falsey', () => {
@@ -151,8 +151,10 @@ describe('mergePrismicPreviewData', () => {
 
 describe('usePrismicPreview', () => {
   const location = {
-    search:
-      'http://localhost:8000/preview?token=https%3A%2F%2Ftest.prismic.io%2Fpreviews%2FXNIWYywAADkA7fH_&documentId=XFyi2hAAACIAImfA',
+    search: qsEncode({
+      token: 'https://test.prismic.io/previews/XNIWYywAADkA7fH_',
+      docID: 'id',
+    }),
   }
 
   const typePaths = [
@@ -175,8 +177,8 @@ describe('usePrismicPreview', () => {
   ]
 
   const rawPreviewData = {
-    id: 'XFyxoxAAACQAIqnY',
-    uid: 'test',
+    id: 'id',
+    uid: 'uid',
     type: 'page',
     data: {
       title: [{ type: 'heading1', text: 'Test', spans: [] }],
@@ -202,7 +204,7 @@ describe('usePrismicPreview', () => {
 
   const normalizedPreviewData = {
     prismicPage: {
-      uid: 'test',
+      uid: 'uid',
       type: 'page',
       data: {
         title: {
@@ -230,47 +232,54 @@ describe('usePrismicPreview', () => {
           },
         ],
       },
-      prismicId: 'XFyxoxAAACQAIqnY',
-      id: '969133b6-03e3-5b18-9152-f2a6e96796e8',
+      prismicId: 'id',
+      id: 'ad9a3286-7f27-5fa8-8ac1-da80c451652e',
       internal: {
         type: 'PrismicPage',
-        contentDigest: '3061931390fa8405bfb7b946d5e4105d',
+        contentDigest: 'fc85796edf46f0437861b2a7938f5df9',
       },
     },
   }
 
   const overrides = {
+    repositoryName: 'repositoryName',
     linkResolver: () => () => '/',
     pathResolver: () => () => '/',
     htmlSerializer: () => {},
   }
 
   global.fetch = mockFetch(typePaths)
-  global.___PRISMIC___ = {
-    pluginOptions: {
-      repositoryName: 'repo',
-      accessToken: 'token',
-      fetchLinks: '',
-      schemas: {},
+  global[GLOBAL_STORE_KEY] = {
+    repositoryName: {
+      pluginOptions: {
+        repositoryName: 'repositoryName',
+        accessToken: 'accessToken',
+        fetchLinks: [],
+        schemas: {},
+      },
+      schemasDigest: 'schemasDigest',
     },
-    schemasDigest: '',
   }
 
-  const api = {
-    getByID: async () => rawPreviewData,
-  }
-  Prismic.getApi.mockResolvedValue(api)
+  Prismic.getApi.mockResolvedValue({ getByID: async () => rawPreviewData })
 
   test('throws error if location is falsey', () => {
     const { result } = renderHook(() => usePrismicPreview(undefined))
 
-    expect(result.error.message).toMatch(/invalid location object!/i)
+    expect(result.error.message).toMatch(/missing location/i)
+  })
+
+  test('throws error if repositoryName is not defined', () => {
+    const { result } = renderHook(() => usePrismicPreview(location, {}))
+
+    expect(result.error.message).toMatch(/invalid repositoryName/i)
   })
 
   test('throws error if there is no defined linkResolver', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        htmlSerializer: () => {},
+        repositoryName: 'repositoryName',
+        htmlSerializer: () => () => {},
         linkResolver: undefined,
       }),
     )
@@ -281,7 +290,8 @@ describe('usePrismicPreview', () => {
   test('throws error if linkResolver is not a function', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        htmlSerializer: () => {},
+        repositoryName: 'repositoryName',
+        htmlSerializer: () => () => {},
         linkResolver: 'linkResolver',
       }),
     )
@@ -292,20 +302,22 @@ describe('usePrismicPreview', () => {
   test('throws error if pathResolver is not a function', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        htmlSerializer: () => {},
-        linkResolver: () => {},
+        repositoryName: 'repositoryName',
+        htmlSerializer: () => () => {},
+        linkResolver: () => () => {},
         pathResolver: 'pathResolver',
       }),
     )
 
-    expect(result.error.message).toMatch(/pathResolver is not a function/i)
+    expect(result.error.message).toMatch(/invalid pathResolver/i)
   })
 
   test('throws error if there is no defined htmlSerializer', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
+        repositoryName: 'repositoryName',
         htmlSerializer: undefined,
-        linkResolver: () => {},
+        linkResolver: () => () => {},
       }),
     )
 
@@ -315,8 +327,9 @@ describe('usePrismicPreview', () => {
   test('throws error if htmlSerializer is not a function', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
+        repositoryName: 'repositoryName',
         htmlSerializer: 'HTMLSERIALIZER STRING',
-        linkResolver: () => {},
+        linkResolver: () => () => {},
       }),
     )
 
@@ -338,7 +351,7 @@ describe('usePrismicPreview', () => {
       usePrismicPreview(location, {
         ...overrides,
         pathResolver: undefined,
-        linkResolver: () => 'LINK',
+        linkResolver: () => () => 'LINK',
       }),
     )
 
@@ -351,7 +364,7 @@ describe('usePrismicPreview', () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       usePrismicPreview(location, {
         ...overrides,
-        pathResolver: () => 'PATH RESOLVER',
+        pathResolver: () => () => 'PATH RESOLVER',
       }),
     )
 

@@ -12,7 +12,7 @@
     "prepare": "npm run build",
     "release": "standard-version",
     "test": "jest",
-    "test:watch": "npm run test --watch"
+    "test:watch": "npm run test -- --watch"
   },
   "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
   "repository": {
@@ -36,6 +36,7 @@
     "pascalcase": "^0.1.1",
     "prismic-dom": "^2.1.0",
     "prismic-javascript": "^2.0.3",
+    "querystring": "^0.2.0",
     "ramda": "^0.26.1",
     "ramda-adjunct": "^2.17.0",
     "traverse": "^0.6.6",
