@@ -1,5 +1,5 @@
 {
-  "plugins": ["lodash"],
+  "plugins": ["lodash", "@babel/plugin-transform-runtime"],
   "presets": [
     [
       "@babel/preset-env",
