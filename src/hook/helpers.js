@@ -32,6 +32,25 @@ const createNode = node => nodeStore.set(node.id, node)
 const hasNodeById = id => nodeStore.has(id)
 const getNodeById = id => nodeStore.get(id)
 
+/**
+ *
+ * @typedef {Object} pluginOptions
+ * @property {string} repositoryName - Name of the Prismic repository to query.
+ * @property {string} accessToken - API token to query the Prismic API.
+ * @property {funcion} fetchLinks - Function for Prismic to resolve links.
+ * @property {string} typePathsFilenamePrefix - Prefix to the typePaths json we generate at build time.
+ * @property {string} schemasDigest - Used for gatsby internals.
+ */
+
+/**
+ * Validates parameters sent to our hook.
+ * @private
+ *
+ * @param {Object} location - Location object from `@reach/router`
+ * @param {Object} pluginOptions - The {@link pluginOptions} to validate.
+ *
+ * @throws When `location` or `pluginOptions` are not valid.
+ */
 export const validateParameters = (location, pluginOptions) => {
   if (!location)
     throw new Error('Missing location. Provide a valid location object.')
@@ -58,13 +77,26 @@ export const validateParameters = (location, pluginOptions) => {
     throw new Error('Invalid htmlSerializer. Provide a valid htmlSerializer.')
 }
 
-// @private
-// Returns global plugin options. Note: only plugin options that can be
-// retained via JSON.stringify are provided.
+/**
+ * Retrieves plugin options from `window`.
+ * @private
+ *
+ * @param {string} repositoryName - Name of the repository.
+ * @returns Global plugin options. Only plugin options that can be serialized
+ * by JSON.stringify() are provided.
+ */
 export const getGlobalPluginOptions = repositoryName =>
   IS_BROWSER ? window[GLOBAL_STORE_KEY][repositoryName] : {}
 
-// Returns preview data for a given document ID from Prismic.
+/**
+ * Fetches raw Prismic preview document data from their api.
+ * @private
+ *
+ * @param {string} id - ID of the prismic document to preview.
+ * @param {Object} pluginOptions - The {@link pluginOptions} to fetch preview data with.
+ *
+ * @returns Raw preview data object from Prismic.
+ */
 export const fetchPreviewData = async (id, pluginOptions) => {
   const { repositoryName, accessToken, fetchLinks } = pluginOptions
 
@@ -74,7 +106,13 @@ export const fetchPreviewData = async (id, pluginOptions) => {
   return api.getByID(id, { fetchLinks })
 }
 
-// Returns type paths JSON.
+/**
+ * Retrieves the typePaths definition file that we create at build time to also normalize our types in the browser.
+ * @private
+ *
+ * @param {Object} pluginOptions - The {@link pluginOptions} to get our type paths file name from
+ * @returns The typePaths JSON object for use when normalizing data in the browser.
+ */
 export const fetchTypePaths = async pluginOptions => {
   const { typePathsFilenamePrefix, schemasDigest } = pluginOptions
 
@@ -85,6 +123,14 @@ export const fetchTypePaths = async pluginOptions => {
   return await req.json()
 }
 
+/**
+ * Normalizes a preview response from Prismic to be the same shape as what is generated at build time.
+ * @private
+ *
+ * @param {Object} previewData - previewData from `fetchPreviewData()` @see {@link fetchPreviewData} for more info.
+ * @param {Object} typePaths - typePaths from `fetchTypePaths()` @see {@link fetchTypePaths} for more info.
+ * @param {Object} pluginOptions - The {@link pluginOptions} to use when normalizing and fetching data.
+ */
 export const normalizePreviewData = async (
   previewData,
   typePaths,
@@ -105,7 +151,6 @@ export const normalizePreviewData = async (
   })
 
   const rootNode = nodeStore.get(rootNodeId)
-
   const prefixedType = camelCase(rootNode.internal.type)
 
   return {
@@ -113,21 +158,30 @@ export const normalizePreviewData = async (
   }
 }
 
-// @private
-// Function that is passed to lodash's mergeWith() to replace arrays during
-// object merges instead of actually merging them. This fixes unintended behavior
-// when merging repeater fields from previews.
+/**
+ * Function that is passed to lodash's `mergeWith()` to replace arrays during object merges instead of
+ * actually merging them. This fixes unintended behavior when merging repeater fields from previews.
+ * @private
+ *
+ * @param {Object} obj - Object being merged.
+ * @param {Object} src - Source object being merge.
+ *
+ * @returns src when obj is an Array.
+ */
 const mergeCopyArrays = (obj, src) => {
   if (isArray(obj)) return src
 }
 
-// @private
-// Returns a new object containing the traversally merged key-value
-// pairs from previewData and staticData.
-//
-// We determine when to merge by comparingthe document id from previewData
-// and replacing staticData's corresponding data object with
-// the one from previewData.
+/**
+ * Traversally merges key-value pairs.
+ * @private
+ *
+ * @param {Object} staticData - Static data generated at buildtime.
+ * @param {Object} previewData - Normalized preview data. @see {@link normalizePreviewData} for more info.
+ * @param {String} key - Key that determines the preview data type to replace inside static data.
+ *
+ * @returns A new object containing the traversally merged key-value pairs from `previewData` and `staticData`
+ */
 const _traversalMerge = (staticData, previewData, key) => {
   const { data: previewDocData, id: previewId } = previewData[key]
 
@@ -144,13 +198,16 @@ const _traversalMerge = (staticData, previewData, key) => {
   return traverse(staticData).map(handleNode)
 }
 
-// @private
-// Returns an object containing the merged contents of staticData
-// and previewData based on the provided key.
-//
-// If the objects share the same top level key, perform a recursive
-// merge. If the objects do not share the same top level key,
-// traversally merge them.
+/**
+ * Merges static and preview data objects together. If the objects share the same top level key, perform
+ * a recursive merge. If the objects do not share the same top level key, traversally merge them.
+ * @private
+ *
+ * @param {Object} staticData - Static data generated at buildtime.
+ * @param {Object} previewData - Normalized preview data. @see {@link normalizePreviewData} for more info.
+ *
+ * @returns Object containing the merge contents of staticData and previewData.
+ */
 const _mergeStaticData = (staticData, previewData) => {
   const previewKey = compose(
     head,
@@ -163,10 +220,18 @@ const _mergeStaticData = (staticData, previewData) => {
   return mergeWith(mergeCopyArrays, staticData, previewData)
 }
 
-// Helper function that merges Gatsby's static data with normalized preview data.
-// If the custom types are the same, deep merge with static data.
-// If the custom types are different, deeply replace any document in the static
-// data that matches the preview document's ID.
+/**
+ * Helper that merge's Gatsby's static data with normalized preview data.
+ * If the custom types are the same, deep merge with static data.
+ * If the custom types are different, deeply replace any document in the static data that matches the preivew document's ID.
+ * @public
+ *
+ * @param {Object} data - Data to merge.
+ * @param data.staticData - Static data from Gatsby.
+ * @param data.previewData - Preview data from `usePrismicPreview()`.
+ *
+ * @returns An object containing the merged contents of previewData and staticData.
+ */
 export const mergePrismicPreviewData = ({ staticData, previewData }) => {
   if (!staticData && !previewData)
     throw new Error(
