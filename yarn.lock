@@ -1549,6 +1549,14 @@ babel-plugin-lodash@^3.3.4:
     lodash "^4.17.10"
     require-package-name "^2.0.1"
 
+babel-plugin-ramda@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-ramda/-/babel-plugin-ramda-2.0.0.tgz#e6708b1637dbb754e0cc0d21cd1c34750b0158c8"
+  integrity sha512-PZ/6fmNGshCU7Vt33JRWDDSQqZxOsav1DztZ+VBJFOamE3spyoKuIL9Ve0FQd/oXGlH5jHf/WrpCSGn0MR+YVw==
+  dependencies:
+    "@babel/helper-module-imports" "^7.0.0"
+    ramda "^0.25.0"
+
 babel-polyfill@6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.26.0.tgz#379937abc67d7895970adc621f284cd966cf2153"
@@ -5915,6 +5923,11 @@ rimraf@^2.6.1:
   integrity sha1-wjOOxkPfeht/5cVPqG9XQopV8z0=
   dependencies:
     glob "^7.0.5"
+
+rollup-plugin-analyzer@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-analyzer/-/rollup-plugin-analyzer-3.1.1.tgz#669e5fb5f5379ec4412982fa7677bb5b0ee7d6fb"
+  integrity sha512-9lW3TT1TM0L4+PBPydEcZkXzwgbJbVZe6LpSJm9einQHp9ZPCGfq1dzzAyw2GjfAytzXncKTlCdLvsrxMYqNjA==
 
 rollup-plugin-babel@^4.3.2:
   version "4.3.2"

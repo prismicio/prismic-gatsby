@@ -5,6 +5,8 @@ import { validatePluginOptions } from './validatePluginOptions'
 
 const isBrowser = typeof window !== 'undefined'
 
+// TODO NAMESPACE plguins options
+
 export const onClientEntry = async (_, rawPluginOptions) => {
   if (!isBrowser) return
 

@@ -3,7 +3,6 @@ import json from 'rollup-plugin-json'
 import { string } from 'rollup-plugin-string'
 import pkg from './package.json'
 import { terser } from 'rollup-plugin-terser'
-import filesize from 'rollup-plugin-filesize'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -30,12 +29,7 @@ export default [
       { file: 'dist/index.esm.js', format: 'es', sourcemap: true },
     ],
     external: externalPkgs,
-    plugins: [
-      babel({ runtimeHelpers: true }),
-      json(),
-      isProd && terser(),
-      filesize(),
-    ],
+    plugins: [babel({ runtimeHelpers: true }), json(), isProd && terser()],
   },
   {
     input: 'src/gatsby-node.js',
@@ -45,18 +39,12 @@ export default [
       babel({ runtimeHelpers: true }),
       json(),
       string({ include: '**/*.graphql' }),
-      filesize(),
     ],
   },
   {
     input: 'src/gatsby-browser.js',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [
-      babel({ runtimeHelpers: true }),
-      json(),
-      isProd && terser(),
-      filesize(),
-    ],
+    plugins: [babel({ runtimeHelpers: true }), json(), isProd && terser()],
   },
 ]

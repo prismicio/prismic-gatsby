@@ -1,5 +1,5 @@
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
+import { always } from 'ramda'
+import { isFunction, noop } from 'ramda-adjunct'
 import {
   array as yupArray,
   mixed as yupMixed,
@@ -15,14 +15,14 @@ const baseValidations = {
     .nullable()
     .required(),
   linkResolver: yupMixed()
-    .test('is function', '${path} is not a function', RA.isFunction)
-    .default(() => RA.noop),
+    .test('is function', '${path} is not a function', isFunction)
+    .default(() => noop),
   fetchLinks: yupArray()
     .of(yupString().required())
     .default([]),
   htmlSerializer: yupMixed()
-    .test('is function', '${path} is not a function', RA.isFunction)
-    .default(() => RA.noop),
+    .test('is function', '${path} is not a function', isFunction)
+    .default(() => noop),
   schemas: yupObject()
     .nullable()
     .required(),
@@ -30,8 +30,8 @@ const baseValidations = {
     .nullable()
     .default('*'),
   shouldNormalizeImage: yupMixed()
-    .test('is function', '${path} is not a function', RA.isFunction)
-    .default(() => R.always(true)),
+    .test('is function', '${path} is not a function', isFunction)
+    .default(() => always(true)),
   plugins: yupArray()
     .max(0)
     .default([]),
