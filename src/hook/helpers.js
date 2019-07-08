@@ -11,7 +11,15 @@ import {
   isPlainObject,
   keys,
   mergeWith,
+  isFunction,
+  noop,
 } from 'lodash/fp'
+import {
+  array as yupArray,
+  mixed as yupMixed,
+  object as yupObject,
+  string as yupString,
+} from 'yup'
 
 import { IS_BROWSER, GLOBAL_STORE_KEY } from '../constants'
 import { documentToNodes } from '../documentToNodes'
@@ -52,29 +60,41 @@ const getNodeById = id => nodeStore.get(id)
  * @throws When `location` or `pluginOptions` are not valid.
  */
 export const validateParameters = (location, pluginOptions) => {
-  if (!location)
-    throw new Error('Missing location. Provide a valid location object.')
+  const locationSchema = yupObject().shape({
+    search: yupString()
+      .nullable()
+      .required('Missing location. Please pass the location object.'),
+  })
 
-  if (typeof location.search !== 'string')
-    throw new Error('Invalid location. Provide a valid location object.')
+  const pluginOptionsSchema = yupObject().shape({
+    repositoryName: yupString()
+      .nullable()
+      .required('Invalid Repository Name. Please provide a string.'),
+    accessToken: yupString()
+      .nullable()
+      .required(),
+    fetchLinks: yupArray()
+      .of(yupString().required())
+      .default([]),
+    linkResolver: yupMixed()
+      .test('is function', '${path} is not a function', isFunction)
+      .required(),
+    htmlSerializer: yupMixed()
+      .test('is function', '${path} is not a function', isFunction)
+      .required(),
+    typePathsFilenamePrefix: yupString()
+      .nullable()
+      .required('Invalid typePaths filename prefix.'),
+    schemasDigest: yupString()
+      .nullable()
+      .required('Invalid Schemas digest'),
+    pathResolver: yupMixed()
+      .test('is function', '${path} is not a function', isFunction)
+      .default(() => noop),
+  })
 
-  if (typeof pluginOptions.repositoryName !== 'string')
-    throw new Error('Invalid repositoryName. Provide a valid repositoryName.')
-
-  if (typeof pluginOptions.accessToken !== 'string')
-    throw new Error('Invalid accessToken. Provide a valid accessToken.')
-
-  if (typeof pluginOptions.linkResolver !== 'function')
-    throw new Error('Invalid linkResolver. Provide a valid linkResolver.')
-
-  if (
-    pluginOptions.pathResolver &&
-    typeof pluginOptions.pathResolver !== 'function'
-  )
-    throw new Error('Invalid pathResolver. Provide a valid pathResolver.')
-
-  if (typeof pluginOptions.htmlSerializer !== 'function')
-    throw new Error('Invalid htmlSerializer. Provide a valid htmlSerializer.')
+  locationSchema.validateSync(location)
+  pluginOptionsSchema.validateSync(pluginOptions)
 }
 
 /**

@@ -35,12 +35,6 @@ const baseValidations = {
   plugins: yupArray()
     .max(0)
     .default([]),
-  repositoryName: yupString()
-    .nullable()
-    .required(),
-  repositoryName: yupString()
-    .nullable()
-    .required(),
 }
 
 export const validatePluginOptions = (pluginOptions, requireSchemas = true) => {

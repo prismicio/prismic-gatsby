@@ -241,11 +241,16 @@ describe('usePrismicPreview', () => {
     },
   }
 
-  const overrides = {
+  const pluginOptions = {
     repositoryName: 'repositoryName',
+    accessToken: 'accessToken',
+    fetchLinks: [],
+    schemas: {},
+    schemasDigest: 'schemasDigest',
+    typePathsFilenamePrefix: 'typePaths',
+    htmlSerializer: () => {},
     linkResolver: () => () => '/',
     pathResolver: () => () => '/',
-    htmlSerializer: () => {},
   }
 
   global.fetch = mockFetch(typePaths)
@@ -270,75 +275,74 @@ describe('usePrismicPreview', () => {
   })
 
   test('throws error if repositoryName is not defined', () => {
-    const { result } = renderHook(() => usePrismicPreview(location, {}))
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        ...pluginOptions,
+        repositoryName: undefined,
+      }),
+    )
 
-    expect(result.error.message).toMatch(/invalid repositoryName/i)
+    expect(result.error.message).toMatch(/invalid repository name/i)
   })
 
   test('throws error if there is no defined linkResolver', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        repositoryName: 'repositoryName',
-        htmlSerializer: () => () => {},
+        ...pluginOptions,
         linkResolver: undefined,
       }),
     )
 
-    expect(result.error.message).toMatch(/invalid linkResolver/i)
+    expect(result.error.message).toMatch(/linkResolver is not a function/i)
   })
 
   test('throws error if linkResolver is not a function', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        repositoryName: 'repositoryName',
-        htmlSerializer: () => () => {},
+        ...pluginOptions,
         linkResolver: 'linkResolver',
       }),
     )
 
-    expect(result.error.message).toMatch(/invalid linkResolver/i)
+    expect(result.error.message).toMatch(/linkResolver is not a function/i)
   })
 
   test('throws error if pathResolver is not a function', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        repositoryName: 'repositoryName',
-        htmlSerializer: () => () => {},
-        linkResolver: () => () => {},
-        pathResolver: 'pathResolver',
+        ...pluginOptions,
+        pathResolver: 'PATH RESOLVER',
       }),
     )
 
-    expect(result.error.message).toMatch(/invalid pathResolver/i)
+    expect(result.error.message).toMatch(/pathResolver is not a function/i)
   })
 
   test('throws error if there is no defined htmlSerializer', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        repositoryName: 'repositoryName',
+        ...pluginOptions,
         htmlSerializer: undefined,
-        linkResolver: () => () => {},
       }),
     )
 
-    expect(result.error.message).toMatch(/invalid htmlSerializer/i)
+    expect(result.error.message).toMatch(/htmlSerializer is not a function/i)
   })
 
   test('throws error if htmlSerializer is not a function', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
-        repositoryName: 'repositoryName',
-        htmlSerializer: 'HTMLSERIALIZER STRING',
-        linkResolver: () => () => {},
+        ...pluginOptions,
+        htmlSerializer: 'HTML SERIALIZER',
       }),
     )
 
-    expect(result.error.message).toMatch(/invalid htmlSerializer/i)
+    expect(result.error.message).toMatch(/htmlSerializer is not a function/i)
   })
 
   test('returns normalized preview data from Prismic', async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
-      usePrismicPreview(location, overrides),
+      usePrismicPreview(location, pluginOptions),
     )
 
     await waitForNextUpdate()
@@ -349,7 +353,7 @@ describe('usePrismicPreview', () => {
   test('returns a path derived from linkResolver if pathResolver is not defined', async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       usePrismicPreview(location, {
-        ...overrides,
+        ...pluginOptions,
         pathResolver: undefined,
         linkResolver: () => () => 'LINK',
       }),
@@ -363,7 +367,7 @@ describe('usePrismicPreview', () => {
   test('returns a path derived from pathResolver if it is defined', async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       usePrismicPreview(location, {
-        ...overrides,
+        ...pluginOptions,
         pathResolver: () => () => 'PATH RESOLVER',
       }),
     )
