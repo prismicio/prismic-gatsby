@@ -285,6 +285,28 @@ describe('usePrismicPreview', () => {
     expect(result.error.message).toMatch(/invalid repository name/i)
   })
 
+  test('throws error if accessToken is not defined', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        ...pluginOptions,
+        accessToken: undefined,
+      }),
+    )
+
+    expect(result.error.message).toMatch(/invalid access token/i)
+  })
+
+  test('does not throw error if fetchLinks is not defined', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, {
+        ...pluginOptions,
+        fetchLinks: [],
+      }),
+    )
+
+    expect(result.error).toBeUndefined()
+  })
+
   test('throws error if there is no defined linkResolver', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {

@@ -69,10 +69,10 @@ export const validateParameters = (location, pluginOptions) => {
   const pluginOptionsSchema = yupObject().shape({
     repositoryName: yupString()
       .nullable()
-      .required('Invalid Repository Name. Please provide a string.'),
+      .required('Invalid Repository Name.'),
     accessToken: yupString()
       .nullable()
-      .required(),
+      .required('Invalid access token.'),
     fetchLinks: yupArray()
       .of(yupString().required())
       .default([]),
@@ -87,7 +87,7 @@ export const validateParameters = (location, pluginOptions) => {
       .required('Invalid typePaths filename prefix.'),
     schemasDigest: yupString()
       .nullable()
-      .required('Invalid Schemas digest'),
+      .required('Invalid Schemas digest.'),
     pathResolver: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
       .default(() => noop),
