@@ -1,4 +1,4 @@
-import * as R from 'ramda'
+import { omit } from 'lodash/fp'
 import md5 from 'md5'
 
 import { validatePluginOptions } from './validatePluginOptions'
@@ -14,7 +14,7 @@ export const onClientEntry = async (_, rawPluginOptions) => {
 
   if (isPreviewSession) {
     const pluginOptions = await validatePluginOptions(
-      R.omit(['schemas', 'plugins'], rawPluginOptions),
+      omit(['schemas', 'plugins'], rawPluginOptions),
       false,
     )
     const schemasDigest = md5(JSON.stringify(rawPluginOptions.schemas))

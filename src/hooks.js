@@ -18,19 +18,6 @@ export { mergePrismicPreviewData } from './hook/helpers'
 // created by Gatsby at build time minus image processing due to running in the
 // browser. Instead, image nodes return their source URL.
 export const usePrismicPreview = (location, pluginOptions = {}) => {
-  // if (!location)
-  //   throw new Error(
-  //     'Invalid location object!. Please provide the location object from @reach/router.',
-  //   )
-  // if (!overrides.linkResolver || !isFunction(overrides.linkResolver))
-  //   throw new Error('Invalid linkResolver! Please provide a function.')
-  // if (overrides.pathResolver && !isFunction(overrides.pathResolver))
-  //   throw new Error(
-  //     'pathResolver is not a function! Please provide a function.',
-  //   )
-  // if (!overrides.htmlSerializer || !isFunction(overrides.htmlSerializer))
-  //   throw new Error('Invalid htmlSerializer! Please provide a function.')
-
   const globalPluginOptions =
     getGlobalPluginOptions(pluginOptions.repositoryName) || {}
   pluginOptions = {
@@ -38,6 +25,8 @@ export const usePrismicPreview = (location, pluginOptions = {}) => {
     ...globalPluginOptions.pluginOptions,
     ...pluginOptions,
   }
+
+  validateParameters(location, pluginOptions)
 
   const [isPreview, setIsPreview] = useState(null)
   const [state, setState] = useState({ previewData: null, path: null })
@@ -69,11 +58,9 @@ export const usePrismicPreview = (location, pluginOptions = {}) => {
       previewData: normalizedPreviewData,
       path: pathResolver({})(normalizedPreviewData),
     })
-  }, [location && location.search])
+  }, [location.search, pluginOptions])
 
   useEffect(() => {
-    validateParameters(location, pluginOptions)
-
     asyncEffect()
   }, [])
 
