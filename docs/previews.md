@@ -186,10 +186,7 @@ Just like last time, let's break this down:
    data and passes it to our template as the `data` prop. In this case, we're
    destructuring it and naming it `staticData`.
 2. If `window` has `__PRISMIC_PREVIEW_DATA__` in it, let's conditionally assign
-   it. This example uses the
-   [optional chaining](https://github.com/babel/babel/tree/master/packages/babel-plugin-proposal-optional-chaining)
-   proposal, but feel free to do this in any way you prefer. We also need to
-   check for `window`'s existence to prevent issues during SSR.
+   it. Note that we check for `window`'s existence to prevent issues during SSR.
 3. Pass `staticData` and `previewData` into `mergePrismicPreviewData`. This
    helper will merge our `previewData` and `staticData` objects together,
    ensuring that we use fresh preview data where it's appropriate, and fallback
