@@ -1,7 +1,7 @@
 # Previews
 
 - [Previews](#Previews)
-  - [Requirements](#Requirements)
+  - [Prerequisites](#Prerequisites)
   - [Why previews are useful](#Why-previews-are-useful)
   - [How to use previews](#How-to-use-previews)
     - [TL;DR](#TLDR)
@@ -22,12 +22,13 @@
     - [Images](#Images)
     - [Aliases](#Aliases)
 
-## Requirements
+## Prerequisites
 
-Prismic previews makes use of `URLSearchParams` to read querystring parameters
-from URLs. If you need to support older browsers, we recommend polyfilling it
-via:
-[`url-search-params-polyfill`](https://www.npmjs.com/package/url-search-params-polyfill)
+While not required, it's recommended to client render your preview resolver
+paths with the
+(gatsby-plugin-create-client-paths)[https://www.npmjs.com/package/gatsby-plugin-create-client-paths]
+plugin. This will help prevent any issues with accessing browser only objects
+such as `window`.
 
 ## Why previews are useful
 
@@ -185,7 +186,8 @@ Just like last time, let's break this down:
 2. If `window` has `__PRISMIC_PREVIEW_DATA__` in it, let's conditionally assign
    it. This example uses the
    [optional chaining](https://github.com/babel/babel/tree/master/packages/babel-plugin-proposal-optional-chaining)
-   proposal, but feel free to do this in any way you prefer.
+   proposal, but feel free to do this in any way you prefer. We also need to
+   check for `window`'s existence to prevent issues during SSR.
 3. Pass `staticData` and `previewData` into `mergePrismicPreviewData`. This
    helper will merge our `previewData` and `staticData` objects together,
    ensuring that we use fresh preview data where it's appropriate, and fallback
