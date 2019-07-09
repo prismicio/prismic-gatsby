@@ -57,10 +57,10 @@ content editing experience of a traditional server setup.
 
 - Query for your preview data with `usePrismicPreview` on your preview endpoint.
 - With your new `previewData`, use Gatsby's `navigate` function to route to the
-  returned `path`, passing your `previewData` along in `location.state`.
-- On your page or template, read your `previewData` from `location.state` and
-  pass it to the `mergePrismicPreviewData` helper function along with your
-  normal static data from Gatsby.
+  returned `path`, passing your `previewData` along in `window`.
+- On your page or template, read your `previewData` from `window` and pass it to
+  the `mergePrismicPreviewData` helper function along with your normal static
+  data from Gatsby.
 - Pass your merged data to your template exactly where you would your static
   data!
 
@@ -150,7 +150,7 @@ where `previewData` "fits", but fallback to static data wherever else it's
 needed.
 
 Once we've navigated to our appropriate template, we need to conditionally
-handle reading `previewData` from `location.state`.
+handle reading `previewData` from `window`.
 
 Below is an example template component:
 
