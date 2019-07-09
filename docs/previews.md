@@ -1,26 +1,26 @@
 # Previews
 
-- [Previews](#previews)
-  - [Requirements](#requirements)
-  - [Why previews are useful](#why-previews-are-useful)
-  - [How to use previews](#how-to-use-previews)
-    - [TL;DR](#tldr)
-    - [Guide](#guide)
-    - [usePrismicPreview](#useprismicpreview)
-    - [mergePrismicPreviewData](#mergeprismicpreviewdata)
-    - [Previewing un-published pages](#previewing-un-published-pages)
-  - [API](#api)
-    - [usePrismicPreview](#useprismicpreview-1)
-      - [Return Value](#return-value)
-    - [mergePrismicPreviewData](#mergeprismicpreviewdata-1)
-      - [Return Value](#return-value-1)
-        - [If `previewData` is falsey](#if-previewdata-is-falsey)
-        - [If `staticData` is falsey](#if-staticdata-is-falsey)
-        - [If `previewData` and `staticData` have the same top level keys](#if-previewdata-and-staticdata-have-the-same-top-level-keys)
-        - [If `previewData` and `staticData` have different top level keys](#if-previewdata-and-staticdata-have-different-top-level-keys)
-  - [Limitations](#limitations)
-    - [Images](#images)
-    - [Aliases](#aliases)
+- [Previews](#Previews)
+  - [Requirements](#Requirements)
+  - [Why previews are useful](#Why-previews-are-useful)
+  - [How to use previews](#How-to-use-previews)
+    - [TL;DR](#TLDR)
+    - [Guide](#Guide)
+    - [usePrismicPreview](#usePrismicPreview)
+    - [mergePrismicPreviewData](#mergePrismicPreviewData)
+    - [Previewing un-published pages](#Previewing-un-published-pages)
+  - [API](#API)
+    - [usePrismicPreview](#usePrismicPreview-1)
+      - [Return Value](#Return-Value)
+    - [mergePrismicPreviewData](#mergePrismicPreviewData-1)
+      - [Return Value](#Return-Value-1)
+        - [If `previewData` is falsey](#If-previewData-is-falsey)
+        - [If `staticData` is falsey](#If-staticData-is-falsey)
+        - [If `previewData` and `staticData` have the same top level keys](#If-previewData-and-staticData-have-the-same-top-level-keys)
+        - [If `previewData` and `staticData` have different top level keys](#If-previewData-and-staticData-have-different-top-level-keys)
+  - [Limitations](#Limitations)
+    - [Images](#Images)
+    - [Aliases](#Aliases)
 
 ## Requirements
 
@@ -97,10 +97,9 @@ const PreviewPage = ({ location }) => {
   })
 
   useEffect(() => {
-    if (previewData) {
-      navigate(path, {
-        state: { previewData: JSON.stringify(previewData) },
-      })
+    if (previewData && path) {
+      window.__PRISMIC_PREVIEW_DATA__ = previewData
+      navigate(path)
     }
   }, [previewData, path])
 
@@ -131,10 +130,9 @@ Let's breakdown what's happening here:
    document, you can provide an optional `pathResolver` function that will be
    used instead.
 5. In `useEffect`, once `previewData` is available, we navigate the user to the
-   resolved `path` and pass `previewData` along too. We need to `JSON.stringify`
-   it since `@reach/router` doesn't allow you to pass objects in
-   `location.state`. We navigate to `path` to ensure that we are using the
-   appropriate page or template component for the document we're previewing.
+   resolved `path` and set `previewData` to a namespaced key on `window`. We
+   navigate to `path` to ensure that we are using the appropriate page or
+   template component for the document we're previewing.
 6. While all of the above is happening, we can display a loading indicator or
    spinner to our users for a good UX.
 
@@ -162,11 +160,11 @@ import { mergePrismicPreviewData } from 'gatsby-source-prismic'
 
 import { Layout } from '../components/Layout'
 
+const IS_BROWSER = typeof window !== 'undefined'
+
 const AuthorTemplate = ({ location, data: staticData }) => {
-  const previewData =
-    location.state && location.state.hasOwnProperty('previewData')
-      ? JSON.parse(location.state.previewData)
-      : null
+  const previewData = IS_BROWSER && window?.__PRISMIC_PREVIEW_DATA__
+
   const data = mergePrismicPreviewData({ staticData, previewData })
 
   return (
@@ -184,18 +182,19 @@ Just like last time, let's break this down:
 1. Like in normal Gatsby-land, we have a `graphql` query that fetches our static
    data and passes it to our template as the `data` prop. In this case, we're
    destructuring it and naming it `staticData`.
-2. If `location.state` has `previewData` in it, let's `JSON.parse` the
-   stringified data. Otherwise, we didn't come from a preview, and we're viewing
-   this template normally.
+2. If `window` has `__PRISMIC_PREVIEW_DATA__` in it, let's conditionally assign
+   it. This example uses the
+   [optional chaining](https://github.com/babel/babel/tree/master/packages/babel-plugin-proposal-optional-chaining)
+   proposal, but feel free to do this in any way you prefer.
 3. Pass `staticData` and `previewData` into `mergePrismicPreviewData`. This
    helper will merge our `previewData` and `staticData` objects together,
    ensuring that we use fresh preview data where it's appropriate, and fallback
    to static data where we don't have any preview data.
 
-   Additionally, this helper function is smart enough to know that if
-   `previewData` is any falsey value, we shouldn't do any processing and just
-   return `staticData` _as is_. This prevents us from doing any extra work when
-   we're not previewing this template.
+   This helper function is also flexible enough to know that if `previewData` is
+   any falsey value, we shouldn't do any processing and just return `staticData`
+   _as is_. This prevents us from doing any extra work when we're not previewing
+   this template.
 
 4. Now, use your merged `data` object as you normally would! Since we have the
    same key-value structure for previews, things should "just work"!
