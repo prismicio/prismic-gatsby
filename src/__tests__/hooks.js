@@ -1,4 +1,4 @@
-import { renderHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import Prismic from 'prismic-javascript'
 import queryString from 'query-string'
 
@@ -153,7 +153,7 @@ describe('usePrismicPreview', () => {
   const location = {
     search: queryString.stringify({
       token: 'https://test.prismic.io/previews/XNIWYywAADkA7fH_',
-      docID: 'id',
+      documentId: 'id',
     }),
   }
 
