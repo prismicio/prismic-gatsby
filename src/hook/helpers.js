@@ -68,6 +68,51 @@ export const validateParameters = (location, pluginOptions) => {
     search: yupString()
       .nullable()
       .required('Missing location. Please pass the location object.'),
+    ancestorOrigins: yupObject()
+      .notRequired()
+      .nullable(),
+    assign: yupMixed()
+      .notRequired()
+      .nullable(),
+    hash: yupString()
+      .notRequired()
+      .nullable(),
+    host: yupString()
+      .notRequired()
+      .nullable(),
+    hostname: yupString()
+      .notRequired()
+      .nullable(),
+    href: yupString()
+      .notRequired()
+      .nullable(),
+    key: yupString()
+      .notRequired()
+      .nullable(),
+    origin: yupString()
+      .notRequired()
+      .nullable(),
+    pathname: yupString()
+      .notRequired()
+      .nullable(),
+    port: yupString()
+      .notRequired()
+      .nullable(),
+    protocol: yupString()
+      .notRequired()
+      .nullable(),
+    reload: yupMixed()
+      .notRequired()
+      .nullable(),
+    replace: yupMixed()
+      .notRequired()
+      .nullable(),
+    state: yupObject()
+      .notRequired()
+      .nullable(),
+    toString: yupMixed()
+      .notRequired()
+      .nullable(),
   })
 
   const pluginOptionsSchema = yupObject().shape({
@@ -95,6 +140,15 @@ export const validateParameters = (location, pluginOptions) => {
     pathResolver: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
       .default(() => noop),
+    shouldNormalizeImage: yupMixed()
+      .notRequired()
+      .nullable(),
+    lang: yupString()
+      .notRequired()
+      .nullable(),
+    plugins: yupArray()
+      .notRequired()
+      .nullable(),
   })
 
   locationSchema.validateSync(location)
@@ -109,9 +163,9 @@ export const validateParameters = (location, pluginOptions) => {
  * @returns Global plugin options. Only plugin options that can be serialized
  * by JSON.stringify() are provided.
  */
-export const getGlobalPluginOptions = repositoryName =>
-  IS_BROWSER ? window[GLOBAL_STORE_KEY][repositoryName] : {}
-
+export const getGlobalPluginOptions = repositoryName => {
+  return IS_BROWSER ? window[GLOBAL_STORE_KEY][repositoryName] : {}
+}
 /**
  * Fetches raw Prismic preview document data from their api.
  * @private

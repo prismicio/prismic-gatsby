@@ -1,6 +1,6 @@
 import { renderHook } from 'react-hooks-testing-library'
 import Prismic from 'prismic-javascript'
-import { encode as qsEncode } from 'querystring'
+import queryString from 'query-string'
 
 import { GLOBAL_STORE_KEY } from '../constants'
 import { mergePrismicPreviewData, usePrismicPreview } from '../hooks'
@@ -151,7 +151,7 @@ describe('mergePrismicPreviewData', () => {
 
 describe('usePrismicPreview', () => {
   const location = {
-    search: qsEncode({
+    search: queryString.stringify({
       token: 'https://test.prismic.io/previews/XNIWYywAADkA7fH_',
       docID: 'id',
     }),

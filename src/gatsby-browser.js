@@ -2,13 +2,10 @@ import { omit } from 'lodash/fp'
 import md5 from 'md5'
 
 import { validatePluginOptions } from './validatePluginOptions'
-
-const isBrowser = typeof window !== 'undefined'
-
-// TODO NAMESPACE plguins options
+import { IS_BROWSER, GLOBAL_STORE_KEY } from './constants'
 
 export const onClientEntry = async (_, rawPluginOptions) => {
-  if (!isBrowser) return
+  if (!IS_BROWSER) return
 
   const searchParams = new URLSearchParams(window.location.search)
   const isPreviewSession =
@@ -21,10 +18,11 @@ export const onClientEntry = async (_, rawPluginOptions) => {
     )
     const schemasDigest = md5(JSON.stringify(rawPluginOptions.schemas))
 
-    window.___PRISMIC___ = {
-      ...window.___PRISMIC___,
-      pluginOptions,
-      schemasDigest,
+    window[GLOBAL_STORE_KEY] = {
+      [rawPluginOptions.repositoryName]: {
+        pluginOptions,
+        schemasDigest,
+      },
     }
   }
 }

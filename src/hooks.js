@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { set as setCookie } from 'es-cookie'
 import Prismic from 'prismic-javascript'
-import { decode as qsDecode } from 'querystring'
+import queryString from 'query-string'
 
 import {
   validateParameters,
@@ -49,14 +49,12 @@ export const usePrismicPreview = (location, pluginOptions = {}) => {
   }
 
   validateParameters(location, pluginOptions)
-  const { token, docID } = qsDecode(location.search)
+  const { token, documentId: docID } = queryString.parse(location.search)
   const [state, setState] = useState({ previewData: null, path: null })
 
   const asyncEffect = useCallback(async () => {
     // If not a preview, reset state and return early.
     if (!token || !docID) return
-
-    setState({ previewData: null, path: null })
 
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)
