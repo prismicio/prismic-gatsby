@@ -6,9 +6,11 @@
   - [How to use previews](#How-to-use-previews)
     - [TL;DR](#TLDR)
     - [Guide](#Guide)
-    - [usePrismicPreview](#usePrismicPreview)
-    - [mergePrismicPreviewData](#mergePrismicPreviewData)
+      - [usePrismicPreview](#usePrismicPreview)
+      - [mergePrismicPreviewData](#mergePrismicPreviewData)
     - [Previewing un-published pages](#Previewing-un-published-pages)
+      - [Unpublished document route handler](#Unpublished-document-route-handler)
+      - [Resolving unpublished paths](#Resolving-unpublished-paths)
   - [API](#API)
     - [usePrismicPreview](#usePrismicPreview-1)
       - [Return Value](#Return-Value)
@@ -26,7 +28,7 @@
 
 While not required, it's recommended to client render your preview resolver
 paths with the
-(gatsby-plugin-create-client-paths)[https://www.npmjs.com/package/gatsby-plugin-create-client-paths]
+(`gatsby-plugin-create-client-paths`)[https://www.npmjs.com/package/gatsby-plugin-create-client-paths]
 plugin. This will help prevent any issues with accessing browser only objects
 such as `window`.
 
@@ -70,7 +72,7 @@ To get started with previews, it's key to understand the two main functions that
 `gatsby-source-prismic` provides to facilitate them. The first of these is a
 React hook called `usePrismicPreview`.
 
-### usePrismicPreview
+#### usePrismicPreview
 
 `usePrismicPreview` allows developers to make requests to Prismic's API that get
 processed _in the browser_. After they're processed, these API responses will
@@ -137,7 +139,7 @@ Let's breakdown what's happening here:
 6. While all of the above is happening, we can display a loading indicator or
    spinner to our users for a good UX.
 
-### mergePrismicPreviewData
+#### mergePrismicPreviewData
 
 You may be wondering:
 
@@ -164,7 +166,7 @@ import { Layout } from '../components/Layout'
 const IS_BROWSER = typeof window !== 'undefined'
 
 const AuthorTemplate = ({ location, data: staticData }) => {
-  const previewData = IS_BROWSER && window?.__PRISMIC_PREVIEW_DATA__
+  const previewData = IS_BROWSER && window.__PRISMIC_PREVIEW_DATA__
 
   const data = mergePrismicPreviewData({ staticData, previewData })
 
@@ -175,7 +177,7 @@ const AuthorTemplate = ({ location, data: staticData }) => {
 
 export default AuthorTemplate
 
-export const query = graphql`` // query for your static data...
+export const query = graphql`` // => query for your static data...
 ```
 
 Just like last time, let's break this down:
@@ -203,7 +205,119 @@ Just like last time, let's break this down:
 
 ### Previewing un-published pages
 
-TODO
+With our previous approach, we can preview currently published pages from
+Prismic just fine, but unpublished pages may not preview correctly. Depening on
+the logic in your `linkResolver()`, your unpublished previews may return an
+undefined or erroneous `path`, resulting unexpected behavior.
+
+To remedy this, we're going to take advantage of the fact that Gatsby pages and
+templates are just React components.
+
+#### Unpublished document route handler
+
+To start, let's create a dedicated `unpublishedPreview` page in your `pages/`
+directory. (e.g. `src/pages/unpublishedPreview.js`).
+
+> ⚠️ While not required, we recommend client rendering the `unpublishedPreview`
+> route with
+> (`gatsby-plugin-create-client-paths`)[https://www.npmjs.com/package/gatsby-plugin-create-client-paths]
+> as well. This will avoid issues with `window` during SSR.
+
+In here, we can have the following component:
+
+```js
+// => in src/pages/unpublishedPreview.js
+import { PageTemplate } from 'src/templates/page'
+
+export const UnpublishedPage = props => {
+  const previewData = window.__PRISMIC_PREVIEW_DATA__
+
+  // => Perform any logic from previewData to determine the correct page or template component to use.
+
+  return <PageTemplate {...props} />
+}
+
+export default UnpublishedPage
+```
+
+As usual, let's break this down:
+
+1. We import our `<PageTemplate>` component. Because templates and pages in
+   Gatsby are just React components, we can reuse them anywhere!
+2. Read our `previewData` from `window`. This example reads `previewData`
+   straight from `window`, but feel free to conditionally assign this in any way
+   you prefer to prevent SSR issues.
+3. Run any logic using `previewData` to correctly determine what template
+   component to pass your data to. This example only has one template, but your
+   site may utilize several.
+4. Spread your props over the template componenet you render. This is needed to
+   pass props like `location` and any other props your templates may need.
+
+#### Resolving unpublished paths
+
+Next, we need to update the `linkResolver` or `pathResolver` function that we
+use to resolve our `path` from `usePrismicPreview` to handle unpublished
+documents. Because we may need some custom logic that may not be suitable for
+your link resolving, `pathResolver` is typically more appropriate for this.
+
+Depending on the structure of your project, the implementation of `pathResolver`
+may vary, but here is a full example to get started with:
+
+```js
+// in src/pages/preview.js
+export const PreviewPage = ({ location }) => {
+  const { allPrismicPage } = useStaticQuery(graphql`
+    {
+      allPrismicPage {
+        edges {
+          node {
+            uid
+          }
+        }
+      }
+    }
+  `)
+  const pageUIDs = allPrismicPage.edges.map(node => node.uid)
+
+  const pathResolver = () => doc => {
+    const previewedUID = doc.prismicPage.uid
+
+    if (pageUIDs.includes(previewedUID)) {
+      return previewedUID
+    } else {
+      return '/unpublishedPreview'
+    }
+  }
+
+  const { previewData, path } = usePrismicPreview(location, {
+    repositoryName: 'myRepoName',
+    linkResolver: () => doc => doc.uid,
+    htmlSerializer: () => {},
+    pathResolver,
+  })
+
+  useEffect(() => {
+    if (previewData && path) {
+      window.__PRISMIC_PREVIEW_DATA = previewData
+      navigate(path)
+    }
+  }, [path, previewData])
+
+  return <Spinner />
+}
+```
+
+As usual, lets break this down:
+
+1. We perform a static query in with Gatsby's `useStaticQuery` React hook to get
+   a list of all our nodes & UIDs.
+2. `map` over the results from our static query to build an array of published
+   UIDs.
+3. Define a `pathResolver` function for `usePrismicPreview()` that checks if the
+   previewed document's `uid` is in the list of published documents.
+4. If the previewed document's `uid` isn't in the list we built, navigate to
+   `/unpublishedPreview`. Otherwise, we'll send them to the route for that
+   document.
 
 ## API
 
