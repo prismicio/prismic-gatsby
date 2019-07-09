@@ -67,6 +67,13 @@ plugins: [
       // The token will be listed under "Permanent access tokens".
       accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
 
+      // The ID of the release you want to build from. Your access token must
+      // allow for access to releases. This is particularly useful for use on
+      // a staging branch for an upcoming release.
+      // The ID can be found in the URL for a given release. Example: 'abcdef'
+      // if the URL is https://my-repo.prismic.io/documents/upcoming~r=abcdef/
+      releaseId: 'abcdef',
+
       // Set a link resolver function used to process links in your content.
       // Fields with rich text formatting or links to internal content use this
       // function to generate the correct link URL.

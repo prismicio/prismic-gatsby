@@ -14,6 +14,7 @@ const baseValidations = {
   accessToken: yupString()
     .nullable()
     .required(),
+  releaseId: yupString().nullable(),
   linkResolver: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
     .default(() => noop),
