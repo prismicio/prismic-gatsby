@@ -13,10 +13,32 @@ import {
 
 export { mergePrismicPreviewData } from './hook/helpers'
 
-// Returns an object containing normalized Prismic preview data directly from
-// the Prismic API. The normalized data object's shape is identical to the shape
-// created by Gatsby at build time minus image processing due to running in the
-// browser. Instead, image nodes return their source URL.
+/**
+ * @typedef {Object} pluginOptions
+ * @property {string} repositoryName - Name of the Prismic repository to query.
+ * @property {string} accessToken - API token to query the Prismic API.
+ * @property {funcion} fetchLinks - Array of values that determines how Prismic fetches linked fields.
+ * @property {function} linkResolver - Function for Prismic to resolve links in the queried document.
+ *    @see {@link https://prismic.io/docs/javascript/beyond-the-api/link-resolving}
+ * @property {function} htmlSerializer - Function that allows Prismic to preprocess rich text fields.
+ *    @see {@link https://prismic.io/docs/javascript/beyond-the-api/html-serializer}
+ * @property {string} typePathsFilenamePrefix - Prefix to the typePaths json we generate at build time.
+ * @property {string} schemasDigest - Used for gatsby internals.
+ * @property {string} pathResolver - Function that allows for custom preview page path resolving.
+ */
+
+/**
+ * React hook providing preview data from Prismic identical in shape to the data
+ * created at build time. Images are not processed due to running in the browser.
+ * Instead, images reutrn their URL.
+ * @public
+ *
+ * @param {Object} location - Location object from @reach/router.
+ * @param {Object} pluginOptions - The {@link pluginOptions} for this preview.
+ *
+ * @returns An object containing normalized Prismic preview data directly from
+ *    the Prismic API.
+ */
 export const usePrismicPreview = (location, pluginOptions = {}) => {
   const globalPluginOptions =
     getGlobalPluginOptions(pluginOptions.repositoryName) || {}

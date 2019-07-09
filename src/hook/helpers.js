@@ -41,13 +41,17 @@ const hasNodeById = id => nodeStore.has(id)
 const getNodeById = id => nodeStore.get(id)
 
 /**
- *
  * @typedef {Object} pluginOptions
  * @property {string} repositoryName - Name of the Prismic repository to query.
  * @property {string} accessToken - API token to query the Prismic API.
- * @property {funcion} fetchLinks - Function for Prismic to resolve links.
+ * @property {funcion} fetchLinks - Array of values that determines how Prismic fetches linked fields.
+ * @property {function} linkResolver - Function for Prismic to resolve links in the queried document.
+ *    @see {@link https://prismic.io/docs/javascript/beyond-the-api/link-resolving}
+ * @property {function} htmlSerializer - Function that allows Prismic to preprocess rich text fields.
+ *    @see {@link https://prismic.io/docs/javascript/beyond-the-api/html-serializer}
  * @property {string} typePathsFilenamePrefix - Prefix to the typePaths json we generate at build time.
  * @property {string} schemasDigest - Used for gatsby internals.
+ * @property {string} pathResolver - Function that allows for custom preview page path resolving.
  */
 
 /**
