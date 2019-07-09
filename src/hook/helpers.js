@@ -176,16 +176,12 @@ export const getGlobalPluginOptions = repositoryName => {
  * @returns Raw preview data object from Prismic.
  */
 export const fetchPreviewData = async (id, pluginOptions) => {
-  const { repositoryName, accessToken, fetchLinks, releaseId } = pluginOptions
+  const { repositoryName, accessToken, fetchLinks } = pluginOptions
 
   const apiEndpoint = `https://${repositoryName}.cdn.prismic.io/api/v2`
   const client = await Prismic.getApi(apiEndpoint, { accessToken })
 
-  const ref = releaseId
-    ? client.refs.find(ref => ref.id === releaseId).ref
-    : undefined
-
-  return client.getByID(id, { fetchLinks, ref })
+  return client.getByID(id, { fetchLinks })
 }
 
 /**
