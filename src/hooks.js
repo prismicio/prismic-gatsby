@@ -49,18 +49,14 @@ export const usePrismicPreview = (location, pluginOptions = {}) => {
   }
 
   validateParameters(location, pluginOptions)
-
-  const [isPreview, setIsPreview] = useState(null)
+  const { token, docID } = qsDecode(location.search)
   const [state, setState] = useState({ previewData: null, path: null })
 
   const asyncEffect = useCallback(async () => {
-    const { token, docID } = qsDecode(location.search)
-
     // If not a preview, reset state and return early.
-    if (!token || !docID) return setIsPreview(false)
+    if (!token || !docID) return
 
     setState({ previewData: null, path: null })
-    setIsPreview(true)
 
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)
@@ -80,11 +76,11 @@ export const usePrismicPreview = (location, pluginOptions = {}) => {
       previewData: normalizedPreviewData,
       path: pathResolver({})(normalizedPreviewData),
     })
-  }, [location.search, pluginOptions])
+  }, [docID, pluginOptions, token])
 
   useEffect(() => {
     asyncEffect()
   }, [])
 
-  return { ...state, isPreview }
+  return { ...state, isPreview: !token || !docID }
 }
