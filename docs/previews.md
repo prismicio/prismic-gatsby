@@ -107,7 +107,7 @@ const PreviewPage = ({ location }) => {
     }
   }, [previewData, path])
 
-  return <Spinner />
+  return <div>Loading preview...</div>
 }
 
 export default PreviewPage
@@ -137,8 +137,8 @@ Let's breakdown what's happening here:
    resolved `path` and set `previewData` to a namespaced key on `window`. We
    navigate to `path` to ensure that we are using the appropriate page or
    template component for the document we're previewing.
-6. While all of the above is happening, we can display a loading indicator or
-   spinner to our users for a good UX.
+6. While all of the above is happening, we can display a loading indicator to
+   our users.
 
 #### mergePrismicPreviewData
 
@@ -303,7 +303,7 @@ export const PreviewPage = ({ location }) => {
     }
   }, [path, previewData])
 
-  return <Spinner />
+  return <div>Loading preview...</div>
 }
 ```
 
