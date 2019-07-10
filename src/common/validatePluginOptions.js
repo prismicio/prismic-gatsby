@@ -1,4 +1,4 @@
-import { always } from 'ramda'
+import R from 'ramda'
 import { isFunction, noop } from 'ramda-adjunct'
 import {
   array as yupArray,
@@ -31,7 +31,7 @@ const baseValidations = {
     .default('*'),
   shouldNormalizeImage: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => always(true)),
+    .default(() => R.always(true)),
   plugins: yupArray()
     .max(0)
     .default([]),

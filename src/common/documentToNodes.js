@@ -1,35 +1,18 @@
-import {
-  compose,
-  cond,
-  test,
-  always,
-  T,
-  identity,
-  prop,
-  find,
-  propEq,
-  pick,
-  then,
-  fromPairs,
-  map,
-  toPairs,
-  omit,
-  propOr,
-} from 'ramda'
+import R from 'ramda'
 import { allP, mapIndexed } from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
 
 const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url', 'localFile']
 
 const getTypeForPath = (path, typePaths) =>
-  compose(
-    cond([
-      [test(/^\[.*GroupType\]$/), always('Group')],
-      [test(/^\[.*SlicesType\]$/), always('Slices')],
-      [T, identity],
+  R.compose(
+    R.cond([
+      [R.test(/^\[.*GroupType\]$/), R.always('Group')],
+      [R.test(/^\[.*SlicesType\]$/), R.always('Slices')],
+      [R.T, R.identity],
     ]),
-    prop('type'),
-    find(propEq('path', path)),
+    R.prop('type'),
+    R.find(R.propEq('path', path)),
   )(typePaths)
 
 const normalizeField = async (id, value, depth, context) => {
@@ -49,23 +32,23 @@ const normalizeField = async (id, value, depth, context) => {
 
   switch (type) {
     case 'PrismicImageType':
-      const base = await compose(
+      const base = await R.compose(
         async baseValue =>
           await normalizeImageField(id, baseValue, depth, context),
-        pick(IMAGE_FIELD_KEYS),
+        R.pick(IMAGE_FIELD_KEYS),
       )(value)
 
       // Thumbnail image data are siblings of the base image data so we need to
       // smartly extract and normalize the key-value pairs.
-      const thumbs = await compose(
-        then(fromPairs),
+      const thumbs = await R.compose(
+        R.then(R.fromPairs),
         allP,
-        map(async ([k, v]) => [
+        R.map(async ([k, v]) => [
           k,
           await normalizeImageField(id, v, depth, context),
         ]),
-        toPairs,
-        omit(IMAGE_FIELD_KEYS),
+        R.toPairs,
+        R.omit(IMAGE_FIELD_KEYS),
       )(value)
 
       return {
@@ -83,19 +66,19 @@ const normalizeField = async (id, value, depth, context) => {
       return await normalizeObjs(value, [...depth, id], context)
 
     case 'Slices':
-      const sliceNodeIds = await compose(
+      const sliceNodeIds = await R.compose(
         allP,
         mapIndexed(async (v, idx) => {
           const sliceNodeId = createNodeId(`${doc.type} ${doc.id} ${id} ${idx}`)
 
           const normalizedPrimary = await normalizeObj(
-            propOr({}, 'primary', v),
+            R.propOr({}, 'primary', v),
             [...depth, id, v.slice_type, 'primary'],
             context,
           )
 
           const normalizedItems = await normalizeObjs(
-            propOr([], 'items', v),
+            R.propOr([], 'items', v),
             [...depth, id, v.slice_type, 'items'],
             context,
           )
@@ -130,18 +113,18 @@ const normalizeField = async (id, value, depth, context) => {
 // Returns a promise that resolves after normalizing each property in an
 // object.
 const normalizeObj = (obj, depth, context) =>
-  compose(
-    then(fromPairs),
+  R.compose(
+    R.then(R.fromPairs),
     allP,
-    map(async ([k, v]) => [k, await normalizeField(k, v, depth, context)]),
-    toPairs,
+    R.map(async ([k, v]) => [k, await normalizeField(k, v, depth, context)]),
+    R.toPairs,
   )(obj)
 
 // Returns a promise that resolves after normalizing a list of objects.
 const normalizeObjs = (objs, depth, context) =>
-  compose(
+  R.compose(
     allP,
-    map(obj => normalizeObj(obj, depth, context)),
+    R.map(obj => normalizeObj(obj, depth, context)),
   )(objs)
 
 export const documentToNodes = async (doc, context) => {

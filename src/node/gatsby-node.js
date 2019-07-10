@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import * as R from 'ramda'
+import R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import md5 from 'md5'
 

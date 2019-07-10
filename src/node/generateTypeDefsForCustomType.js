@@ -1,4 +1,4 @@
-import * as R from 'ramda'
+import R from 'ramda'
 import pascalcase from 'pascalcase'
 
 const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url', 'localFile']
