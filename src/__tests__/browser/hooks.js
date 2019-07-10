@@ -255,15 +255,8 @@ describe('usePrismicPreview', () => {
 
   global.fetch = mockFetch(typePaths)
   global[GLOBAL_STORE_KEY] = {
-    repositoryName: {
-      pluginOptions: {
-        repositoryName: 'repositoryName',
-        accessToken: 'accessToken',
-        fetchLinks: [],
-        schemas: {},
-      },
-      schemasDigest: 'schemasDigest',
-    },
+    [pluginOptions.repositoryName]: pluginOptions,
+    schemasDigest: pluginOptions.schemasDigest,
   }
 
   Prismic.getApi.mockResolvedValue({ getByID: async () => rawPreviewData })

@@ -1,26 +1,25 @@
-# gatsby-source-prismic
+# gatsby-source-prismic <!-- omit in toc -->
 
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
 
 ## Table of Contents
 
-- [gatsby-source-prismic](#gatsby-source-prismic)
-  - [Table of Contents](#Table-of-Contents)
-  - [Features](#Features)
-  - [Install](#Install)
-  - [Migration Guide](#Migration-Guide)
-  - [How to use](#How-to-use)
-  - [Providing JSON schemas](#Providing-JSON-schemas)
-  - [How to query](#How-to-query)
-    - [Query Rich Text fields](#Query-Rich-Text-fields)
-    - [Query Link fields](#Query-Link-fields)
-    - [Query Content Relation fields](#Query-Content-Relation-fields)
-    - [Query slices](#Query-slices)
-    - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
-    - [Image processing](#Image-processing)
-  - [Previews](#Previews)
-  - [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
+- [Table of Contents](#Table-of-Contents)
+- [Features](#Features)
+- [Install](#Install)
+- [Migration Guide](#Migration-Guide)
+- [How to use](#How-to-use)
+- [Providing JSON schemas](#Providing-JSON-schemas)
+- [How to query](#How-to-query)
+  - [Query Rich Text fields](#Query-Rich-Text-fields)
+  - [Query Link fields](#Query-Link-fields)
+  - [Query Content Relation fields](#Query-Content-Relation-fields)
+  - [Query slices](#Query-slices)
+  - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
+  - [Image processing](#Image-processing)
+- [Previews](#Previews)
+- [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
 
 ## Features
 
@@ -485,8 +484,8 @@ To learn more about image processing, check the documentation of
 
 ## Previews
 
-For an in-depth guide on using previews with `gatsby-source-prismic`, please
-refer to [this guide](./previews.md).
+For an in-depth guide on using previews, please refer to
+[this guide](./previews.md).
 
 ## Site's `gatsby-node.js` example
 

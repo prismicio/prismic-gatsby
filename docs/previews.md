@@ -1,28 +1,27 @@
-# Previews
+# Previews <!-- omit in toc -->
 
-- [Previews](#Previews)
-  - [Prerequisites](#Prerequisites)
-  - [Why previews are useful](#Why-previews-are-useful)
-  - [How to use previews](#How-to-use-previews)
-    - [TL;DR](#TLDR)
-    - [Guide](#Guide)
-      - [usePrismicPreview](#usePrismicPreview)
-      - [mergePrismicPreviewData](#mergePrismicPreviewData)
-    - [Previewing un-published pages](#Previewing-un-published-pages)
-      - [Unpublished document route handler](#Unpublished-document-route-handler)
-      - [Resolving unpublished paths](#Resolving-unpublished-paths)
-  - [API](#API)
-    - [usePrismicPreview](#usePrismicPreview-1)
-      - [Return Value](#Return-Value)
-    - [mergePrismicPreviewData](#mergePrismicPreviewData-1)
-      - [Return Value](#Return-Value-1)
-        - [If `previewData` is falsey](#If-previewData-is-falsey)
-        - [If `staticData` is falsey](#If-staticData-is-falsey)
-        - [If `previewData` and `staticData` have the same top level keys](#If-previewData-and-staticData-have-the-same-top-level-keys)
-        - [If `previewData` and `staticData` have different top level keys](#If-previewData-and-staticData-have-different-top-level-keys)
-  - [Limitations](#Limitations)
-    - [Images](#Images)
-    - [Aliases](#Aliases)
+- [Prerequisites](#Prerequisites)
+- [Why previews are useful](#Why-previews-are-useful)
+- [How to use previews](#How-to-use-previews)
+  - [TL;DR](#TLDR)
+  - [Guide](#Guide)
+    - [usePrismicPreview](#usePrismicPreview)
+    - [mergePrismicPreviewData](#mergePrismicPreviewData)
+  - [Previewing un-published pages](#Previewing-un-published-pages)
+    - [Unpublished document route handler](#Unpublished-document-route-handler)
+    - [Resolving unpublished paths](#Resolving-unpublished-paths)
+- [API](#API)
+  - [usePrismicPreview](#usePrismicPreview-1)
+    - [Return Value](#Return-Value)
+  - [mergePrismicPreviewData](#mergePrismicPreviewData-1)
+    - [Return Value](#Return-Value-1)
+      - [If `previewData` is falsey](#If-previewData-is-falsey)
+      - [If `staticData` is falsey](#If-staticData-is-falsey)
+      - [If `previewData` and `staticData` have the same top level keys](#If-previewData-and-staticData-have-the-same-top-level-keys)
+      - [If `previewData` and `staticData` have different top level keys](#If-previewData-and-staticData-have-different-top-level-keys)
+- [Limitations](#Limitations)
+  - [Images](#Images)
+  - [Aliases](#Aliases)
 
 ## Prerequisites
 
@@ -87,6 +86,8 @@ Here is an example using the `usePrismicPreview` hook on a page component at
 `/preview`.
 
 ```jsx
+// src/pages/preview.js
+
 import React, { useEffect } from 'react'
 import { navigate } from 'gatsby'
 import { usePrismicPreview } from 'gatsby-source-prismic'
@@ -157,6 +158,8 @@ handle reading `previewData` from `window`.
 Below is an example template component:
 
 ```jsx
+// src/templates/authorTemplate.js
+
 import React from 'react'
 import { graphql } from 'gatsby'
 import { mergePrismicPreviewData } from 'gatsby-source-prismic'
@@ -203,7 +206,7 @@ Just like last time, let's break this down:
 ### Previewing un-published pages
 
 With our previous approach, we can preview currently published pages from
-Prismic just fine, but unpublished pages may not preview correctly. Depening on
+Prismic just fine, but unpublished pages may not preview correctly. Depending on
 the logic in your `linkResolver()`, your unpublished previews may return an
 undefined or erroneous `path`, resulting unexpected behavior.
 
@@ -223,7 +226,8 @@ directory. (e.g. `src/pages/unpublishedPreview.js`).
 In here, we can have the following component:
 
 ```js
-// => in src/pages/unpublishedPreview.js
+// src/pages/unpublishedPreview.js
+
 import { PageTemplate } from 'src/templates/page'
 
 export const UnpublishedPage = props => {
@@ -261,7 +265,8 @@ Depending on the structure of your project, the implementation of `pathResolver`
 may vary, but here is a full example to get started with:
 
 ```js
-// in src/pages/preview.js
+// src/pages/preview.js
+
 export const PreviewPage = ({ location }) => {
   const { allPrismicPage } = useStaticQuery(graphql`
     {
