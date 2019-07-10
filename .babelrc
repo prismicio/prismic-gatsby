@@ -1,5 +1,14 @@
 {
-  "plugins": ["lodash", "ramda", "@babel/plugin-transform-runtime"],
+  "plugins": [
+    "lodash",
+    [
+      "ramda",
+      {
+        "useES": true
+      }
+    ],
+    "@babel/plugin-transform-runtime"
+  ],
   "presets": [
     [
       "@babel/preset-env",
