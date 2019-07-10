@@ -29,7 +29,11 @@ export default [
       { file: 'dist/index.esm.js', format: 'es', sourcemap: true },
     ],
     external: externalPkgs,
-    plugins: [babel({ runtimeHelpers: true }), json(), isProd && terser()],
+    plugins: [
+      babel({ runtimeHelpers: true }),
+      json(),
+      false && isProd && terser(),
+    ],
   },
   {
     input: 'src/node/gatsby-node.js',
@@ -45,6 +49,10 @@ export default [
     input: 'src/browser/gatsby-browser.js',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [babel({ runtimeHelpers: true }), json(), isProd && terser()],
+    plugins: [
+      babel({ runtimeHelpers: true }),
+      json(),
+      false && isProd && terser(),
+    ],
   },
 ]

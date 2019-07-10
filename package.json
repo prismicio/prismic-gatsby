@@ -6,7 +6,7 @@
   "module": "index.esm.js",
   "scripts": {
     "build": "NODE_ENV=production rollup -c",
-    "build:watch": "npm run build --watch",
+    "build:watch": "npm run build -- --watch",
     "format": "prettier --write 'src/**/*.js' 'rollup.config.js' 'docs/**/*.md'",
     "prebuild": "rimraf dist",
     "prepare": "npm run build",

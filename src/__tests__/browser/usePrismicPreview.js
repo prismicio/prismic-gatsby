@@ -264,10 +264,18 @@ describe('usePrismicPreview', () => {
 
   Prismic.getApi.mockResolvedValue({ getByID: async () => rawPreviewData })
 
-  test('throws error if location is falsey', () => {
+  test('isPreview is false if location is falsey', () => {
     const { result } = renderHook(() => usePrismicPreview(undefined))
 
-    expect(result.error.message).toMatch(/missing location/i)
+    expect(result.current.isPreview).toBe(false)
+  })
+
+  test('isPreview is false if location is invalid', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview({ ...location, search: undefined }),
+    )
+
+    expect(result.current.isPreview).toBe(false)
   })
 
   test('throws error if repositoryName is not defined', () => {

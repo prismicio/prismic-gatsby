@@ -55,19 +55,16 @@ const getNodeById = id => nodeStore.get(id)
  */
 
 /**
- * Validates parameters sent to our hook.
+ * Validates location sent to our hook.
  * @private
  *
  * @param {Object} rawLocation - Location object from `@reach/router`
- * @param {Object} rawPluginOptions - The {@link pluginOptions} to validate.
  *
- * @throws When `location` or `pluginOptions` are not valid.
+ * @throws When `location is not valid.
  */
-export const validateParameters = (rawLocation, rawPluginOptions) => {
-  const locationSchema = yupObject().shape({
-    search: yupString()
-      .nullable()
-      .required('Missing location. Please pass the location object.'),
+export const validateLocation = rawLocation => {
+  const schema = yupObject().shape({
+    search: yupString().nullable(),
     ancestorOrigins: yupObject()
       .notRequired()
       .nullable(),
@@ -115,7 +112,19 @@ export const validateParameters = (rawLocation, rawPluginOptions) => {
       .nullable(),
   })
 
-  const pluginOptionsSchema = yupObject().shape({
+  return schema.validateSync(rawLocation)
+}
+
+/**
+ * Validates plugin options sent to our hook.
+ * @private
+ *
+ * @param {Object} rawPluginOptions - The {@link pluginOptions} to validate.
+ *
+ * @throws When `pluginOptions` are not valid.
+ */
+export const validatePluginOptions = rawPluginOptions => {
+  const schema = yupObject().shape({
     repositoryName: yupString()
       .nullable()
       .required('Invalid Repository Name.'),
@@ -155,10 +164,7 @@ export const validateParameters = (rawLocation, rawPluginOptions) => {
       .nullable(),
   })
 
-  return {
-    location: locationSchema.validateSync(rawLocation),
-    pluginOptions: pluginOptionsSchema.validateSync(rawPluginOptions),
-  }
+  return schema.validateSync(rawPluginOptions)
 }
 
 /**
@@ -170,7 +176,7 @@ export const validateParameters = (rawLocation, rawPluginOptions) => {
  * by JSON.stringify() are provided.
  */
 export const getGlobalPluginOptions = repositoryName => {
-  return IS_BROWSER ? window[GLOBAL_STORE_KEY][repositoryName] : {}
+  return IS_BROWSER ? (window[GLOBAL_STORE_KEY] || {})[repositoryName] : {}
 }
 /**
  * Fetches raw Prismic preview document data from their api.

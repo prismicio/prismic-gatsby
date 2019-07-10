@@ -4,7 +4,8 @@ import Prismic from 'prismic-javascript'
 import queryString from 'query-string'
 
 import {
-  validateParameters,
+  validateLocation,
+  validatePluginOptions,
   getGlobalPluginOptions,
   fetchTypePaths,
   fetchPreviewData,
@@ -40,6 +41,8 @@ export { mergePrismicPreviewData } from './helpers'
  *    the Prismic API.
  */
 export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
+  const [state, setState] = useState({ previewData: null, path: null })
+
   const globalPluginOptions =
     getGlobalPluginOptions(rawPluginOptions.repositoryName) || {}
   rawPluginOptions = {
@@ -48,16 +51,17 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
     ...rawPluginOptions,
   }
 
-  const { location, pluginOptions } = validateParameters(
-    rawLocation,
-    rawPluginOptions,
-  )
+  const location = validateLocation(rawLocation)
   const { token, documentId: docID } = queryString.parse(location.search)
-  const [state, setState] = useState({ previewData: null, path: null })
+
+  const isPreview = Boolean(token && docID)
+
+  let pluginOptions = rawPluginOptions
+  if (isPreview) pluginOptions = validatePluginOptions(rawPluginOptions)
 
   const asyncEffect = useCallback(async () => {
     // If not a preview, reset state and return early.
-    if (!token || !docID) return
+    if (!isPreview) return
 
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)
@@ -83,5 +87,5 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
     asyncEffect()
   }, [])
 
-  return { ...state, isPreview: !token || !docID }
+  return { ...state, isPreview }
 }
