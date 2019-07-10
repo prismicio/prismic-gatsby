@@ -1,8 +1,8 @@
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
+import { allP, mapIndexed } from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
 
-const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url', 'localFile']
+import { IMAGE_FIELD_KEYS } from '../common/constants'
 
 const getTypeForPath = (path, typePaths) =>
   R.compose(
@@ -42,7 +42,7 @@ const normalizeField = async (id, value, depth, context) => {
       // smartly extract and normalize the key-value pairs.
       const thumbs = await R.compose(
         R.then(R.fromPairs),
-        RA.allP,
+        allP,
         R.map(async ([k, v]) => [
           k,
           await normalizeImageField(id, v, depth, context),
@@ -67,8 +67,8 @@ const normalizeField = async (id, value, depth, context) => {
 
     case 'Slices':
       const sliceNodeIds = await R.compose(
-        RA.allP,
-        RA.mapIndexed(async (v, idx) => {
+        allP,
+        mapIndexed(async (v, idx) => {
           const sliceNodeId = createNodeId(`${doc.type} ${doc.id} ${id} ${idx}`)
 
           const normalizedPrimary = await normalizeObj(
@@ -115,7 +115,7 @@ const normalizeField = async (id, value, depth, context) => {
 const normalizeObj = (obj, depth, context) =>
   R.compose(
     R.then(R.fromPairs),
-    RA.allP,
+    allP,
     R.map(async ([k, v]) => [k, await normalizeField(k, v, depth, context)]),
     R.toPairs,
   )(obj)
@@ -123,7 +123,7 @@ const normalizeObj = (obj, depth, context) =>
 // Returns a promise that resolves after normalizing a list of objects.
 const normalizeObjs = (objs, depth, context) =>
   R.compose(
-    RA.allP,
+    allP,
     R.map(obj => normalizeObj(obj, depth, context)),
   )(objs)
 

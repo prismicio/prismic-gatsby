@@ -1,12 +1,11 @@
 {
-  "sourceMaps": true,
-  "plugins": ["lodash"],
+  "plugins": ["lodash", "@babel/plugin-transform-runtime"],
   "presets": [
     [
       "@babel/preset-env",
       {
         "targets": {
-          "browsers": ["last 2 Chrome versions"]
+          "browsers": ["> 1%", "last 1 version"]
         }
       }
     ],

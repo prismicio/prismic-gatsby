@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import { documentToNodes } from '../documentToNodes'
+import { documentToNodes } from '../../common/documentToNodes'
 
 let nodeStore = []
 const createNode = node => nodeStore.push(node)
