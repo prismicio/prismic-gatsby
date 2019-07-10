@@ -27,9 +27,9 @@
 
 While not required, it's recommended to client render your preview resolver
 paths with the
-(`gatsby-plugin-create-client-paths`)[https://www.npmjs.com/package/gatsby-plugin-create-client-paths]
-plugin. This will help prevent any issues with accessing browser only objects
-such as `window`.
+[`gatsby-plugin-create-client-paths`][gatsby-plugin-create-client-paths] plugin.
+This will help prevent any issues with accessing browser-only objects such as
+`window`.
 
 ## Why previews are useful
 
@@ -349,8 +349,6 @@ Returns an object with the following keys:
 |    path     | String  | A path determined by running the raw preview API response through either `linkResolver` or `pathResolver`.                                                            |
 |  isPreview  | Boolean | Boolean for indicating that your current route is on a preview.                                                                                                       |
 
---- |
-
 ### mergePrismicPreviewData
 
 Receives a single object as a parameter:
@@ -474,3 +472,6 @@ know about these key changes.
 > ⚠️ If you attempt to merge a `previewData` with a `staticData` object with
 > aliased fields with `mergePrismicPreviewData`, the resulting merged object
 > will be incorrect.
+
+[gatsby-plugin-create-client-paths]:
+  https://www.gatsbyjs.org/packages/gatsby-plugin-create-client-paths/
