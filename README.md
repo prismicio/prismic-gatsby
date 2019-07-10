@@ -40,8 +40,8 @@ npm install --save gatsby-source-prismic
 Read the migration guide to learn why and how to upgrade from v2 to v3. Then
 read the previews guide to learn how to setup previews.
 
-- [Migrating from v2 to v3](./migrating-from-v2-to-v3.md)
-- [Previews](./previews.md)
+- [Migrating from v2 to v3](./docs/migrating-from-v2-to-v3.md)
+- [Previews](./docs/previews.md)
 
 ## How to use
 
@@ -485,7 +485,7 @@ To learn more about image processing, check the documentation of
 ## Previews
 
 For an in-depth guide on using previews, please refer to
-[this guide](./previews.md).
+[this guide](./docs/previews.md).
 
 ## Site's `gatsby-node.js` example
 
