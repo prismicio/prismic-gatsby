@@ -58,12 +58,12 @@ const getNodeById = id => nodeStore.get(id)
  * Validates parameters sent to our hook.
  * @private
  *
- * @param {Object} location - Location object from `@reach/router`
- * @param {Object} pluginOptions - The {@link pluginOptions} to validate.
+ * @param {Object} rawLocation - Location object from `@reach/router`
+ * @param {Object} rawPluginOptions - The {@link pluginOptions} to validate.
  *
  * @throws When `location` or `pluginOptions` are not valid.
  */
-export const validateParameters = (location, pluginOptions) => {
+export const validateParameters = (rawLocation, rawPluginOptions) => {
   const locationSchema = yupObject().shape({
     search: yupString()
       .nullable()
@@ -127,10 +127,10 @@ export const validateParameters = (location, pluginOptions) => {
       .default([]),
     linkResolver: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
-      .required(),
+      .default(() => noop),
     htmlSerializer: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
-      .required(),
+      .default(() => noop),
     typePathsFilenamePrefix: yupString()
       .nullable()
       .required('Invalid typePaths filename prefix.'),
@@ -138,8 +138,12 @@ export const validateParameters = (location, pluginOptions) => {
       .nullable()
       .required('Invalid Schemas digest.'),
     pathResolver: yupMixed()
-      .test('is function', '${path} is not a function', isFunction)
-      .default(() => noop),
+      .nullable()
+      .test(
+        'is function',
+        '${path} is not a function',
+        value => value === undefined || isFunction(value),
+      ),
     shouldNormalizeImage: yupMixed()
       .notRequired()
       .nullable(),
@@ -151,8 +155,10 @@ export const validateParameters = (location, pluginOptions) => {
       .nullable(),
   })
 
-  locationSchema.validateSync(location)
-  pluginOptionsSchema.validateSync(pluginOptions)
+  return {
+    location: locationSchema.validateSync(rawLocation),
+    pluginOptions: pluginOptionsSchema.validateSync(rawPluginOptions),
+  }
 }
 
 /**

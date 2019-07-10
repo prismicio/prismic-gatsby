@@ -33,22 +33,25 @@ export { mergePrismicPreviewData } from './helpers'
  * Instead, images reutrn their URL.
  * @public
  *
- * @param {Object} location - Location object from @reach/router.
- * @param {Object} pluginOptions - The {@link pluginOptions} for this preview.
+ * @param {Object} rawLocation - Location object from @reach/router.
+ * @param {Object} rawPluginOptions - The {@link pluginOptions} for this preview.
  *
  * @returns An object containing normalized Prismic preview data directly from
  *    the Prismic API.
  */
-export const usePrismicPreview = (location, pluginOptions = {}) => {
+export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
   const globalPluginOptions =
-    getGlobalPluginOptions(pluginOptions.repositoryName) || {}
-  pluginOptions = {
+    getGlobalPluginOptions(rawPluginOptions.repositoryName) || {}
+  rawPluginOptions = {
     schemasDigest: globalPluginOptions.schemasDigest,
     ...globalPluginOptions.pluginOptions,
-    ...pluginOptions,
+    ...rawPluginOptions,
   }
 
-  validateParameters(location, pluginOptions)
+  const { location, pluginOptions } = validateParameters(
+    rawLocation,
+    rawPluginOptions,
+  )
   const { token, documentId: docID } = queryString.parse(location.search)
   const [state, setState] = useState({ previewData: null, path: null })
 

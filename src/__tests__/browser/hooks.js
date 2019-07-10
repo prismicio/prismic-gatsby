@@ -300,17 +300,6 @@ describe('usePrismicPreview', () => {
     expect(result.error).toBeUndefined()
   })
 
-  test('throws error if there is no defined linkResolver', () => {
-    const { result } = renderHook(() =>
-      usePrismicPreview(location, {
-        ...pluginOptions,
-        linkResolver: undefined,
-      }),
-    )
-
-    expect(result.error.message).toMatch(/linkResolver is not a function/i)
-  })
-
   test('throws error if linkResolver is not a function', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
@@ -331,17 +320,6 @@ describe('usePrismicPreview', () => {
     )
 
     expect(result.error.message).toMatch(/pathResolver is not a function/i)
-  })
-
-  test('throws error if there is no defined htmlSerializer', () => {
-    const { result } = renderHook(() =>
-      usePrismicPreview(location, {
-        ...pluginOptions,
-        htmlSerializer: undefined,
-      }),
-    )
-
-    expect(result.error.message).toMatch(/htmlSerializer is not a function/i)
   })
 
   test('throws error if htmlSerializer is not a function', () => {

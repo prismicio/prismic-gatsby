@@ -96,8 +96,7 @@ import { Spinner } from '../components/Spinner'
 
 const PreviewPage = ({ location }) => {
   const { previewData, path } = usePrismicPreview(location, {
-    linkResolver: ({ node, key, value }) => doc => doc.uid,
-    htmlSerializer: ({ node, key, value }) => () => {},
+    repositoryName: 'myRepository',
   })
 
   useEffect(() => {
@@ -119,11 +118,9 @@ Let's breakdown what's happening here:
    `location` object from `@reach/router` is needed to read the token and ID of
    the previewed document from Prismic.
 2. In the second argument to `usePrismicPreview`, we pass in an object
-   containing the required `linkResolver` and `htmlSerializer` functions. We are
-   able to read your access token and repository name from `gatsby-config.js`,
-   but due to a limitation with Gatsby, you are required to re-specify these two
-   functions again. If needed, you can optionally provide overrides to any of
-   the other plugin config options here as well.
+   containing the required `repositoryName` string. If needed, you can
+   optionally provide overrides to any of the other plugin config options here
+   as well.
 3. From `usePrismicPreview`, we receive `previewData`. The `previewData` object
    contains the data from Prismic's API for the previewed document. This object
    is also normalized to have the same key-value data shape as what we get at
@@ -291,8 +288,6 @@ export const PreviewPage = ({ location }) => {
 
   const { previewData, path } = usePrismicPreview(location, {
     repositoryName: 'myRepoName',
-    linkResolver: () => () => {},
-    htmlSerializer: () => {},
     pathResolver,
   })
 
@@ -327,23 +322,22 @@ As usual, lets break this down:
 of hooks apply to its use. It accepts the following function parameters as
 defined below:
 
-| Parameter | Required? |  Type  | Description                                                                                                                                                                                                                                                         |
-| :-------: | :-------: | :----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| location  |    ✅     | Object | The location object from `@reach/router`. Used to determine the preview token and document ID from search parameters.                                                                                                                                               |
-| overrides |    ✅     | Object | An object that allows you to override any of the `gatsby-source-prismic` plugin options _only_ for previews. Due to limitations in Gatsby, you are **required** to provide a `linkResolver` and `htmlSerializer` here again if you specified it in `gatsby-config`. |
+| Parameter | Required? |  Type  | Description                                                                                                           |
+| :-------: | :-------: | :----: | --------------------------------------------------------------------------------------------------------------------- |
+| location  |    ✅     | Object | The location object from `@reach/router`. Used to determine the preview token and document ID from search parameters. |
+| overrides |    ✅     | Object | An object that allows you to override any of the `gatsby-source-prismic` plugin options _only_ for previews.          |
 
 The `overrides` object can be passed any of the following keys. Please keep in
-mind that specifying your `linkResolver`, `htmlSerializer` and `repositoryName`
-is **required**.
+mind that specifying your `repositoryName` is **required**.
 
-|      Key       | Required? |       Type        | Description                                                                                                                                                                                                                                                      |
-| :------------: | :-------: | :---------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| repositoryName |    ✅     |      String       | Your Prismic repository name.                                                                                                                                                                                                                                    |
-|  linkResolver  |    ✅     |     Function      | Determines how links in your preview are resolved to URLs. If `pathResolver` is not defined, `linkResolver` is used to determine the `path` returned by `usePrismicPreview`. Generally, this should be the same function as the one provided in `gatsby-config`. |
-| htmlSerializer |    ✅     |     Function      | Determines how rich text fields are serialized to HTML. Generally, this should be the same function as the one provided in `gatsby-config`.                                                                                                                      |
-|  pathResolver  |           |     Function      | Function that allows for custom preview `path` resolving logic. This is useful if your `linkResolver` logic is different than how you generate URLs or paths for your pages. `pathResolver` receives the normalized previewed document as an argument.           |
-|   fetchLinks   |           | String or Array[] | Determines which link fields are fetched for the previewed document. For more information, refer to Prismic's docs on fetchLinks: https://prismic.io/docs/javascript/query-the-api/fetch-linked-document-fields                                                  |
-|  accessToken   |           |      String       | Your Prismic access token. Only provide this if you need to use a different token than the one provided in `gatsby-config`.                                                                                                                                      |
+|      Key       | Required? |       Type        | Description                                                                                                                                                                                                                                            |
+| :------------: | :-------: | :---------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| repositoryName |    ✅     |      String       | Your Prismic repository name.                                                                                                                                                                                                                          |
+|  linkResolver  |           |     Function      | Determines how links in your preview are resolved to URLs. If `pathResolver` is not defined, `linkResolver` is used to determine the `path` returned by `usePrismicPreview`.                                                                           |
+| htmlSerializer |           |     Function      | Determines how rich text fields are serialized to HTML.                                                                                                                                                                                                |
+|  pathResolver  |           |     Function      | Function that allows for custom preview `path` resolving logic. This is useful if your `linkResolver` logic is different than how you generate URLs or paths for your pages. `pathResolver` receives the normalized previewed document as an argument. |
+|   fetchLinks   |           | String or Array[] | Determines which link fields are fetched for the previewed document. For more information, refer to Prismic's docs on fetchLinks: https://prismic.io/docs/javascript/query-the-api/fetch-linked-document-fields                                        |
+|  accessToken   |           |      String       | Your Prismic access token. Only provide this if you need to use a different token than the one provided in `gatsby-config`.                                                                                                                            |
 
 #### Return Value
 
