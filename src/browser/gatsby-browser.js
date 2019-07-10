@@ -1,8 +1,8 @@
 import { omit } from 'lodash/fp'
 import md5 from 'md5'
 
-import { validatePluginOptions } from './validatePluginOptions'
-import { IS_BROWSER, GLOBAL_STORE_KEY } from './constants'
+import { validatePluginOptions } from '../common/validatePluginOptions'
+import { IS_BROWSER, GLOBAL_STORE_KEY } from '../common/constants'
 
 export const onClientEntry = async (_, rawPluginOptions) => {
   if (!IS_BROWSER) return

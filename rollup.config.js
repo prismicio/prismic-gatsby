@@ -32,7 +32,7 @@ export default [
     plugins: [babel({ runtimeHelpers: true }), json(), isProd && terser()],
   },
   {
-    input: 'src/gatsby-node.js',
+    input: 'src/node/gatsby-node.js',
     output: { file: 'dist/gatsby-node.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
     plugins: [
@@ -42,7 +42,7 @@ export default [
     ],
   },
   {
-    input: 'src/gatsby-browser.js',
+    input: 'src/browser/gatsby-browser.js',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
     plugins: [babel({ runtimeHelpers: true }), json(), isProd && terser()],

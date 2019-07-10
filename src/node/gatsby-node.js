@@ -4,21 +4,21 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import md5 from 'md5'
 
-import { validatePluginOptions } from './validatePluginOptions'
+import { validatePluginOptions } from '../common/validatePluginOptions'
 import { fetchAllDocuments } from './fetchAllDocuments'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
 } from './generateTypeDefsForCustomType'
-import { documentToNodes } from './documentToNodes'
+import { documentToNodes } from '../common/documentToNodes'
 import {
   normalizeImageField,
   normalizeLinkField,
   normalizeSlicesField,
   normalizeStructuredTextField,
-} from './normalizers/node'
-import standardTypes from './standardTypes.graphql'
-import { name as pkgName } from '../package.json'
+} from './normalizers'
+import standardTypes from '../common/standardTypes.graphql'
+import { name as pkgName } from '../../package.json'
 
 const msg = s => `${pkgName} - ${s}`
 

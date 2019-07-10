@@ -21,14 +21,14 @@ import {
   string as yupString,
 } from 'yup'
 
-import { IS_BROWSER, GLOBAL_STORE_KEY } from '../constants'
-import { documentToNodes } from '../documentToNodes'
+import { IS_BROWSER, GLOBAL_STORE_KEY } from '../common/constants'
+import { documentToNodes } from '../common/documentToNodes'
 import {
   normalizeImageField,
   normalizeLinkField,
   normalizeSlicesField,
   normalizeStructuredTextField,
-} from '../normalizers/browser'
+} from './normalizers'
 
 const seedConstant = `638f7a53-c567-4eca-8fc1-b23efb1cfb2b`
 const createNodeId = id =>

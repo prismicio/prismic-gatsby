@@ -1,1 +1,1 @@
-export { usePrismicPreview, mergePrismicPreviewData } from './hooks'
+export { usePrismicPreview, mergePrismicPreviewData } from './browser/hooks'

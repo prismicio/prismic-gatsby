@@ -3,7 +3,7 @@ import * as R from 'ramda'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
-} from '../generateTypeDefsForCustomType'
+} from '../../node/generateTypeDefsForCustomType'
 
 const customTypeId = 'custom_type'
 

@@ -2,8 +2,8 @@ import { renderHook } from '@testing-library/react-hooks'
 import Prismic from 'prismic-javascript'
 import queryString from 'query-string'
 
-import { GLOBAL_STORE_KEY } from '../constants'
-import { mergePrismicPreviewData, usePrismicPreview } from '../hooks'
+import { GLOBAL_STORE_KEY } from '../../common/constants'
+import { mergePrismicPreviewData, usePrismicPreview } from '../../browser/hooks'
 
 jest.mock('prismic-javascript')
 beforeEach(() => (console.error = jest.fn()))

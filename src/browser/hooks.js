@@ -9,9 +9,9 @@ import {
   fetchTypePaths,
   fetchPreviewData,
   normalizePreviewData,
-} from './hook/helpers'
+} from './helpers'
 
-export { mergePrismicPreviewData } from './hook/helpers'
+export { mergePrismicPreviewData } from './helpers'
 
 /**
  * @typedef {Object} pluginOptions
