@@ -291,7 +291,7 @@ export const PreviewPage = ({ location }) => {
 
   const { previewData, path } = usePrismicPreview(location, {
     repositoryName: 'myRepoName',
-    linkResolver: () => doc => doc.uid,
+    linkResolver: () => () => {},
     htmlSerializer: () => {},
     pathResolver,
   })
