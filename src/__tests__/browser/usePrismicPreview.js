@@ -3,7 +3,10 @@ import Prismic from 'prismic-javascript'
 import queryString from 'query-string'
 
 import { GLOBAL_STORE_KEY } from '../../common/constants'
-import { mergePrismicPreviewData, usePrismicPreview } from '../../browser/hooks'
+import {
+  mergePrismicPreviewData,
+  usePrismicPreview,
+} from '../../browser/usePrismicPreview'
 
 jest.mock('prismic-javascript')
 beforeEach(() => (console.error = jest.fn()))
