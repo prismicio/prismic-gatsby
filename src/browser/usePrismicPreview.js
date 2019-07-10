@@ -79,7 +79,7 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
 
     setState({
       previewData: normalizedPreviewData,
-      path: pathResolver({})(normalizedPreviewData),
+      path: pathResolver({})(rawPreviewData),
     })
   }, [docID, pluginOptions, token])
 
