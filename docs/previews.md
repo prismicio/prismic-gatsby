@@ -217,8 +217,8 @@ directory. (e.g. `src/pages/unpublishedPreview.js`).
 
 > ⚠️ While not required, we recommend client rendering the `unpublishedPreview`
 > route with
-> (`gatsby-plugin-create-client-paths`)[https://www.npmjs.com/package/gatsby-plugin-create-client-paths]
-> as well. This will avoid issues with `window` during SSR.
+> [`gatsby-plugin-create-client-paths`][gatsby-plugin-create-client-paths] as
+> well. This will avoid issues with `window` during SSR.
 
 In here, we can have the following component:
 
