@@ -271,15 +271,13 @@ export const PreviewPage = ({ location }) => {
   const { allPrismicPage } = useStaticQuery(graphql`
     {
       allPrismicPage {
-        edges {
-          node {
-            uid
-          }
+        nodes {
+          uid
         }
       }
     }
   `)
-  const pageUIDs = allPrismicPage.edges.map(node => node.uid)
+  const pageUIDs = allPrismicPage.nodes.map(node => node.uid)
 
   const pathResolver = () => doc => {
     const previewedUID = doc.prismicPage.uid
