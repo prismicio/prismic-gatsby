@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { isFunction, noop } from 'ramda-adjunct'
 import {
   array as yupArray,

@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from 'ramda'
 import { allP, mapIndexed } from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
 
