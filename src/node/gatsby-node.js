@@ -108,9 +108,11 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
         createNode: node => {
           reporter.verbose(
             msg(
-              `creating node { id: "${node.id}", type: "${
-                node.internal.type
-              }" } `,
+              `creating node ${JSON.stringify({
+                id: node.id,
+                type: node.internal.type,
+                prismicId: node.prismicId,
+              })}`,
             ),
           )
           gatsbyContext.actions.createNode(node)
