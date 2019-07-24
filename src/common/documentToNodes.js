@@ -1,19 +1,20 @@
 import * as R from 'ramda'
 import { allP, mapIndexed } from 'ramda-adjunct'
 import pascalcase from 'pascalcase'
+import compose from 'compose-tiny'
 
 import { IMAGE_FIELD_KEYS } from '../common/constants'
 
-const getTypeForPath = (path, typePaths) =>
-  R.compose(
-    R.cond([
-      [R.test(/^\[.*GroupType\]$/), R.always('Group')],
-      [R.test(/^\[.*SlicesType\]$/), R.always('Slices')],
-      [R.T, R.identity],
-    ]),
-    R.prop('type'),
-    R.find(R.propEq('path', path)),
-  )(typePaths)
+const getTypeForPath = (path, typePaths) => {
+  const stringifiedPath = JSON.stringify(path)
+  const def = typePaths.find(x => JSON.stringify(x.path) === stringifiedPath)
+
+  if (!def) return
+  if (/^\[.*GroupType\]$/.test(def.type)) return 'Group'
+  if (/^\[.*SlicesType\]$/.test(def.type)) return 'Slices'
+
+  return def.type
+}
 
 const normalizeField = async (id, value, depth, context) => {
   const {
@@ -32,10 +33,13 @@ const normalizeField = async (id, value, depth, context) => {
 
   switch (type) {
     case 'PrismicImageType':
-      const base = await R.compose(
-        async baseValue =>
-          await normalizeImageField(id, baseValue, depth, context),
-        R.pick(IMAGE_FIELD_KEYS),
+      const base = await compose(
+        baseValue => normalizeImageField(id, baseValue, depth, context),
+        x =>
+          Object.keys(x).reduce((acc, key) => {
+            if (IMAGE_FIELD_KEYS.include(key)) acc[key] = x[key]
+            return acc
+          }, {}),
       )(value)
 
       // Thumbnail image data are siblings of the base image data so we need to
