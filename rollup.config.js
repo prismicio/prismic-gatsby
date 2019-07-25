@@ -29,30 +29,18 @@ export default [
       { file: 'dist/index.esm.js', format: 'es', sourcemap: true },
     ],
     external: externalPkgs,
-    plugins: [
-      babel({ runtimeHelpers: true }),
-      json(),
-      false && isProd && terser(),
-    ],
+    plugins: [babel(), json(), false && isProd && terser()],
   },
   {
     input: 'src/node/gatsby-node.js',
     output: { file: 'dist/gatsby-node.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [
-      babel({ runtimeHelpers: true }),
-      json(),
-      string({ include: '**/*.graphql' }),
-    ],
+    plugins: [babel(), json(), string({ include: '**/*.graphql' })],
   },
   {
     input: 'src/browser/gatsby-browser.js',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [
-      babel({ runtimeHelpers: true }),
-      json(),
-      false && isProd && terser(),
-    ],
+    plugins: [babel(), json(), false && isProd && terser()],
   },
 ]

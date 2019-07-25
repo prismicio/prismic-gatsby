@@ -1,11 +1,11 @@
-import * as R from 'ramda'
-import { isFunction, noop } from 'ramda-adjunct'
 import {
   array as yupArray,
   mixed as yupMixed,
   object as yupObject,
   string as yupString,
 } from 'yup'
+
+import { isFunction } from './utils'
 
 const baseValidations = {
   repositoryName: yupString()
@@ -16,13 +16,13 @@ const baseValidations = {
     .required(),
   linkResolver: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => noop),
+    .default(() => () => {}),
   fetchLinks: yupArray()
     .of(yupString().required())
     .default([]),
   htmlSerializer: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => noop),
+    .default(() => () => {}),
   schemas: yupObject()
     .nullable()
     .required(),
@@ -31,7 +31,7 @@ const baseValidations = {
     .default('*'),
   shouldNormalizeImage: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => R.always(true)),
+    .default(() => () => true),
   plugins: yupArray()
     .max(0)
     .default([]),
