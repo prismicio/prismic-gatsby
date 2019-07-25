@@ -4,6 +4,7 @@
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "main": "index.cjs.js",
   "module": "index.esm.js",
+  "sideEffects": false,
   "scripts": {
     "build": "NODE_ENV=production rollup -c",
     "build:watch": "npm run build -- --watch",
@@ -28,12 +29,11 @@
   "author": "Angelo Ashmore <angelo.ashmore@walltowall.com>",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.5.2",
-    "@hapi/joi": "^15.0.3",
+    "camelcase": "^5.3.1",
     "compose-tiny": "^1.1.3",
     "es-cookie": "^1.2.0",
     "gatsby-source-filesystem": "^2.0.33",
-    "lodash": "^4.17.11",
+    "lodash.mergewith": "^4.6.2",
     "md5": "^2.2.1",
     "pascalcase": "^0.1.1",
     "prismic-dom": "^2.1.0",
@@ -46,27 +46,25 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.0",
-    "@babel/plugin-transform-runtime": "^7.5.0",
-    "@babel/preset-env": "^7.5.2",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
-    "@commitlint/cli": "^8.0.0",
-    "@commitlint/config-conventional": "^8.0.0",
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
     "@testing-library/react-hooks": "^1.1.0",
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "^10.0.2",
     "babel-jest": "^24.8.0",
-    "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-ramda": "^2.0.0",
-    "eslint": "^6.0.1",
-    "eslint-plugin-react": "^7.13.0",
-    "eslint-plugin-react-hooks": "^1.6.0",
-    "husky": "^3.0.0",
+    "eslint": "^6.1.0",
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react-hooks": "^1.6.1",
+    "husky": "^3.0.1",
     "jest": "^24.8.0",
-    "prettier": "^1.17.0",
+    "prettier": "^1.18.2",
     "react": "^16.8.6",
     "react-test-renderer": "^16.8.6",
     "rimraf": "^2.6.3",
-    "rollup": "^1.16.6",
+    "rollup": "^1.17.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-string": "^3.0.0",
@@ -74,7 +72,8 @@
     "standard-version": "^6.0.1"
   },
   "peerDependencies": {
-    "gatsby": ">=2.3.0",
+    "gatsby": ">=2.3",
     "react": ">=16.8"
-  }
+  },
+  "browserslist": ">1%, not ie 11, not op_mini all"
 }

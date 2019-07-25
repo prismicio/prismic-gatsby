@@ -2,18 +2,8 @@ import Prismic from 'prismic-javascript'
 import uuidv5 from 'uuid/v5'
 import md5 from 'md5'
 import traverse from 'traverse'
-import {
-  camelCase,
-  compose,
-  has,
-  head,
-  isArray,
-  isPlainObject,
-  keys,
-  mergeWith,
-  isFunction,
-  noop,
-} from 'lodash/fp'
+import camelCase from 'camelcase'
+import mergeWith from 'lodash.mergewith'
 import {
   array as yupArray,
   mixed as yupMixed,
@@ -23,6 +13,7 @@ import {
 
 import { IS_BROWSER, GLOBAL_STORE_KEY } from '../common/constants'
 import { documentToNodes } from '../common/documentToNodes'
+import { isFunction } from '../common/utils'
 import {
   normalizeImageField,
   normalizeLinkField,
@@ -136,10 +127,10 @@ export const validatePluginOptions = rawPluginOptions => {
       .default([]),
     linkResolver: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
-      .default(() => noop),
+      .default(() => {}),
     htmlSerializer: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
-      .default(() => noop),
+      .default(() => {}),
     typePathsFilenamePrefix: yupString()
       .nullable()
       .required('Invalid typePaths filename prefix.'),
@@ -258,9 +249,7 @@ export const normalizePreviewData = async (
  *
  * @returns src when obj is an Array.
  */
-const mergeCopyArrays = (obj, src) => {
-  if (isArray(obj)) return src
-}
+const mergeCopyArrays = (obj, src) => (Array.isArray(obj) ? src : undefined)
 
 /**
  * Traversally merges key-value pairs.
@@ -276,12 +265,8 @@ const _traversalMerge = (staticData, previewData, key) => {
   const { data: previewDocData, id: previewId } = previewData[key]
 
   function handleNode(node) {
-    if (isPlainObject(node) && has('id', node) && node.id === previewId) {
-      this.update(
-        mergeWith(mergeCopyArrays, node, {
-          data: previewDocData,
-        }),
-      )
+    if (typeof node === 'object' && node.id === previewId) {
+      this.update(mergeWith(node, { data: previewDocData }, mergeCopyArrays))
     }
   }
 
@@ -299,15 +284,12 @@ const _traversalMerge = (staticData, previewData, key) => {
  * @returns Object containing the merge contents of staticData and previewData.
  */
 const _mergeStaticData = (staticData, previewData) => {
-  const previewKey = compose(
-    head,
-    keys,
-  )(previewData)
+  const previewKey = Object.keys(previewData)[0]
 
-  if (!has(previewKey, staticData))
+  if (!staticData.hasOwnProperty(previewKey))
     return _traversalMerge(staticData, previewData, previewKey)
 
-  return mergeWith(mergeCopyArrays, staticData, previewData)
+  return mergeWith(staticData, previewData, mergeCopyArrays)
 }
 
 /**

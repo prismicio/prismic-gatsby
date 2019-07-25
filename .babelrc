@@ -1,14 +1,6 @@
 {
-  "plugins": ["lodash", "@babel/plugin-transform-runtime"],
   "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "browsers": ["> 1%", "last 1 version"]
-        }
-      }
-    ],
+    "@babel/preset-env",
     "@babel/preset-react"
   ]
 }

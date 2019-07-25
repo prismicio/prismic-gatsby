@@ -16,13 +16,13 @@ const baseValidations = {
     .required(),
   linkResolver: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => {}),
+    .default(() => () => {}),
   fetchLinks: yupArray()
     .of(yupString().required())
     .default([]),
   htmlSerializer: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => {}),
+    .default(() => () => {}),
   schemas: yupObject()
     .nullable()
     .required(),
@@ -31,7 +31,7 @@ const baseValidations = {
     .default('*'),
   shouldNormalizeImage: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => true),
+    .default(() => () => true),
   plugins: yupArray()
     .max(0)
     .default([]),
