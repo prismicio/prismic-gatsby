@@ -127,10 +127,10 @@ export const validatePluginOptions = rawPluginOptions => {
       .default([]),
     linkResolver: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
-      .default(() => {}),
+      .default(() => () => {}),
     htmlSerializer: yupMixed()
       .test('is function', '${path} is not a function', isFunction)
-      .default(() => {}),
+      .default(() => () => {}),
     typePathsFilenamePrefix: yupString()
       .nullable()
       .required('Invalid typePaths filename prefix.'),
