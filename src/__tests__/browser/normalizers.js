@@ -15,12 +15,15 @@ const createContentDigest = jest
   .fn()
   .mockReturnValue(createContentDigestReturnValue)
 
+const linkResolverReturnValue = 'result of linkResolver'
+const linkResolver = jest.fn().mockReturnValue(() => linkResolverReturnValue)
+
 const context = {
   doc: { id: 'id' },
   createNodeId,
   hasNodeById: () => {},
   gatsbyContext: { actions: {} },
-  pluginOptions: { linkResolver: () => {}, htmlSerializer: () => {} },
+  pluginOptions: { linkResolver, htmlSerializer: () => {} },
   createContentDigest,
 }
 
@@ -107,6 +110,7 @@ describe('normalizeLinkField', () => {
       id: createNodeIdReturnValue,
       prismicId: 'id',
       type: 'custom_type',
+      url: linkResolverReturnValue,
       data: {},
       dataRaw: undefined,
       dataString: undefined,

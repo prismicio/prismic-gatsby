@@ -1,3 +1,4 @@
+import PrismicDOM from 'prismic-dom'
 import pascalcase from 'pascalcase'
 import compose from 'compose-tiny'
 
@@ -118,7 +119,13 @@ const normalizeObjs = (objs = [], depth, context) =>
   Promise.all(objs.map(obj => normalizeObj(obj, depth, context)))
 
 export const documentToNodes = async (doc, context) => {
-  const { createNodeId, createContentDigest, createNode } = context
+  const {
+    createNodeId,
+    createContentDigest,
+    createNode,
+    pluginOptions,
+  } = context
+  const { linkResolver } = pluginOptions
 
   const docNodeId = createNodeId(`${doc.type} ${doc.id}`)
   const normalizedData = await normalizeObj(doc.data, [doc.type, 'data'], {
@@ -127,6 +134,8 @@ export const documentToNodes = async (doc, context) => {
     docNodeId,
   })
 
+  const linkResolverForDoc = linkResolver({ node: doc })
+
   createNode({
     ...doc,
     id: docNodeId,
@@ -134,6 +143,7 @@ export const documentToNodes = async (doc, context) => {
     data: normalizedData,
     dataString: JSON.stringify(doc.data),
     dataRaw: doc.data,
+    url: linkResolverForDoc(doc),
     internal: {
       type: pascalcase(`Prismic ${doc.type}`),
       contentDigest: createContentDigest(doc),
