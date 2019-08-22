@@ -4,6 +4,7 @@ import md5 from 'md5'
 import traverse from 'traverse'
 import camelCase from 'camelcase'
 import mergeWith from 'lodash.mergewith'
+import cloneDeep from 'lodash.clonedeep'
 import {
   array as yupArray,
   mixed as yupMixed,
@@ -312,5 +313,7 @@ export const mergePrismicPreviewData = ({ staticData, previewData }) => {
   if (!staticData) return previewData
   if (!previewData) return staticData
 
-  return _mergeStaticData(staticData, previewData)
+  const clonedStaticData = cloneDeep(staticData)
+
+  return _mergeStaticData(clonedStaticData, previewData)
 }

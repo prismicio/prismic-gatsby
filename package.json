@@ -33,6 +33,7 @@
     "compose-tiny": "^1.1.3",
     "es-cookie": "^1.2.0",
     "gatsby-source-filesystem": "^2.0.33",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.mergewith": "^4.6.2",
     "md5": "^2.2.1",
     "pascalcase": "^0.1.1",
