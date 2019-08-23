@@ -107,58 +107,6 @@ export const validateLocation = rawLocation => {
 }
 
 /**
- * Validates plugin options sent to our hook.
- * @private
- *
- * @param {Object} rawPluginOptions - The {@link pluginOptions} to validate.
- *
- * @throws When `pluginOptions` are not valid.
- */
-export const validatePluginOptions = rawPluginOptions => {
-  const schema = yupObject().shape({
-    repositoryName: yupString()
-      .nullable()
-      .required('Invalid Repository Name.'),
-    accessToken: yupString()
-      .nullable()
-      .required('Invalid access token.'),
-    fetchLinks: yupArray()
-      .of(yupString().required())
-      .default([]),
-    linkResolver: yupMixed()
-      .test('is function', '${path} is not a function', isFunction)
-      .default(() => () => {}),
-    htmlSerializer: yupMixed()
-      .test('is function', '${path} is not a function', isFunction)
-      .default(() => () => {}),
-    typePathsFilenamePrefix: yupString()
-      .nullable()
-      .required('Invalid typePaths filename prefix.'),
-    schemasDigest: yupString()
-      .nullable()
-      .required('Invalid Schemas digest.'),
-    pathResolver: yupMixed()
-      .nullable()
-      .test(
-        'is function',
-        '${path} is not a function',
-        value => value === undefined || isFunction(value),
-      ),
-    shouldNormalizeImage: yupMixed()
-      .notRequired()
-      .nullable(),
-    lang: yupString()
-      .notRequired()
-      .nullable(),
-    plugins: yupArray()
-      .notRequired()
-      .nullable(),
-  })
-
-  return schema.validateSync(rawPluginOptions)
-}
-
-/**
  * Retrieves plugin options from `window`.
  * @private
  *

@@ -251,7 +251,7 @@ describe('usePrismicPreview', () => {
     schemas: {},
     schemasDigest: 'schemasDigest',
     typePathsFilenamePrefix: 'typePaths',
-    htmlSerializer: () => {},
+    htmlSerializer: () => () => {},
     linkResolver: () => () => '/',
     pathResolver: () => () => '/',
   }
@@ -286,7 +286,7 @@ describe('usePrismicPreview', () => {
       }),
     )
 
-    expect(result.error.message).toMatch(/invalid repository name/i)
+    expect(result.error.message).toMatch(/repositoryName is a required field/i)
   })
 
   test('throws error if accessToken is not defined', () => {
@@ -297,7 +297,7 @@ describe('usePrismicPreview', () => {
       }),
     )
 
-    expect(result.error.message).toMatch(/invalid access token/i)
+    expect(result.error.message).toMatch(/accessToken is a required field/i)
   })
 
   test('does not throw error if fetchLinks is not defined', () => {

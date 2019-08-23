@@ -41,7 +41,10 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   let pluginOptions
 
   try {
-    pluginOptions = await validatePluginOptions(rawPluginOptions)
+    pluginOptions = validatePluginOptions(rawPluginOptions, {
+      pathResolver: false,
+      schemasDigest: false,
+    })
   } catch (error) {
     reporter.error(msg('invalid plugin options'))
     reporter.panic(msg(error.errors.join(', ')))

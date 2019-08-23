@@ -35,16 +35,41 @@ const baseValidations = {
   plugins: yupArray()
     .max(0)
     .default([]),
+
+  // Browser-only validations
+  pathResolver: yupMixed()
+    .nullable()
+    .test(
+      'is function',
+      '${path} is not a function',
+      value => value === undefined || isFunction(value),
+    ),
+  schemasDigest: yupString()
+    .nullable()
+    .required('Invalid Schemas digest.'),
 }
 
-export const validatePluginOptions = (pluginOptions, requireSchemas = true) => {
-  const schema = yupObject().shape({
-    ...baseValidations,
-    schemas: requireSchemas ? baseValidations.schemas : undefined,
-    typePathsFilenamePrefix: yupString()
-      .nullable()
-      .default(`prismic-typepaths---${pluginOptions.repositoryName}-`),
-  })
+export const validatePluginOptions = (
+  pluginOptions,
+  filterValidations = {},
+) => {
+  // Add typePathsFilenamePrefix. The default is derived from the provided
+  // pluginOptions.
+  baseValidations.typePathsFilenamePrefix = yupString()
+    .nullable()
+    .default(`prismic-typepaths---${pluginOptions.repositoryName}-`)
 
-  return schema.validate(pluginOptions, { abortEarly: false })
+  // Filter validations based on the filterValidations param.
+  const filteredValidations = Object.keys(baseValidations).reduce(
+    (acc, key) => {
+      if (filterValidations[key] || !filterValidations.hasOwnProperty(key))
+        acc[key] = baseValidations[key]
+      return acc
+    },
+    {},
+  )
+
+  const schema = yupObject().shape(filteredValidations)
+
+  return schema.validateSync(pluginOptions, { abortEarly: false })
 }

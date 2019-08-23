@@ -12,9 +12,9 @@ export const onClientEntry = async (_, rawPluginOptions) => {
   const isPreviewSession = searchParams.token && searchParams.documentId
 
   if (isPreviewSession) {
-    const pluginOptions = await validatePluginOptions(
+    const pluginOptions = validatePluginOptions(
       omit(['schemas', 'plugins'])(rawPluginOptions),
-      false,
+      { schemas: false },
     )
     const schemasDigest = md5(JSON.stringify(rawPluginOptions.schemas))
 

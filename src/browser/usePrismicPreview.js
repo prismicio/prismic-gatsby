@@ -3,9 +3,9 @@ import { set as setCookie } from 'es-cookie'
 import Prismic from 'prismic-javascript'
 import queryString from 'query-string'
 
+import { validatePluginOptions } from '../common/validatePluginOptions'
 import {
   validateLocation,
-  validatePluginOptions,
   getGlobalPluginOptions,
   fetchTypePaths,
   fetchPreviewData,
@@ -52,9 +52,9 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
   }
 
   const location = validateLocation(rawLocation)
-  const { token, documentId: docID } = queryString.parse(location.search)
+  const { token, documentId } = queryString.parse(location.search)
 
-  const isPreview = Boolean(token && docID)
+  const isPreview = Boolean(token && documentId)
 
   let pluginOptions = rawPluginOptions
   if (isPreview) pluginOptions = validatePluginOptions(rawPluginOptions)
@@ -66,7 +66,7 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)
 
-    const rawPreviewData = await fetchPreviewData(docID, pluginOptions)
+    const rawPreviewData = await fetchPreviewData(documentId, pluginOptions)
     const typePaths = await fetchTypePaths(pluginOptions)
     const normalizedPreviewData = await normalizePreviewData(
       rawPreviewData,
@@ -81,7 +81,7 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
       previewData: normalizedPreviewData,
       path: pathResolver({})(rawPreviewData),
     })
-  }, [docID, pluginOptions, token])
+  }, [documentId, pluginOptions, token])
 
   useEffect(() => {
     asyncEffect()
