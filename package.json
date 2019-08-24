@@ -77,5 +77,15 @@
     "gatsby": ">=2.3",
     "react": ">=16.8"
   },
-  "browserslist": ">1%, not ie 11, not op_mini all"
+  "browserslist": ">1%, not ie 11, not op_mini all",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
 }
