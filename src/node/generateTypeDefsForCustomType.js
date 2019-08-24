@@ -307,7 +307,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
       description: "The document's Prismic API URL.",
     },
     url: {
-      type: 'String!',
+      type: 'String',
       description: "The document's URL derived via the link resolver.",
     },
     id: {

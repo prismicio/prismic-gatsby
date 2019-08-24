@@ -14,7 +14,7 @@ export const onClientEntry = async (_, rawPluginOptions) => {
   if (isPreviewSession) {
     const pluginOptions = validatePluginOptions(
       omit(['schemas', 'plugins'])(rawPluginOptions),
-      { schemas: false },
+      { schemas: false, schemasDigest: false },
     )
     const schemasDigest = md5(JSON.stringify(rawPluginOptions.schemas))
 

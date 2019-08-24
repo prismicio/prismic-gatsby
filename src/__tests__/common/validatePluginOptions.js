@@ -25,6 +25,19 @@ test('validates options', () => {
   expect(() => validatePluginOptions(pluginOptions)).not.toThrow()
 })
 
+test('allows excluding checks', () => {
+  expect(() =>
+    validatePluginOptions({ ...pluginOptions, repositoryName: undefined }),
+  ).toThrow('repositoryName')
+
+  expect(() =>
+    validatePluginOptions(
+      { ...pluginOptions, repositoryName: undefined },
+      { repositoryName: false },
+    ),
+  ).not.toThrow('repositoryName')
+})
+
 describe('repositoryName', () => {
   test('required', () => {
     expect(() =>
@@ -100,7 +113,7 @@ describe('linkResolver', () => {
       linkResolver: undefined,
     })
 
-    expect(linkResolver()).toBeUndefined()
+    expect(linkResolver()()).toBeUndefined()
   })
 })
 
@@ -137,6 +150,6 @@ describe('htmlSerializer', () => {
       htmlSerializer: undefined,
     })
 
-    expect(htmlSerializer()).toBeUndefined()
+    expect(htmlSerializer()()).toBeUndefined()
   })
 })

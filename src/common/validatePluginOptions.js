@@ -16,7 +16,7 @@ const baseValidations = {
     .required(),
   linkResolver: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => () => {}),
+    .default(() => () => () => {}),
   fetchLinks: yupArray()
     .of(
       yupString()
@@ -26,7 +26,7 @@ const baseValidations = {
     .default([]),
   htmlSerializer: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => () => {}),
+    .default(() => () => () => {}),
   schemas: yupObject()
     .strict()
     .required(),

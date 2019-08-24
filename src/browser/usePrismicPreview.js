@@ -57,7 +57,8 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
   const isPreview = Boolean(token && documentId)
 
   let pluginOptions = rawPluginOptions
-  if (isPreview) pluginOptions = validatePluginOptions(rawPluginOptions)
+  if (isPreview)
+    pluginOptions = validatePluginOptions(rawPluginOptions, { schemas: false })
 
   const asyncEffect = useCallback(async () => {
     // If not a preview, reset state and return early.
