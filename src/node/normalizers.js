@@ -56,7 +56,7 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
 // `gatsby-image` integration. The linked node data is provided on the
 // `localFile` key.
 //
-// NOTE: The document field is set to a node ID but this will be resolved to
+// NOTE: The localFile field is set to a node ID but this will be resolved to
 // the node in the GraphQL resolver.
 export const normalizeImageField = async (id, value, _depth, context) => {
   const { doc, docNodeId, gatsbyContext, pluginOptions } = context
@@ -72,10 +72,10 @@ export const normalizeImageField = async (id, value, _depth, context) => {
 
   let fileNode
 
-  if (shouldAttemptToCreateRemoteFileNode)
+  if (shouldAttemptToCreateRemoteFileNode && value.url) {
     try {
       fileNode = await createRemoteFileNode({
-        url: value.url,
+        url: decodeURIComponent(value.url),
         parentNodeId: docNodeId,
         store,
         cache,
@@ -85,6 +85,7 @@ export const normalizeImageField = async (id, value, _depth, context) => {
     } catch (error) {
       // Ignore
     }
+  }
 
   return {
     ...value,
