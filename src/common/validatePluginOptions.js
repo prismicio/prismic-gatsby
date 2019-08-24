@@ -9,25 +9,29 @@ import { isFunction } from './utils'
 
 const baseValidations = {
   repositoryName: yupString()
-    .nullable()
+    .strict()
     .required(),
   accessToken: yupString()
-    .nullable()
+    .strict()
     .required(),
   linkResolver: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
     .default(() => () => {}),
   fetchLinks: yupArray()
-    .of(yupString().required())
+    .of(
+      yupString()
+        .strict()
+        .required(),
+    )
     .default([]),
   htmlSerializer: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
     .default(() => () => {}),
   schemas: yupObject()
-    .nullable()
+    .strict()
     .required(),
   lang: yupString()
-    .nullable()
+    .strict()
     .default('*'),
   shouldNormalizeImage: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
@@ -35,29 +39,31 @@ const baseValidations = {
   plugins: yupArray()
     .max(0)
     .default([]),
+  // Default value set in validatePluginOptions below.
+  typePathsFilenamePrefix: yupString(),
 
   // Browser-only validations
-  pathResolver: yupMixed()
-    .nullable()
-    .test(
-      'is function',
-      '${path} is not a function',
-      value => value === undefined || isFunction(value),
-    ),
+  pathResolver: yupMixed().test(
+    'is function',
+    '${path} is not a function',
+    x => typeof x === 'undefined' || isFunction(x),
+  ),
   schemasDigest: yupString()
-    .nullable()
-    .required('Invalid Schemas digest.'),
+    .strict()
+    .required(),
 }
 
 export const validatePluginOptions = (
   pluginOptions,
   filterValidations = {},
 ) => {
-  // Add typePathsFilenamePrefix. The default is derived from the provided
-  // pluginOptions.
-  baseValidations.typePathsFilenamePrefix = yupString()
-    .nullable()
-    .default(`prismic-typepaths---${pluginOptions.repositoryName}-`)
+  // Must do this here with access to pluginOptions.
+  if (pluginOptions.repositoryName)
+    baseValidations.typePathsFilenamePrefix.default(
+      `prismic-typepaths---${pluginOptions.repositoryName &&
+        pluginOptions.repositoryName.toString()}-`,
+    )
+  else baseValidations.typePathsFilenamePrefix.default(`prismic-typepaths---`)
 
   // Filter validations based on the filterValidations param.
   const filteredValidations = Object.keys(baseValidations).reduce(
