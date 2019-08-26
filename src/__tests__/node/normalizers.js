@@ -15,8 +15,8 @@ const context = {
   createNodeId,
   gatsbyContext: { actions: {} },
   pluginOptions: {
-    linkResolver: () => {},
-    htmlSerializer: () => {},
+    linkResolver: () => () => {},
+    htmlSerializer: () => () => {},
     shouldNormalizeImage: () => true,
   },
 }
@@ -101,7 +101,7 @@ describe('normalizeLinkField', () => {
 
     expect(result).toEqual({
       ...value,
-      url: '',
+      url: undefined,
       document: createNodeIdReturnValue,
       raw: value,
     })

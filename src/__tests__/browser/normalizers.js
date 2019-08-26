@@ -23,7 +23,7 @@ const context = {
   createNodeId,
   hasNodeById: () => {},
   gatsbyContext: { actions: {} },
-  pluginOptions: { linkResolver, htmlSerializer: () => {} },
+  pluginOptions: { linkResolver, htmlSerializer: () => () => {} },
   createContentDigest,
 }
 

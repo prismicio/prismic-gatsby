@@ -1,5 +1,6 @@
 module.exports = {
   plugins: ['react', 'react-hooks'],
+  extends: ['plugin:jest/recommended'],
   rules: {
     'no-var': 'warn',
     'no-unused-vars': 'warn',
@@ -17,7 +18,6 @@ module.exports = {
     node: true,
     browser: true,
     es6: true,
-    jest: true,
   },
   parser: 'babel-eslint',
   parserOptions: {

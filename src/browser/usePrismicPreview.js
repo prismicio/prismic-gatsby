@@ -3,9 +3,9 @@ import { set as setCookie } from 'es-cookie'
 import Prismic from 'prismic-javascript'
 import queryString from 'query-string'
 
+import { validatePluginOptions } from '../common/validatePluginOptions'
 import {
   validateLocation,
-  validatePluginOptions,
   getGlobalPluginOptions,
   fetchTypePaths,
   fetchPreviewData,
@@ -56,7 +56,8 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
   const isPreview = Boolean(token && documentId)
 
   let pluginOptions = rawPluginOptions
-  if (isPreview) pluginOptions = validatePluginOptions(rawPluginOptions)
+  if (isPreview)
+    pluginOptions = validatePluginOptions(rawPluginOptions, { schemas: false })
 
   // Generate the share link
   const { previewId } = queryString.parse(token)
@@ -66,7 +67,6 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
     document: documentId,
     version,
   })
-
   const shareLink = `https://${pluginOptions.repositoryName}.prismic.io/previews/session/draft?${queryParams}`
 
   const asyncEffect = useCallback(async () => {
