@@ -56,18 +56,21 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
   const isPreview = Boolean(token && documentId)
 
   let pluginOptions = rawPluginOptions
-  if (isPreview)
+  let shareLink = ''
+
+  if (isPreview) {
     pluginOptions = validatePluginOptions(rawPluginOptions, { schemas: false })
 
-  // Generate the share link
-  const { previewId } = queryString.parse(token)
-  const version = token.split('?')[0].split(':')[2]
-  const queryParams = queryString.stringify({
-    previewId,
-    document: documentId,
-    version,
-  })
-  const shareLink = `https://${pluginOptions.repositoryName}.prismic.io/previews/session/draft?${queryParams}`
+    const { websitePreviewId } = queryString.parse(token.split('?')[1])
+    const version = token.split('?')[0].split(':')[2]
+    const queryParams = queryString.stringify({
+      previewId: websitePreviewId,
+      document: documentId,
+      version,
+    })
+
+    shareLink = `https://${pluginOptions.repositoryName}.prismic.io/previews/session/draft?${queryParams}`
+  }
 
   const asyncEffect = useCallback(async () => {
     // If not a preview, reset state and return early.

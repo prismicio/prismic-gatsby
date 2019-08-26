@@ -155,10 +155,14 @@ describe('mergePrismicPreviewData', () => {
 describe('usePrismicPreview', () => {
   const location = {
     search: queryString.stringify({
-      token: 'https://test.prismic.io/previews/XNIWYywAADkA7fH_',
-      documentId: 'id',
+      token:
+        'https://repositoryName.prismic.io/previews/XWCr5RMAACUAcMzR:XWRMwxMAACMAgO93?websitePreviewId=XWA-MRMAACYAbuUk',
+      documentId: 'XUD1HxEAACUAR-tn',
     }),
   }
+
+  const shareLink =
+    'https://repositoryName.prismic.io/previews/session/draft?previewId=XWA-MRMAACYAbuUk&document=XUD1HxEAACUAR-tn&version=XWRMwxMAACMAgO93'
 
   const typePaths = [
     {
@@ -278,6 +282,14 @@ describe('usePrismicPreview', () => {
     expect(result.current.isPreview).toBe(false)
   })
 
+  test('returns empty string for shareLink if location is invalid', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview({ ...location, search: undefined }),
+    )
+
+    expect(result.current.shareLink).toBe('')
+  })
+
   test('throws error if repositoryName is not defined', () => {
     const { result } = renderHook(() =>
       usePrismicPreview(location, {
@@ -379,6 +391,20 @@ describe('usePrismicPreview', () => {
     await waitForNextUpdate()
 
     expect(result.current.path).toBe('PATH RESOLVER')
+  })
+
+  test('returns a shareable link', () => {
+    const { result } = renderHook(() =>
+      usePrismicPreview(location, { ...pluginOptions }),
+    )
+
+    const shareLinkParams = queryString.parse(
+      result.current.shareLink.split('?')[1],
+    )
+
+    expect(shareLinkParams.document).toBe('XUD1HxEAACUAR-tn')
+    expect(shareLinkParams.previewId).toBe('XWA-MRMAACYAbuUk')
+    expect(shareLinkParams.version).toBe('XWRMwxMAACMAgO93')
   })
 
   global.fetch.mockClear()
