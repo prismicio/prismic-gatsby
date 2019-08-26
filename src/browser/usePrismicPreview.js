@@ -52,12 +52,22 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
   }
 
   const location = validateLocation(rawLocation)
-  const { token, documentId: docID } = queryString.parse(location.search)
-
-  const isPreview = Boolean(token && docID)
+  const { token, documentId } = queryString.parse(location.search)
+  const isPreview = Boolean(token && documentId)
 
   let pluginOptions = rawPluginOptions
   if (isPreview) pluginOptions = validatePluginOptions(rawPluginOptions)
+
+  // Generate the share link
+  const { previewId } = queryString.parse(token)
+  const version = token.split('?')[0].split(':')[2]
+  const queryParams = queryString.stringify({
+    previewId,
+    document: documentId,
+    version,
+  })
+
+  const shareLink = `https://${pluginOptions.repositoryName}.prismic.io/previews/session/draft?${queryParams}`
 
   const asyncEffect = useCallback(async () => {
     // If not a preview, reset state and return early.
@@ -66,7 +76,7 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
     // Required to send preview cookie on all API requests on future routes.
     setCookie(Prismic.previewCookie, token)
 
-    const rawPreviewData = await fetchPreviewData(docID, pluginOptions)
+    const rawPreviewData = await fetchPreviewData(documentId, pluginOptions)
     const typePaths = await fetchTypePaths(pluginOptions)
     const normalizedPreviewData = await normalizePreviewData(
       rawPreviewData,
@@ -81,11 +91,11 @@ export const usePrismicPreview = (rawLocation, rawPluginOptions = {}) => {
       previewData: normalizedPreviewData,
       path: pathResolver({})(rawPreviewData),
     })
-  }, [docID, pluginOptions, token])
+  }, [documentId, pluginOptions, token])
 
   useEffect(() => {
     asyncEffect()
   }, [])
 
-  return { ...state, isPreview }
+  return { ...state, isPreview, shareLink }
 }
