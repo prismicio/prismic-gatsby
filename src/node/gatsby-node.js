@@ -4,21 +4,21 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import md5 from 'md5'
 
-import { validatePluginOptions } from './validatePluginOptions'
+import { validatePluginOptions } from '../common/validatePluginOptions'
 import { fetchAllDocuments } from './fetchAllDocuments'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
 } from './generateTypeDefsForCustomType'
-import { documentToNodes } from './documentToNodes'
+import { documentToNodes } from '../common/documentToNodes'
 import {
   normalizeImageField,
   normalizeLinkField,
   normalizeSlicesField,
   normalizeStructuredTextField,
-} from './normalizers/node'
-import standardTypes from './standardTypes.graphql'
-import { name as pkgName } from '../package.json'
+} from './normalizers'
+import standardTypes from '../common/standardTypes.graphql'
+import { name as pkgName } from '../../package.json'
 
 const msg = s => `${pkgName} - ${s}`
 
@@ -41,7 +41,10 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   let pluginOptions
 
   try {
-    pluginOptions = await validatePluginOptions(rawPluginOptions)
+    pluginOptions = validatePluginOptions(rawPluginOptions, {
+      pathResolver: false,
+      schemasDigest: false,
+    })
   } catch (error) {
     reporter.error(msg('invalid plugin options'))
     reporter.panic(msg(error.errors.join(', ')))
@@ -108,9 +111,11 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
         createNode: node => {
           reporter.verbose(
             msg(
-              `creating node { id: "${node.id}", type: "${
-                node.internal.type
-              }" } `,
+              `creating node ${JSON.stringify({
+                id: node.id,
+                type: node.internal.type,
+                prismicId: node.prismicId,
+              })}`,
             ),
           )
           gatsbyContext.actions.createNode(node)

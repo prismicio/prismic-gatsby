@@ -17,9 +17,9 @@ const fieldToType = (id, value, depth, context) => {
 
   switch (value.type) {
     case 'UID':
-      enqueueTypePath([...depth, id], 'String!')
+      enqueueTypePath([...depth, id], 'String')
       return {
-        type: 'String!',
+        type: 'String',
         description:
           "The document's unique identifier. Unique among all instances of the document's type.",
       }
@@ -304,6 +304,10 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
     },
     href: {
       type: 'String!',
+      description: "The document's Prismic API URL.",
+    },
+    url: {
+      type: 'String',
       description: "The document's URL derived via the link resolver.",
     },
     id: {

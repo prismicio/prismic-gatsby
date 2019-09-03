@@ -1,7 +1,7 @@
 import Prismic from 'prismic-javascript'
 import PrismicDOM from 'prismic-dom'
 
-import { documentToNodes } from '../documentToNodes'
+import { documentToNodes } from '../common/documentToNodes'
 
 // Normalizes a PrismicStructuredTextType field by providing HTML and text
 // versions of the value using `prismic-dom` on the `html` and `text` keys,
@@ -77,6 +77,7 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
       ...value,
       url: PrismicDOM.Link.url(value, linkResolverForField),
       raw: value,
+      document: null, // TODO: ???????
     },
     proxyHandler,
   )

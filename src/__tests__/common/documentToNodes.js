@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import { documentToNodes } from '../documentToNodes'
+import { documentToNodes } from '../../common/documentToNodes'
 
 let nodeStore = []
 const createNode = node => nodeStore.push(node)
@@ -35,7 +35,11 @@ const normalizeSlicesField = jest
   .fn()
   .mockReturnValue(normalizeSlicesFieldReturnValue)
 
+const linkResolverReturnValue = 'result of linkResolver'
+const linkResolver = jest.fn().mockReturnValue(() => linkResolverReturnValue)
+
 const baseContext = {
+  pluginOptions: { linkResolver },
   createNode,
   createNodeId,
   createContentDigest,
@@ -98,6 +102,12 @@ describe('documentToNodes', () => {
       )
 
       expect(nodeStore[0].dataRaw).toEqual(data)
+    })
+
+    test("sets url to document's URL using linkResolver", async () => {
+      await documentToNodes(baseDoc, baseContext)
+
+      expect(nodeStore[0].url).toEqual(linkResolverReturnValue)
     })
   })
 

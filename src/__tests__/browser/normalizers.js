@@ -5,7 +5,7 @@ import {
   normalizeLinkField,
   normalizeSlicesField,
   normalizeStructuredTextField,
-} from '../../normalizers/browser'
+} from '../../browser/normalizers'
 
 const createNodeIdReturnValue = 'result of createNodeId'
 const createNodeId = jest.fn().mockReturnValue(createNodeIdReturnValue)
@@ -15,12 +15,15 @@ const createContentDigest = jest
   .fn()
   .mockReturnValue(createContentDigestReturnValue)
 
+const linkResolverReturnValue = 'result of linkResolver'
+const linkResolver = jest.fn().mockReturnValue(() => linkResolverReturnValue)
+
 const context = {
   doc: { id: 'id' },
   createNodeId,
   hasNodeById: () => {},
   gatsbyContext: { actions: {} },
-  pluginOptions: { linkResolver: () => {}, htmlSerializer: () => {} },
+  pluginOptions: { linkResolver, htmlSerializer: () => () => {} },
   createContentDigest,
 }
 
@@ -66,6 +69,7 @@ describe('normalizeLinkField', () => {
 
     expect(result).toEqual({
       ...value,
+      document: null,
       raw: value,
     })
   })
@@ -106,6 +110,7 @@ describe('normalizeLinkField', () => {
       id: createNodeIdReturnValue,
       prismicId: 'id',
       type: 'custom_type',
+      url: linkResolverReturnValue,
       data: {},
       dataRaw: undefined,
       dataString: undefined,

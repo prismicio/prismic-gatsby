@@ -1,34 +1,25 @@
-# gatsby-source-prismic
+# gatsby-source-prismic <!-- omit in toc -->
 
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
 
 ## Table of Contents
 
-- [Features](#features)
-- [Install](#install)
-- [Migration Guide](#migration-guide)
-- [How to use](#how-to-use)
-- [Providing JSON schemas](#providing-json-schemas)
-- [How to query](#how-to-query)
-  - [Query Rich Text fields](#query-rich-text-fields)
-  - [Query Link fields](#query-link-fields)
-  - [Query Content Relation fields](#query-content-relation-fields)
-  - [Query slices](#query-slices)
-  - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
-  - [Image processing](#image-processing)
-- [Previews](#previews)
-  - [usePrismicPreview()](#useprismicpreview)
-    - [Return Value](#return-value)
-    - [API](#api)
-    - [Gotchas](#gotchas)
-      - [Images](#images)
-  - [mergePrismicPreviewData()](#mergeprismicpreviewdata)
-    - [Return Value](#return-value-1)
-      - [If the custom type of the previewed document and the template are different](#if-the-custom-type-of-the-previewed-document-and-the-template-are-different)
-    - [API](#api-1)
-  - [In-depth Guide](#in-depth-guide)
-- [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
+- [Table of Contents](#Table-of-Contents)
+- [Features](#Features)
+- [Install](#Install)
+- [Migration Guide](#Migration-Guide)
+- [How to use](#How-to-use)
+- [Providing JSON schemas](#Providing-JSON-schemas)
+- [How to query](#How-to-query)
+  - [Query Rich Text fields](#Query-Rich-Text-fields)
+  - [Query Link fields](#Query-Link-fields)
+  - [Query Content Relation fields](#Query-Content-Relation-fields)
+  - [Query slices](#Query-slices)
+  - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
+  - [Image processing](#Image-processing)
+- [Previews](#Previews)
+- [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
 
 ## Features
 
@@ -49,8 +40,8 @@ npm install --save gatsby-source-prismic
 Read the migration guide to learn why and how to upgrade from v2 to v3. Then
 read the previews guide to learn how to setup previews.
 
-- [Migrating from v2 to v3](./migrating-from-v2-to-v3.md)
-- [Previews](./previews.md)
+- [Migrating from v2 to v3](./docs/migrating-from-v2-to-v3.md)
+- [Previews](./docs/previews.md)
 
 ## How to use
 
@@ -493,139 +484,8 @@ To learn more about image processing, check the documentation of
 
 ## Previews
 
-### usePrismicPreview()
-
-`usePrismicPreview()` is a React hook that allows for querying and normalizing
-responses from Prismic's API. An example is shown below:
-
-```jsx
-import { usePrismicPreview } from 'gatsby-source-prismic'
-
-const PreviewPage = ({ location }) => {
-  const { previewData } = usePrismicPreview(location, {
-    linkResolver: doc => doc.uid,
-    htmlSerializer: () => {},
-  })
-
-  return previewData ? (
-    <PageTemplate data={previewData} />
-  ) : (
-    <div>Loading...</div>
-  )
-}
-```
-
-#### Return Value
-
-Returns an object with the following keys:
-
-- `previewData`: An object with the same data shape that `gatsby-source-prismic`
-  generates at build time. As such, it can be provided to templates & pages
-  directly.
-- `path`: A string of the resolved path for the previewed Prismic doc. This is
-  determined via the provided `linkResolver` function _or_ an optional
-  `pathResolver` function.
-- `isInvalid`: A boolean that indicates that a bad token or document ID was
-  resolved from `location`. Typically only true if a client manually navigates
-  to a preview resolver page.
-
-#### API
-
-`usePrismicPreview` Accepts the following parameters:
-
-- `location`: **Required**. The location object from `@reach/router`. This is
-  used to read the preview token and the previewed document's ID to send an API
-  request for preview data.
-- `overrides`: An object that allows for preview specific overrides of
-  `gatsby-source-prismic` config options:
-  - `linkResolver`: **Required**. Determines how links in your preview content
-    are resolved to URLs. If `pathResolver` is not defined, `linkResolver` is
-    used to determine the `path` return value.
-  - `htmlSerializer`: **Required**. Function that maps rich text fields to HTML.
-    Should be the same function provided to the plugin configuration.
-  - `fetchLinks`: Allows you to specify the link fields to fetch for the
-    previewed document.
-  - `repositoryName`: Your Prismic repository name if it's different from the
-    one in `gatsby-config.js`
-  - `accessToken`: Your prismic access token if it's different from the one in
-    `gatsby-config.js`
-
-> ⚠️ Since preview API requests are made in the browser, your access token will
-> be exposed to the client.
-
-#### Gotchas
-
-##### Images
-
-Since data normalization happens at runtime, we cannot perform the same image
-optimizations that we do at buildtime. Instead, `usePrismicPreview()` returns
-the `url` field for an image.
-
-> ⚛️ A smart image component that conditionally uses `url` or `gatsby-image`
-> data is recommended for preview parity.
-
-### mergePrismicPreviewData()
-
-A helper function for merging data from Gatsby's graphQL schema and normalized
-responses from `usePrismicPreview`. An example is shown below:
-
-```jsx
-import { mergePrismicPreviewData } from 'gatsby-source-prismic'
-
-export const PageTemplate = ({ data }) => {
-  // { ... } previewData comes from usePrismicPreview()
-  const mergedData = mergePrismicPreviewData({ staticData: data, previewData })
-
-  return <Layout>{/* Do stuff with mergedData */}</Layout>
-}
-```
-
-`mergePrismicPreviewData` is useful when your previewed templates or pages need
-to use data from Prismic that arent't directly provided by the previewed
-document. An example of this is if a previewed document's template or page also
-uses data from `allPrismicX` queries.
-
-`mergePrismicPreviewData` allows us to show fresh preview data where applicable
-for the previewed document on a template, but also fallback to static data from
-Gatsby.
-
-#### Return Value
-
-Returns a new object by deeply merging the key-value pairs from `staticData` and
-`previewData`. If a key between the two objects are shared, values from
-`previewData` are used.
-
-##### If the custom type of the previewed document and the template are different
-
-Returns a new object by deeply traversing `staticData` and replacing any
-document links with the previewed document's ID with `previewData`. This is
-useful for previewing documents whose data would only be shown on a page via
-`allPrismicX` queries.
-
-#### API
-
-Accepts the following parameters via an object:
-
-- `staticData`. **Required**. Static data from a page's GraphQL query. If
-  `staticData` is falsey, `mergePrismicPreviewData` will return `undefined`.
-- `previewData`. Preview data from `usePrismicPreview()`. If `previewData` is
-  falsey, `mergePrismicPreview` will return `staticData` as is.
-
-### In-depth Guide
-
-When creating `gatsby-source-prismic`'s preview API, we wanted to allow
-developers to reuse as much of their existing templates and components as much
-as possible.
-
-In an ideal scenario, these functions and hooks should provide "drop-in" preview
-functionality to most sites using `gatsby-source-prismic` without needing to
-specifically configure components to support it.
-
-That being said, there are some recommended guidelines like creating a preview
-resolver page, handling preview redirect logic, and handling previewed images.
-
-For an in-depth guide on using previews with `gatsby-source-prismic`, please
-refer to [this guide](./previews.md).
+For an in-depth guide on using previews, please refer to
+[this guide](./docs/previews.md).
 
 ## Site's `gatsby-node.js` example
 

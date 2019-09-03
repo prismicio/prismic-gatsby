@@ -1,5 +1,5 @@
 import Prismic from 'prismic-javascript'
-import { name as pkgName } from '../package.json'
+import { name as pkgName } from '../../package.json'
 
 const msg = s => `${pkgName} - ${s}`
 
@@ -16,11 +16,15 @@ const pagedGet = async (
   } = context
 
   reporter.verbose(msg(`fetching documents page ${page}`))
-  const response = await client.query([], { ...queryOptions, page, pageSize })
+  const response = await client.query([], {
+    ...queryOptions,
+    page,
+    pageSize,
+  })
 
   acc = acc.concat(response.results)
 
-  if (queryOptions.page * queryOptions.pageSize < response.total_results_size)
+  if (page * pageSize < response.total_results_size)
     return pagedGet(client, queryOptions, context, pageSize, page + 1, acc)
 
   return acc
