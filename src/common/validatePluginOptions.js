@@ -30,9 +30,7 @@ const baseValidations = {
   schemas: yupObject()
     .strict()
     .required(),
-  lang: yupString()
-    .strict()
-    .default('*'),
+  lang: yupString().default('*'),
   shouldNormalizeImage: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
     .default(() => () => true),
@@ -40,7 +38,7 @@ const baseValidations = {
     .max(0)
     .default([]),
   // Default value set in validatePluginOptions below.
-  typePathsFilenamePrefix: yupString(),
+  typePathsFilenamePrefix: yupString().default(`prismic-typepaths---`),
 
   // Browser-only validations
   pathResolver: yupMixed().test(
@@ -59,11 +57,10 @@ export const validatePluginOptions = (
 ) => {
   // Must do this here with access to pluginOptions.
   if (pluginOptions.repositoryName)
-    baseValidations.typePathsFilenamePrefix.default(
+    baseValidations.typePathsFilenamePrefix = baseValidations.typePathsFilenamePrefix.default(
       `prismic-typepaths---${pluginOptions.repositoryName &&
         pluginOptions.repositoryName.toString()}-`,
     )
-  else baseValidations.typePathsFilenamePrefix.default(`prismic-typepaths---`)
 
   // Filter validations based on the filterValidations param.
   const filteredValidations = Object.keys(baseValidations).reduce(

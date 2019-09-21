@@ -66,34 +66,6 @@ describe('accessToken', () => {
   })
 })
 
-describe('schemasDigest', () => {
-  test('required', () => {
-    expect(() =>
-      validatePluginOptions({ ...pluginOptions, schemasDigest: undefined }),
-    ).toThrow('schemasDigest')
-  })
-
-  test('must be a string', () => {
-    expect(() =>
-      validatePluginOptions({ ...pluginOptions, schemasDigest: Symbol() }),
-    ).toThrow('schemasDigest')
-  })
-})
-
-describe('schemas', () => {
-  test('required', () => {
-    expect(() =>
-      validatePluginOptions({ ...pluginOptions, schemas: undefined }),
-    ).toThrow('schemas')
-  })
-
-  test('must be an object', () => {
-    expect(() =>
-      validatePluginOptions({ ...pluginOptions, schemas: Symbol() }),
-    ).toThrow('schemas')
-  })
-})
-
 describe('linkResolver', () => {
   test('not required', () => {
     expect(() =>
@@ -117,17 +89,26 @@ describe('linkResolver', () => {
   })
 })
 
-describe('pathResolver', () => {
+describe('fetchLinks', () => {
   test('not required', () => {
     expect(() =>
-      validatePluginOptions({ ...pluginOptions, pathResolver: undefined }),
-    ).not.toThrow('pathResolver')
+      validatePluginOptions({ ...pluginOptions, fetchLinks: undefined }),
+    ).not.toThrow('fetchLinks')
   })
 
-  test('must be a function', () => {
+  test('must be an array', () => {
     expect(() =>
-      validatePluginOptions({ ...pluginOptions, pathResolver: Symbol() }),
-    ).toThrow('pathResolver')
+      validatePluginOptions({ ...pluginOptions, fetchLinks: Symbol() }),
+    ).toThrow('fetchLinks')
+  })
+
+  test('default to an empty array', () => {
+    const { fetchLinks } = validatePluginOptions({
+      ...pluginOptions,
+      fetchLinks: undefined,
+    })
+
+    expect(fetchLinks).toEqual([])
   })
 })
 
@@ -151,5 +132,142 @@ describe('htmlSerializer', () => {
     })
 
     expect(htmlSerializer()()).toBeUndefined()
+  })
+})
+
+describe('schemas', () => {
+  test('required', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, schemas: undefined }),
+    ).toThrow('schemas')
+  })
+
+  test('must be an object', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, schemas: Symbol() }),
+    ).toThrow('schemas')
+  })
+})
+
+describe('lang', () => {
+  test('not required', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, lang: undefined }),
+    ).not.toThrow('lang')
+  })
+
+  test('default to *', () => {
+    const { lang } = validatePluginOptions({
+      ...pluginOptions,
+      lang: undefined,
+    })
+
+    expect(lang).toBe('*')
+  })
+})
+
+describe('shouldNormalizeImage', () => {
+  test('not required', () => {
+    expect(() =>
+      validatePluginOptions({
+        ...pluginOptions,
+        shouldNormalizeImage: undefined,
+      }),
+    ).not.toThrow('shouldNormalizeImage')
+  })
+
+  test('must be a function', () => {
+    expect(() =>
+      validatePluginOptions({
+        ...pluginOptions,
+        shouldNormalizeImage: Symbol(),
+      }),
+    ).toThrow('shouldNormalizeImage')
+  })
+
+  test('default to function returning true', () => {
+    const { shouldNormalizeImage } = validatePluginOptions({
+      ...pluginOptions,
+      shouldNormalizeImage: undefined,
+    })
+
+    expect(shouldNormalizeImage()).toBe(true)
+  })
+})
+
+describe('plugins', () => {
+  test('not required', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, plugins: undefined }),
+    ).not.toThrow('plugins')
+  })
+
+  test('must be empty array', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, plugins: [] }),
+    ).not.toThrow('plugins')
+
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, plugins: [Symbol()] }),
+    ).toThrow('plugins')
+  })
+
+  test('default to empty array', () => {
+    const { plugins } = validatePluginOptions({
+      ...pluginOptions,
+      plugins: undefined,
+    })
+
+    expect(plugins).toEqual([])
+  })
+})
+
+describe('typePathsFilenamePrefix', () => {
+  test('not required', () => {
+    expect(() =>
+      validatePluginOptions({
+        ...pluginOptions,
+        typePathsFilenamePrefix: undefined,
+      }),
+    ).not.toThrow('typePathsFilenamePrefix')
+  })
+
+  test('default to expected default', () => {
+    const { typePathsFilenamePrefix } = validatePluginOptions({
+      ...pluginOptions,
+      typePathsFilenamePrefix: undefined,
+    })
+
+    expect(typePathsFilenamePrefix).toBe(
+      `prismic-typepaths---${pluginOptions.repositoryName}-`,
+    )
+  })
+})
+
+describe('schemasDigest', () => {
+  test('required', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, schemasDigest: undefined }),
+    ).toThrow('schemasDigest')
+  })
+
+  test('must be a string', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, schemasDigest: Symbol() }),
+    ).toThrow('schemasDigest')
+  })
+})
+
+describe('pathResolver', () => {
+  test('not required', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, pathResolver: undefined }),
+    ).not.toThrow('pathResolver')
+  })
+
+  test('must be a function', () => {
+    expect(() =>
+      validatePluginOptions({ ...pluginOptions, pathResolver: Symbol() }),
+    ).toThrow('pathResolver')
   })
 })
