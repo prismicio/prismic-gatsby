@@ -10,21 +10,26 @@ export const normalizeStructuredTextField = async (
   _depth,
   context,
 ) => {
-  const { doc, pluginOptions } = context
-  const { linkResolver, htmlSerializer } = pluginOptions
+  try {
+    const { doc, pluginOptions } = context
+    const { linkResolver, htmlSerializer } = pluginOptions
 
-  const linkResolverForField = linkResolver({ key: id, value, node: doc })
-  const htmlSerializerForField = htmlSerializer({ key: id, value, node: doc })
+    const linkResolverForField = linkResolver({ key: id, value, node: doc })
+    const htmlSerializerForField = htmlSerializer({ key: id, value, node: doc })
 
-  return {
-    html: PrismicDOM.RichText.asHtml(
-      value,
-      linkResolverForField,
-      htmlSerializerForField,
-    ),
-    text: PrismicDOM.RichText.asText(value),
-    raw: value,
+    return {
+      html: PrismicDOM.RichText.asHtml(
+        value,
+        linkResolverForField,
+        htmlSerializerForField,
+      ),
+      text: PrismicDOM.RichText.asText(value),
+      raw: value,
+    }
+  } catch (error) {
+    // Ignore
   }
+
 }
 
 // Normalizes a PrismicLinkType field by providing a resolved URL using
@@ -34,21 +39,26 @@ export const normalizeStructuredTextField = async (
 // NOTE: The document field is set to a node ID but this will be resolved to
 // the node in the GraphQL resolver.
 export const normalizeLinkField = async (id, value, _depth, context) => {
-  const { doc, createNodeId, pluginOptions } = context
-  const { linkResolver } = pluginOptions
+  try {
+    const { doc, createNodeId, pluginOptions } = context
+    const { linkResolver } = pluginOptions
 
-  const linkResolverForField = linkResolver({ key: id, value, node: doc })
+    const linkResolverForField = linkResolver({ key: id, value, node: doc })
 
-  let documentId = null
-  if (value.link_type === 'Document')
-    documentId = createNodeId(`${value.type} ${value.id}`)
+    let documentId = null
+    if (value.link_type === 'Document')
+      documentId = createNodeId(`${value.type} ${value.id}`)
 
-  return {
-    ...value,
-    url: PrismicDOM.Link.url(value, linkResolverForField),
-    document: documentId,
-    raw: value,
+    return {
+      ...value,
+      url: PrismicDOM.Link.url(value, linkResolverForField),
+      document: documentId,
+      raw: value,
+    }
+  } catch (error) {
+    // Ignore
   }
+
 }
 
 // Normalizes a PrismicImageType field by creating a File node using
