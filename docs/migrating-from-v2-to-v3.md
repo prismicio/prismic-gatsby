@@ -142,7 +142,7 @@ direct reference to the linked document.
            }
          }
        }
-   `
+     `
    ```
 
 2. When accessing `document`, use it like any other object field, not an array.
@@ -177,7 +177,7 @@ hatch if the untouched data is needed.
         }
       }
     }
-`
+  `
 ```
 
 ### Using `dataString`
@@ -199,7 +199,7 @@ escape hatch if the untouched data is needed.
 -     dataString
 +     dataRaw
     }
-`
+  `
 ```
 
 ## Setting up previews
@@ -223,35 +223,35 @@ folder. This file is then fetched in the browser during a preview.
 
 The type paths file looks something like this:
 
-```json
+```js
 // public/prismic-typepaths---my-repo-md5hash2049b789871e9494879b29464.json
 
-[
-  { "path": ["page"], "type": "PrismicPage" },
-  { "path": ["page", "uid"], "type": "String" },
-  { "path": ["page", "data"], "type": "PrismicPageDataType" },
+;[
+  { path: ['page'], type: 'PrismicPage' },
+  { path: ['page', 'uid'], type: 'String' },
+  { path: ['page', 'data'], type: 'PrismicPageDataType' },
   {
-    "path": ["page", "data", "parent"],
-    "type": "PrismicLinkType"
+    path: ['page', 'data', 'parent'],
+    type: 'PrismicLinkType',
   },
   {
-    "path": ["page", "data", "title"],
-    "type": "PrismicStructuredTextType"
+    path: ['page', 'data', 'title'],
+    type: 'PrismicStructuredTextType',
   },
-  { "path": ["page", "data", "featured_image"], "type": "PrismicImageType" },
+  { path: ['page', 'data', 'featured_image'], type: 'PrismicImageType' },
   {
-    "path": ["page", "data", "body"],
-    "type": "[PrismicPageBodySlicesType]"
+    path: ['page', 'data', 'body'],
+    type: '[PrismicPageBodySlicesType]',
   },
-  { "path": ["page", "data", "body", "text"], "type": "PrismicPageBodyText" },
+  { path: ['page', 'data', 'body', 'text'], type: 'PrismicPageBodyText' },
   {
-    "path": ["page", "data", "body", "text", "primary"],
-    "type": "PrismicPageBodyTextPrimaryType"
+    path: ['page', 'data', 'body', 'text', 'primary'],
+    type: 'PrismicPageBodyTextPrimaryType',
   },
   {
-    "path": ["page", "data", "body", "text", "primary", "text"],
-    "type": "PrismicStructuredTextType"
-  }
+    path: ['page', 'data', 'body', 'text', 'primary', 'text'],
+    type: 'PrismicStructuredTextType',
+  },
 ]
 ```
 
