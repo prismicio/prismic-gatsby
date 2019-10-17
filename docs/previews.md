@@ -1,6 +1,5 @@
 # Previews <!-- omit in toc -->
 
-- [Prerequisites](#Prerequisites)
 - [Why previews are useful](#Why-previews-are-useful)
 - [How to use previews](#How-to-use-previews)
   - [TL;DR](#TLDR)
@@ -23,14 +22,6 @@
   - [Images](#Images)
   - [Aliases](#Aliases)
 
-## Prerequisites
-
-While not required, it's recommended to client render your preview resolver
-paths with the
-[`gatsby-plugin-create-client-paths`][gatsby-plugin-create-client-paths] plugin.
-This will help prevent any issues with accessing browser-only objects such as
-`window`.
-
 ## Why previews are useful
 
 In most traditional CMS setups, content editors and creators can preview their
@@ -47,22 +38,34 @@ preview requests on demand. With Gatsby, no such infrastructure exists to
 accomplish this. Asking content creators, editors, and clients to "wait a few
 minutes" for a site to rebuild is often not an acceptable solution.
 
-With v3 of `gatsby-source-prismic`, we're happy to announce that client-rendered
-previews are now available! By rendering previews client-side, we can retain the
-benefits of Gatsby's HTML pre-rendering while still provding the dynamic & rich
-content editing experience of a traditional server setup.
+With v3 of `gatsby-source-prismic`, client-rendered previews are now available!
+By rendering previews client-side, we can retain the benefits of Gatsby's HTML
+pre-rendering while still provding the dynamic & rich content editing experience
+of a traditional server setup.
 
 ## How to use previews
 
-### TL;DR
+### Summary
 
-- Query for your preview data with `usePrismicPreview` on your preview endpoint.
-- With your new `previewData`, use Gatsby's `navigate` function to route to the
-  returned `path`, passing your `previewData` along in `window`.
-- On your page or template, read your `previewData` from `window` and pass it to
-  the `mergePrismicPreviewData` helper function along with your normal static
-  data from Gatsby.
-- Pass your merged data to your template exactly where you would your static
+- **Get preview data**
+
+  Query for your preview data with the `usePrismicPreview` hook on your preview
+  page.
+
+- **Save preview data globally**
+
+  Save your preview data globally (e.g. `window` or Redux) and navigate to your
+  previewed document's page using Gatsby's `navigate` function.
+
+- **Merge with non-preview data**
+
+  On your page or template, read your `previewData` from your global store and
+  pass it to the `mergePrismicPreviewData` helper function along with your
+  normal static data from Gatsby.
+
+- **Pass data to your page**
+
+  Pass your merged data to your template exactly where you would your static
   data!
 
 ### Guide

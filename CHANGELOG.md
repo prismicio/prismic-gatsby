@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.11](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.10...v3.0.0-beta.11) (2019-09-21)
+
+
+### Bug Fixes
+
+* restore option defaults ([690fa9b](https://github.com/angeloashmore/gatsby-source-prismic/commit/690fa9b))
+
+
+
 ## [3.0.0-beta.10](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.9...v3.0.0-beta.10) (2019-08-26)
 
 

@@ -19,6 +19,8 @@ repositories.
   - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
   - [Image processing](#Image-processing)
 - [Previews](#Previews)
+- [Limitations](#Limitations)
+  - [GraphQL-valid field names](#GraphQL-valid-field-names)
 - [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
 
 ## Features
@@ -486,6 +488,23 @@ To learn more about image processing, check the documentation of
 
 For an in-depth guide on using previews, please refer to
 [this guide](./docs/previews.md).
+
+## Limitations
+
+### GraphQL-valid field names
+
+All field names must adhere to GraphQL's strict requirements:
+
+- `a-z`: Any lowercase letter.
+- `A-Z`: Any uppercase letter.
+- `0-9`: Any number. **Name must not start with a number**.
+- `_`: Underscores
+
+Note that this does not allow fields containing the following:
+
+- Starting with a number (e.g. `0_my_field`)
+- Dashes (e.g. `my-field`)
+- Symbols (e.g. `!@#$%^&*()`)
 
 ## Site's `gatsby-node.js` example
 
