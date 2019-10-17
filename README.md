@@ -497,7 +497,7 @@ All field names must adhere to GraphQL's strict requirements:
 
 - `a-z`: Any lowercase letter.
 - `A-Z`: Any uppercase letter.
-- `0-9`: Any number. **Name must not start with a number**.
+- `0-9`: Any number. Name must not start with a number.
 - `_`: Underscores
 
 Note that this does not allow fields containing the following:

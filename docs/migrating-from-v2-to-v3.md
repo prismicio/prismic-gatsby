@@ -8,6 +8,7 @@
 - [Handling breaking changes](#handling-breaking-changes)
   - [Provide custom type schemas](#provide-custom-type-schemas)
   - [Accessing linked documents](#accessing-linked-documents)
+  - [Using `raw` fields](#using-raw-fields)
 - [Setting up previews](#setting-up-previews)
 - [Things to know](#things-to-know)
   - [Type paths file in `/public`](#type-paths-file-in-public)
@@ -47,7 +48,7 @@ You need to update your `package.json` to use at least `v2.5.0` of Gatsby.
 // package.json
 
 "dependencies": {
-  "gatsby": "^2.5.0",
+  "gatsby": "^2.5.0"
 }
 ```
 
@@ -59,7 +60,7 @@ Update your `package.json` to use v3 of `gatsby-source-prismic`.
 // package.json
 
 "dependencies": {
-  "gatsby-source-prismic": "^3.0.0",
+  "gatsby-source-prismic": "^3.0.0"
 }
 ```
 
@@ -74,7 +75,7 @@ includes hooks, update your version of `react` and `react-dom`.
 
 "dependencies": {
   "react": "^16.8.0",
-  "react-dom": "^16.8.0",
+  "react-dom": "^16.8.0"
 }
 ```
 
@@ -150,6 +151,56 @@ direct reference to the linked document.
    - const uid = data.prismicPage.data.linkField.document[0].uid
    + const uid = data.prismicPage.data.linkField.document.uid
    ```
+
+### Using `raw` fields
+
+In v2, certain field types contain a `raw` field populated with an untouched
+version of Prismic's data. For example, a Rich Text field's `raw` field would
+contain Prismic's custom representation of formatted text. This requred you to
+list out all child fields, such as `spans` for a Rich Text field.
+
+In v3, `raw` is now a `JSON` type, removing the need to explicitly request child
+fields. All child fields will automatically be returned as a JSON object.
+
+Note that the `raw` field is still not recommended and is included as an escape
+hatch if the untouched data is needed.
+
+```diff
+  const query = graphql`
+    prismicPage {
+      data {
+        richTextField {
+-         raw {
+-           spans
+-         }
++         raw
+        }
+      }
+    }
+`
+```
+
+### Using `dataString`
+
+In v2, `dataString` was available to allow querying the raw API data as a
+fallback. This was the node's data run through `JSON.stringify`.
+
+In v3, `dataString` is deprecated and replaced by `dataRaw`. Like the `raw`
+fields, `dataRaw` is now a `JSON` type, meaning you can query the field without
+needing to specify the child fields. Unlike `dataString`, `dataRaw` will return
+a JSON object, removing the need to run `JSON.parse`.
+
+Note that the `dataRaw` field is still not recommended and is included as an
+escape hatch if the untouched data is needed.
+
+```diff
+  const query = graphql`
+    prismicPage {
+-     dataString
++     dataRaw
+    }
+`
+```
 
 ## Setting up previews
 
