@@ -9,6 +9,7 @@
   - [Provide custom type schemas](#provide-custom-type-schemas)
   - [Accessing linked documents](#accessing-linked-documents)
   - [Using `raw` fields](#using-raw-fields)
+  - [Replace `dataString` with `dataRaw`](#replace-datastring-with-dataraw)
 - [Setting up previews](#setting-up-previews)
 - [Things to know](#things-to-know)
   - [Type paths file in `/public`](#type-paths-file-in-public)
@@ -180,7 +181,7 @@ hatch if the untouched data is needed.
   `
 ```
 
-### Using `dataString`
+### Replace `dataString` with `dataRaw`
 
 In v2, `dataString` was available to allow querying the raw API data as a
 fallback. This was the node's data run through `JSON.stringify`.
