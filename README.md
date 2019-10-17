@@ -493,7 +493,7 @@ For an in-depth guide on using previews, please refer to
 
 ### GraphQL-valid field names
 
-All field names must adhere to GraphQL's strict requirements:
+All field names must adhere to GraphQL's field name requirements:
 
 - `a-z`: Any lowercase letter.
 - `A-Z`: Any uppercase letter.
@@ -514,13 +514,14 @@ const path = require('path')
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
+  // Query all Pages with their IDs and template data.
   const pages = await graphql(`
     {
       allPrismicPage {
-        edges {
-          node {
-            id
-            uid
+        nodes {
+          id
+          uid
+          data {
             template
           }
         }
@@ -529,16 +530,17 @@ exports.createPages = async ({ graphql, actions }) => {
   `)
 
   const pageTemplates = {
-    Light: path.resolve('./src/templates/light.js'),
-    Dark: path.resolve('./src/templates/dark.js'),
+    Light: path.resolve(__dirname, 'src/templates/light.js'),
+    Dark: path.resolve(__dirname, 'src/templates/dark.js'),
   }
 
-  pages.data.allPrismicPage.edges.forEach(edge => {
+  // Create pages for each Page in Prismic using the selected template.
+  pages.data.allPrismicPage.nodes.forEach(node => {
     createPage({
-      path: `/${edge.node.uid}`,
-      component: pageTemplates[edge.node.template],
+      path: `/${node.uid}`,
+      component: pageTemplates[node.template],
       context: {
-        id: edge.node.id,
+        id: node.id,
       },
     })
   })
