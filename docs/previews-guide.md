@@ -40,38 +40,41 @@ export default PreviewPage
 
 # Previewing with Prismic
 
-`gatsby-source-prismic`'s preview tries to be unopinionated in its
-implementation. This allows the system to be flexible and work alongside other
+`gatsby-source-prismic`'s preview system aims to be unopinionated on how you
+implement it. This allows the system to be flexible and work alongside other
 parts of your site.
 
-As a result, there is some setup involved in order to hook into previews.
+The following guide is a recommended approach to implementing previews, but
+customizations are encouraged.
 
 ## Summary
 
-- **Create a preview page**
+Each step is described in full detail below.
 
-  Create a page to which Prismic will redirect previews.
+1. [**Create a preview page**](#create-a-preview-page)
 
-- **Get preview data**
+   Create a page to which Prismic will redirect previews.
 
-  Query for your preview data with the `usePrismicPreview` hook on your preview
-  page.
+1. [**Get preview data**](#get-preview-data)
 
-- **Save preview data globally**
+   Query for your preview data with the `usePrismicPreview` hook on your preview
+   page.
 
-  Save your preview data globally (e.g. `window` or Redux) and navigate to your
-  previewed document's page using Gatsby's `navigate` function.
+1. [**Save preview data globally**](#save-preview-data-globally)
 
-- **Merge with non-preview data**
+   Save your preview data globally (e.g. `window` or Redux) and navigate to your
+   previewed document's page using Gatsby's `navigate` function.
 
-  On your page or template, read your `previewData` from your global store and
-  pass it to the `mergePrismicPreviewData` helper function along with your
-  normal static data from Gatsby.
+1. [**Merge with non-preview data**](#merge-with-non-preview-data)
 
-- **Pass data to your page**
+   On your page or template, read your `previewData` from your global store and
+   pass it to the `mergePrismicPreviewData` helper function along with your
+   normal static data from Gatsby.
 
-  Pass your merged data to your template exactly where you would your static
-  data.
+1. [**Pass data to your page**](#pass-data-to-your-page)
+
+   Pass your merged data to your template exactly where you would your static
+   data.
 
 ## Create a preview page
 
