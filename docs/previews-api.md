@@ -1,6 +1,6 @@
 # Preview API
 
-## Table on Contents
+## Table of Contents
 
 - [`usePrismicPreview`](#usePrismicPreview)
 - [`mergePrismicPreviewData`](#usePrismicPreview)
