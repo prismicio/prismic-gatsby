@@ -7,12 +7,23 @@ parts of your site.
 The following guide is a recommended approach to implementing previews, but
 customizations are encouraged.
 
+## Table on Contents
+
+- [Summary](#summary)
+- [Enable previews in Prismic](#enable-previews-in-prismic)
+- [Create a preview page](#create-a-preview-page)
+- [Get preview data](#get-preview-data)
+- [Save preview data globally](#save-preview-data-globally)
+- [Navigate to the document's page](#navigate-to-the-documents-page)
+- [Merge with non-preview data](#merge-with-non-preview-data)
+- [Wrap-up](#wrap-up)
+
 ## Summary
 
 Each step is described in full detail below.
 
-1. [**Setup previews in Prismic**](#setup-previews-in-prismic): Enable previews
-   in Prismic with your preview URL.
+1. [**Enable previews in Prismic**](#enable-previews-in-prismic): Enable
+   previews in Prismic with your preview URL.
 
 1. [**Create a preview page**](#create-a-preview-page): Create a page to which
    Prismic will redirect previews.
