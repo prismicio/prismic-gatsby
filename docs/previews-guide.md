@@ -11,33 +11,26 @@ customizations are encouraged.
 
 Each step is described in full detail below.
 
-1. [**Setup previews in Prismic**](#setup-previews-in-prismic)
+1. [**Setup previews in Prismic**](#setup-previews-in-prismic): Enable previews
+   in Prismic with your preview URL.
 
-   Enable previews in Prismic with your preview URL.
+1. [**Create a preview page**](#create-a-preview-page): Create a page to which
+   Prismic will redirect previews.
 
-1. [**Create a preview page**](#create-a-preview-page)
+1. [**Get preview data**](#get-preview-data): Query for your preview data with
+   the `usePrismicPreview` hook on your preview page.
 
-   Create a page to which Prismic will redirect previews.
-
-1. [**Get preview data**](#get-preview-data)
-
-   Query for your preview data with the `usePrismicPreview` hook on your preview
+1. [**Save preview data globally**](#save-preview-data-globally): Save your
+   preview data globally (e.g. `window` or Redux) to use later on the document's
    page.
 
-1. [**Save preview data globally**](#save-preview-data-globally)
-
-   Save your preview data globally (e.g. `window` or Redux) to use later on the
-   document's page.
-
-1. [**Navigate to the document's page**](#navigate-to-the-documents-page)
-
+1. [**Navigate to the document's page**](#navigate-to-the-documents-page):
    Navigate to your previewed document's page using Gatsby's `navigate`
    function.
 
-1. [**Merge with non-preview data**](#merge-with-non-preview-data)
-
-   Lastly, on your page or template, read the preview data from your global
-   store and pass it to the `mergePrismicPreviewData` helper.
+1. [**Merge with non-preview data**](#merge-with-non-preview-data): Lastly, on
+   your page or template, read the preview data from your global store and pass
+   it to the `mergePrismicPreviewData` helper.
 
 ## Enable previews in Prismic
 
