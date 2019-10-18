@@ -284,7 +284,7 @@ Gatsby site. This guide shows a basic implementation, but the system allows for
 building your own preview system tailored to your setup.
 
 For more details on the preview functions' API, see the
-[Preview API](./preview-api.md) document.
+[Previews API](./previews-api.md) document.
 
 [prismic-setup-preview]:
   https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
