@@ -9,6 +9,7 @@ customizations are encouraged.
 
 ## Table on Contents
 
+- [Why previews are useful](#why-previews-are-useful)
 - [Summary](#summary)
 - [Enable previews in Prismic](#enable-previews-in-prismic)
 - [Create a preview page](#create-a-preview-page)
@@ -17,6 +18,27 @@ customizations are encouraged.
 - [Navigate to the document's page](#navigate-to-the-documents-page)
 - [Merge with non-preview data](#merge-with-non-preview-data)
 - [Wrap-up](#wrap-up)
+
+## Why previews are useful
+
+In most traditional CMS setups, content editors and creators can preview their
+changes before publishing them live. However, as you are probably aware, getting
+previews to work with Gatsby can be a bit challenging.
+
+The static nature of Gatsby coupled with a headless CMS brings a lot of
+benefits. Unfortunately, it also comes with the drawback of removing the
+capability to provide the "immediate feedback" of previews that many content
+creators want.
+
+In a traditional setting, a server exists to dynamically build and serve these
+preview requests on demand. With Gatsby, no such infrastructure exists to
+accomplish this. Asking content creators, editors, and clients to "wait a few
+minutes" for a site to rebuild is often not an acceptable solution.
+
+With v3 of `gatsby-source-prismic`, client-rendered previews are now available!
+By rendering previews client-side, we can retain the benefits of Gatsby's HTML
+pre-rendering while still provding the dynamic and rich content editing
+experience of a traditional server setup.
 
 ## Summary
 

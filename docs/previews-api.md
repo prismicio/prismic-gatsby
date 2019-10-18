@@ -4,6 +4,7 @@
 
 - [`usePrismicPreview`](#usePrismicPreview)
 - [`mergePrismicPreviewData`](#usePrismicPreview)
+- [Limitations](#limitations)
 
 ## usePrismicPreview
 
@@ -70,9 +71,9 @@ document data nodes with the previewed document's ID with `previewData`. This is
 useful for previewing documents whose data would only be shown on a page such as
 data from `allPrismicBooks` queries.
 
-# Limitations
+## Limitations
 
-## Images
+### Images
 
 Since preview data normalization happens at runtime, we cannot perform the same
 image optimizations that we do at build-time. Instead, `usePrismicPreview()`
@@ -133,7 +134,7 @@ you, great!)
 CSS-in-JS solutions will work just as well here, or you can even leverage the
 `<picture>` tag with a `srcset` you get from Prismic!
 
-## Aliases
+### Aliases
 
 Since normalized previews rely on the inferred graphQL schemas that are provided
 to Gatsby, graphQL aliases are currently unsupported.
