@@ -136,8 +136,8 @@ CSS-in-JS solutions will work just as well here, or you can even leverage the
 
 ### Aliases
 
-Since normalized previews rely on the inferred GraphQL schemas that are provided
-to Gatsby, GraphQL aliases are currently unsupported.
+Since normalized previews rely on the GraphQL schemas that are provided to
+Gatsby, GraphQL aliases are currently unsupported.
 
 This means that if you perform anything like this in your GraphQL queries:
 
