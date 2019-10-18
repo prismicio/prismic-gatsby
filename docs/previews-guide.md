@@ -1,7 +1,7 @@
 # Previewing with Prismic
 
-`gatsby-source-prismic`'s preview system aims to be unopinionated on how you
-implement it. This allows the system to be flexible and work alongside other
+`gatsby-source-prismic`'s preview system aims to be unopinionated in its
+implementation. This allows the system to be flexible and work alongside other
 parts of your site.
 
 The following guide is a recommended approach to implementing previews, but
@@ -13,7 +13,7 @@ Each step is described in full detail below.
 
 1. [**Setup previews in Prismic**](#setup-previews-in-prismic)
 
-   Enable previews in prismic with your preview URL.
+   Enable previews in Prismic with your preview URL.
 
 1. [**Create a preview page**](#create-a-preview-page)
 
@@ -36,9 +36,8 @@ Each step is described in full detail below.
 
 1. [**Merge with non-preview data**](#merge-with-non-preview-data)
 
-   Lastly, on your page or template, read your `previewData` from your global
-   store and pass it to the `mergePrismicPreviewData` helper function along with
-   your normal static data from Gatsby.
+   Lastly, on your page or template, read the preview data from your global
+   store and pass it to the `mergePrismicPreviewData` helper.
 
 ## Enable previews in Prismic
 
@@ -47,7 +46,7 @@ Before writing any code in Gatsby, we'll need to enable previews in Prismic.
 Follow Prismic's official [How to set up a preview][prismic-setup-preview] guide
 to enable previews on your repository.
 
-While developing, you would typically create multiple preview sites:
+While developing, you would typically set up multiple preview sites:
 
 - **Development**: Domain: `http://localhost:8000`, Link Resolver: `/preview`
 - **Production**: Domain: `https://<your_url>`, Link Resolver: `/preview`
@@ -178,7 +177,10 @@ const PreviewPage = ({ location }) => {
   // the previewed document's page.
   useEffect(() => {
     // If this is not a preview, skip.
-    if (!isPreview) return
+    //   null = Not yet determined if previewing.
+    //   true = Preview is available.
+    //   false = Preview is not available.
+    if (isPreview === false) return
 
     // Save the preview data to somewhere globally accessible. This could be
     // something like a global Redux store or React context.
@@ -239,7 +241,9 @@ export const PageTemplate = ({ data: staticData }) => {
   return (
     <Layout>
       <h1>{data.prismicPage.data.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: data.prismicPage.data.body }} />
+      <div
+        dangerouslySetInnerHTML={{ __html: data.prismicPage.data.body.html }}
+      />
     </Layout>
   )
 }
@@ -247,7 +251,6 @@ export const PageTemplate = ({ data: staticData }) => {
 export const query = graphql`
   query($id: String!) {
     prismicPage(id: { eq: $id }) {
-      uid
       data {
         title
         body {
@@ -267,17 +270,17 @@ unchanged data.
 
 The power of the preview system comes from the plugin's two main functions:
 
-- `usePrismicPreview`: React hook to fetch preview data using Prismic's preview
-  URL parameters.
-- `mergePrismicPreviewData`: Helper function to merge preview data with static
-  data.
+- **`usePrismicPreview`**: React hook to fetch preview data using Prismic's
+  preview URL parameters.
+- **`mergePrismicPreviewData`**: Helper function to merge preview data with
+  static data.
 
-With both functions, custom preview functionality can be built out. This guide
-shows a basic implementation, but the system allows for building your own
-preview system tailored to your setup.
+With both functions, custom preview functionality can be built within your
+Gatsby site. This guide shows a basic implementation, but the system allows for
+building your own preview system tailored to your setup.
 
-For more details on the preview functions' API, see
-[Preview API](./preview-api.md).
+For more details on the preview functions' API, see the
+[Preview API](./preview-api.md) document.
 
 [prismic-setup-preview]:
   https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
