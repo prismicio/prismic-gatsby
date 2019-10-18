@@ -150,8 +150,6 @@ query {
         text
       }
     }
-    meta_title
-    meta_description
   }
 }
 ```
