@@ -50,7 +50,7 @@ const normalizeField = async (id, value, depth, context) => {
 
       return {
         ...base,
-        ...thumbs,
+        thumbnails: Object.keys(thumbs).length > 0 ? thumbs : null,
       }
 
     case 'PrismicStructuredTextType':

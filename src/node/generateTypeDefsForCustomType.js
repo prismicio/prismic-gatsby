@@ -53,36 +53,18 @@ const fieldToType = (id, value, depth, context) => {
 
     case 'Image':
       enqueueTypePath([...depth, id], 'PrismicImageType')
-      return {
-        type: 'PrismicImageType',
-        resolve: (parent, args, context, info) => {
-          const key = info.path.key
-          const value = parent[key]
 
-          const getFileNode = id =>
-            context.nodeModel.getNodeById({
-              id,
-              type: 'File',
-            })
+      R.compose(
+        R.forEach(thumb =>
+          enqueueTypePath(
+            [...depth, id, 'thumbnails', thumb.name],
+            'PrismicImageThumbnailType',
+          ),
+        ),
+        R.pathOr([], ['config', 'thumbnails']),
+      )(value)
 
-          const baseValue = R.compose(
-            R.assoc('localFile', getFileNode(value.localFile)),
-            R.pick(IMAGE_FIELD_KEYS),
-          )(value)
-
-          const thumbValues = R.compose(
-            R.mapObjIndexed(v =>
-              R.assoc('localFile', getFileNode(v.localFile), v),
-            ),
-            R.omit(IMAGE_FIELD_KEYS),
-          )(value)
-
-          return {
-            ...baseValue,
-            ...thumbValues,
-          }
-        },
-      }
+      return 'PrismicImageType'
 
     case 'Link':
       enqueueTypePath([...depth, id], 'PrismicLinkType')
@@ -245,7 +227,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
   const enqueueTypePath = (path, type) => typePaths.push({ path, type })
 
   // UID fields are defined at the same level as data fields, but are a level
-  // about data in API responses. Pulling it out separately here allows us to
+  // above data in API responses. Pulling it out separately here allows us to
   // process the UID field differently than the data fields.
   const { uid: uidField, ...dataFields } = R.compose(
     R.mergeAll,
@@ -262,6 +244,9 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
       enqueueTypePath,
     })
 
+  // Create a type for all data fields by shallowly mapping each field to a
+  // type.
+  const dataName = pascalcase(`Prismic ${id} Data Type`)
   const dataFieldTypes = R.mapObjIndexed(
     (field, fieldId) =>
       fieldToType(fieldId, field, [id, 'data'], {
@@ -272,11 +257,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
       }),
     dataFields,
   )
-
-  const dataName = pascalcase(`Prismic ${id} Data Type`)
-
   enqueueTypePath([id, 'data'], dataName)
-
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
       name: dataName,
@@ -330,7 +311,6 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
   if (uidFieldType) customTypeFields.uid = uidFieldType
 
   enqueueTypePath([id], customTypeName)
-
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
       name: customTypeName,
@@ -359,5 +339,29 @@ export const generateTypeDefForLinkType = (allTypeDefs, context) => {
   return gatsbySchema.buildUnionType({
     name: 'PrismicAllDocumentTypes',
     types: documentTypeNames,
+  })
+}
+
+export const generateTypeDefForImageType = (typePaths, context) => {
+  const { gatsbyContext } = context
+  const { schema: gatsbySchema } = gatsbyContext
+
+  const thumbnailKeys = R.compose(
+    R.map(
+      R.compose(
+        R.last,
+        R.prop('path'),
+      ),
+    ),
+    R.filter(R.propEq('type', 'PrismicImageThumbnailType')),
+  )(typePaths)
+
+  return gatsbySchema.buildObjectType({
+    name: 'PrismicImageThumbnailsType',
+    fields: R.reduce(
+      (acc, curr) => R.assoc(curr, { type: 'PrismicImageThumbnailType' }, acc),
+      {},
+      thumbnailKeys,
+    ),
   })
 }

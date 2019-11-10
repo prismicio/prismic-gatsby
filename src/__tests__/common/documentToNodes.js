@@ -14,6 +14,7 @@ const createContentDigest = jest
 
 const normalizeImageFieldReturnValue = {
   value: 'result of normalizeImageField',
+  thumbnails: null,
 }
 const normalizeImageField = jest
   .fn()
@@ -136,13 +137,15 @@ describe('documentToNodes', () => {
 
     test('normalizes image field thumbnail images', async () => {
       await documentToNodes(
-        { ...baseDoc, data: { image: { ...image, Thumb: image } } },
+        { ...baseDoc, data: { image: { ...image, thumb: image } } },
         context,
       )
 
       expect(nodeStore[0].data.image).toEqual({
         ...normalizeImageFieldReturnValue,
-        Thumb: normalizeImageFieldReturnValue,
+        thumbnails: {
+          thumb: normalizeImageFieldReturnValue,
+        },
       })
     })
   })
