@@ -15,8 +15,9 @@ repositories.
   - [Query Rich Text fields](#Query-Rich-Text-fields)
   - [Query Link fields](#Query-Link-fields)
   - [Query Content Relation fields](#Query-Content-Relation-fields)
-  - [Query slices](#Query-slices)
+  - [Query Slices](#Query-slices)
   - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
+  - [Query image thumbnails](#Query-image-thumbnails)
   - [Image processing](#Image-processing)
 - [Previews](#Previews)
 - [Limitations](#Limitations)
@@ -421,15 +422,48 @@ data interface, but it is available if necessary
 }
 ```
 
+### Query image thumbnails
+
+Prismic allows setting multiple images for a single image field with optional
+constraints. This is useful when different versions of an image are required
+based on its surrouding context, such as responsive images where a different
+image may be necessary on smaller or larger screens.
+
+Image thumbnails are available on the `thumbnail` field of all image fields.
+
+See the official docs for more details on configuring thumbnails on your custom
+types: [How to set up responsive images][prismic-responsive-images].
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      nodes {
+        data {
+          imageFieldName {
+            url
+            thumbnails {
+              myThumbnailName {
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ### Image processing
 
 To use image processing you need `gatsby-transformer-sharp`,
 `gatsby-plugin-sharp`, and their dependencies `gatsby-image` and
 `gatsby-source-filesystem` in your `gatsby-config.js`.
 
-You can apply image processing to any image field on a document. Image
-processing of inline images added to Rich Text fields is currently not
-supported.
+You can apply image processing to any image field and its thumbnails on a
+document. Image processing of inline images added to Rich Text fields is
+currently not supported.
 
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the [`gatsby-transformer-sharp`
@@ -558,3 +592,5 @@ exports.createPages = async ({ graphql, actions }) => {
   https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
 [gatsby-image-fragments]:
   https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
+[prismic-responsive-images]:
+  https://user-guides.prismic.io/en/articles/762324-how-to-set-up-responsive-images
