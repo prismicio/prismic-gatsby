@@ -14,10 +14,10 @@ repositories.
 - [How to query](#How-to-query)
   - [Query Rich Text fields](#Query-Rich-Text-fields)
   - [Query Link fields](#Query-Link-fields)
+  - [Query Image fields](#Query-image-fields)
   - [Query Content Relation fields](#Query-Content-Relation-fields)
   - [Query Slices](#Query-slices)
   - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
-  - [Query image thumbnails](#Query-image-thumbnails)
   - [Image processing](#Image-processing)
 - [Previews](#Previews)
 - [Limitations](#Limitations)
@@ -289,6 +289,42 @@ using the `raw` field, though use of this field is discouraged.
 }
 ```
 
+### Query Image fields
+
+Prismic allows setting multiple images for a single image field with optional
+constraints. This is useful when different versions of an image are required
+based on its surrouding context. One such example could be a responsive image
+where a different image may be necessary on smaller or larger screens.
+
+Image thumbnails are available on the `thumbnail` field of all image fields.
+
+See the official docs for more details on configuring thumbnails on your custom
+types: [How to set up responsive images][prismic-responsive-images].
+
+See the [Image processing](#Image-processing) section to learn how to enable
+Gatsby Image support.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      nodes {
+        data {
+          imageFieldName {
+            url
+            thumbnails {
+              myThumbnailName {
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ### Query Content Relation fields
 
 Content Relation fields relate a field to another document. Since fields from
@@ -416,39 +452,6 @@ data interface, but it is available if necessary
       node {
         id
         dataString
-      }
-    }
-  }
-}
-```
-
-### Query image thumbnails
-
-Prismic allows setting multiple images for a single image field with optional
-constraints. This is useful when different versions of an image are required
-based on its surrouding context. One such example could be a responsive image
-where a different image may be necessary on smaller or larger screens.
-
-Image thumbnails are available on the `thumbnail` field of all image fields.
-
-See the official docs for more details on configuring thumbnails on your custom
-types: [How to set up responsive images][prismic-responsive-images].
-
-```graphql
-{
-  allPrismicPage {
-    edges {
-      nodes {
-        data {
-          imageFieldName {
-            url
-            thumbnails {
-              myThumbnailName {
-                url
-              }
-            }
-          }
-        }
       }
     }
   }
