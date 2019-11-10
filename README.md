@@ -310,10 +310,10 @@ Gatsby Image support.
     edges {
       nodes {
         data {
-          imageFieldName {
+          image_field {
             url
             thumbnails {
-              myThumbnailName {
+              thumbnail_name {
                 url
               }
             }
