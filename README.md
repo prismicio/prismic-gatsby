@@ -426,8 +426,8 @@ data interface, but it is available if necessary
 
 Prismic allows setting multiple images for a single image field with optional
 constraints. This is useful when different versions of an image are required
-based on its surrouding context, such as responsive images where a different
-image may be necessary on smaller or larger screens.
+based on its surrouding context. One such example could be a responsive image
+where a different image may be necessary on smaller or larger screens.
 
 Image thumbnails are available on the `thumbnail` field of all image fields.
 
