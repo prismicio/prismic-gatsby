@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.14](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.13...v3.0.0-beta.14) (2019-11-11)
+
+
+### Bug Fixes
+
+* ensure null values skipped on traversal merge ([fe10fb6](https://github.com/angeloashmore/gatsby-source-prismic/commit/fe10fb6))
+
+
+
 ## [3.0.0-beta.13](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.12...v3.0.0-beta.13) (2019-11-11)
 
 
