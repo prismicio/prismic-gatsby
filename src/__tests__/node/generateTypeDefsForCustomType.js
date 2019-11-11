@@ -3,6 +3,7 @@ import * as R from 'ramda'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
+  generateTypeDefForImageType,
 } from '../../node/generateTypeDefsForCustomType'
 
 const customTypeId = 'custom_type'
@@ -191,65 +192,7 @@ describe('generateTypeDefsForCustomType', () => {
           context,
         )
 
-        expect(typeDefs[0].config.fields.key).toMatchObject({
-          type: 'PrismicImageType',
-        })
-      })
-
-      test('PrismicImageType resolver gets base image File node by ID', () => {
-        const { typeDefs } = generateTypeDefsForCustomType(
-          customTypeId,
-          { Main: { key: { type: 'Image' } } },
-          context,
-        )
-
-        const resolver = typeDefs[0].config.fields.key.resolve
-        const getNodeById = jest.fn().mockReturnValue({ type: 'File' })
-
-        resolver(
-          { image: { localFile: 'baseId' } },
-          undefined,
-          { nodeModel: { getNodeById } },
-          { path: { key: 'image' } },
-        )
-
-        expect(getNodeById).toHaveBeenCalledWith({
-          id: 'baseId',
-          type: 'File',
-        })
-      })
-
-      test('PrismicImageType resolver gets thumbnail image File nodes by ID', () => {
-        const { typeDefs } = generateTypeDefsForCustomType(
-          customTypeId,
-          { Main: { key: { type: 'Image' } } },
-          context,
-        )
-
-        const resolver = typeDefs[0].config.fields.key.resolve
-        const getNodeById = jest.fn().mockReturnValue({ type: 'File' })
-
-        resolver(
-          {
-            image: {
-              Thumb1: { localFile: 'thumb1Id' },
-              Thumb2: { localFile: 'thumb2Id' },
-            },
-          },
-          undefined,
-          { nodeModel: { getNodeById } },
-          { path: { key: 'image' } },
-        )
-
-        expect(getNodeById).toHaveBeenCalledWith({
-          id: 'thumb1Id',
-          type: 'File',
-        })
-
-        expect(getNodeById).toHaveBeenCalledWith({
-          id: 'thumb2Id',
-          type: 'File',
-        })
+        expect(typeDefs[0].config.fields.key).toBe('PrismicImageType')
       })
     })
 
@@ -515,6 +458,12 @@ describe('generateTypeDefsForCustomType', () => {
                 },
               },
             },
+            image: {
+              type: 'Image',
+              config: {
+                thumbnails: [{ name: 'thumb', width: 100, height: 100 }],
+              },
+            },
           },
         },
         context,
@@ -546,6 +495,11 @@ describe('generateTypeDefsForCustomType', () => {
         {
           path: ['custom_type', 'data', 'body'],
           type: '[PrismicCustomTypeBodySlicesType]',
+        },
+        { path: ['custom_type', 'data', 'image'], type: 'PrismicImageType' },
+        {
+          path: ['custom_type', 'data', 'image', 'thumbnails', 'thumb'],
+          type: 'PrismicImageThumbnailType',
         },
         { path: ['custom_type', 'data'], type: 'PrismicCustomTypeDataType' },
         { path: ['custom_type'], type: 'PrismicCustomType' },
@@ -586,5 +540,31 @@ describe('generateTypeDefForLinkType', () => {
       'PrismicCustomType',
       'PrismicCustomType2',
     ])
+  })
+})
+
+describe('generateTypeDefForImageType', () => {
+  test('returns PrismicImageThumbnailsType definition including all PrismicImageType thumbnail fields', () => {
+    const { typePaths } = generateTypeDefsForCustomType(
+      customTypeId,
+      {
+        Main: {
+          image: {
+            type: 'Image',
+            config: {
+              thumbnails: [
+                { name: 'thumb1', width: 100, height: 100 },
+                { name: 'thumb2', width: 200, height: 200 },
+              ],
+            },
+          },
+        },
+      },
+      context,
+    )
+
+    const result = generateTypeDefForImageType(typePaths, context)
+
+    expect(Object.keys(result.config.fields)).toEqual(['thumb1', 'thumb2'])
   })
 })

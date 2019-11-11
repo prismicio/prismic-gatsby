@@ -56,8 +56,8 @@ type PrismicImageDimensionsType {
   height: Int!
 }
 
-"A responsive image field with constraints."
-type PrismicImageType {
+"An image thumbnail with constraints."
+type PrismicImageThumbnailType implements PrismicImageInterface {
   "The image's alternative text."
   alt: String
   "The image's copyright text."
@@ -67,7 +67,23 @@ type PrismicImageType {
   "The image's URL on Prismic's CDN."
   url: String
   "The locally downloaded image if `shouldNormalizeImage` returns true."
-  localFile: File
+  localFile: File @link
+}
+
+"An image field with optional constrained thumbnails."
+type PrismicImageType implements PrismicImageInterface {
+  "The image's alternative text."
+  alt: String
+  "The image's copyright text."
+  copyright: String
+  "The image's dimensions."
+  dimensions: PrismicImageDimensionsType
+  "The image's URL on Prismic's CDN."
+  url: String
+  "The locally downloaded image if `shouldNormalizeImage` returns true."
+  localFile: File @link
+  "The image's thumbnails."
+  thumbnails: PrismicImageThumbnailsType
 }
 
 "Types of links."
@@ -108,6 +124,14 @@ type PrismicLinkType {
   document: PrismicAllDocumentTypes
   "The field's value without transformations exactly as it comes from the Prismic API."
   raw: JSON
+}
+
+interface PrismicImageInterface {
+  alt: String
+  copyright: String
+  dimensions: PrismicImageDimensionsType
+  url: String
+  localFile: File
 }
 
 interface PrismicDocument {

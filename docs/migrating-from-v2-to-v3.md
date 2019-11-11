@@ -8,6 +8,7 @@
 - [Handling breaking changes](#handling-breaking-changes)
   - [Provide custom type schemas](#provide-custom-type-schemas)
   - [Accessing linked documents](#accessing-linked-documents)
+  - [Namespacing image thumbnails](#namespacing-image-thumbnails)
   - [Using `raw` fields](#using-raw-fields)
   - [Replace `dataString` with `dataRaw`](#replace-datastring-with-dataraw)
 - [Setting up previews](#setting-up-previews)
@@ -151,6 +152,45 @@ direct reference to the linked document.
    ```diff
    - const uid = data.prismicPage.data.linkField.document[0].uid
    + const uid = data.prismicPage.data.linkField.document.uid
+   ```
+
+### Namespacing image thumbnails
+
+In v2, Image fields contained the image thumbnail data at the same level as the
+primary image data. If you had a `mobile` thumbnail size, for example, the
+`mobile` field would be at the same level as the primary image's `url` field.
+This could potentially cause conflicts if a thumbnail name took the name of an
+existing image field.
+
+In v3, image thumbnail fields are nested under a `thumbnails` field.
+
+1. In your GraphQL queries, move image thumbnails under the `thumbnail` field.
+
+   ```diff
+     const query = graphql`
+       prismicPage {
+         data {
+           imageField {
+             url
+   -         mobile {
+   -           url
+   -         }
+   +         thumbnails {
+   +           mobile {
+   +             url
+   +           }
+   +         }
+           }
+         }
+       }
+     `
+   ```
+
+2. When accessing a thumbnail, use the `thumbnails` property.
+
+   ```diff
+   - const mobileUrl = data.prismicPage.data.imageField.mobile.url
+   + const mobileUrl = data.prismicPage.data.imageField.thumbnails.mobile.uid
    ```
 
 ### Using `raw` fields

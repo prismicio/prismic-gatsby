@@ -9,6 +9,7 @@ import { fetchAllDocuments } from './fetchAllDocuments'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
+  generateTypeDefForImageType,
 } from './generateTypeDefsForCustomType'
 import { documentToNodes } from '../common/documentToNodes'
 import {
@@ -78,9 +79,11 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   )(typeVals)
 
   const linkTypeDef = generateTypeDefForLinkType(typeDefs, { gatsbyContext })
+  const imageTypeDef = generateTypeDefForImageType(typePaths, { gatsbyContext })
 
   createTypes(standardTypes)
   createTypes(linkTypeDef)
+  createTypes(imageTypeDef)
   createTypes(typeDefs)
 
   createTypesActivity.end()
