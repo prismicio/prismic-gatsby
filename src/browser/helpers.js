@@ -214,7 +214,7 @@ const _traversalMerge = (staticData, previewData, key) => {
   const { data: previewDocData, id: previewId } = previewData[key]
 
   function handleNode(node) {
-    if (typeof node === 'object' && node.id === previewId) {
+    if (node && typeof node === 'object' && node.id === previewId) {
       this.update(mergeWith(node, { data: previewDocData }, mergeCopyArrays))
     }
   }
