@@ -1,6 +1,8 @@
 import PrismicDOM from 'prismic-dom'
 import { createRemoteFileNode } from 'gatsby-source-filesystem'
 
+import { msg } from '../common/utils'
+
 // Normalizes a PrismicStructuredTextType field by providing HTML and text
 // versions of the value using `prismic-dom` on the `html` and `text` keys,
 // respectively. The raw value is provided on the `raw` key.
@@ -60,8 +62,8 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
 // the node in the GraphQL resolver.
 export const normalizeImageField = async (id, value, _depth, context) => {
   const { doc, docNodeId, gatsbyContext, pluginOptions } = context
-  const { createNodeId, store, cache, actions } = gatsbyContext
-  const { createNode } = actions
+  const { createNodeId, store, cache, actions, reporter } = gatsbyContext
+  const { createNode, touchNode } = actions
   const { shouldNormalizeImage } = pluginOptions
 
   const shouldAttemptToCreateRemoteFileNode = await shouldNormalizeImage({
@@ -70,11 +72,18 @@ export const normalizeImageField = async (id, value, _depth, context) => {
     node: doc,
   })
 
-  let fileNode
+  if (!shouldAttemptToCreateRemoteFileNode || !value || !value.url) return value
 
-  if (shouldAttemptToCreateRemoteFileNode && value.url) {
+  let fileNodeID
+  const cachedImageDataKey = `prismic-image-${value.url}`
+  const cachedImageData = await cache.get(cachedImageDataKey)
+
+  if (cachedImageData) {
+    fileNodeID = cachedImageData.fileNodeID
+    touchNode({ nodeId: fileNodeID })
+  } else {
     try {
-      fileNode = await createRemoteFileNode({
+      const fileNode = await createRemoteFileNode({
         url: decodeURIComponent(value.url),
         parentNodeId: docNodeId,
         store,
@@ -82,15 +91,22 @@ export const normalizeImageField = async (id, value, _depth, context) => {
         createNode,
         createNodeId,
       })
+
+      if (fileNode) {
+        fileNodeID = fileNode.id
+        await cache.set(cachedImageDataKey, { fileNodeID })
+      }
     } catch (error) {
-      // Ignore
+      reporter.error(
+        msg(`failed to create image node with URL: ${value.url}`),
+        error,
+      )
     }
   }
 
-  return {
-    ...value,
-    localFile: fileNode ? fileNode.id : null,
-  }
+  if (fileNodeID) return { ...value, localFile: fileNodeID }
+
+  return value
 }
 
 // Normalizes a SlicesType field by returning the value as-is.

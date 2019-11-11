@@ -19,9 +19,7 @@ import {
   normalizeStructuredTextField,
 } from './normalizers'
 import standardTypes from '../common/standardTypes.graphql'
-import { name as pkgName } from '../../package.json'
-
-const msg = s => `${pkgName} - ${s}`
+import { msg } from '../common/utils'
 
 export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   const { actions, reporter } = gatsbyContext

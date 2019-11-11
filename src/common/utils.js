@@ -1,3 +1,9 @@
+import { name as pkgName } from '../../package.json'
+
+// Returns a namespaced string intended to log to a console.
+export const msg = s => `${pkgName} - ${s}`
+
+// See: lodash.isFunction
 export const isFunction = x => !!(x && x.constructor && x.call && x.apply)
 
 // See: lodash.pick

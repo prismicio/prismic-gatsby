@@ -13,7 +13,11 @@ const createNodeId = jest.fn().mockReturnValue(createNodeIdReturnValue)
 const context = {
   doc: { id: 'id' },
   createNodeId,
-  gatsbyContext: { actions: {} },
+  gatsbyContext: {
+    actions: { touchNode: () => {} },
+    cache: { get: jest.fn(), set: () => {} },
+    reporter: { error: (_, error) => console.error(error) },
+  },
   pluginOptions: {
     linkResolver: () => () => {},
     htmlSerializer: () => () => {},
@@ -43,9 +47,9 @@ describe('normalizeImageField', () => {
     })
   })
 
-  test('localFile field is null if file node could not be created', async () => {
-    createRemoteFileNode.mockImplementationOnce(async () => {
-      throw new Error()
+  test('localFile field uses cached node ID if available', async () => {
+    context.gatsbyContext.cache.get.mockReturnValueOnce({
+      fileNodeID: 'cachedId',
     })
 
     const result = await normalizeImageField(
@@ -55,10 +59,26 @@ describe('normalizeImageField', () => {
       context,
     )
 
-    expect(result.localFile).toBeNull()
+    expect(result.localFile).toBe('cachedId')
   })
 
-  test('localFile field is null if shouldNormalizeImage returns false', async () => {
+  test('localFile field is empty if file node could not be created', async () => {
+    createRemoteFileNode.mockImplementationOnce(async () => {
+      throw new Error()
+    })
+
+    const result = await normalizeImageField(undefined, value, undefined, {
+      ...context,
+      gatsbyContext: {
+        ...context.gatsbyContext,
+        reporter: { error: () => {} },
+      },
+    })
+
+    expect(result.localFile).toBeUndefined()
+  })
+
+  test('localFile field is empty if shouldNormalizeImage returns false', async () => {
     const result = await normalizeImageField(undefined, value, undefined, {
       ...context,
       pluginOptions: {
@@ -67,7 +87,7 @@ describe('normalizeImageField', () => {
       },
     })
 
-    expect(result.localFile).toBeNull()
+    expect(result.localFile).toBeUndefined()
   })
 
   test('provides key, value, node values to linkResolver', async () => {
