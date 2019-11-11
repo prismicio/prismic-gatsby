@@ -48,10 +48,10 @@ const normalizeField = async (id, value, depth, context) => {
         omit(IMAGE_FIELD_KEYS),
       )(value)
 
-      return {
-        ...base,
-        thumbnails: Object.keys(thumbs).length > 0 ? thumbs : null,
-      }
+      const val = base
+      if (Object.keys(thumbs).length > 0) val.thumbnails = thumbs
+
+      return val
 
     case 'PrismicStructuredTextType':
       return await normalizeStructuredTextField(id, value, depth, context)

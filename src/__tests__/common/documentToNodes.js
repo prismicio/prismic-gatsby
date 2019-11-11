@@ -14,7 +14,6 @@ const createContentDigest = jest
 
 const normalizeImageFieldReturnValue = {
   value: 'result of normalizeImageField',
-  thumbnails: null,
 }
 const normalizeImageField = jest
   .fn()
