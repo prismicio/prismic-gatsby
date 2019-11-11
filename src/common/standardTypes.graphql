@@ -141,6 +141,6 @@ interface PrismicDocument {
   id: ID!
   lang: String
   last_publication_date: Date
-  # tags: [String]
+  tags: [String]
   type: String
 }
