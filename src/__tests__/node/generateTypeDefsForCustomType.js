@@ -110,7 +110,7 @@ describe('generateTypeDefsForCustomType', () => {
 
       expect(typeDefs[0].config.fields.key.type).toBe('Date')
       expect(typeDefs[0].config.fields.key.extensions).toEqual({
-        formatdate: {},
+        dateformat: {},
       })
     })
 
@@ -123,7 +123,7 @@ describe('generateTypeDefsForCustomType', () => {
 
       expect(typeDefs[0].config.fields.key.type).toBe('Date')
       expect(typeDefs[0].config.fields.key.extensions).toEqual({
-        formatdate: {},
+        dateformat: {},
       })
     })
 
@@ -572,5 +572,23 @@ describe('generateTypeDefForImageType', () => {
     const result = generateTypeDefForImageType(typePaths, context)
 
     expect(Object.keys(result.config.fields)).toEqual(['thumb1', 'thumb2'])
+  })
+
+  test('returns scalar type that always returns null if no thumbnails are defined', () => {
+    const { typePaths } = generateTypeDefsForCustomType(
+      customTypeId,
+      {
+        Main: {
+          image: {
+            type: 'Image',
+          },
+        },
+      },
+      context,
+    )
+
+    const result = generateTypeDefForImageType(typePaths, context)
+
+    expect(result.serialize()).toBeNull()
   })
 })

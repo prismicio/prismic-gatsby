@@ -1,5 +1,6 @@
 import * as R from 'ramda'
 import pascalcase from 'pascalcase'
+import { GraphQLScalarType } from 'gatsby/graphql'
 
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
@@ -39,7 +40,7 @@ const fieldToType = (id, value, depth, context) => {
     case 'Date':
     case 'Timestamp':
       enqueueTypePath([...depth, id], 'Date')
-      return { type: 'Date', extensions: { formatdate: {} } }
+      return { type: 'Date', extensions: { dateformat: {} } }
 
     case 'GeoPoint':
       enqueueTypePath([...depth, id], 'PrismicGeoPointType')
@@ -361,6 +362,12 @@ export const generateTypeDefForImageType = (typePaths, context) => {
     ),
     R.filter(R.propEq('type', 'PrismicImageThumbnailType')),
   )(typePaths)
+
+  if (thumbnailKeys.length < 1)
+    return new GraphQLScalarType({
+      name: 'PrismicImageThumbnailsType',
+      serialize: () => null,
+    })
 
   return gatsbySchema.buildObjectType({
     name: 'PrismicImageThumbnailsType',
