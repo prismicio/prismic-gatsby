@@ -8,6 +8,7 @@
 - [Handling breaking changes](#handling-breaking-changes)
   - [Provide custom type schemas](#provide-custom-type-schemas)
   - [Accessing linked documents](#accessing-linked-documents)
+  - [Namespacing image thumbnails](#namespacing-image-thumbnails)
   - [Using `raw` fields](#using-raw-fields)
   - [Replace `dataString` with `dataRaw`](#replace-datastring-with-dataraw)
 - [Setting up previews](#setting-up-previews)
@@ -157,9 +158,9 @@ direct reference to the linked document.
 
 In v2, Image fields contained the image thumbnail data at the same level as the
 primary image data. If you had a `mobile` thumbnail size, for example, the
-`mobile` field would be at the same level as the `url` field of the primary
-image. This could potentially cause conflicts if a thumbnail name took the name
-of an existing image field.
+`mobile` field would be at the same level as the primary image's `url` field.
+This could potentially cause conflicts if a thumbnail name took the name of an
+existing image field.
 
 In v3, image thumbnail fields are nested under a `thumbnails` field.
 
@@ -185,7 +186,7 @@ In v3, image thumbnail fields are nested under a `thumbnails` field.
      `
    ```
 
-2. When accessing a thumbnail, access it with the `thumbnails` property.
+2. When accessing a thumbnail, use the `thumbnails` property.
 
    ```diff
    - const mobileUrl = data.prismicPage.data.imageField.mobile.url
