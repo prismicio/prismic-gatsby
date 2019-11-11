@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.13](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.12...v3.0.0-beta.13) (2019-11-11)
+
+
+### Bug Fixes
+
+* add tags to PrismicDocument interface ([a5a5eae](https://github.com/angeloashmore/gatsby-source-prismic/commit/a5a5eae))
+* handle schemas with no thumbnails properly ([f010fe9](https://github.com/angeloashmore/gatsby-source-prismic/commit/f010fe9))
+* use cached images if available ([7787a45](https://github.com/angeloashmore/gatsby-source-prismic/commit/7787a45))
+
+
+### Features
+
+* don't infer fields ([dd66296](https://github.com/angeloashmore/gatsby-source-prismic/commit/dd66296))
+
+
+
 ## [3.0.0-beta.12](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.10...v3.0.0-beta.12) (2019-11-11)
 
 
