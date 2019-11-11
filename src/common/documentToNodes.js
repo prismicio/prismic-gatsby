@@ -1,4 +1,3 @@
-import PrismicDOM from 'prismic-dom'
 import pascalcase from 'pascalcase'
 import compose from 'compose-tiny'
 

@@ -101,24 +101,30 @@ describe('generateTypeDefsForCustomType', () => {
       expect(typeDefs[0].config.fields.key).toEqual('Float')
     })
 
-    test('Date type returns Date', () => {
+    test('Date type returns Date with formatdate extension', () => {
       const { typeDefs } = generateTypeDefsForCustomType(
         customTypeId,
         { Main: { key: { type: 'Date' } } },
         context,
       )
 
-      expect(typeDefs[0].config.fields.key).toEqual('Date')
+      expect(typeDefs[0].config.fields.key.type).toBe('Date')
+      expect(typeDefs[0].config.fields.key.extensions).toEqual({
+        formatdate: {},
+      })
     })
 
-    test('Timestamp type returns Date', () => {
+    test('Timestamp type returns Date with formatdate extension', () => {
       const { typeDefs } = generateTypeDefsForCustomType(
         customTypeId,
         { Main: { key: { type: 'Timestamp' } } },
         context,
       )
 
-      expect(typeDefs[0].config.fields.key).toEqual('Date')
+      expect(typeDefs[0].config.fields.key.type).toBe('Date')
+      expect(typeDefs[0].config.fields.key.extensions).toEqual({
+        formatdate: {},
+      })
     })
 
     test('GeoPoint type returns PrismicGeoPointType', () => {

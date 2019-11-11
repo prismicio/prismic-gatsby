@@ -1,8 +1,6 @@
 import * as R from 'ramda'
 import pascalcase from 'pascalcase'
 
-const IMAGE_FIELD_KEYS = ['dimensions', 'alt', 'copyright', 'url', 'localFile']
-
 // Returns a GraphQL type name given a field based on its type. If the type is
 // is an object or union, the necessary type definition is enqueued on to the
 // provided queue to be created at a later time.
@@ -41,7 +39,7 @@ const fieldToType = (id, value, depth, context) => {
     case 'Date':
     case 'Timestamp':
       enqueueTypePath([...depth, id], 'Date')
-      return 'Date'
+      return { type: 'Date', extensions: { formatdate: {} } }
 
     case 'GeoPoint':
       enqueueTypePath([...depth, id], 'PrismicGeoPointType')
@@ -96,6 +94,7 @@ const fieldToType = (id, value, depth, context) => {
               fieldToType(subfieldId, subfield, [...depth, id], context),
             subfields,
           ),
+          extensions: { infer: false },
         }),
       )
 
@@ -130,6 +129,7 @@ const fieldToType = (id, value, depth, context) => {
                 ),
               primaryFields,
             ),
+            extensions: { infer: false },
           }),
         )
 
@@ -156,6 +156,7 @@ const fieldToType = (id, value, depth, context) => {
                 ),
               itemsFields,
             ),
+            extensions: { infer: false },
           }),
         )
 
@@ -173,6 +174,7 @@ const fieldToType = (id, value, depth, context) => {
           name: sliceName,
           fields: sliceFields,
           interfaces: ['Node'],
+          extensions: { infer: false },
         }),
       )
 
@@ -262,6 +264,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
     gatsbySchema.buildObjectType({
       name: dataName,
       fields: dataFieldTypes,
+      extensions: { infer: false },
     }),
   )
 
@@ -282,6 +285,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
     first_publication_date: {
       type: 'Date!',
       description: "The document's initial publication date.",
+      extensions: { dateformat: {} },
     },
     href: {
       type: 'String!',
@@ -300,6 +304,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
     last_publication_date: {
       type: 'Date!',
       description: "The document's most recent publication date",
+      extensions: { dateformat: {} },
     },
     tags: { type: '[String!]!', description: "The document's list of tags." },
     type: {
@@ -316,6 +321,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
       name: customTypeName,
       fields: customTypeFields,
       interfaces: ['PrismicDocument', 'Node'],
+      extensions: { infer: false },
     }),
   )
 
@@ -363,5 +369,6 @@ export const generateTypeDefForImageType = (typePaths, context) => {
       {},
       thumbnailKeys,
     ),
+    extensions: { infer: false },
   })
 }
