@@ -99,7 +99,7 @@ export const normalizeImageField = async (id, value, _depth, context) => {
     } catch (error) {
       reporter.error(
         msg(`failed to create image node with URL: ${value.url}`),
-        error,
+        new Error(error),
       )
     }
   }
