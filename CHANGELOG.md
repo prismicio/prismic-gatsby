@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-imgix.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.14...v3.0.0-imgix.0) (2019-11-24)
+
+
+### Bug Fixes
+
+* ensure error message is an error object ([5a76af4](https://github.com/angeloashmore/gatsby-source-prismic/commit/5a76af4))
+
+
+### Features
+
+* add initial imgix integration ([a15b14f](https://github.com/angeloashmore/gatsby-source-prismic/commit/a15b14f))
+
+
+
 ## [3.0.0-beta.14](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.13...v3.0.0-beta.14) (2019-11-11)
 
 
