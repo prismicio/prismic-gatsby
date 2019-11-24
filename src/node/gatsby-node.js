@@ -9,7 +9,7 @@ import { fetchAllDocuments } from './fetchAllDocuments'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
-  generateTypeDefForImageType,
+  generateTypeDefsForImageType,
 } from './generateTypeDefsForCustomType'
 import { documentToNodes } from '../common/documentToNodes'
 import {
@@ -19,6 +19,7 @@ import {
   normalizeStructuredTextField,
 } from './normalizers'
 import standardTypes from '../common/standardTypes.graphql'
+import { getFixedGatsbyImage, getFluidGatsbyImage } from '../getGatsbyImage'
 import { msg } from '../common/utils'
 
 export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
@@ -77,11 +78,13 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   )(typeVals)
 
   const linkTypeDef = generateTypeDefForLinkType(typeDefs, { gatsbyContext })
-  const imageTypeDef = generateTypeDefForImageType(typePaths, { gatsbyContext })
+  const imageTypeDefs = generateTypeDefsForImageType(typePaths, {
+    gatsbyContext,
+  })
 
   createTypes(standardTypes)
   createTypes(linkTypeDef)
-  createTypes(imageTypeDef)
+  createTypes(imageTypeDefs)
   createTypes(typeDefs)
 
   createTypesActivity.end()
@@ -153,4 +156,35 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   fs.writeFileSync(typePathsFilename, JSON.stringify(typePaths))
 
   writeTypePathsActivity.end()
+}
+
+exports.createResolvers = ({ createResolvers }) => {
+  const resolvers = {
+    PrismicImageType: {
+      fixed: {
+        resolve: (source, args) =>
+          source.url
+            ? getFixedGatsbyImage(
+                source.url,
+                source.dimensions.width,
+                source.dimensions.height,
+                args,
+              )
+            : undefined,
+      },
+      fluid: {
+        resolve: (source, args) =>
+          source.url
+            ? getFluidGatsbyImage(
+                source.url,
+                source.dimensions.width,
+                source.dimensions.height,
+                args,
+              )
+            : undefined,
+      },
+    },
+  }
+
+  createResolvers(resolvers)
 }

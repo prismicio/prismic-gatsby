@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getFixedGatsbyImage jpg with width (600) 1`] = `
+Object {
+  "aspectRatio": 1.996007984031936,
+  "base64": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=100&fit=max&q=20&blur=15&auto=compress%2Cformat",
+  "height": 301,
+  "src": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+  "srcSet": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&dpr=1&q=50&auto=compress%2Cformat 1x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&dpr=1.5&q=50&auto=compress%2Cformat 1.5x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&dpr=2&q=50&auto=compress%2Cformat 2x",
+  "srcSetWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&dpr=1&q=50&auto=compress%2Cformat 1x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&dpr=1.5&q=50&auto=compress%2Cformat 1.5x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&dpr=2&q=50&auto=compress%2Cformat 2x",
+  "srcWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=600&h=301&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+  "width": 600,
+}
+`;
+
+exports[`getFixedGatsbyImage jpg without params 1`] = `
+Object {
+  "aspectRatio": 1.996007984031936,
+  "base64": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=100&fit=max&q=20&blur=15&auto=compress%2Cformat",
+  "height": 1002,
+  "src": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+  "srcSet": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&dpr=1&q=50&auto=compress%2Cformat 1x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&dpr=1.5&q=50&auto=compress%2Cformat 1.5x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&dpr=2&q=50&auto=compress%2Cformat 2x",
+  "srcSetWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&dpr=1&q=50&auto=compress%2Cformat 1x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&dpr=1.5&q=50&auto=compress%2Cformat 1.5x, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&dpr=2&q=50&auto=compress%2Cformat 2x",
+  "srcWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+  "width": 2000,
+}
+`;
+
+exports[`getFluidGatsbyImage jpg with max width (1000) 1`] = `
+Object {
+  "aspectRatio": 1.996007984031936,
+  "base64": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=100&fit=max&q=20&blur=15&auto=compress%2Cformat",
+  "src": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&h=501&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+  "srcSet": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=250&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 250w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=500&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 500w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1500&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1500w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 2000w",
+  "srcSetWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=250&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 250w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=500&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 500w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1500&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1500w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 2000w",
+  "srcWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&h=501&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+}
+`;
+
+exports[`getFluidGatsbyImage jpg with max width (1000) and srcSetBreakpoints 1`] = `
+Object {
+  "aspectRatio": 1.996007984031936,
+  "base64": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=100&fit=max&q=20&blur=15&auto=compress%2Cformat",
+  "src": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&h=501&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+  "srcSet": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=400&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 400w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1000w",
+  "srcSetWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=400&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 400w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1000w",
+  "srcWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&h=501&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+}
+`;
+
+exports[`getFluidGatsbyImage jpg without params 1`] = `
+Object {
+  "aspectRatio": 1.996007984031936,
+  "base64": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=100&fit=max&q=20&blur=15&auto=compress%2Cformat",
+  "src": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+  "srcSet": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=500&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 500w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 2000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=3000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 3000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=4000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 4000w",
+  "srcSetWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=500&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 500w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=1000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 1000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 2000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=3000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 3000w, https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=4000&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat 4000w",
+  "srcWebp": "https://images.prismic.io/pvadev/7802e8de-6b1a-4e65-b6bc-69cde942f727_LG_6250R_crop.JPG?w=2000&h=1002&rect=0,0,3599,1803&fit=max&q=50&auto=compress%2Cformat",
+}
+`;

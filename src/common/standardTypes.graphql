@@ -56,6 +56,29 @@ type PrismicImageDimensionsType {
   height: Int!
 }
 
+"`gatsby-image`-compatible image data for `fixed` images."
+type PrismicImageFixedType {
+  base64: String
+  aspectRatio: Float
+  width: Float
+  height: Float
+  src: String
+  srcSet: String
+  srcWebp: String
+  srcSetWebp: String
+}
+
+"`gatsby-image`-compatible image data for `fluid` images."
+type PrismicImageFluidType {
+  base64: String
+  aspectRatio: Float
+  src: String
+  srcSet: String
+  srcWebp: String
+  srcSetWebp: String
+  sizes: String
+}
+
 "An image thumbnail with constraints."
 type PrismicImageThumbnailType implements PrismicImageInterface {
   "The image's alternative text."
@@ -68,6 +91,14 @@ type PrismicImageThumbnailType implements PrismicImageInterface {
   url: String
   "The locally downloaded image if `shouldNormalizeImage` returns true."
   localFile: File @link
+  "`gatsby-image`-compatible image data for `fixed` images."
+  fixed(width: Int, height: Int): PrismicImageFixedType
+  "`gatsby-image`-compatible image data for `fluid` images."
+  fluid(
+    maxWidth: Int
+    maxHeight: Int
+    srcSetBreakpoints: [Int!]
+  ): PrismicImageFluidType
 }
 
 "An image field with optional constrained thumbnails."
@@ -82,6 +113,14 @@ type PrismicImageType implements PrismicImageInterface {
   url: String
   "The locally downloaded image if `shouldNormalizeImage` returns true."
   localFile: File @link
+  "`gatsby-image`-compatible image data for `fixed` images."
+  fixed(width: Int, height: Int): PrismicImageFixedType
+  "`gatsby-image`-compatible image data for `fluid` images."
+  fluid(
+    maxWidth: Int
+    maxHeight: Int
+    srcSetBreakpoints: [Int!]
+  ): PrismicImageFluidType
   "The image's thumbnails."
   thumbnails: PrismicImageThumbnailsType
 }
@@ -132,6 +171,8 @@ interface PrismicImageInterface {
   dimensions: PrismicImageDimensionsType
   url: String
   localFile: File
+  fixed: PrismicImageFixedType
+  fluid: PrismicImageFluidType
 }
 
 interface PrismicDocument {
