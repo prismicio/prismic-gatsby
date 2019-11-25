@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-imgix.4](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-imgix.3...v3.0.0-imgix.4) (2019-11-25)
+
+
+### Bug Fixes
+
+* properly copy fragments to .cache ([01b2dde](https://github.com/angeloashmore/gatsby-source-prismic/commit/01b2dde))
+
+
+
 ## [3.0.0-imgix.3](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-imgix.2...v3.0.0-imgix.3) (2019-11-25)
 
 
