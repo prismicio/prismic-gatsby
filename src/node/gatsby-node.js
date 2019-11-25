@@ -1,4 +1,5 @@
 import fs from 'fs'
+import fsExtra from 'fs-extra'
 import path from 'path'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -193,8 +194,8 @@ exports.onPreExtractQueries = async ({ store }) => {
   const program = store.getState().program
 
   // Add fragments for GatsbyPrismicImage to .cache/fragments.
-  await fs.copy(
-    require.resolve(__dirname, '../src/fragments.js'),
+  await fsExtra.copy(
+    path.join(__dirname, '../src/fragments.js'),
     `${program.directory}/.cache/fragments/gatsby-source-prismic-fragments.js`,
   )
 }
