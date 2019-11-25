@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-imgix.3](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-imgix.2...v3.0.0-imgix.3) (2019-11-25)
+
+
+### Bug Fixes
+
+* include src in npm package ([1b79d9a](https://github.com/angeloashmore/gatsby-source-prismic/commit/1b79d9a))
+
+
+
 ## [3.0.0-imgix.2](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-imgix.1...v3.0.0-imgix.2) (2019-11-25)
 
 
