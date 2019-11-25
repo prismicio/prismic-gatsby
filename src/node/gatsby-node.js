@@ -194,7 +194,7 @@ exports.onPreExtractQueries = async ({ store }) => {
 
   // Add fragments for GatsbyPrismicImage to .cache/fragments.
   await fs.copy(
-    require.resolve(__dirname, '../src/fragments.js'),
+    require.resolve('gatsby-source-prismic/src/fragments.js'),
     `${program.directory}/.cache/fragments/gatsby-source-prismic-fragments.js`,
   )
 }
