@@ -1,3 +1,23 @@
+// Default width for `fixed` images.
+const DEFAULT_FIXED_WIDTH = 400
+
+// Default resolutions for `fixed` images. Same as `gatsby-plugin-sharp`.
+const DEFAULT_FIXED_RESOLUTIONS = [1, 1.5, 2]
+
+// Default maxWidth for `fluid` images
+const DEFAULT_FLUID_MAX_WIDTH = 800
+
+// Default breakpoint factors for `fluid` images. Same as
+// `gatsby-plugin-sharp`.
+const DEFAULT_FLUID_BREAKPOINT_FACTORS = [0.25, 0.5, 1.5, 2]
+
+// Default quality for images. 50 is fairly aggressive.
+const DEFAULT_QUALITY = 50
+
+// Default image sizing strategy. `max` ensures the resulting image is never
+// larger than the source file.
+const DEFAULT_FIT = 'max'
+
 const buildURL = (
   baseURL,
   {
@@ -6,10 +26,10 @@ const buildURL = (
     aspectRatio,
     rect,
     dpr,
-    quality = 50,
+    quality = DEFAULT_QUALITY,
     compress = true,
     format = true,
-    fit = 'max',
+    fit = DEFAULT_FIT,
     blur,
   } = {},
 ) => {
@@ -40,10 +60,14 @@ const buildURL = (
   return [baseURL, searchParams].join('?')
 }
 
-const buildBase64URL = baseURL =>
-  buildURL(baseURL, { width: 100, blur: 15, quality: 20 })
+const buildBase64URL = (baseURL, params) =>
+  buildURL(baseURL, { width: 100, blur: 15, quality: 20, ...params })
 
-const buildFixedSrcSet = (baseURL, params, resolutions = [1, 1.5, 2]) =>
+const buildFixedSrcSet = (
+  baseURL,
+  params,
+  resolutions = DEFAULT_FIXED_RESOLUTIONS,
+) =>
   resolutions
     .map(resolution => {
       const url = buildURL(baseURL, { ...params, dpr: resolution })
@@ -54,7 +78,8 @@ const buildFixedSrcSet = (baseURL, params, resolutions = [1, 1.5, 2]) =>
 const buildFluidSrcSet = (baseURL, params, breakpoints) => {
   const { width } = params
 
-  if (!breakpoints) breakpoints = [width / 4, width / 2, width * 1.5, width * 2]
+  if (!breakpoints)
+    breakpoints = DEFAULT_FLUID_BREAKPOINT_FACTORS.map(x => width * x)
 
   // Sort, remove duplicates, and ensure maxWidth is added.
   const uniqSortedBreakpoints = [
@@ -71,12 +96,6 @@ const buildFluidSrcSet = (baseURL, params, breakpoints) => {
       return `${url} ${breakpoint}w`
     })
     .join(', ')
-}
-
-const _getAspectRatioFromRect = rectString => {
-  const [x1, y1, x2, y2] = rectString.split(',')
-
-  return (x2 - x1) / (y2 - y1)
 }
 
 const stripSearchParams = url => url.replace(/\?.*$/, '')
@@ -99,11 +118,11 @@ export const getFixedGatsbyImage = (
 
   const rect = params.get('rect')
   const aspectRatio = sourceWidth / sourceHeight
-  const width = args.width ?? sourceWidth
+  const width = args.width ?? DEFAULT_FIXED_WIDTH
   const height = args.height ?? Math.round(width / aspectRatio)
   const quality = args.quality
 
-  const base64 = buildBase64URL(baseURL)
+  const base64 = buildBase64URL(baseURL, { rect })
   const src = buildURL(baseURL, { width, height, rect, quality })
   const srcSet = buildFixedSrcSet(baseURL, { width, height, rect, quality })
 
@@ -127,14 +146,14 @@ export const getFluidGatsbyImage = (
 ) => {
   const { baseURL, params } = extractImageURLData(url)
 
+  const rect = params.get('rect')
   const aspectRatio = sourceWidth / sourceHeight
-  const width = args.maxWidth ?? sourceWidth
+  const width = args.maxWidth ?? DEFAULT_FLUID_MAX_WIDTH
   const height = args.maxHeight ?? Math.round(width / aspectRatio)
   const quality = args.quality
   const srcSetBreakpoints = args.srcSetBreakpoints
-  const rect = params.get('rect')
 
-  const base64 = buildBase64URL(baseURL)
+  const base64 = buildBase64URL(baseURL, { rect })
   const src = buildURL(baseURL, { width, height, rect, quality })
   const srcSet = buildFluidSrcSet(
     baseURL,
