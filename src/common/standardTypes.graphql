@@ -58,29 +58,19 @@ type PrismicImageDimensionsType {
 
 "An image thumbnail with constraints."
 type PrismicImageThumbnailType implements PrismicImageInterface {
-  "The image's alternative text."
   alt: String
-  "The image's copyright text."
   copyright: String
-  "The image's dimensions."
   dimensions: PrismicImageDimensionsType
-  "The image's URL on Prismic's CDN."
   url: String
-  "The locally downloaded image if `shouldNormalizeImage` returns true."
   localFile: File @link
 }
 
 "An image field with optional constrained thumbnails."
 type PrismicImageType implements PrismicImageInterface {
-  "The image's alternative text."
   alt: String
-  "The image's copyright text."
   copyright: String
-  "The image's dimensions."
   dimensions: PrismicImageDimensionsType
-  "The image's URL on Prismic's CDN."
   url: String
-  "The locally downloaded image if `shouldNormalizeImage` returns true."
   localFile: File @link
   "The image's thumbnails."
   thumbnails: PrismicImageThumbnailsType
@@ -127,20 +117,57 @@ type PrismicLinkType {
 }
 
 interface PrismicImageInterface {
+  "The image's alternative text."
   alt: String
+  "The image's copyright text."
   copyright: String
+  "The image's dimensions."
   dimensions: PrismicImageDimensionsType
+  "The image's URL on Prismic's CDN."
   url: String
+  "The locally downloaded image if `shouldNormalizeImage` returns true."
   localFile: File
 }
 
 interface PrismicDocument {
-  dataString: String
-  first_publication_date: Date
+  "The document's data object without transformations exactly as it comes from the Prismic API."
+  dataRaw: JSON!
+  "The document's data object without transformations. The object is stringified via `JSON.stringify` to eliminate the need to declare subfields."
+  dataString: String @deprecated(reason: "Use `dataRaw` instead which returns JSON.")
+  "The document's initial publication date."
+  first_publication_date(
+    "Format the date using Moment.js' date tokens, e.g. `date(formatString: \"YYYY MMMM DD\")`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens."
+    formatString: String,
+    "Returns a string generated with Moment.js' `fromNow` function"
+    fromNow: Boolean,
+    "Returns the difference between this date and the current time. Defaults to \"milliseconds\" but you can also pass in as the measurement \"years\", \"months\", \"weeks\", \"days\", \"hours\", \"minutes\", and \"seconds\"."
+    difference: String,
+    "Configures the locale Moment.js will use to format the date."
+    locale: String
+  ): Date
+  "The document's Prismic API URL."
   href: String
+  "The document's URL derived via the link resolver."
+  url: String
+  "Globally unique identifier. Note that this differs from the `prismicID` field."
   id: ID!
-  lang: String
-  last_publication_date: Date
-  tags: [String]
-  type: String
+  "The document's language."
+  lang: String!
+  "The document's most recent publication date"
+  last_publication_date(
+    "Format the date using Moment.js' date tokens, e.g. `date(formatString: \"YYYY MMMM DD\")`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens."
+    formatString: String,
+    "Returns a string generated with Moment.js' `fromNow` function"
+    fromNow: Boolean,
+    "Returns the difference between this date and the current time. Defaults to \"milliseconds\" but you can also pass in as the measurement \"years\", \"months\", \"weeks\", \"days\", \"hours\", \"minutes\", and \"seconds\"."
+    difference: String,
+    "Configures the locale Moment.js will use to format the date."
+    locale: String
+  ): Date
+  "The document's list of tags."
+  tags: [String!]!
+  "The document's Prismic API ID type."
+  type: String!
+  "The document's Prismic ID."
+  prismicId: ID!
 }
