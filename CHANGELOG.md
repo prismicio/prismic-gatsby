@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.15](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.14...v3.0.0-beta.15) (2019-11-26)
+
+
+### Bug Fixes
+
+* ensure error message is an error object ([5a76af4](https://github.com/angeloashmore/gatsby-source-prismic/commit/5a76af445145e48540ed66e1013b4a935f6a87de))
+* replace broken link check with isBroken property ([4f6a3a8](https://github.com/angeloashmore/gatsby-source-prismic/commit/4f6a3a83a38896d68c8fd0e449b1296a708443ff))
+* update all dependencies ([3914bba](https://github.com/angeloashmore/gatsby-source-prismic/commit/3914bba080895817dc1ca305ebafff18b62deeff))
+* **preview:** check for broken_type before trying to get linked document ([f557025](https://github.com/angeloashmore/gatsby-source-prismic/commit/f557025cf8e263cec75c53fa6e3af5e714ca1ef7))
+
 ## [3.0.0-beta.14](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.13...v3.0.0-beta.14) (2019-11-11)
 
 
