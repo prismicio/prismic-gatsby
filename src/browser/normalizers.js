@@ -57,13 +57,14 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
   const linkedDocId = createNodeId(`${value.type} ${value.id}`)
 
   // Fetches, normalizes, and caches linked document if not present in cache.
-  if (value.link_type === 'Document' && value.id)
+  if (value.link_type === 'Document' && value.id && !value.isBroken)
     await fetchAndCreateDocumentNodes(value, context)
 
   const proxyHandler = {
     get: (obj, prop) => {
       if (prop === 'document') {
-        if (value.link_type === 'Document') return getNodeById(linkedDocId)
+        if (value.link_type === 'Document' && !value.isBroken)
+          return getNodeById(linkedDocId)
 
         return null
       }
@@ -71,7 +72,6 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
       return obj[prop]
     },
   }
-
   return new Proxy(
     {
       ...value,

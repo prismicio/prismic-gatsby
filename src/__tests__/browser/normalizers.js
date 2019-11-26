@@ -133,6 +133,18 @@ describe('normalizeLinkField', () => {
     expect(result.document).toBeNull()
   })
 
+  test('document field is null if broken document link', async () => {
+    const value = { isBroken: true }
+    const result = await normalizeLinkField(
+      undefined,
+      value,
+      undefined,
+      context,
+    )
+
+    expect(result.document).toBeNull()
+  })
+
   test('provides key, value, node values to linkResolver', async () => {
     const key = 'key'
     const value = { link_type: 'Document', id: 'id' }
