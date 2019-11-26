@@ -6,7 +6,7 @@
   "module": "index.esm.js",
   "sideEffects": false,
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "build": "cross-env NODE_ENV=production rollup -c",
     "build:watch": "npm run build -- --watch",
     "format": "prettier --write 'src/**/*.js' 'rollup.config.js' 'docs/**/*.md'",
     "prebuild": "rimraf dist",
@@ -56,6 +56,7 @@
     "babel-eslint": "^10.0.2",
     "babel-jest": "^24.8.0",
     "babel-plugin-ramda": "^2.0.0",
+    "cross-env": "^6.0.3",
     "eslint": "^6.1.0",
     "eslint-plugin-jest": "^22.15.2",
     "eslint-plugin-react": "^7.14.3",
