@@ -136,11 +136,29 @@ interface PrismicImageInterface {
 
 interface PrismicDocument {
   dataString: String
-  first_publication_date: Date
+  first_publication_date(
+    "Format the date using Moment.js' date tokens, e.g. `date(formatString: \"YYYY MMMM DD\")`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens."
+    formatString: String,
+    "Returns a string generated with Moment.js' `fromNow` function"
+    fromNow: Boolean,
+    "Returns the difference between this date and the current time. Defaults to \"milliseconds\" but you can also pass in as the measurement \"years\", \"months\", \"weeks\", \"days\", \"hours\", \"minutes\", and \"seconds\"."
+    difference: String,
+    "Configures the locale Moment.js will use to format the date."
+    locale: String
+  ): Date
   href: String
   id: ID!
   lang: String
-  last_publication_date: Date
+  last_publication_date(
+    "Format the date using Moment.js' date tokens, e.g. `date(formatString: \"YYYY MMMM DD\")`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens."
+    formatString: String,
+    "Returns a string generated with Moment.js' `fromNow` function"
+    fromNow: Boolean,
+    "Returns the difference between this date and the current time. Defaults to \"milliseconds\" but you can also pass in as the measurement \"years\", \"months\", \"weeks\", \"days\", \"hours\", \"minutes\", and \"seconds\"."
+    difference: String,
+    "Configures the locale Moment.js will use to format the date."
+    locale: String
+  ): Date
   tags: [String]
   type: String
 }
