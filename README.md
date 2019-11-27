@@ -460,13 +460,85 @@ data interface, but it is available if necessary
 
 ### Image processing
 
-To use image processing you need `gatsby-transformer-sharp`,
+You can process images using one of the following methods:
+
+- **Recommended: On-the-fly transformed using Imgix**: Images are **not**
+  downloaded to your computer or server and instead are transformed using
+  Prismic's Imgix integration to resize images on-the-fly.
+- **Locally transformed at build-time**: Images are downloaded to your computer
+  or server which resizes images at build-time.
+
+#### Using Imgix transformed images
+
+You can apply image processing to any image field and its thumbnails on a
+document. Image processing of inline images added to Rich Text fields is
+currently not supported.
+
+Note that images are not resized or downloaded a build-time. Instead, images are
+manipulated on Imgix's servers at request time.
+
+To access image processing in your queries, you need to use this pattern, where
+`...ImageFragment` is one of the following fragments:
+
+- `GatsbyPrismicImageFixed`: Images with an exact width and/or height and a
+  low-quality image placeholder.
+- `GatsbyPrismicImageFixed_noBase64`: Same as above with no image placeholder.
+- `GatsbyPrismicImageFluid`: Images with a fluid max width and/or height and a
+  low-quality image placeholder.
+- `GatsbyPrismicImageFluid_noBase64`: Same as above with no image placeholder.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            fluid {
+              ...ImageFragment
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Full example:
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            fluid(maxWidth: 1000, maxHeight: 800) {
+              ...GatsbyPrismicImageFluid
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Using locally transformed images
+
+To use local image processing, you need `gatsby-transformer-sharp`,
 `gatsby-plugin-sharp`, and their dependencies `gatsby-image` and
 `gatsby-source-filesystem` in your `gatsby-config.js`.
 
 You can apply image processing to any image field and its thumbnails on a
 document. Image processing of inline images added to Rich Text fields is
 currently not supported.
+
+Note that this will incur additional build time as image processing is
+time-consuming.
 
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the [`gatsby-transformer-sharp`
@@ -505,8 +577,8 @@ Full example:
           imageFieldName {
             localFile {
               childImageSharp {
-                resolutions(width: 500, height: 300) {
-                  ...GatsbyImageSharpResolutions_withWebp
+                fixed(width: 500, height: 300) {
+                  ...GatsbyImageSharpFixed_withWebp
                 }
               }
             }
@@ -518,7 +590,7 @@ Full example:
 }
 ```
 
-To learn more about image processing, check the documentation of
+To learn more about local image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
 
 ## Previews
