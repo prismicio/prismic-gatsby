@@ -20,7 +20,10 @@ import {
   normalizeStructuredTextField,
 } from './normalizers'
 import standardTypes from '../common/standardTypes.graphql'
-import { getFixedGatsbyImage, getFluidGatsbyImage } from '../getGatsbyImage'
+import {
+  getFixedGatsbyImage,
+  getFluidGatsbyImage,
+} from '../common/getGatsbyImage'
 import { msg } from '../common/utils'
 
 export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
@@ -68,15 +71,9 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
     ),
   )(pluginOptions.schemas)
 
-  const typeDefs = R.compose(
-    R.flatten,
-    R.map(R.prop('typeDefs')),
-  )(typeVals)
+  const typeDefs = R.compose(R.flatten, R.map(R.prop('typeDefs')))(typeVals)
 
-  const typePaths = R.compose(
-    R.flatten,
-    R.map(R.prop('typePaths')),
-  )(typeVals)
+  const typePaths = R.compose(R.flatten, R.map(R.prop('typePaths')))(typeVals)
 
   const linkTypeDef = generateTypeDefForLinkType(typeDefs, { gatsbyContext })
   const imageTypeDefs = generateTypeDefsForImageType(typePaths, {

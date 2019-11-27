@@ -207,6 +207,49 @@ use SVG placeholder images as it is currently not supported.
    + const fluid = data.prismicPage.data.imageField.fluid
    ```
 
+### Replace `shouldNormalizeImage` with `shouldDownloadImage`
+
+In v2, the `shouldNormalizeImage` plugin option allowed enabling or disabling
+downloading an image locally to make it available for
+`gatsby-transformer-sharp`. This defaulted to `true` for all images.
+
+In v3, `shouldNormalizeImage` is renamed to `shouldDownloadImage` and defaults
+to `false` for all images.
+
+If you are using Imgix for all of your images, you can remove
+`shouldNormalizeImage` and leave `shouldDownloadImage` as the default.
+
+```diff
+  // gatsby-config.js
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        // Along with your other options...
+-       shouldNormalizeImage: () => true,
+      },
+    },
+  ]
+```
+
+If you wish to continue using `gatsby-transformer-sharp` for image
+transformations, change `shouldNormalizeImage` to `shouldDownloadImage` and
+ensure it returns true for all images requiring transformations.
+
+```diff
+  // gatsby-config.js
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        // Along with your other options...
+-       shouldNormalizeImage: () => true,
++       shouldDownloadImage: () => true,
+      },
+    },
+  ]
+```
+
 ### Namespacing image thumbnails
 
 In v2, Image fields contained the image thumbnail data at the same level as the

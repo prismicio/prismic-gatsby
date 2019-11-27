@@ -166,32 +166,32 @@ describe('lang', () => {
   })
 })
 
-describe('shouldNormalizeImage', () => {
+describe('shouldDownloadImage', () => {
   test('not required', () => {
     expect(() =>
       validatePluginOptions({
         ...pluginOptions,
-        shouldNormalizeImage: undefined,
+        shouldDownloadImage: undefined,
       }),
-    ).not.toThrow('shouldNormalizeImage')
+    ).not.toThrow('shouldDownloadImage')
   })
 
   test('must be a function', () => {
     expect(() =>
       validatePluginOptions({
         ...pluginOptions,
-        shouldNormalizeImage: Symbol(),
+        shouldDownloadImage: Symbol(),
       }),
-    ).toThrow('shouldNormalizeImage')
+    ).toThrow('shouldDownloadImage')
   })
 
-  test('default to function returning true', () => {
-    const { shouldNormalizeImage } = validatePluginOptions({
+  test('default to function returning false', () => {
+    const { shouldDownloadImage } = validatePluginOptions({
       ...pluginOptions,
-      shouldNormalizeImage: undefined,
+      shouldDownloadImage: undefined,
     })
 
-    expect(shouldNormalizeImage()).toBe(true)
+    expect(shouldDownloadImage()).toBe(false)
   })
 })
 

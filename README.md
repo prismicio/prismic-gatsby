@@ -120,9 +120,9 @@ plugins: [
       // The document node, field key (i.e. API ID), and field value are
       // provided to the function, as seen below. This allows you to use
       // different logic for each field if necessary.
-      // This defaults to always return true.
-      shouldNormalizeImage: ({ node, key, value }) => {
-        // Return true to normalize the image or false to skip.
+      // This defaults to always return false.
+      shouldDownloadImage: ({ node, key, value }) => {
+        // Return true to download the image or false to skip.
       },
 
       // Set the prefix for the filename where type paths for your schemas are
@@ -537,6 +537,32 @@ To use local image processing, you need `gatsby-transformer-sharp`,
 
 Note that this will incur additional build time as image processing is
 time-consuming.
+
+In your `gatsby-config.js` file, set the `shouldDownloadImage` plugin option to
+a function that returns `true` for images requiring local transformations.
+
+```js
+// In your gatsby-config.js
+plugins: [
+  {
+    resolve: 'gatsby-source-prismic',
+    options: {
+      // Along with your other options...
+
+      // Set a function to determine if images are downloaded locally and made
+      // available for gatsby-transformer-sharp for use with gatsby-image.
+      // The document node, field key (i.e. API ID), and field value are
+      // provided to the function, as seen below. This allows you to use
+      // different logic for each field if necessary.
+      // This defaults to always return false.
+      shouldDownloadImage: ({ node, key, value }) => {
+        // Return true to download the image or false to skip.
+        return true
+      },
+    },
+  },
+]
+```
 
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the [`gatsby-transformer-sharp`

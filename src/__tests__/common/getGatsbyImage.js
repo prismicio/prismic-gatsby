@@ -1,4 +1,7 @@
-import { getFixedGatsbyImage, getFluidGatsbyImage } from '../getGatsbyImage'
+import {
+  getFixedGatsbyImage,
+  getFluidGatsbyImage,
+} from '../../common/getGatsbyImage'
 
 const URL_SRC = 'https://images.prismic.io/reponame/imagehash.jpg'
 const URL_SRC_WITH_RECT =

@@ -31,9 +31,15 @@ const baseValidations = {
     .strict()
     .required(),
   lang: yupString().default('*'),
-  shouldNormalizeImage: yupMixed()
+  shouldDownloadImage: yupMixed()
     .test('is function', '${path} is not a function', isFunction)
-    .default(() => () => true),
+    .default(() => () => false),
+  // TODO: Remove `shouldNormalizeImage` in version 4
+  shouldNormalizeImage: yupMixed().test(
+    'is function',
+    '${path} is not a function',
+    x => typeof x === 'undefined' || isFunction(x),
+  ),
   plugins: yupArray()
     .max(0)
     .default([]),
