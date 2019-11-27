@@ -9,6 +9,7 @@
   - [Provide custom type schemas](#provide-custom-type-schemas)
   - [Accessing linked documents](#accessing-linked-documents)
   - [Replace local images with Imgix-processed ones](#replace-local-images-with-imgix-processed-ones)
+  - [Replace `shouldNormalizeImage` with `shouldDownloadImage`](#replace-shouldnormalizeimage-with-shoulddownloadimage)
   - [Namespacing image thumbnails](#namespacing-image-thumbnails)
   - [Using `raw` fields](#using-raw-fields)
   - [Replace `dataString` with `dataRaw`](#replace-datastring-with-dataraw)
