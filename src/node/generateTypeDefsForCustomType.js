@@ -232,10 +232,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
   // UID fields are defined at the same level as data fields, but are a level
   // above data in API responses. Pulling it out separately here allows us to
   // process the UID field differently than the data fields.
-  const { uid: uidField, ...dataFields } = R.compose(
-    R.mergeAll,
-    R.values,
-  )(json)
+  const { uid: uidField, ...dataFields } = R.compose(R.mergeAll, R.values)(json)
 
   // UID fields must be conditionally processed since not all custom types
   // implement a UID field.
@@ -272,47 +269,23 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
   const customTypeName = pascalcase(`Prismic ${id}`)
   const customTypeFields = {
     data: { type: dataName, description: "The document's data fields." },
-    dataRaw: {
-      type: 'JSON!',
-      description:
-        "The document's data object without transformations exactly as it comes from the Prismic API.",
-    },
-    dataString: {
-      type: 'String!',
-      description:
-        "The document's data object without transformations. The object is stringified via `JSON.stringify` to eliminate the need to declare subfields.",
-      deprecationReason: 'Use `dataRaw` instead which returns JSON.',
-    },
+    dataRaw: 'JSON!',
+    dataString: 'String!',
     first_publication_date: {
       type: 'Date!',
-      description: "The document's initial publication date.",
       extensions: { dateformat: {} },
     },
-    href: {
-      type: 'String!',
-      description: "The document's Prismic API URL.",
-    },
-    url: {
-      type: 'String',
-      description: "The document's URL derived via the link resolver.",
-    },
-    id: {
-      type: 'ID!',
-      description:
-        'Globally unique identifier. Note that this differs from the `prismicID` field.',
-    },
-    lang: { type: 'String!', description: "The document's language." },
+    href: 'String!',
+    url: 'String',
+    id: 'ID!',
+    lang: 'String!',
     last_publication_date: {
       type: 'Date!',
-      description: "The document's most recent publication date",
       extensions: { dateformat: {} },
     },
-    tags: { type: '[String!]!', description: "The document's list of tags." },
-    type: {
-      type: 'String!',
-      description: "The document's Prismic API ID type.",
-    },
-    prismicId: { type: 'ID!', description: "The document's Prismic ID." },
+    tags: '[String!]!',
+    type: 'String!',
+    prismicId: 'ID!',
   }
   if (uidFieldType) customTypeFields.uid = uidFieldType
 
@@ -356,12 +329,7 @@ export const generateTypeDefsForImageType = (typePaths, context) => {
   const typeDefs = []
 
   const thumbnailKeys = R.compose(
-    R.map(
-      R.compose(
-        R.last,
-        R.prop('path'),
-      ),
-    ),
+    R.map(R.compose(R.last, R.prop('path'))),
     R.filter(R.propEq('type', 'PrismicImageThumbnailType')),
   )(typePaths)
 
