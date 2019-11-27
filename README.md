@@ -469,24 +469,25 @@ You can process images using one of the following methods:
 - **Locally transformed at build-time**: Images are downloaded to your computer
   or server which resizes images at build-time.
 
-#### Using Imgix transformed images
-
 You can apply image processing to any image field and its thumbnails on a
 document. Image processing of inline images added to Rich Text fields is
 currently not supported.
 
-Note that images are not resized or downloaded a build-time. Instead, images are
-manipulated on Imgix's servers at request time.
+#### Using Imgix transformed images
+
+Using this method, images are manipulated on Imgix's servers at request time,
+eliminating the need to download and resize images on your computer or server.
 
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the following fragments:
 
-- `GatsbyPrismicImageFixed`: Images with an exact width and/or height and a
-  low-quality image placeholder.
-- `GatsbyPrismicImageFixed_noBase64`: Same as above with no image placeholder.
-- `GatsbyPrismicImageFluid`: Images with a fluid max width and/or height and a
-  low-quality image placeholder.
-- `GatsbyPrismicImageFluid_noBase64`: Same as above with no image placeholder.
+- `GatsbyPrismicImageFixed`
+- `GatsbyPrismicImageFixed_noBase64`
+- `GatsbyPrismicImageFluid`
+- `GatsbyPrismicImageFluid_noBase64`
+
+Learn about the different types of responsive images and fragments from
+[`gatsby-image`'s official docs][gatsby-image-types].
 
 ```graphql
 {
@@ -533,10 +534,6 @@ Full example:
 To use local image processing, you need `gatsby-transformer-sharp`,
 `gatsby-plugin-sharp`, and their dependencies `gatsby-image` and
 `gatsby-source-filesystem` in your `gatsby-config.js`.
-
-You can apply image processing to any image field and its thumbnails on a
-document. Image processing of inline images added to Rich Text fields is
-currently not supported.
 
 Note that this will incur additional build time as image processing is
 time-consuming.
@@ -670,3 +667,5 @@ exports.createPages = async ({ graphql, actions }) => {
   https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
 [prismic-responsive-images]:
   https://user-guides.prismic.io/en/articles/762324-how-to-set-up-responsive-images
+[gatsby-image-types]:
+  https://www.gatsbyjs.org/packages/gatsby-image/?=gatsby-image#two-types-of-responsive-images
