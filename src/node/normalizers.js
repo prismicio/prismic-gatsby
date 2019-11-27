@@ -64,7 +64,7 @@ export const normalizeImageField = async (id, value, _depth, context) => {
   const { doc, docNodeId, gatsbyContext, pluginOptions } = context
   const { createNodeId, store, cache, actions, reporter } = gatsbyContext
   const { createNode, touchNode } = actions
-  const { shouldNormalizeImage, shouldDownloadImage } = pluginOptions
+  let { shouldNormalizeImage, shouldDownloadImage } = pluginOptions
 
   // TODO: Remove `shouldNormalizeImage` in version 4
   if (shouldNormalizeImage) {

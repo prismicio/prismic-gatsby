@@ -101,6 +101,20 @@ describe('normalizeImageField', () => {
     expect(result.localFile).toBeUndefined()
   })
 
+  // TODO: Remove shouldNormalizeImage in version 4
+  test('deprecated shouldNormalizeImage can be used in place of shouldDownloadImage', async () => {
+    const result = await normalizeImageField(undefined, value, undefined, {
+      ...context,
+      pluginOptions: {
+        ...context.pluginOptions,
+        shouldDownloadImage: undefined,
+        shouldNormalizeImage: () => true,
+      },
+    })
+
+    expect(result.localFile).toBe('remoteFileNodeId')
+  })
+
   test('provides key, value, node values to linkResolver', async () => {
     const key = 'key'
     const node = context.doc
