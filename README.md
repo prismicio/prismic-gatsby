@@ -27,7 +27,8 @@ repositories.
 ## Features
 
 - Supports Rich Text fields, slices, and content relation fields
-- Supports `gatsby-transformer-sharp` and `gatsby-image` for image fields
+- Supports `gatsby-image` using Imgix or `gatsby-transformer-sharp` for image
+  fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
 - Supports Prismic previews
