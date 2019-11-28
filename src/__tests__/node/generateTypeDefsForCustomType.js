@@ -3,7 +3,7 @@ import * as R from 'ramda'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
-  generateTypeDefForImageType,
+  generateTypeDefsForImageType,
 } from '../../node/generateTypeDefsForCustomType'
 
 const customTypeId = 'custom_type'
@@ -569,7 +569,7 @@ describe('generateTypeDefForImageType', () => {
       context,
     )
 
-    const result = generateTypeDefForImageType(typePaths, context)
+    const result = generateTypeDefsForImageType(typePaths, context)
 
     expect(Object.keys(result.config.fields)).toEqual(['thumb1', 'thumb2'])
   })
@@ -587,7 +587,7 @@ describe('generateTypeDefForImageType', () => {
       context,
     )
 
-    const result = generateTypeDefForImageType(typePaths, context)
+    const result = generateTypeDefsForImageType(typePaths, context)
 
     expect(result.serialize()).toBeNull()
   })

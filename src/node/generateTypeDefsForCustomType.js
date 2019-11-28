@@ -326,35 +326,24 @@ export const generateTypeDefsForImageType = (typePaths, context) => {
   const { gatsbyContext } = context
   const { schema: gatsbySchema } = gatsbyContext
 
-  const typeDefs = []
-
   const thumbnailKeys = R.compose(
     R.map(R.compose(R.last, R.prop('path'))),
     R.filter(R.propEq('type', 'PrismicImageThumbnailType')),
   )(typePaths)
 
-  // Thumbnails type with all thumbnail keys.
-  if (thumbnailKeys.length < 1) {
-    typeDefs.push(
-      new GraphQLScalarType({
-        name: 'PrismicImageThumbnailsType',
-        serialize: () => null,
-      }),
-    )
-  } else {
-    typeDefs.push(
-      gatsbySchema.buildObjectType({
-        name: 'PrismicImageThumbnailsType',
-        fields: R.reduce(
-          (acc, curr) =>
-            R.assoc(curr, { type: 'PrismicImageThumbnailType' }, acc),
-          {},
-          thumbnailKeys,
-        ),
-        extensions: { infer: false },
-      }),
-    )
-  }
+  if (thumbnailKeys.length < 1)
+    return new GraphQLScalarType({
+      name: 'PrismicImageThumbnailsType',
+      serialize: () => null,
+    })
 
-  return typeDefs
+  return gatsbySchema.buildObjectType({
+    name: 'PrismicImageThumbnailsType',
+    fields: R.reduce(
+      (acc, curr) => R.assoc(curr, { type: 'PrismicImageThumbnailType' }, acc),
+      {},
+      thumbnailKeys,
+    ),
+    extensions: { infer: false },
+  })
 }

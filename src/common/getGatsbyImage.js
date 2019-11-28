@@ -1,10 +1,10 @@
-// Default width for `fixed` images.
+// Default width for `fixed` images. Same as `gatsby-plugin-sharp`.
 const DEFAULT_FIXED_WIDTH = 400
 
 // Default resolutions for `fixed` images. Same as `gatsby-plugin-sharp`.
 const DEFAULT_FIXED_RESOLUTIONS = [1, 1.5, 2]
 
-// Default maxWidth for `fluid` images
+// Default maxWidth for `fluid` images. Same as `gatsby-plugin-sharp`.
 const DEFAULT_FLUID_MAX_WIDTH = 800
 
 // Default breakpoint factors for `fluid` images. Same as
@@ -81,7 +81,7 @@ const buildFluidSrcSet = (baseURL, params, breakpoints) => {
   if (!breakpoints)
     breakpoints = DEFAULT_FLUID_BREAKPOINT_FACTORS.map(x => width * x)
 
-  // Sort, remove duplicates, and ensure maxWidth is added.
+  // Remove duplicates, sort by numberical value, and ensure maxWidth is added.
   const uniqSortedBreakpoints = [
     ...new Set([...breakpoints, width].sort((a, b) => a - b)),
   ]
@@ -98,11 +98,9 @@ const buildFluidSrcSet = (baseURL, params, breakpoints) => {
     .join(', ')
 }
 
-const stripSearchParams = url => url.replace(/\?.*$/, '')
-
 const extractImageURLData = url => {
-  const baseURL = stripSearchParams(url)
   const instance = new URL(url)
+  const baseURL = instance.origin + instance.pathname
   const params = instance.searchParams
 
   return { baseURL, params }

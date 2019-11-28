@@ -16,12 +16,12 @@ const context = {
   gatsbyContext: {
     actions: { touchNode: () => {} },
     cache: { get: jest.fn(), set: () => {} },
-    reporter: { error: (_, error) => console.error(error) },
+    reporter: { error: (_, error) => console.error(error), warn: () => {} },
   },
   pluginOptions: {
     linkResolver: () => () => {},
     htmlSerializer: () => () => {},
-    shouldNormalizeImage: () => true,
+    shouldDownloadImage: () => false,
   },
 }
 
@@ -33,12 +33,20 @@ describe('normalizeImageField', () => {
     copyright: 'copyright',
   }
 
-  test('returns localFile field alongside base fields', async () => {
+  const contextWithDownloadedImages = {
+    ...context,
+    pluginOptions: {
+      ...context.pluginOptions,
+      shouldDownloadImage: () => true,
+    },
+  }
+
+  test('returns localFile field alongside base fields if shouldDownloadImage is true', async () => {
     const result = await normalizeImageField(
       undefined,
       value,
       undefined,
-      context,
+      contextWithDownloadedImages,
     )
 
     expect(result).toEqual({
@@ -47,7 +55,7 @@ describe('normalizeImageField', () => {
     })
   })
 
-  test('localFile field uses cached node ID if available', async () => {
+  test('localFile field uses cached node ID if available and shouldDownloadImage is true', async () => {
     context.gatsbyContext.cache.get.mockReturnValueOnce({
       fileNodeID: 'cachedId',
     })
@@ -56,38 +64,55 @@ describe('normalizeImageField', () => {
       undefined,
       value,
       undefined,
-      context,
+      contextWithDownloadedImages,
     )
 
     expect(result.localFile).toBe('cachedId')
   })
 
-  test('localFile field is empty if file node could not be created', async () => {
+  test('localFile field is empty if file node could not be created and shouldDownloadImage is true', async () => {
     createRemoteFileNode.mockImplementationOnce(async () => {
       throw new Error()
     })
 
     const result = await normalizeImageField(undefined, value, undefined, {
-      ...context,
+      ...contextWithDownloadedImages,
       gatsbyContext: {
-        ...context.gatsbyContext,
-        reporter: { error: () => {} },
+        ...contextWithDownloadedImages.gatsbyContext,
+        reporter: {
+          ...contextWithDownloadedImages.gatsbyContext.reporter,
+          error: () => {},
+        },
       },
     })
 
     expect(result.localFile).toBeUndefined()
   })
 
-  test('localFile field is empty if shouldNormalizeImage returns false', async () => {
+  test('localFile field is empty if shouldDownloadImage returns false', async () => {
     const result = await normalizeImageField(undefined, value, undefined, {
       ...context,
       pluginOptions: {
         ...context.pluginOptions,
-        shouldNormalizeImage: () => false,
+        shouldDownloadImage: () => false,
       },
     })
 
     expect(result.localFile).toBeUndefined()
+  })
+
+  // TODO: Remove shouldNormalizeImage in version 4
+  test('deprecated shouldNormalizeImage can be used in place of shouldDownloadImage', async () => {
+    const result = await normalizeImageField(undefined, value, undefined, {
+      ...context,
+      pluginOptions: {
+        ...context.pluginOptions,
+        shouldDownloadImage: undefined,
+        shouldNormalizeImage: () => true,
+      },
+    })
+
+    expect(result.localFile).toBe('remoteFileNodeId')
   })
 
   test('provides key, value, node values to linkResolver', async () => {
@@ -97,7 +122,7 @@ describe('normalizeImageField', () => {
       ...context,
       pluginOptions: {
         ...context.pluginOptions,
-        shouldNormalizeImage: ({
+        shouldDownloadImage: ({
           key: scopedKey,
           value: scopedValue,
           node: scopedNode,

@@ -64,9 +64,20 @@ export const normalizeImageField = async (id, value, _depth, context) => {
   const { doc, docNodeId, gatsbyContext, pluginOptions } = context
   const { createNodeId, store, cache, actions, reporter } = gatsbyContext
   const { createNode, touchNode } = actions
-  const { shouldNormalizeImage } = pluginOptions
+  let { shouldNormalizeImage, shouldDownloadImage } = pluginOptions
 
-  const shouldAttemptToCreateRemoteFileNode = await shouldNormalizeImage({
+  // TODO: Remove `shouldNormalizeImage` in version 4
+  if (shouldNormalizeImage) {
+    reporter.warn(
+      msg(
+        'The shouldNormalizeImage plugin option has been replaced by shouldDownloadImage and will be removed in the next major version. Please update your config to use shouldDownloadImage.',
+      ),
+    )
+
+    shouldDownloadImage = shouldNormalizeImage
+  }
+
+  const shouldAttemptToCreateRemoteFileNode = await shouldDownloadImage({
     key: id,
     value,
     node: doc,

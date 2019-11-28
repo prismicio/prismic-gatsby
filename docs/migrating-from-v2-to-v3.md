@@ -8,6 +8,8 @@
 - [Handling breaking changes](#handling-breaking-changes)
   - [Provide custom type schemas](#provide-custom-type-schemas)
   - [Accessing linked documents](#accessing-linked-documents)
+  - [Replace local images with Imgix-processed ones](#replace-local-images-with-imgix-processed-ones)
+  - [Replace `shouldNormalizeImage` with `shouldDownloadImage`](#replace-shouldnormalizeimage-with-shoulddownloadimage)
   - [Namespacing image thumbnails](#namespacing-image-thumbnails)
   - [Using `raw` fields](#using-raw-fields)
   - [Replace `dataString` with `dataRaw`](#replace-datastring-with-dataraw)
@@ -18,13 +20,15 @@
 
 ## Why you should migrate
 
-The v3 release includes two major features designed to improve the developer and
-content editor experience.
+The v3 release includes three major features designed to improve the developer
+and content editor experience.
 
 - **Schemas**: Custom types and their fields are fully integrated into Gatsby's
   GraphQL data system.
 - **Previews**: Content editors can preview content before publishing without
   the need to rebuild the entire site.
+- **Imgix-backed `gatsby-image`**: Significantly reduce build times by utilizing
+  Imgix's URL-based image manipulation when using `gatsby-image`.
 
 This release also fixes several long-standing issues as a result of the new
 schema processing.
@@ -153,6 +157,99 @@ direct reference to the linked document.
    - const uid = data.prismicPage.data.linkField.document[0].uid
    + const uid = data.prismicPage.data.linkField.document.uid
    ```
+
+### Replace local images with Imgix-processed ones
+
+In v2, Image fields provided a `localFile` field with a locally downloaded copy
+of the image. This allows `gatsby-transformer-sharp` to provide `gatsby-image`
+integration.
+
+In v3, this can be replaced with Imgix's URL-based image manipulation. This can
+significantly reduce your build times if your site is image-heavy as no image
+processing is done at build-time.
+
+Note that this is an optional, but recommended, change if your site does **not**
+use SVG placeholder images as it is currently not supported.
+
+`localFile` will continue to be supported.
+
+1. In your GraphQL queries, replace `localFile.childImageSharp.fluid` and
+   `localFile.childImageSharp.fluid` with `fluid` and `fixed`, respectively.
+
+   Also replace `GatsbyImageFluid` and `GatsbyImageFixed` fragments with
+   `GatsbyPrismicImageFluid` and `GatsbyPrismicImageFixed`.
+
+   ```diff
+     const query = graphql`
+     prismicPage {
+       data {
+         imageField {
+   -       localFile {
+   -         childImageSharp {
+   -           fluid(maxWidth: 1000) {
+   -             ...GatsbyImageFluid
+   -           }
+   -         }
+   -       }
+   +       fluid(maxWidth: 1000) {
+   +         ...GatsbyPrismicImageFluid
+   +       }
+         }
+       }
+     }
+     `
+   ```
+
+2. When providing image data to `gatsby-image`, access the image data using the
+   new path.
+
+   ```diff
+   - const fluid = data.prismicPage.data.imageField.localFile.childImageSharp.fluid
+   + const fluid = data.prismicPage.data.imageField.fluid
+   ```
+
+### Replace `shouldNormalizeImage` with `shouldDownloadImage`
+
+In v2, the `shouldNormalizeImage` plugin option allowed enabling or disabling
+downloading an image locally to make it available for
+`gatsby-transformer-sharp`. This defaulted to `true` for all images.
+
+In v3, `shouldNormalizeImage` is renamed to `shouldDownloadImage` and defaults
+to `false` for all images.
+
+If you are using Imgix for all of your images, you can remove
+`shouldNormalizeImage` and leave `shouldDownloadImage` as the default.
+
+```diff
+  // gatsby-config.js
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        // Along with your other options...
+-       shouldNormalizeImage: () => true,
+      },
+    },
+  ]
+```
+
+If you wish to continue using `gatsby-transformer-sharp` for image
+transformations, change `shouldNormalizeImage` to `shouldDownloadImage` and
+ensure it returns true for all images requiring transformations.
+
+```diff
+  // gatsby-config.js
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        // Along with your other options...
+-       shouldNormalizeImage: () => true,
++       shouldDownloadImage: () => true,
+      },
+    },
+  ]
+```
 
 ### Namespacing image thumbnails
 

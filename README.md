@@ -27,7 +27,8 @@ repositories.
 ## Features
 
 - Supports Rich Text fields, slices, and content relation fields
-- Supports `gatsby-transformer-sharp` and `gatsby-image` for image fields
+- Supports `gatsby-image` using Imgix or `gatsby-transformer-sharp` for image
+  fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
 - Supports Prismic previews
@@ -119,9 +120,9 @@ plugins: [
       // The document node, field key (i.e. API ID), and field value are
       // provided to the function, as seen below. This allows you to use
       // different logic for each field if necessary.
-      // This defaults to always return true.
-      shouldNormalizeImage: ({ node, key, value }) => {
-        // Return true to normalize the image or false to skip.
+      // This defaults to always return false.
+      shouldDownloadImage: ({ node, key, value }) => {
+        // Return true to download the image or false to skip.
       },
 
       // Set the prefix for the filename where type paths for your schemas are
@@ -460,13 +461,108 @@ data interface, but it is available if necessary
 
 ### Image processing
 
-To use image processing you need `gatsby-transformer-sharp`,
-`gatsby-plugin-sharp`, and their dependencies `gatsby-image` and
-`gatsby-source-filesystem` in your `gatsby-config.js`.
+You can process images using one of the following methods:
+
+- **Recommended: On-the-fly transformed using Imgix**: Images are **not**
+  downloaded to your computer or server and instead are transformed using
+  Prismic's Imgix integration to resize images on-the-fly.
+- **Locally transformed at build-time**: Images are downloaded to your computer
+  or server which resizes images at build-time.
 
 You can apply image processing to any image field and its thumbnails on a
 document. Image processing of inline images added to Rich Text fields is
 currently not supported.
+
+#### Using Imgix transformed images
+
+Using this method, images are manipulated on Imgix's servers at request time,
+eliminating the need to download and resize images on your computer or server.
+
+To access image processing in your queries, you need to use this pattern, where
+`...ImageFragment` is one of the following fragments:
+
+- `GatsbyPrismicImageFixed`
+- `GatsbyPrismicImageFixed_noBase64`
+- `GatsbyPrismicImageFluid`
+- `GatsbyPrismicImageFluid_noBase64`
+
+Learn about the different types of responsive images and fragments from
+[`gatsby-image`'s official docs][gatsby-image-types].
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            fluid {
+              ...ImageFragment
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Full example:
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            fluid(maxWidth: 1000, maxHeight: 800) {
+              ...GatsbyPrismicImageFluid
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Using locally transformed images
+
+To use local image processing, you need `gatsby-transformer-sharp`,
+`gatsby-plugin-sharp`, and their dependencies `gatsby-image` and
+`gatsby-source-filesystem` in your `gatsby-config.js`.
+
+Note that this will incur additional build time as image processing is
+time-consuming.
+
+In your `gatsby-config.js` file, set the `shouldDownloadImage` plugin option to
+a function that returns `true` for images requiring local transformations.
+
+```js
+// In your gatsby-config.js
+plugins: [
+  {
+    resolve: 'gatsby-source-prismic',
+    options: {
+      // Along with your other options...
+
+      // Set a function to determine if images are downloaded locally and made
+      // available for gatsby-transformer-sharp for use with gatsby-image.
+      // The document node, field key (i.e. API ID), and field value are
+      // provided to the function, as seen below. This allows you to use
+      // different logic for each field if necessary.
+      // This defaults to always return false.
+      shouldDownloadImage: ({ node, key, value }) => {
+        // Return true to download the image or false to skip.
+        return true
+      },
+    },
+  },
+]
+```
 
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the [`gatsby-transformer-sharp`
@@ -505,8 +601,8 @@ Full example:
           imageFieldName {
             localFile {
               childImageSharp {
-                resolutions(width: 500, height: 300) {
-                  ...GatsbyImageSharpResolutions_withWebp
+                fixed(width: 500, height: 300) {
+                  ...GatsbyImageSharpFixed_withWebp
                 }
               }
             }
@@ -518,7 +614,7 @@ Full example:
 }
 ```
 
-To learn more about image processing, check the documentation of
+To learn more about local image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
 
 ## Previews
@@ -597,3 +693,5 @@ exports.createPages = async ({ graphql, actions }) => {
   https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
 [prismic-responsive-images]:
   https://user-guides.prismic.io/en/articles/762324-how-to-set-up-responsive-images
+[gatsby-image-types]:
+  https://www.gatsbyjs.org/packages/gatsby-image/?=gatsby-image#two-types-of-responsive-images
