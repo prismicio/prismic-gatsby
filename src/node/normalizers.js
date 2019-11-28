@@ -53,6 +53,8 @@ export const normalizeLinkField = async (id, value, _depth, context) => {
   }
 }
 
+let _didShowShouldNormalizeImageDeprecationMessage = false
+
 // Normalizes a PrismicImageType field by creating a File node using
 // `gatsby-source-filesystem`. This allows for `gatsby-transformer-sharp` and
 // `gatsby-image` integration. The linked node data is provided on the
@@ -67,13 +69,14 @@ export const normalizeImageField = async (id, value, _depth, context) => {
   let { shouldNormalizeImage, shouldDownloadImage } = pluginOptions
 
   // TODO: Remove `shouldNormalizeImage` in version 4
-  if (shouldNormalizeImage) {
+  if (shouldNormalizeImage && !_didShowShouldNormalizeImageDeprecationMessage) {
     reporter.warn(
       msg(
         'The shouldNormalizeImage plugin option has been replaced by shouldDownloadImage and will be removed in the next major version. Please update your config to use shouldDownloadImage.',
       ),
     )
 
+    _didShowShouldNormalizeImageDeprecationMessage = true
     shouldDownloadImage = shouldNormalizeImage
   }
 
