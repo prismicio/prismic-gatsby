@@ -1,8 +1,18 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version)
-for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [3.0.0-beta.16](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.15...v3.0.0-beta.16) (2019-12-05)
+
+
+### Features
+
+* add imgix gatsby-image integration ([#170](https://github.com/angeloashmore/gatsby-source-prismic/issues/170)) ([25fc981](https://github.com/angeloashmore/gatsby-source-prismic/commit/25fc981215cf7ac7223bdfa2e9ad0fea0c4fd72e))
+
+
+### Bug Fixes
+
+* graphql introspection on `PrismicDocument`'s `Date` fields ([87f758a](https://github.com/angeloashmore/gatsby-source-prismic/commit/87f758a0eec4986da346b8fd9a92beee55d4fc81))
 
 ## [3.0.0-beta.15](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.14...v3.0.0-beta.15) (2019-11-26)
 
