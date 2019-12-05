@@ -322,7 +322,7 @@ export const generateTypeDefForLinkType = (allTypeDefs, context) => {
   })
 }
 
-export const generateTypeDefForImageType = (typePaths, context) => {
+export const generateTypeDefsForImageType = (typePaths, context) => {
   const { gatsbyContext } = context
   const { schema: gatsbySchema } = gatsbyContext
 

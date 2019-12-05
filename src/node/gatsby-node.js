@@ -1,4 +1,5 @@
 import fs from 'fs'
+import fsExtra from 'fs-extra'
 import path from 'path'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -9,7 +10,7 @@ import { fetchAllDocuments } from './fetchAllDocuments'
 import {
   generateTypeDefsForCustomType,
   generateTypeDefForLinkType,
-  generateTypeDefForImageType,
+  generateTypeDefsForImageType,
 } from './generateTypeDefsForCustomType'
 import { documentToNodes } from '../common/documentToNodes'
 import {
@@ -19,6 +20,10 @@ import {
   normalizeStructuredTextField,
 } from './normalizers'
 import standardTypes from '../common/standardTypes.graphql'
+import {
+  getFixedGatsbyImage,
+  getFluidGatsbyImage,
+} from '../common/getGatsbyImage'
 import { msg } from '../common/utils'
 
 export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
@@ -66,22 +71,18 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
     ),
   )(pluginOptions.schemas)
 
-  const typeDefs = R.compose(
-    R.flatten,
-    R.map(R.prop('typeDefs')),
-  )(typeVals)
+  const typeDefs = R.compose(R.flatten, R.map(R.prop('typeDefs')))(typeVals)
 
-  const typePaths = R.compose(
-    R.flatten,
-    R.map(R.prop('typePaths')),
-  )(typeVals)
+  const typePaths = R.compose(R.flatten, R.map(R.prop('typePaths')))(typeVals)
 
   const linkTypeDef = generateTypeDefForLinkType(typeDefs, { gatsbyContext })
-  const imageTypeDef = generateTypeDefForImageType(typePaths, { gatsbyContext })
+  const imageTypeDefs = generateTypeDefsForImageType(typePaths, {
+    gatsbyContext,
+  })
 
   createTypes(standardTypes)
   createTypes(linkTypeDef)
-  createTypes(imageTypeDef)
+  createTypes(imageTypeDefs)
   createTypes(typeDefs)
 
   createTypesActivity.end()
@@ -153,4 +154,45 @@ export const sourceNodes = async (gatsbyContext, rawPluginOptions) => {
   fs.writeFileSync(typePathsFilename, JSON.stringify(typePaths))
 
   writeTypePathsActivity.end()
+}
+
+exports.createResolvers = ({ createResolvers }) => {
+  const resolvers = {
+    PrismicImageType: {
+      fixed: {
+        resolve: (source, args) =>
+          source.url
+            ? getFixedGatsbyImage(
+                source.url,
+                source.dimensions.width,
+                source.dimensions.height,
+                args,
+              )
+            : undefined,
+      },
+      fluid: {
+        resolve: (source, args) =>
+          source.url
+            ? getFluidGatsbyImage(
+                source.url,
+                source.dimensions.width,
+                source.dimensions.height,
+                args,
+              )
+            : undefined,
+      },
+    },
+  }
+
+  createResolvers(resolvers)
+}
+
+exports.onPreExtractQueries = async ({ store }) => {
+  const program = store.getState().program
+
+  // Add fragments for GatsbyPrismicImage to .cache/fragments.
+  await fsExtra.copy(
+    path.join(__dirname, '../src/fragments.js'),
+    `${program.directory}/.cache/fragments/gatsby-source-prismic-fragments.js`,
+  )
 }
