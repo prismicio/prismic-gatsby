@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.17](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.16...v3.0.0-beta.17) (2019-12-08)
+
+
+### Bug Fixes
+
+* restore link field size property ([dd02aeb](https://github.com/angeloashmore/gatsby-source-prismic/commit/dd02aeb70c4841b61ca2f3e574a4068ca3477504))
+
 ## [3.0.0-beta.16](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.15...v3.0.0-beta.16) (2019-12-05)
 
 
