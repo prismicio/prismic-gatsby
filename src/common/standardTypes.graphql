@@ -137,6 +137,8 @@ type PrismicLinkType {
   url: String
   "The link's target."
   target: String
+  "If a Media link, the size of the file."
+  size: Int
   "If a Document link, the linked document's Prismic ID."
   id: ID
   "If a Document link, the linked document's Prismic custom type API ID"
@@ -174,15 +176,16 @@ interface PrismicDocument {
   "The document's data object without transformations exactly as it comes from the Prismic API."
   dataRaw: JSON!
   "The document's data object without transformations. The object is stringified via `JSON.stringify` to eliminate the need to declare subfields."
-  dataString: String @deprecated(reason: "Use `dataRaw` instead which returns JSON.")
+  dataString: String
+    @deprecated(reason: "Use `dataRaw` instead which returns JSON.")
   "The document's initial publication date."
   first_publication_date(
     "Format the date using Moment.js' date tokens, e.g. `date(formatString: \"YYYY MMMM DD\")`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens."
-    formatString: String,
+    formatString: String
     "Returns a string generated with Moment.js' `fromNow` function"
-    fromNow: Boolean,
+    fromNow: Boolean
     "Returns the difference between this date and the current time. Defaults to \"milliseconds\" but you can also pass in as the measurement \"years\", \"months\", \"weeks\", \"days\", \"hours\", \"minutes\", and \"seconds\"."
-    difference: String,
+    difference: String
     "Configures the locale Moment.js will use to format the date."
     locale: String
   ): Date
@@ -197,11 +200,11 @@ interface PrismicDocument {
   "The document's most recent publication date"
   last_publication_date(
     "Format the date using Moment.js' date tokens, e.g. `date(formatString: \"YYYY MMMM DD\")`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens."
-    formatString: String,
+    formatString: String
     "Returns a string generated with Moment.js' `fromNow` function"
-    fromNow: Boolean,
+    fromNow: Boolean
     "Returns the difference between this date and the current time. Defaults to \"milliseconds\" but you can also pass in as the measurement \"years\", \"months\", \"weeks\", \"days\", \"hours\", \"minutes\", and \"seconds\"."
-    difference: String,
+    difference: String
     "Configures the locale Moment.js will use to format the date."
     locale: String
   ): Date
