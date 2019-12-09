@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.18](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.17...v3.0.0-beta.18) (2019-12-09)
+
+
+### Features
+
+* export getFixedGatsbyImage and getFluidGatsbyImage ([d53f8aa](https://github.com/angeloashmore/gatsby-source-prismic/commit/d53f8aa92b0fb204cc7088bf47784252a7133d5a))
+
 ## [3.0.0-beta.17](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.16...v3.0.0-beta.17) (2019-12-08)
 
 
