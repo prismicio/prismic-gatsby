@@ -236,7 +236,7 @@ site's `gatsby-node.js` is also provided at the `url` field.
 **Note**: Data within the `document` field is wrapped in an array. Due to the
 method in which Gatsby processes one-to-one node relationships, this
 work-around is necessary to ensure the field can accommodate different content
-types. This may be fixed in a later Gatsby relase.
+types. This may be fixed in a later Gatsby release.
 
 Querying data on the `document` field is handled the same as querying slices.
 Please read the [Query slices](#query-slices) section for details.
