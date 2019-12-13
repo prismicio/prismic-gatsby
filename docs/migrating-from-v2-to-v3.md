@@ -113,6 +113,7 @@ if they are empty in Prismic.
    +       schemas: {
    +         page: require('./src/schemas/page.json'),
    +         blog_post: require('./src/schemas/blog_post.json'),
+   +         'page_about-us': require('./src/schemas/page_about-us.json'),
    +       }
          }
        }
