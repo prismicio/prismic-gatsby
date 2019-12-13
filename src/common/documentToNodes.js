@@ -100,6 +100,22 @@ const normalizeField = async (id, value, depth, context) => {
         context,
       )
 
+    case 'AlternateLanguages':
+      // Treat the array of alternate language documents as a list of link
+      // fields. We need to force the link type to a Document since it is not
+      // there by default.
+      return await Promise.all(
+        value.map(
+          async v =>
+            await normalizeLinkField(
+              id,
+              { ...v, link_type: 'Document' },
+              depth,
+              context,
+            ),
+        ),
+      )
+
     default:
       return value
   }
@@ -132,6 +148,12 @@ export const documentToNodes = async (doc, context) => {
     doc,
     docNodeId,
   })
+  const normalizedAlternativeLanguages = await normalizeField(
+    'alternate_languages',
+    doc.alternate_languages,
+    [doc.type],
+    { ...context, doc, docNodeId },
+  )
 
   const linkResolverForDoc = linkResolver({ node: doc })
 
@@ -142,6 +164,7 @@ export const documentToNodes = async (doc, context) => {
     data: normalizedData,
     dataString: JSON.stringify(doc.data),
     dataRaw: doc.data,
+    alternate_languages: normalizedAlternativeLanguages,
     url: linkResolverForDoc(doc),
     internal: {
       type: pascalcase(`Prismic ${doc.type}`),

@@ -40,6 +40,7 @@ const linkResolver = jest.fn().mockReturnValue(() => linkResolverReturnValue)
 
 const baseContext = {
   pluginOptions: { linkResolver },
+  typePaths: [],
   createNode,
   createNodeId,
   createContentDigest,

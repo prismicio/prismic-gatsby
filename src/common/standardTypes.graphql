@@ -133,7 +133,7 @@ type PrismicLinkType {
   link_type: PrismicLinkTypes!
   "If a Document link, `true` if linked document does not exist, `false` otherwise."
   isBroken: Boolean
-  "The link URL using `prismic-dom` the link resolver."
+  "The document's URL derived via the link resolver."
   url: String
   "The link's target."
   target: String
@@ -152,7 +152,7 @@ type PrismicLinkType {
   "If a Document link, the linked document's UID."
   uid: String
   "If a Document link, the linked document."
-  document: PrismicAllDocumentTypes
+  document: PrismicAllDocumentTypes @link
   "The field's value without transformations exactly as it comes from the Prismic API."
   raw: JSON
 }
@@ -210,6 +210,8 @@ interface PrismicDocument {
   ): Date
   "The document's list of tags."
   tags: [String!]!
+  "Alternate languages for the document."
+  alternate_languages: [PrismicLinkType!]!
   "The document's Prismic API ID type."
   type: String!
   "The document's Prismic ID."

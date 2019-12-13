@@ -67,21 +67,7 @@ const fieldToType = (id, value, depth, context) => {
 
     case 'Link':
       enqueueTypePath([...depth, id], 'PrismicLinkType')
-      return {
-        type: 'PrismicLinkType',
-        resolve: (parent, args, context, info) => {
-          const key = info.path.key
-          const value = parent[key]
-
-          return {
-            ...value,
-            document: context.nodeModel.getNodeById({
-              id: createNodeId(`${value.type} ${value.id}`),
-              type: pascalcase(`Prismic ${value.type}`),
-            }),
-          }
-        },
-      }
+      return 'PrismicLinkType'
 
     case 'Group':
       const groupName = pascalcase(`Prismic ${customTypeId} ${id} Group Type`)
@@ -213,6 +199,14 @@ const fieldToType = (id, value, depth, context) => {
           }),
       }
 
+    // Note: AlternateLanguages is an internal plugin-specific type, not from
+    // Prismic.
+    case 'AlternateLanguages':
+      // The types are intentionally different here. We need to handle
+      // AlternateLanguages in a unique way in `common/documentToNodes.js`.
+      enqueueTypePath([...depth, id], 'AlternateLanguages')
+      return '[PrismicLinkType!]!'
+
     default:
       console.log(`UNPROCESSED FIELD for type "${value.type}"`, id)
       return null
@@ -243,6 +237,19 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
       customTypeId: id,
       enqueueTypePath,
     })
+
+  // The alternate languages field acts as a list of Link fields. Note:
+  // AlternateLanguages is an internal plugin-specific type, not from Prismic.
+  const alternateLanguagesFieldType = fieldToType(
+    'alternate_languages',
+    { type: 'AlternateLanguages' },
+    [id],
+    {
+      ...context,
+      customTypeId: id,
+      enqueueTypePath,
+    },
+  )
 
   // Create a type for all data fields by shallowly mapping each field to a
   // type.
@@ -284,6 +291,7 @@ export const generateTypeDefsForCustomType = (id, json, context) => {
       extensions: { dateformat: {} },
     },
     tags: '[String!]!',
+    alternate_languages: alternateLanguagesFieldType,
     type: 'String!',
     prismicId: 'ID!',
   }
