@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.19](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.18...v3.0.0-beta.19) (2019-12-13)
+
+
+### Features
+
+* add alternate languages support ([7680981](https://github.com/angeloashmore/gatsby-source-prismic/commit/7680981a9df4ad3b59b2714c14b88b7e0d768c78))
+
 ## [3.0.0-beta.18](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.17...v3.0.0-beta.18) (2019-12-09)
 
 

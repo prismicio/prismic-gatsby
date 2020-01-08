@@ -210,32 +210,7 @@ describe('generateTypeDefsForCustomType', () => {
           context,
         )
 
-        expect(typeDefs[0].config.fields.key).toMatchObject({
-          type: 'PrismicLinkType',
-        })
-      })
-
-      test('PrismicLinkType resolver gets document node by ID', () => {
-        const { typeDefs } = generateTypeDefsForCustomType(
-          customTypeId,
-          { Main: { key: { type: 'Link' } } },
-          context,
-        )
-
-        const resolver = typeDefs[0].config.fields.key.resolve
-        const getNodeById = jest.fn()
-
-        resolver(
-          { link: { id: 'id', type: 'custom_type' } },
-          undefined,
-          { nodeModel: { getNodeById } },
-          { path: { key: 'link' } },
-        )
-
-        expect(getNodeById).toHaveBeenCalledWith({
-          id: 'result of createNodeId',
-          type: 'PrismicCustomType',
-        })
+        expect(typeDefs[0].config.fields.key).toBe('PrismicLinkType')
       })
     })
 
@@ -477,6 +452,10 @@ describe('generateTypeDefsForCustomType', () => {
 
       expect(typePaths).toEqual([
         { path: ['custom_type', 'uid'], type: 'String' },
+        {
+          path: ['custom_type', 'alternate_languages'],
+          type: 'AlternateLanguages',
+        },
         { path: ['custom_type', 'data', 'text'], type: 'String' },
         {
           path: ['custom_type', 'data', 'body', 'slice', 'primary', 'key'],

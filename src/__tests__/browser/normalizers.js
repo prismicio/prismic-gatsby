@@ -20,6 +20,7 @@ const linkResolver = jest.fn().mockReturnValue(() => linkResolverReturnValue)
 
 const context = {
   doc: { id: 'id' },
+  typePaths: [],
   createNodeId,
   hasNodeById: () => {},
   gatsbyContext: { actions: {} },
