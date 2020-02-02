@@ -1,10 +1,5 @@
-import babel from 'rollup-plugin-babel'
-import json from 'rollup-plugin-json'
-import { string } from 'rollup-plugin-string'
+import typescript from '@rollup/plugin-typescript'
 import pkg from './package.json'
-import { terser } from 'rollup-plugin-terser'
-
-const isProd = process.env.NODE_ENV === 'production'
 
 const makeExternalPredicate = externalArr => {
   if (externalArr.length === 0) {
@@ -17,30 +12,28 @@ const makeExternalPredicate = externalArr => {
 const externalPkgs = makeExternalPredicate([
   ...Object.keys(pkg.dependencies || {}),
   ...Object.keys(pkg.peerDependencies || {}),
-  'fs',
-  'path',
 ])
 
 export default [
   {
-    input: 'src/index.js',
+    input: 'src/index.ts',
     output: [
       { file: 'dist/index.cjs.js', format: 'cjs', sourcemap: true },
       { file: 'dist/index.esm.js', format: 'es', sourcemap: true },
     ],
     external: externalPkgs,
-    plugins: [babel(), json(), false && isProd && terser()],
+    plugins: [typescript()],
   },
   {
     input: 'src/node/gatsby-node.js',
     output: { file: 'dist/gatsby-node.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [babel(), json(), string({ include: '**/*.graphql' })],
+    plugins: [typescript()],
   },
   {
     input: 'src/browser/gatsby-browser.js',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [babel(), json(), false && isProd && terser()],
+    plugins: [typescript()],
   },
 ]
