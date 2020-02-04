@@ -31,16 +31,24 @@
     "gatsby-source-plugin",
     "prismic"
   ],
+  "dependencies": {
+    "pascalcase": "^1.0.0",
+    "prismic-dom": "^2.1.0",
+    "prismic-javascript": "^2.1.5"
+  },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
+    "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-typescript": "^3.0.0",
     "@types/jest": "^25.1.1",
+    "@types/prismic-dom": "^2.1.1",
     "cross-env": "^7.0.0",
     "gatsby": "^2.19.12",
     "husky": "^4.2.1",
     "prettier": "^1.19.1",
     "rollup": "^1.31.0",
+    "rollup-plugin-typescript2": "^0.25.3",
     "standard-version": "^7.1.0",
     "tslib": "^1.10.0",
     "typescript": "^3.7.5"
