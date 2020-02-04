@@ -1,4 +1,8 @@
-import { PluginOptions as GatsbyPluginOptions, NodeInput } from 'gatsby'
+import {
+  PluginOptions as GatsbyPluginOptions,
+  SourceNodesArgs,
+  NodeInput,
+} from 'gatsby'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import * as PrismicDOM from 'prismic-dom'
 
@@ -29,7 +33,7 @@ export type FieldNormalizer<T, N> = (
   path: TypePath['path'],
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
-) => N
+) => N | Promise<N>
 
 export type ImageFieldNormalizer = FieldNormalizer<
   ImageField,
@@ -124,23 +128,55 @@ export interface NormalizedLinkField extends LinkField {
   raw: LinkField
 }
 
-interface ImageThumbnailField {
-  alt?: string
-  copyright?: string
-  dimensions?: { width: number; height: number }
-  url?: string
-}
-
 export interface ImageField {
   alt?: string
   copyright?: string
   dimensions?: { width: number; height: number }
   url?: string
-  thumbnails: ImageThumbnailField
+  // This should be ImageThumbnailField, but TypeScript does not let us
+  // type unknown field types separatly from known without widening the type.
+  [key: string]: unknown
 }
 
 export interface NormalizedImageField extends ImageField {
+  thumbnails?: { [key: string]: NormalizedImageField }
+  fixed?: GatsbyFixedImageProps
+  fluid?: GatsbyFluidImageProps
   localFile?: NodeID
+}
+
+interface GatsbyImageProps {
+  base64?: string
+  aspectRatio: number
+  src: string
+  srcWebp: string
+  srcSet: string
+  srcSetWebp: string
+}
+
+export interface GatsbyFixedImageProps extends GatsbyImageProps {
+  width: number
+  height: number
+}
+
+export interface GatsbyFluidImageProps extends GatsbyImageProps {
+  sizes: string
+}
+
+interface GatsbyImageArgs {
+  quality?: number
+}
+
+export interface GatsbyImageFluidArgs extends GatsbyImageArgs {
+  maxWidth?: number
+  maxHeight?: number
+  sizes?: string
+  srcSetBreakpoints?: number[]
+}
+
+export interface GatsbyImageFixedArgs extends GatsbyImageArgs {
+  width?: number
+  height?: number
 }
 
 export type AlternateLanguagesField = LinkField[]
@@ -153,7 +189,7 @@ export type NormalizedGroupField = { [key: string]: NormalizedField }[]
 
 export interface DocumentsToNodesEnvironment {
   createNode: (node: NodeInput) => void
-  createNodeId: (input: unknown) => string
+  createNodeId: (input: string) => string
   createContentDigest: (input: unknown) => string
   normalizeImageField: ImageFieldNormalizer
   normalizeLinkField: LinkFieldNormalizer
@@ -161,6 +197,7 @@ export interface DocumentsToNodesEnvironment {
   normalizeStructuredTextField: StructuredTextFieldNormalizer
   typePaths: TypePath[]
   pluginOptions: PluginOptions
+  gatsbyContext?: SourceNodesArgs
 }
 
 export enum FieldType {
@@ -305,6 +342,12 @@ type PluginHTMLSerializer = (input: {
   node: PrismicDocument
 }) => HTMLSerializer
 
+type ShouldDownloadImage = (input: {
+  key: string
+  value: unknown
+  node: PrismicDocument
+}) => boolean | Promise<boolean>
+
 export interface PluginOptions extends GatsbyPluginOptions {
   repositoryName: string
   accessToken?: string
@@ -313,7 +356,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   fetchLinks?: string[]
   schemas: Schemas
   lang?: string
-  shouldDownloadImage?: unknown
-  shouldNormalizeImage?: unknown
+  shouldDownloadImage?: ShouldDownloadImage
+  shouldNormalizeImage?: ShouldDownloadImage
   typePathsFilenamePrefix?: string
 }

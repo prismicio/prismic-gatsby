@@ -1,6 +1,9 @@
 import PrismicDOM from 'prismic-dom'
 import pascalcase from 'pascalcase'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
+import pick from 'lodash.pick'
+import omit from 'lodash.omit'
+import { mapObjValsP, buildSchemaTypeName } from './utils'
 import {
   DocumentsToNodesEnvironment,
   TypePath,
@@ -17,8 +20,10 @@ import {
   Field,
   NormalizedField,
   NormalizedAlternateLanguagesField,
+  ImageField,
 } from './types'
-import { mapObjVals, buildSchemaTypeName } from './utils'
+
+const IMAGE_FIELD_KEYS = ['alt', 'copyright', 'dimensions', 'url'] as const
 
 const getTypeForPath = (
   path: TypePath['path'],
@@ -34,13 +39,13 @@ const getTypeForPath = (
   return def.type
 }
 
-const normalizeField = (
+const normalizeField = async (
   apiId: string,
   field: Field,
   path: TypePath['path'],
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
-): NormalizedField => {
+): Promise<NormalizedField> => {
   const {
     createNodeId,
     createNode,
@@ -56,11 +61,22 @@ const normalizeField = (
 
   switch (type) {
     case GraphQLType.Image: {
-      // TODO
+      const baseObj: ImageField = pick(field as ImageField, IMAGE_FIELD_KEYS)
+      const thumbsObj = omit(field as ImageField, IMAGE_FIELD_KEYS) as {
+        [key: string]: ImageField
+      }
+
+      const base = await normalizeImageField(apiId, baseObj, path, doc, env)
+      const thumbs = await mapObjValsP(
+        async thumb => await normalizeImageField(apiId, thumb, path, doc, env),
+        thumbsObj,
+      )
+
+      return { ...base, thumbnails: thumbs }
     }
 
     case GraphQLType.StructuredText: {
-      return normalizeStructuredTextField(
+      return await normalizeStructuredTextField(
         apiId,
         field as StructuredTextField,
         path,
@@ -70,51 +86,58 @@ const normalizeField = (
     }
 
     case GraphQLType.Link: {
-      return normalizeLinkField(apiId, field as LinkField, path, doc, env)
+      return await normalizeLinkField(apiId, field as LinkField, path, doc, env)
     }
 
     case GraphQLType.Group: {
-      return normalizeObjs(field as GroupField, [...path, apiId], doc, env)
+      return await normalizeObjs(
+        field as GroupField,
+        [...path, apiId],
+        doc,
+        env,
+      )
     }
 
     case GraphQLType.Slices: {
-      const sliceNodeIds = (field as SlicesField).map((slice, index) => {
-        const sliceNodeId = createNodeId(
-          `${doc.type} ${doc.id} ${apiId} ${index}`,
-        )
+      const sliceNodeIds = await Promise.all(
+        (field as SlicesField).map(async (slice, index) => {
+          const sliceNodeId = createNodeId(
+            `${doc.type} ${doc.id} ${apiId} ${index}`,
+          )
 
-        const normalizedPrimary = normalizeObj(
-          slice.primary,
-          [...path, apiId, slice.slice_type, 'primary'],
-          doc,
-          env,
-        )
+          const normalizedPrimary = await normalizeObj(
+            slice.primary,
+            [...path, apiId, slice.slice_type, 'primary'],
+            doc,
+            env,
+          )
 
-        const normalizedItems = normalizeObjs(
-          slice.items,
-          [...path, apiId, slice.slice_type, 'items'],
-          doc,
-          env,
-        )
+          const normalizedItems = await normalizeObjs(
+            slice.items,
+            [...path, apiId, slice.slice_type, 'items'],
+            doc,
+            env,
+          )
 
-        const node: SliceNodeInput = {
-          id: sliceNodeId,
-          primary: normalizedPrimary,
-          items: normalizedItems,
-          internal: {
-            type: pascalcase(
-              `Prismic ${doc.type} ${apiId} ${slice.slice_type}`,
-            ),
-            contentDigest: createContentDigest(slice),
-          },
-        }
+          const node: SliceNodeInput = {
+            id: sliceNodeId,
+            primary: normalizedPrimary,
+            items: normalizedItems,
+            internal: {
+              type: pascalcase(
+                `Prismic ${doc.type} ${apiId} ${slice.slice_type}`,
+              ),
+              contentDigest: createContentDigest(slice),
+            },
+          }
 
-        createNode(node)
+          createNode(node)
 
-        return node.id
-      })
+          return node.id
+        }),
+      )
 
-      return normalizeSlicesField(
+      return await normalizeSlicesField(
         apiId,
         sliceNodeIds,
         [...path, apiId],
@@ -129,16 +152,19 @@ const normalizeField = (
       // Treat the array of alternate language documents as a list of link
       // fields. We need to force the link type to a Document since it is not
       // there by default.
-      return (field as AlternateLanguagesField).map(item =>
-        normalizeLinkField(
-          apiId,
-          {
-            ...item,
-            link_type: LinkFieldType.Document,
-          },
-          path,
-          doc,
-          env,
+      return await Promise.all(
+        (field as AlternateLanguagesField).map(
+          async item =>
+            await normalizeLinkField(
+              apiId,
+              {
+                ...item,
+                link_type: LinkFieldType.Document,
+              },
+              path,
+              doc,
+              env,
+            ),
         ),
       )
     }
@@ -149,25 +175,25 @@ const normalizeField = (
   }
 }
 
-const normalizeObj = (
+const normalizeObj = async (
   obj: { [key: string]: Field } = {},
   path: TypePath['path'],
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
-): { [key: string]: NormalizedField } =>
-  mapObjVals(
+): Promise<{ [key: string]: NormalizedField }> =>
+  mapObjValsP(
     (field, fieldApiId) => normalizeField(fieldApiId, field, path, doc, env),
     obj,
   )
 
-const normalizeObjs = (
+const normalizeObjs = async (
   objs: { [key: string]: Field }[] = [],
   path: TypePath['path'],
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
-) => objs.map(obj => normalizeObj(obj, path, doc, env))
+) => await Promise.all(objs.map(obj => normalizeObj(obj, path, doc, env)))
 
-const documentToNodes = (
+const documentToNodes = async (
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
 ) => {
@@ -180,14 +206,19 @@ const documentToNodes = (
   const docNodeId = createNodeId(`${doc.type} ${doc.id}`)
   const docUrl = PrismicDOM.Link.url(doc, linkResolverForDoc)
 
-  const normalizedData = normalizeObj(doc.data, [doc.type, 'data'], doc, env)
-  const normalizedAlernativeLanguages = normalizeField(
+  const normalizedData = await normalizeObj(
+    doc.data,
+    [doc.type, 'data'],
+    doc,
+    env,
+  )
+  const normalizedAlernativeLanguages = (await normalizeField(
     'alternate_languages',
     (doc.alternate_languages as unknown) as AlternateLanguagesField,
     [doc.type],
     doc,
     env,
-  ) as NormalizedAlternateLanguagesField
+  )) as NormalizedAlternateLanguagesField
 
   const node: DocumentNodeInput = {
     ...doc,
@@ -207,9 +238,9 @@ const documentToNodes = (
   createNode(node)
 }
 
-export const documentsToNodes = (
+export const documentsToNodes = async (
   docs: PrismicDocument[],
   env: DocumentsToNodesEnvironment,
 ) => {
-  for (const doc of docs) documentToNodes(doc, env)
+  await Promise.all(docs.map(doc => documentToNodes(doc, env)))
 }

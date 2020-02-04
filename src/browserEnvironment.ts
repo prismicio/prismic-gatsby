@@ -1,7 +1,8 @@
-import { SourceNodesArgs } from 'gatsby'
+import { NodeInput } from 'gatsby'
 import PrismicDOM from 'prismic-dom'
-import { createRemoteFileNode } from 'gatsby-source-filesystem'
-import { msg } from './utils'
+import uuidv5 from 'uuid/v5'
+import md5 from 'md5'
+import { buildFixedGatsbyImage, buildFluidGatsbyImage } from './gatsbyImage'
 import {
   DocumentsToNodesEnvironment,
   SlicesFieldNormalizer,
@@ -16,61 +17,35 @@ import {
   PluginOptions,
 } from './types'
 
+const UUID_NAMESPACE = `638f7a53-c567-4eca-8fc1-b23efb1cfb2b`
+
+// TODO: Implement browser environment. The following was mostly copy/pasted
+// from the node environment.
+
 const normalizeImageField: ImageFieldNormalizer = async (
-  apiId,
+  _apiId,
   field,
   _path,
-  doc,
-  env,
+  _doc,
+  _env,
 ) => {
-  const { createNode, createNodeId, gatsbyContext, pluginOptions } = env
-  const { store, cache, actions, reporter } = gatsbyContext!
-  const { touchNode } = actions
-  let { shouldDownloadImage } = pluginOptions
+  const url = field.url
 
-  let shouldAttemptToCreateRemoteFileNode = true
-  if (shouldDownloadImage)
-    shouldAttemptToCreateRemoteFileNode = await shouldDownloadImage({
-      key: apiId,
-      value: field,
-      node: doc,
-    })
+  if (!url) return field
 
-  if (!shouldAttemptToCreateRemoteFileNode || !field.url) return field
-
-  let fileNodeID: NodeID | undefined = undefined
-  const cachedImageDataKey = `prismic-image-${field.url}`
-  const cachedImageData: { fileNodeID: string } = await cache.get(
-    cachedImageDataKey,
+  const fixed = buildFixedGatsbyImage(
+    url,
+    field.dimensions!.width,
+    field.dimensions!.width,
   )
 
-  if (cachedImageData) {
-    fileNodeID = cachedImageData.fileNodeID
-    touchNode({ nodeId: fileNodeID })
-  } else {
-    try {
-      const fileNode = await createRemoteFileNode({
-        url: decodeURIComponent(field.url),
-        store,
-        cache,
-        createNode,
-        createNodeId,
-        reporter,
-      })
+  const fluid = buildFluidGatsbyImage(
+    url,
+    field.dimensions!.width,
+    field.dimensions!.width,
+  )
 
-      if (fileNode) {
-        fileNodeID = fileNode.id
-        await cache.set(cachedImageDataKey, { fileNodeID })
-      }
-    } catch (error) {
-      reporter.error(
-        msg(`failed to create image node with URL: ${field.url}`),
-        new Error(error),
-      )
-    }
-  }
-
-  return { ...field, localFile: fileNodeID }
+  return { ...field, fixed, fluid }
 }
 
 const normalizeLinkField: LinkFieldNormalizer = (
@@ -111,7 +86,7 @@ const normalizeSlicesField: SlicesFieldNormalizer = (
   _env,
 ) => field
 
-const normalizeStructuredTextField: StructuredTextFieldNormalizer = (
+const normalizeStructuredTextField: StructuredTextFieldNormalizer = async (
   apiId,
   field,
   _path,
@@ -150,15 +125,17 @@ const normalizeStructuredTextField: StructuredTextFieldNormalizer = (
 
 export const createEnvironment = (
   pluginOptions: PluginOptions,
-  gatsbyContext: SourceNodesArgs,
   typePaths: TypePath[],
 ): DocumentsToNodesEnvironment => {
-  const { actions, createNodeId, createContentDigest } = gatsbyContext
-  const { createNode } = actions
+  const nodeStore = new Map()
+
+  const createNode = (node: NodeInput) => void nodeStore.set(node.id, node)
+  const createNodeId = (input: string) => uuidv5(input, UUID_NAMESPACE)
+  const createContentDigest = (input: unknown) => md5(JSON.stringify(input))
 
   return {
     createNode,
-    createNodeId: (input: string) => createNodeId(input),
+    createNodeId,
     createContentDigest,
     normalizeImageField,
     normalizeLinkField,
@@ -166,6 +143,5 @@ export const createEnvironment = (
     normalizeStructuredTextField,
     typePaths,
     pluginOptions,
-    gatsbyContext,
   }
 }

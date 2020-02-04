@@ -82,6 +82,30 @@ export const mapObjVals = <T1, T2>(
 }
 
 /**
+ * Maps values of an object to new values.
+ *
+ * @param fn Function that maps a value and key to a new value.
+ * @param obj Object to map to a new object.
+ *
+ * @returns New object with mapped values.
+ */
+export const mapObjValsP = async <T1, T2>(
+  fn: (val: T1, key: string) => Promise<T2>,
+  obj: { [key: string]: T1 },
+): Promise<{ [key: string]: T2 }> => {
+  const result: { [key: string]: T2 } = {}
+
+  const keys = Object.keys(obj)
+  await Promise.all(
+    keys.map(async key => {
+      result[key] = await fn(obj[key], key)
+    }),
+  )
+
+  return result
+}
+
+/**
  * Returns true if the provided object has no keys, false otherwise.
  *
  * @param obj Object to check.

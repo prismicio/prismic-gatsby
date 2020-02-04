@@ -4,7 +4,7 @@
     "target": "es6",
     "module": "esnext",
     "resolveJsonModule": true,
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,

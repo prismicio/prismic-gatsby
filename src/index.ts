@@ -1,1 +1,1 @@
-// noop
+export { buildFixedGatsbyImage, buildFluidGatsbyImage } from './gatsbyImage'
