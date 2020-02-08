@@ -1,5 +1,5 @@
 import path from 'path'
-import fsExtra from 'fs-extra'
+import { writeFileSync, copyFileSync } from 'fs-extra'
 import md5 from 'md5'
 import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 
@@ -90,7 +90,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   )
 
   reporter.verbose(msg(`writing out type paths to : ${typePathsFilename}`))
-  fsExtra.writeFileSync(typePathsFilename, JSON.stringify(typePaths))
+  writeFileSync(typePathsFilename, JSON.stringify(typePaths))
 
   writeTypePathsActivity.end()
 }
@@ -109,7 +109,7 @@ export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = gatsbyCont
   const program = store.getState().program
 
   // Add fragments for GatsbyPrismicImage to .cache/fragments.
-  fsExtra.copySync(
+  copyFileSync(
     path.join(__dirname, '../src/fragments.ts'),
     `${program.directory}/.cache/fragments/gatsby-source-prismic-fragments.js`,
   )

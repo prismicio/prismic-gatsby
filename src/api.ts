@@ -1,5 +1,5 @@
 import { SourceNodesArgs, Reporter } from 'gatsby'
-import Prismic from 'prismic-javascript'
+import { getApi } from 'prismic-javascript'
 import PrismicResolvedApi, {
   QueryOptions,
 } from 'prismic-javascript/d.ts/ResolvedApi'
@@ -12,7 +12,7 @@ export const createClient = async (
   repositoryName: string,
   accessToken?: string,
 ) =>
-  await Prismic.getApi(`https://${repositoryName}.prismic.io/api/v2`, {
+  await getApi(`https://${repositoryName}.prismic.io/api/v2`, {
     accessToken,
   })
 

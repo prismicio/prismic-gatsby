@@ -11,8 +11,8 @@ const baseSchema = {
 }
 
 const baseDefaults = {
-  linkResolver: () => () => {},
-  htmlSerializer: () => () => {},
+  linkResolver: () => () => () => {},
+  htmlSerializer: () => () => () => {},
   fetchLinks: [],
   typePathsFilenamePrefix: 'prismic-typepaths---',
 }
@@ -28,7 +28,7 @@ const PluginOptionsValidator = struct(
   {
     ...baseDefaults,
     lang: '*',
-    shouldDownloadImage: () => false,
+    shouldDownloadImage: () => () => false,
     plugins: [],
   },
 )
