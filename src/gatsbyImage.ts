@@ -4,6 +4,8 @@ import {
   GatsbyFluidImageProps,
   GatsbyImageFixedArgs,
   GatsbyImageFluidArgs,
+  GraphQLType,
+  NormalizedImageField,
 } from './types'
 
 // Default width for `fixed` images. Same as `gatsby-plugin-sharp`.
@@ -166,4 +168,31 @@ export const buildFluidGatsbyImage = (
     srcSetWebp: srcSet,
     sizes: '',
   }
+}
+
+export const resolvers = {
+  [GraphQLType.Image]: {
+    fixed: {
+      resolve: (source: NormalizedImageField, args: GatsbyImageFixedArgs) =>
+        source.url
+          ? buildFixedGatsbyImage(
+              source.url,
+              source.dimensions!.width,
+              source.dimensions!.height,
+              args,
+            )
+          : undefined,
+    },
+    fluid: {
+      resolve: (source: NormalizedImageField, args: GatsbyImageFluidArgs) =>
+        source.url
+          ? buildFluidGatsbyImage(
+              source.url,
+              source.dimensions!.width,
+              source.dimensions!.height,
+              args,
+            )
+          : undefined,
+    },
+  },
 }

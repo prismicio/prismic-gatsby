@@ -1,21 +1,15 @@
 import path from 'path'
 import fsExtra from 'fs-extra'
-import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 import md5 from 'md5'
+import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 
 import { schemasToTypeDefs } from './schemasToTypeDefs'
 import { fetchAllDocuments } from './fetchAllDocuments'
 import { documentsToNodes } from './documentsToNodes'
-import { createEnvironment } from './nodeEnvironment'
-import { buildFixedGatsbyImage, buildFluidGatsbyImage } from './gatsbyImage'
+import { createEnvironment } from './environment.node'
+import { resolvers as gatsbyImageResolvers } from './gatsbyImage'
 import { msg } from './utils'
-import {
-  PluginOptions,
-  GraphQLType,
-  GatsbyImageFixedArgs,
-  GatsbyImageFluidArgs,
-  NormalizedImageField,
-} from './types'
+import { PluginOptions } from './types'
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   gatsbyContext: SourceNodesArgs,
@@ -93,35 +87,7 @@ export const createResolvers: GatsbyNode['createResolvers'] = async (
   _pluginOptions: PluginOptions,
 ) => {
   const { createResolvers } = gatsbyContext
-
-  const resolvers = {
-    [GraphQLType.Image]: {
-      fixed: {
-        resolve: (source: NormalizedImageField, args: GatsbyImageFixedArgs) =>
-          source.url
-            ? buildFixedGatsbyImage(
-                source.url,
-                source.dimensions!.width,
-                source.dimensions!.height,
-                args,
-              )
-            : undefined,
-      },
-      fluid: {
-        resolve: (source: NormalizedImageField, args: GatsbyImageFluidArgs) =>
-          source.url
-            ? buildFluidGatsbyImage(
-                source.url,
-                source.dimensions!.width,
-                source.dimensions!.height,
-                args,
-              )
-            : undefined,
-      },
-    },
-  }
-
-  createResolvers(resolvers)
+  createResolvers(gatsbyImageResolvers)
 }
 
 export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = gatsbyContext => {
