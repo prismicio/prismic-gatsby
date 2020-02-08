@@ -3,6 +3,7 @@ import fsExtra from 'fs-extra'
 import md5 from 'md5'
 import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 
+import { validatePluginOptions } from './validateOptions'
 import { schemasToTypeDefs } from './schemasToTypeDefs'
 import { fetchAllDocuments } from './api'
 import { documentsToNodes } from './documentsToNodes'
@@ -24,6 +25,18 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   const writeTypePathsActivity = reporter.activityTimer(
     msg('write out type paths'),
   )
+
+  /**
+   * Validate plugin options. Set default options where necessary. If any
+   * plugin options are invalid, stop immediately.
+   */
+
+  try {
+    pluginOptions = validatePluginOptions(pluginOptions)
+  } catch (error) {
+    reporter.error(msg('invalid plugin options'))
+    reporter.panic(error)
+  }
 
   /**
    * Create types derived from Prismic custom type schemas.
