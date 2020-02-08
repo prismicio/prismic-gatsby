@@ -4,7 +4,7 @@ import md5 from 'md5'
 import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 
 import { schemasToTypeDefs } from './schemasToTypeDefs'
-import { fetchAllDocuments } from './fetchAllDocuments'
+import { fetchAllDocuments } from './api'
 import { documentsToNodes } from './documentsToNodes'
 import { createEnvironment } from './environment.node'
 import { resolvers as gatsbyImageResolvers } from './gatsbyImage'

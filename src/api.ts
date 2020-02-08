@@ -8,6 +8,14 @@ import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import { msg } from './utils'
 import { PluginOptions } from './types'
 
+export const createClient = async (
+  repositoryName: string,
+  accessToken?: string,
+) =>
+  await Prismic.getApi(`https://${repositoryName}.prismic.io/api/v2`, {
+    accessToken,
+  })
+
 const pagedGet = async (
   client: PrismicResolvedApi,
   queryOptions: QueryOptions,
@@ -42,10 +50,7 @@ export const fetchAllDocuments = async (
   const { repositoryName, accessToken, fetchLinks, lang } = pluginOptions
   const { reporter } = gatsbyContext
 
-  const apiEndpoint = `https://${repositoryName}.prismic.io/api/v2`
-  const client = await Prismic.getApi(apiEndpoint, {
-    accessToken,
-  })
+  const client = await createClient(repositoryName, accessToken)
 
   const queryOptions: QueryOptions = {}
   if (fetchLinks) queryOptions.fetchLinks = fetchLinks

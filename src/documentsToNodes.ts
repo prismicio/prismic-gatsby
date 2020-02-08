@@ -193,7 +193,7 @@ const normalizeObjs = async (
   env: DocumentsToNodesEnvironment,
 ) => await Promise.all(objs.map(obj => normalizeObj(obj, path, doc, env)))
 
-const documentToNodes = async (
+export const documentToNodes = async (
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
 ) => {

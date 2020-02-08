@@ -2,6 +2,7 @@ import {
   PluginOptions as GatsbyPluginOptions,
   SourceNodesArgs,
   NodeInput,
+  Node,
 } from 'gatsby'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import * as PrismicDOM from 'prismic-dom'
@@ -20,6 +21,30 @@ export interface DocumentNodeInput extends NodeInput {
 export interface SliceNodeInput extends NodeInput {
   primary: { [key: string]: NormalizedField }
   items: { [key: string]: NormalizedField }[]
+}
+
+export interface DocumentsToNodesEnvironment {
+  createNode: (node: NodeInput) => void
+  createNodeId: (input: string) => string
+  createContentDigest: (input: unknown) => string
+  normalizeImageField: ImageFieldNormalizer
+  normalizeLinkField: LinkFieldNormalizer
+  normalizeSlicesField: SlicesFieldNormalizer
+  normalizeStructuredTextField: StructuredTextFieldNormalizer
+  typePaths: TypePath[]
+  pluginOptions: PluginOptions
+  context:
+    | DocumentsToNodesEnvironmentNodeContext
+    | DocumentsToNodesEnvironmentBrowserContext
+}
+
+export interface DocumentsToNodesEnvironmentNodeContext {
+  gatsbyContext: SourceNodesArgs
+}
+
+export interface DocumentsToNodesEnvironmentBrowserContext {
+  hasNodeById: (id: string) => boolean
+  getNodeById: <T>(id: string) => T & Node
 }
 
 export interface TypePath {
@@ -186,19 +211,6 @@ export type NormalizedAlternateLanguagesField = AlternateLanguagesField
 export type GroupField = { [key: string]: Field }[]
 
 export type NormalizedGroupField = { [key: string]: NormalizedField }[]
-
-export interface DocumentsToNodesEnvironment {
-  createNode: (node: NodeInput) => void
-  createNodeId: (input: string) => string
-  createContentDigest: (input: unknown) => string
-  normalizeImageField: ImageFieldNormalizer
-  normalizeLinkField: LinkFieldNormalizer
-  normalizeSlicesField: SlicesFieldNormalizer
-  normalizeStructuredTextField: StructuredTextFieldNormalizer
-  typePaths: TypePath[]
-  pluginOptions: PluginOptions
-  gatsbyContext?: SourceNodesArgs
-}
 
 export enum FieldType {
   Color = 'Color',

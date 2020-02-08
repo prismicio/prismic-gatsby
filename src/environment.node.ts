@@ -4,6 +4,7 @@ import { createRemoteFileNode } from 'gatsby-source-filesystem'
 import { msg } from './utils'
 import {
   DocumentsToNodesEnvironment,
+  DocumentsToNodesEnvironmentNodeContext,
   SlicesFieldNormalizer,
   ImageFieldNormalizer,
   LinkFieldNormalizer,
@@ -23,8 +24,9 @@ const normalizeImageField: ImageFieldNormalizer = async (
   doc,
   env,
 ) => {
-  const { createNode, createNodeId, gatsbyContext, pluginOptions } = env
-  const { store, cache, actions, reporter } = gatsbyContext!
+  const { createNode, createNodeId, pluginOptions, context } = env
+  const { gatsbyContext } = context as DocumentsToNodesEnvironmentNodeContext
+  const { store, cache, actions, reporter } = gatsbyContext
   const { touchNode } = actions
   let { shouldDownloadImage } = pluginOptions
 
@@ -166,6 +168,6 @@ export const createEnvironment = (
     normalizeStructuredTextField,
     typePaths,
     pluginOptions,
-    gatsbyContext,
+    context: { gatsbyContext },
   }
 }
