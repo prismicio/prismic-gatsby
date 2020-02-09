@@ -29,8 +29,8 @@ const mockGatsbyContext = {
 
 const pluginOptions = {
   repositoryName: 'repoName',
-  plugins: [],
   schemas: { page: mockSchema },
+  plugins: [],
 }
 
 describe('usePrismicPreview', () => {
