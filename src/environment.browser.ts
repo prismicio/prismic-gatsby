@@ -1,4 +1,7 @@
-import PrismicDOM from 'prismic-dom'
+import {
+  Link as PrismicDOMLink,
+  RichText as PrismicDOMRichText,
+} from 'prismic-dom'
 import uuidv5 from 'uuid/v5'
 import md5 from 'md5'
 
@@ -128,7 +131,7 @@ const normalizeLinkField: LinkFieldNormalizer = (
   return new Proxy(
     {
       ...field,
-      url: PrismicDOM.Link.url(field, linkResolverForField),
+      url: PrismicDOMLink.url(field, linkResolverForField),
       document: linkedDocId,
       raw: field,
     },
@@ -205,12 +208,12 @@ const normalizeStructuredTextField: StructuredTextFieldNormalizer = async (
     })
 
   return {
-    html: PrismicDOM.RichText.asHtml(
+    html: PrismicDOMRichText.asHtml(
       field,
       linkResolverForField,
       htmlSerializerForField,
     ),
-    text: PrismicDOM.RichText.asText(field),
+    text: PrismicDOMRichText.asText(field),
     raw: field,
   }
 }

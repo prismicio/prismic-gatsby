@@ -1,4 +1,4 @@
-import PrismicDOM from 'prismic-dom'
+import { Link as PrismicDOMLink } from 'prismic-dom'
 import pascalcase from 'pascalcase'
 import pick from 'lodash.pick'
 import omit from 'lodash.omit'
@@ -205,7 +205,7 @@ export const documentToNodes = async (
   if (linkResolver) linkResolverForDoc = linkResolver({ node: doc })
 
   const docNodeId = createNodeId(`${doc.type} ${doc.id}`)
-  const docUrl = PrismicDOM.Link.url(doc, linkResolverForDoc)
+  const docUrl = PrismicDOMLink.url(doc, linkResolverForDoc)
 
   const normalizedData = await normalizeObj(
     doc.data,

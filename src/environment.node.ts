@@ -1,4 +1,7 @@
-import PrismicDOM from 'prismic-dom'
+import {
+  Link as PrismicDOMLink,
+  RichText as PrismicDOMRichText,
+} from 'prismic-dom'
 import { createRemoteFileNode } from 'gatsby-source-filesystem'
 
 import { msg } from './utils'
@@ -101,7 +104,7 @@ const normalizeLinkField: LinkFieldNormalizer = (
 
   return {
     ...field,
-    url: PrismicDOM.Link.url(field, linkResolverForField),
+    url: PrismicDOMLink.url(field, linkResolverForField),
     document: linkedDocId,
     raw: field,
   }
@@ -142,12 +145,12 @@ const normalizeStructuredTextField: StructuredTextFieldNormalizer = (
     })
 
   return {
-    html: PrismicDOM.RichText.asHtml(
+    html: PrismicDOMRichText.asHtml(
       field,
       linkResolverForField,
       htmlSerializerForField,
     ),
-    text: PrismicDOM.RichText.asText(field),
+    text: PrismicDOMRichText.asText(field),
     raw: field,
   }
 }

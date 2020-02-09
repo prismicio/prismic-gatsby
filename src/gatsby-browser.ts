@@ -1,7 +1,6 @@
 import md5 from 'md5'
 import omit from 'lodash.omit'
 
-import { isBrowser } from './utils'
 import { BROWSER_STORE_KEY } from './constants'
 
 import { GatsbyBrowser } from 'gatsby'
@@ -24,8 +23,6 @@ export const onClientEntry: GatsbyBrowser['onClientEntry'] = (
   _gatsbyContext,
   pluginOptions: BrowserPluginOptions,
 ) => {
-  if (!isBrowser) return
-
   const params = new URLSearchParams(window.location.search)
   const isPreviewSession = params.has('token') && params.has('documentId')
 
