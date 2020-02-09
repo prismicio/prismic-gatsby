@@ -7,6 +7,7 @@ import { validateBrowserOptions } from './validateOptions'
 import { createClient } from './api'
 import { createEnvironment } from './environment.browser'
 import { documentToNodes } from './documentsToNodes'
+import { isBrowser } from './utils'
 import { BROWSER_STORE_KEY } from './constants'
 
 import { Node } from 'gatsby'
@@ -99,6 +100,8 @@ export const usePrismicPreview = (options: Options) => {
     typePathsFilenamePrefix: string
     schemasDigest: string
   } = useMemo(() => {
+    if (!isBrowser) return options
+
     const context = window[BROWSER_STORE_KEY][options.repositoryName]
 
     if (!context)
@@ -114,13 +117,15 @@ export const usePrismicPreview = (options: Options) => {
   }, [options])
 
   const { token, documentId } = useMemo(() => {
+    if (!isBrowser) return {}
+
     const params = new URLSearchParams(window.location.search)
 
     return {
       token: params.get('token') ?? undefined,
       documentId: params.get('documentId') ?? undefined,
     }
-  }, [window.location.search])
+  }, [isBrowser ? window.location.search : undefined])
 
   /**
    * Set the preview status as soon as possible.
