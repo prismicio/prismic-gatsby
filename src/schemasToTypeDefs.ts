@@ -148,7 +148,10 @@ const fieldToType = (
       const sliceChoiceTypes = Object.entries(
         sliceChoices,
       ).map(([sliceChoiceApiId, sliceChoice]) =>
-        fieldToType(sliceChoiceApiId, sliceChoice, [...path, apiId], context),
+        fieldToType(sliceChoiceApiId, sliceChoice, [...path, apiId], {
+          ...context,
+          sliceZoneId: apiId,
+        }),
       )
 
       enqueueTypeDef(

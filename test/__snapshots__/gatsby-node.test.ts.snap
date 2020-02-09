@@ -5,15 +5,126 @@ exports[`sourceNodes creates types 1`] = `
   "calls": Array [
     Array [
       Array [
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "published_on": "Date",
+            },
+            "name": "PrismicPageMainNewsPostPrimaryType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "name": "PrismicPageMainSlicesType",
+            "types": Array [
+              "PrismicPageMainNewsPost",
+            ],
+          },
+          "kind": "UNION",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "text": "PrismicStructuredTextType",
+            },
+            "name": "PrismicPageBodyTextPrimaryType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "caption": "PrismicStructuredTextType",
+              "image": "PrismicImageType",
+            },
+            "interfaces": Array [
+              "Node",
+            ],
+            "name": "PrismicPageBodyImagesItemType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "name": "PrismicPageBodySlicesType",
+            "types": Array [
+              "PrismicPageBodyText",
+              "PrismicPageBodyImages",
+            ],
+          },
+          "kind": "UNION",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "body": "[PrismicPageBodySlicesType]",
+              "main": "[PrismicPageMainSlicesType]",
+              "meta_description": "String",
+              "meta_title": "String",
+              "parent": "PrismicLinkType",
+              "title": "PrismicStructuredTextType",
+            },
+            "name": "PrismicPageDataType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "alternate_languages": "[PrismicLinkType!]!",
+              "data": "PrismicPageDataType",
+              "dataRaw": "JSON!",
+              "dataString": "String!",
+              "first_publication_date": "Date!",
+              "href": "String!",
+              "lang": "String!",
+              "last_publication_date": "Date!",
+              "prismicId": "ID!",
+              "tags": "[String!]!",
+              "type": "String!",
+              "uid": "String",
+              "url": "String",
+            },
+            "interfaces": Array [
+              "PrismicDocument",
+              "Node",
+            ],
+            "name": "PrismicPage",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "name": "PrismicAllDocumentTypes",
+            "types": Array [
+              "PrismicPage",
+            ],
+          },
+          "kind": "UNION",
+        },
+        Object {
+          "config": Object {
+            "name": "PrismicImageThumbnailsType",
+            "serialize": [Function],
+          },
+          "kind": "SCALAR",
+        },
       ],
     ],
   ],

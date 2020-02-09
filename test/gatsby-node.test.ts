@@ -109,12 +109,25 @@ const mockGatsbyContext: SourceNodesArgs = {
   waitForCascadingActions: false,
   parentSpan: {},
   schema: {
-    buildObjectType: jest.fn(),
-    buildUnionType: jest.fn(),
-    buildInterfaceType: jest.fn(),
-    buildInputObjectType: jest.fn(),
-    buildEnumType: jest.fn(),
-    buildScalarType: jest.fn(),
+    buildObjectType: jest
+      .fn()
+      .mockImplementation(config => ({ kind: 'OBJECT', config })),
+    buildUnionType: jest.fn().mockImplementation(config => ({
+      kind: 'UNION',
+      config,
+    })),
+    buildInterfaceType: jest
+      .fn()
+      .mockImplementation(config => ({ kind: 'INTERFACE', config })),
+    buildInputObjectType: jest
+      .fn()
+      .mockImplementation(config => ({ kind: 'INPUT', config })),
+    buildEnumType: jest
+      .fn()
+      .mockImplementation(config => ({ kind: 'ENUM', config })),
+    buildScalarType: jest
+      .fn()
+      .mockImplementation(config => ({ kind: 'SCALAR', config })),
   },
 }
 
