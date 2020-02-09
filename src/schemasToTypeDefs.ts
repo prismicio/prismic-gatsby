@@ -200,7 +200,6 @@ const fieldToType = (
                 ),
               primaryFields,
             ) as { [key: string]: GraphQLType },
-            extensions: { infer: false },
           }),
         )
 
@@ -226,8 +225,6 @@ const fieldToType = (
                 ),
               itemsFields,
             ) as { [key: string]: GraphQLType },
-            interfaces: ['Node'],
-            extensions: { infer: false },
           }),
         )
 

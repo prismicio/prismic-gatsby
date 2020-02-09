@@ -202,9 +202,6 @@ exports[`sourceNodes creates types 1`] = `
       Array [
         Object {
           "config": Object {
-            "extensions": Object {
-              "infer": false,
-            },
             "fields": Object {
               "published_on": Object {
                 "extensions": Object {
@@ -246,9 +243,6 @@ exports[`sourceNodes creates types 1`] = `
         },
         Object {
           "config": Object {
-            "extensions": Object {
-              "infer": false,
-            },
             "fields": Object {
               "text": "PrismicStructuredTextType",
             },
@@ -276,16 +270,10 @@ exports[`sourceNodes creates types 1`] = `
         },
         Object {
           "config": Object {
-            "extensions": Object {
-              "infer": false,
-            },
             "fields": Object {
               "caption": "PrismicStructuredTextType",
               "image": "PrismicImageType",
             },
-            "interfaces": Array [
-              "Node",
-            ],
             "name": "PrismicPageBodyImagesItemType",
           },
           "kind": "OBJECT",
