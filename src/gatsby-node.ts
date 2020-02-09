@@ -113,7 +113,7 @@ export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = gatsbyCont
 
   // Add fragments for GatsbyPrismicImage to .cache/fragments.
   copyFileSync(
-    path.resolve(__dirname, 'fragments.js'),
+    path.resolve(__dirname, '../fragments.js'),
     path.resolve(
       program.directory,
       '.cache/fragments/gatsby-source-prismic-fragments.js',
