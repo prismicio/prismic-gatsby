@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`usePrismicPreview updates return state while fetching preview 1`] = `
+exports[`usePrismicPreview updates state while fetching preview 1`] = `
 Object {
   "prismicPage": Object {
     "alternate_languages": Array [],

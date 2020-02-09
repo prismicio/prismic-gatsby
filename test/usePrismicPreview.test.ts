@@ -54,7 +54,7 @@ describe('usePrismicPreview', () => {
     )
   })
 
-  test('updates return state while fetching preview', async () => {
+  test('updates state while fetching preview', async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       usePrismicPreview({ repositoryName: pluginOptions.repositoryName }),
     )
