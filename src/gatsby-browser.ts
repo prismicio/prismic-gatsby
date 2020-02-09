@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-interface BrowserPluginOptionsStore {
+export interface BrowserPluginOptionsStore {
   [key: string]: {
     pluginOptions: BrowserPluginOptions
     schemasDigest: string
@@ -28,10 +28,9 @@ export const onClientEntry: GatsbyBrowser['onClientEntry'] = (
 
   if (!isPreviewSession) return
 
-  let store = window[BROWSER_STORE_KEY]
-  store = store || {}
+  window[BROWSER_STORE_KEY] = window[BROWSER_STORE_KEY] || {}
 
-  Object.assign(store, {
+  Object.assign(window[BROWSER_STORE_KEY], {
     [pluginOptions.repositoryName]: {
       pluginOptions: omit(pluginOptions, ['schemas', 'plugins']),
       schemasDigest: md5(JSON.stringify(pluginOptions.schemas)),

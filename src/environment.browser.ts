@@ -92,13 +92,13 @@ const normalizeImageField: ImageFieldNormalizer = async (
   const fixed = buildFixedGatsbyImage(
     url,
     field.dimensions!.width,
-    field.dimensions!.width,
+    field.dimensions!.height,
   )
 
   const fluid = buildFluidGatsbyImage(
     url,
     field.dimensions!.width,
-    field.dimensions!.width,
+    field.dimensions!.height,
   )
 
   return { ...field, fixed, fluid }

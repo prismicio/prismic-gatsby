@@ -14,17 +14,24 @@ import { Node } from 'gatsby'
 import { QueryOptions } from 'prismic-javascript/d.ts/ResolvedApi'
 import {
   PluginOptions,
-  DocumentNodeInput,
-  BrowserPluginOptions,
   DocumentsToNodesEnvironmentBrowserContext,
   LinkResolver,
+  BrowserPluginOptions,
 } from './types'
 
-type Options = BrowserPluginOptions &
-  Pick<PluginOptions, 'linkResolver' | 'htmlSerializer'> & {
-    pathResolver?: PluginOptions['linkResolver']
-    schemasDigest?: string
-  }
+type Options = Pick<
+  PluginOptions,
+  | 'repositoryName'
+  | 'accessToken'
+  | 'linkResolver'
+  | 'htmlSerializer'
+  | 'fetchLinks'
+  | 'lang'
+  | 'typePathsFilenamePrefix'
+> & {
+  pathResolver?: PluginOptions['linkResolver']
+  schemasDigest?: string
+}
 
 enum ActionType {
   IS_NOT_PREVIEW = 'IS_NOT_PREVIEW',
@@ -44,14 +51,14 @@ interface Action {
 interface State {
   isPreview?: boolean
   isLoading: boolean
-  document?: DocumentNodeInput
+  previewData?: { [key: string]: Node }
   path?: string
 }
 
 const initialState: State = {
   isPreview: undefined,
   isLoading: false,
-  document: undefined,
+  previewData: undefined,
   path: undefined,
 }
 
@@ -89,6 +96,7 @@ export const usePrismicPreview = (options: Options) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const hydratedOptions: Options & {
+    plugins: []
     lang: string
     typePathsFilenamePrefix: string
     schemasDigest: string
@@ -120,7 +128,7 @@ export const usePrismicPreview = (options: Options) => {
    * Set the preview status as soon as possible.
    */
   useEffect(() => {
-    const isPreview = token && documentId
+    const isPreview = Boolean(token && documentId)
 
     dispatch({
       type: isPreview ? ActionType.IS_PREVIEW : ActionType.IS_NOT_PREVIEW,
@@ -149,7 +157,10 @@ export const usePrismicPreview = (options: Options) => {
       { headers: { 'Content-Type': 'application/json' } },
     )
     const typePaths = await typePathsRes.json()
-    const env = createEnvironment(hydratedOptions, typePaths)
+    const env = createEnvironment(
+      hydratedOptions as BrowserPluginOptions,
+      typePaths,
+    )
     const { context } = env
     const { getNodeById } = context as DocumentsToNodesEnvironmentBrowserContext
     const rootNodeId = await documentToNodes(doc, env)
@@ -164,7 +175,7 @@ export const usePrismicPreview = (options: Options) => {
     const path = PrismicDOMLink.url(doc, linkResolverForDoc)
 
     dispatch({ type: ActionType.DOCUMENT_LOADED, payload: { rootNode, path } })
-  }, [state.isPreview, token])
+  }, [state.isPreview])
 
   useEffect(() => {
     asyncEffect()
