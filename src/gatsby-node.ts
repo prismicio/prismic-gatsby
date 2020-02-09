@@ -32,7 +32,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
    * Validate plugin options. Set default options where necessary. If any
    * plugin options are invalid, stop immediately.
    */
-
   try {
     pluginOptions = validatePluginOptions(pluginOptions)
   } catch (error) {
