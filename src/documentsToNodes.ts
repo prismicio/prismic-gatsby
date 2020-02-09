@@ -175,7 +175,7 @@ const normalizeField = async (
   }
 }
 
-const normalizeObj = async (
+const normalizeObj = (
   obj: { [key: string]: Field } = {},
   path: TypePath['path'],
   doc: PrismicDocument,
@@ -186,12 +186,12 @@ const normalizeObj = async (
     obj,
   )
 
-const normalizeObjs = async (
+const normalizeObjs = (
   objs: { [key: string]: Field }[] = [],
   path: TypePath['path'],
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
-) => await Promise.all(objs.map(obj => normalizeObj(obj, path, doc, env)))
+) => Promise.all(objs.map(obj => normalizeObj(obj, path, doc, env)))
 
 export const documentToNodes = async (
   doc: PrismicDocument,

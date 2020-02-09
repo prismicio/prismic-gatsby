@@ -2,6 +2,7 @@ import { SourceNodesArgs } from 'gatsby'
 
 import { sourceNodes } from '../src/gatsby-node'
 
+import { writeFileSync } from './__mocks__/fs-extra'
 import mockSchema from './__fixtures__/schema.json'
 
 const mockActions = {
@@ -155,6 +156,9 @@ describe('sourceNodes', () => {
   test('writes type paths to filesystem', async () => {
     await sourceNodes!(mockGatsbyContext, pluginOptions)
 
-    expect(mockGatsbyContext.actions.createNode).toMatchSnapshot()
+    expect(writeFileSync).toMatchSnapshot()
+
+    // Ensure valid JSON.
+    expect(JSON.parse(writeFileSync.mock.calls[0][1])).toMatchSnapshot()
   })
 })

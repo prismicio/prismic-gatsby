@@ -1,5 +1,196 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`sourceNodes creates nodes 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "id": "createNodeId",
+        "internal": Object {
+          "contentDigest": "createContentDigest",
+          "type": "PrismicPageBodyText",
+        },
+        "items": Array [
+          Object {},
+        ],
+        "primary": Object {
+          "text": Object {
+            "html": "<p>Example text</p>",
+            "raw": Array [
+              Object {
+                "spans": Array [],
+                "text": "Example text",
+                "type": "paragraph",
+              },
+            ],
+            "text": "Example text",
+          },
+        },
+      },
+    ],
+    Array [
+      Object {
+        "id": "createNodeId",
+        "internal": Object {
+          "contentDigest": "createContentDigest",
+          "type": "PrismicPageBodyImages",
+        },
+        "items": Array [
+          Object {
+            "caption": Object {
+              "html": "<p>Example camption</p>",
+              "raw": Array [
+                Object {
+                  "spans": Array [],
+                  "text": "Example camption",
+                  "type": "paragraph",
+                },
+              ],
+              "text": "Example camption",
+            },
+            "image": Object {
+              "alt": "Example alt text",
+              "copyright": null,
+              "dimensions": Object {
+                "height": 1333,
+                "width": 2000,
+              },
+              "thumbnails": Object {},
+              "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333",
+            },
+          },
+        ],
+        "primary": Object {},
+      },
+    ],
+    Array [
+      Object {
+        "alternate_languages": Array [],
+        "data": Object {
+          "body": Array [
+            "createNodeId",
+            "createNodeId",
+          ],
+          "main": Array [],
+          "meta_description": null,
+          "meta_title": null,
+          "parent": Object {
+            "document": "createNodeId",
+            "link_type": "Document",
+            "raw": Object {
+              "link_type": "Document",
+            },
+            "url": undefined,
+          },
+          "title": Object {
+            "html": "<h1>Home</h1>",
+            "raw": Array [
+              Object {
+                "spans": Array [],
+                "text": "Home",
+                "type": "heading1",
+              },
+            ],
+            "text": "Home",
+          },
+        },
+        "dataRaw": Object {
+          "body": Array [
+            Object {
+              "items": Array [
+                Object {},
+              ],
+              "primary": Object {
+                "text": Array [
+                  Object {
+                    "spans": Array [],
+                    "text": "Example text",
+                    "type": "paragraph",
+                  },
+                ],
+              },
+              "slice_label": null,
+              "slice_type": "text",
+            },
+            Object {
+              "items": Array [
+                Object {
+                  "caption": Array [
+                    Object {
+                      "spans": Array [],
+                      "text": "Example camption",
+                      "type": "paragraph",
+                    },
+                  ],
+                  "image": Object {
+                    "alt": "Example alt text",
+                    "copyright": null,
+                    "dimensions": Object {
+                      "height": 1333,
+                      "width": 2000,
+                    },
+                    "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333",
+                  },
+                },
+              ],
+              "primary": Object {},
+              "slice_label": null,
+              "slice_type": "images",
+            },
+          ],
+          "main": Array [],
+          "meta_description": null,
+          "meta_title": null,
+          "parent": Object {
+            "link_type": "Document",
+          },
+          "title": Array [
+            Object {
+              "spans": Array [],
+              "text": "Home",
+              "type": "heading1",
+            },
+          ],
+        },
+        "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\"},\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\"},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
+        "first_publication_date": "2019-01-06T04:03:51+0000",
+        "href": "https://gatsby-starter-ww.cdn.prismic.io/api/v2/documents/search?ref=Xj9DrRUAACcAJ33X&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22XDF-DhEAACAA5b4F%22%29+%5D%5D",
+        "id": "createNodeId",
+        "internal": Object {
+          "contentDigest": "createContentDigest",
+          "type": "PrismicPage",
+        },
+        "lang": "en-us",
+        "last_publication_date": "2020-02-08T23:26:37+0000",
+        "linked_documents": Array [],
+        "prismicId": "XDF-DhEAACAA5b4F",
+        "slugs": Array [
+          "home",
+        ],
+        "tags": Array [],
+        "type": "page",
+        "uid": "home",
+        "url": undefined,
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
 exports[`sourceNodes creates types 1`] = `
 [MockFunction] {
   "calls": Array [
@@ -135,4 +326,202 @@ exports[`sourceNodes creates types 1`] = `
     },
   ],
 }
+`;
+
+exports[`sourceNodes writes type paths to filesystem 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "/Users/angeloashmore/projects/js/gatsby-source-prismic/public/prismic-typepaths---0d5871ff6ad802968216a91db927d1b7.json",
+      "[{\\"path\\":[\\"page\\",\\"uid\\"],\\"type\\":\\"String\\"},{\\"path\\":[\\"page\\",\\"alternate_languages\\"],\\"type\\":\\"AlternateLanguages\\"},{\\"path\\":[\\"page\\",\\"data\\"],\\"type\\":\\"PrismicPageDataType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"title\\"],\\"type\\":\\"PrismicStructuredTextType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"meta_title\\"],\\"type\\":\\"String\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"meta_description\\"],\\"type\\":\\"String\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"parent\\"],\\"type\\":\\"PrismicLinkType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\",\\"news_post\\",\\"primary\\",\\"published_on\\"],\\"type\\":\\"Date\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\",\\"news_post\\",\\"primary\\"],\\"type\\":\\"PrismicPageMainNewsPostPrimaryType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\",\\"news_post\\"],\\"type\\":\\"PrismicPageMainNewsPost\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\"],\\"type\\":\\"[PrismicPageMainSlicesType]\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"text\\",\\"primary\\",\\"text\\"],\\"type\\":\\"PrismicStructuredTextType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"text\\",\\"primary\\"],\\"type\\":\\"PrismicPageBodyTextPrimaryType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"text\\"],\\"type\\":\\"PrismicPageBodyText\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\",\\"items\\",\\"image\\"],\\"type\\":\\"PrismicImageType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\",\\"items\\",\\"caption\\"],\\"type\\":\\"PrismicStructuredTextType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\",\\"items\\"],\\"type\\":\\"[PrismicPageBodyImagesItemType]\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\"],\\"type\\":\\"PrismicPageBodyImages\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\"],\\"type\\":\\"[PrismicPageBodySlicesType]\\"},{\\"path\\":[\\"page\\"],\\"type\\":\\"PrismicPage\\"}]",
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`sourceNodes writes type paths to filesystem 2`] = `
+Array [
+  Object {
+    "path": Array [
+      "page",
+      "uid",
+    ],
+    "type": "String",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "alternate_languages",
+    ],
+    "type": "AlternateLanguages",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+    ],
+    "type": "PrismicPageDataType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "title",
+    ],
+    "type": "PrismicStructuredTextType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "meta_title",
+    ],
+    "type": "String",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "meta_description",
+    ],
+    "type": "String",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "parent",
+    ],
+    "type": "PrismicLinkType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+      "news_post",
+      "primary",
+      "published_on",
+    ],
+    "type": "Date",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+      "news_post",
+      "primary",
+    ],
+    "type": "PrismicPageMainNewsPostPrimaryType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+      "news_post",
+    ],
+    "type": "PrismicPageMainNewsPost",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+    ],
+    "type": "[PrismicPageMainSlicesType]",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "text",
+      "primary",
+      "text",
+    ],
+    "type": "PrismicStructuredTextType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "text",
+      "primary",
+    ],
+    "type": "PrismicPageBodyTextPrimaryType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "text",
+    ],
+    "type": "PrismicPageBodyText",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+      "image",
+    ],
+    "type": "PrismicImageType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+      "caption",
+    ],
+    "type": "PrismicStructuredTextType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+    ],
+    "type": "[PrismicPageBodyImagesItemType]",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+    ],
+    "type": "PrismicPageBodyImages",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+    ],
+    "type": "[PrismicPageBodySlicesType]",
+  },
+  Object {
+    "path": Array [
+      "page",
+    ],
+    "type": "PrismicPage",
+  },
+]
 `;

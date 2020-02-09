@@ -71,7 +71,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
 
   const env = createEnvironment(pluginOptions, gatsbyContext, typePaths)
   // TODO: Implement queue like `schemasToTypeDefs` and create nodes here.
-  documentsToNodes(documents, env)
+  await documentsToNodes(documents, env)
 
   createNodesActivity.end()
 
