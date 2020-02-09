@@ -1,20 +1,22 @@
-import { SourceNodesArgs } from 'gatsby'
 import PrismicDOM from 'prismic-dom'
 import { createRemoteFileNode } from 'gatsby-source-filesystem'
+
 import { msg } from './utils'
+
+import { SourceNodesArgs } from 'gatsby'
 import {
   DocumentsToNodesEnvironment,
   DocumentsToNodesEnvironmentNodeContext,
-  SlicesFieldNormalizer,
+  HTMLSerializer,
   ImageFieldNormalizer,
   LinkFieldNormalizer,
-  StructuredTextFieldNormalizer,
-  LinkResolver,
-  HTMLSerializer,
   LinkFieldType,
+  LinkResolver,
   NodeID,
-  TypePath,
   PluginOptions,
+  SlicesFieldNormalizer,
+  StructuredTextFieldNormalizer,
+  TypePath,
 } from './types'
 
 const normalizeImageField: ImageFieldNormalizer = async (

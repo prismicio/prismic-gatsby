@@ -1,4 +1,6 @@
-import { buildImgixUrl, ImgixUrlQueryParams, ImgixFit } from 'ts-imgix'
+import { buildImgixUrl } from 'ts-imgix'
+
+import { ImgixUrlQueryParams, ImgixFit } from 'ts-imgix'
 import {
   GatsbyFixedImageProps,
   GatsbyFluidImageProps,

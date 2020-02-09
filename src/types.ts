@@ -251,11 +251,6 @@ export enum GraphQLType {
   AlternateLanguages = 'AlternateLanguages',
 }
 
-export enum SliceChoiceDisplay {
-  List = 'list',
-  Grid = 'grid',
-}
-
 interface BaseFieldConfigSchema {
   label?: string
   labels?: { [key: string]: string[] }
@@ -298,6 +293,11 @@ export interface SliceChoicesSchema {
   [sliceId: string]: SliceFieldSchema
 }
 
+enum SliceChoiceDisplay {
+  List = 'list',
+  Grid = 'grid',
+}
+
 export interface SliceFieldSchema extends BaseFieldSchema {
   type: FieldType.Slice
   fieldset: string
@@ -328,12 +328,10 @@ export interface FieldsSchema {
   [fieldId: string]: FieldSchema
 }
 
-export interface TabSchema {
-  [fieldId: string]: FieldSchema
-}
-
 export interface Schema {
-  [tabName: string]: TabSchema
+  [tabName: string]: {
+    [fieldId: string]: FieldSchema
+  }
 }
 
 export interface Schemas {
@@ -359,6 +357,17 @@ type ShouldDownloadImage = (input: {
   value: unknown
   node: PrismicDocument
 }) => boolean | Promise<boolean>
+
+export type BrowserPluginOptions = GatsbyPluginOptions &
+  Pick<
+    PluginOptions,
+    | 'repositoryName'
+    | 'accessToken'
+    | 'fetchLinks'
+    | 'schemas'
+    | 'lang'
+    | 'typePathsFilenamePrefix'
+  >
 
 export interface PluginOptions extends GatsbyPluginOptions {
   repositoryName: string

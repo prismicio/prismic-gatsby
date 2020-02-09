@@ -1,27 +1,27 @@
-import { SourceNodesArgs, Reporter } from 'gatsby'
 import { getApi } from 'prismic-javascript'
+
+import { msg } from './utils'
+import { API_PAGE_SIZE } from './constants'
+
+import { SourceNodesArgs, Reporter } from 'gatsby'
 import PrismicResolvedApi, {
   QueryOptions,
 } from 'prismic-javascript/d.ts/ResolvedApi'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
-
-import { msg } from './utils'
 import { PluginOptions } from './types'
 
 export const createClient = async (
   repositoryName: string,
   accessToken?: string,
 ) =>
-  await getApi(`https://${repositoryName}.prismic.io/api/v2`, {
-    accessToken,
-  })
+  await getApi(`https://${repositoryName}.prismic.io/api/v2`, { accessToken })
 
 const pagedGet = async (
   client: PrismicResolvedApi,
   queryOptions: QueryOptions,
-  page = 1,
-  pageSize = 100,
-  documents: PrismicDocument[] = [],
+  page: number,
+  pageSize: number,
+  documents: PrismicDocument[],
   reporter: Reporter,
 ): Promise<PrismicDocument[]> => {
   reporter.verbose(msg(`fetching documents page ${page}`))
@@ -56,12 +56,5 @@ export const fetchAllDocuments = async (
   if (fetchLinks) queryOptions.fetchLinks = fetchLinks
   if (lang) queryOptions.lang = lang
 
-  return await pagedGet(
-    client,
-    queryOptions,
-    undefined,
-    undefined,
-    undefined,
-    reporter,
-  )
+  return await pagedGet(client, queryOptions, 1, API_PAGE_SIZE, [], reporter)
 }

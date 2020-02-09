@@ -1,29 +1,30 @@
 import PrismicDOM from 'prismic-dom'
 import pascalcase from 'pascalcase'
-import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import pick from 'lodash.pick'
 import omit from 'lodash.omit'
+
 import { mapObjValsP, buildSchemaTypeName } from './utils'
+import { IMAGE_FIELD_KEYS } from './constants'
+
+import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import {
   DocumentsToNodesEnvironment,
   TypePath,
-  GraphQLType,
-  StructuredTextField,
-  LinkField,
-  AlternateLanguagesField,
-  LinkFieldType,
-  LinkResolver,
-  DocumentNodeInput,
-  GroupField,
-  SlicesField,
-  SliceNodeInput,
   Field,
+  AlternateLanguagesField,
+  GroupField,
+  ImageField,
+  LinkField,
+  SlicesField,
+  StructuredTextField,
   NormalizedField,
   NormalizedAlternateLanguagesField,
-  ImageField,
+  LinkFieldType,
+  GraphQLType,
+  LinkResolver,
+  DocumentNodeInput,
+  SliceNodeInput,
 } from './types'
-
-const IMAGE_FIELD_KEYS = ['alt', 'copyright', 'dimensions', 'url'] as const
 
 const getTypeForPath = (
   path: TypePath['path'],
@@ -236,11 +237,11 @@ export const documentToNodes = async (
   }
 
   createNode(node)
+
+  return node.id
 }
 
 export const documentsToNodes = async (
   docs: PrismicDocument[],
   env: DocumentsToNodesEnvironment,
-) => {
-  await Promise.all(docs.map(doc => documentToNodes(doc, env)))
-}
+) => await Promise.all(docs.map(doc => documentToNodes(doc, env)))

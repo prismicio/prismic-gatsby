@@ -1,5 +1,6 @@
 import { struct } from 'superstruct'
-import { PluginOptions } from './types'
+
+import { PluginOptions, BrowserPluginOptions } from './types'
 
 const baseSchema = {
   repositoryName: 'string',
@@ -7,6 +8,7 @@ const baseSchema = {
   linkResolver: 'function?',
   htmlSerializer: 'function?',
   fetchLinks: struct.optional(['string']),
+  lang: 'string?',
   typePathsFilenamePrefix: 'string?',
 }
 
@@ -14,6 +16,7 @@ const baseDefaults = {
   linkResolver: () => () => () => {},
   htmlSerializer: () => () => () => {},
   fetchLinks: [],
+  lang: '*',
   typePathsFilenamePrefix: 'prismic-typepaths---',
 }
 
@@ -21,13 +24,11 @@ const PluginOptionsValidator = struct(
   {
     ...baseSchema,
     schemas: struct.record(['string', 'object']),
-    lang: 'string?',
     shouldDownloadImage: 'function?',
     plugins: struct.size([0, 0]),
   },
   {
     ...baseDefaults,
-    lang: '*',
     shouldDownloadImage: () => () => false,
     plugins: [],
   },
@@ -45,5 +46,5 @@ const BrowserOptionsValidator = struct(
 export const validatePluginOptions = (pluginOptions: PluginOptions) =>
   PluginOptionsValidator(pluginOptions)
 
-export const validateBrowserOptions = (browserOptions: object) =>
+export const validateBrowserOptions = (browserOptions: BrowserPluginOptions) =>
   BrowserOptionsValidator(browserOptions)

@@ -1,36 +1,36 @@
-import { NodeInput } from 'gatsby'
 import PrismicDOM from 'prismic-dom'
 import uuidv5 from 'uuid/v5'
 import md5 from 'md5'
-import { QueryOptions } from 'prismic-javascript/d.ts/ResolvedApi'
-import { buildFixedGatsbyImage, buildFluidGatsbyImage } from './gatsbyImage'
+
 import { createClient } from './api'
 import { documentToNodes } from './documentsToNodes'
+import { buildFixedGatsbyImage, buildFluidGatsbyImage } from './gatsbyImage'
+import { buildSchemaTypeName } from './utils'
+import { UUID_NAMESPACE, PLACEHOLDER_NODE_TYPE_SUFFIX } from './constants'
+
+import { NodeInput } from 'gatsby'
+import { QueryOptions } from 'prismic-javascript/d.ts/ResolvedApi'
 import {
+  BrowserPluginOptions,
   DocumentsToNodesEnvironment,
   DocumentsToNodesEnvironmentBrowserContext,
-  SlicesFieldNormalizer,
-  ImageFieldNormalizer,
-  LinkFieldNormalizer,
-  StructuredTextFieldNormalizer,
-  LinkResolver,
   HTMLSerializer,
-  LinkFieldType,
-  TypePath,
-  PluginOptions,
+  ImageFieldNormalizer,
   LinkField,
+  LinkFieldNormalizer,
+  LinkFieldType,
+  LinkResolver,
   NormalizedLinkField,
+  SlicesFieldNormalizer,
+  StructuredTextFieldNormalizer,
+  TypePath,
 } from './types'
-import { buildSchemaTypeName } from 'utils'
 
 interface UnbrokenDocumentLinkField extends LinkField {
   link_type: LinkFieldType.Document
   id: string
   isBroken: false
 }
-
-const UUID_NAMESPACE = `638f7a53-c567-4eca-8fc1-b23efb1cfb2b`
-const PLACEHOLDER_NODE_TYPE_SUFFIX = '___PLACEHOLDER'
 
 const loadLinkFieldDocument = async (
   field: UnbrokenDocumentLinkField,
@@ -216,7 +216,7 @@ const normalizeStructuredTextField: StructuredTextFieldNormalizer = async (
 }
 
 export const createEnvironment = (
-  pluginOptions: PluginOptions,
+  pluginOptions: BrowserPluginOptions,
   typePaths: TypePath[],
 ): DocumentsToNodesEnvironment => {
   const nodeStore = new Map()

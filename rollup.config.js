@@ -24,7 +24,7 @@ export default [
       { file: 'dist/index.esm.js', format: 'es', sourcemap: true },
     ],
     external: externalPkgs,
-    plugins: [typescript()],
+    plugins: [typescript(), json()],
   },
   {
     input: 'src/gatsby-node.ts',
@@ -36,7 +36,7 @@ export default [
     input: 'src/gatsby-browser.ts',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript()],
+    plugins: [typescript(), json()],
   },
   {
     input: 'src/fragments.ts',

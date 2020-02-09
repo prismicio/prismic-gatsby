@@ -1,5 +1,6 @@
-import { name as pkgName } from '../package.json'
 import pascalcase from 'pascalcase'
+
+import { name as pkgName } from '../package.json'
 
 /**
  * Returns a namespaced string intended for logging.
@@ -127,3 +128,9 @@ export const isEmptyObj = (obj: object) => {
 export const buildSchemaTypeName = (apiId: string) =>
   pascalcase(`Prismic ${apiId}`)
 
+/**
+ * Determines whether the current context is the browser.
+ *
+ * @returns `true` if the current context is the browser, `false` otherwise.
+ */
+export const isBrowser = typeof window !== 'undefined'

@@ -1,19 +1,21 @@
 import pascalcase from 'pascalcase'
+
+import { msg, mapObjVals, isEmptyObj, buildSchemaTypeName } from './utils'
+
 import { SourceNodesArgs, GatsbyGraphQLType, NodePluginSchema } from 'gatsby'
 import {
-  Schemas,
-  Schema,
-  TypePath,
+  BaseFieldSchema,
   FieldSchema,
   FieldType,
   GraphQLType,
-  BaseFieldSchema,
-  ImageFieldSchema,
   GroupFieldSchema,
-  SlicesFieldSchema,
+  ImageFieldSchema,
+  Schema,
+  Schemas,
   SliceFieldSchema,
+  SlicesFieldSchema,
+  TypePath,
 } from './types'
-import { msg, mapObjVals, isEmptyObj, buildSchemaTypeName } from './utils'
 
 /**
  * Enqueues a GraphQL type definition to be created at a later time.
@@ -145,13 +147,12 @@ const fieldToType = (
         `Prismic ${customTypeApiId} ${apiId} SlicesType`,
       )
       const sliceChoices = (field as SlicesFieldSchema).config.choices
-      const sliceChoiceTypes = Object.entries(
-        sliceChoices,
-      ).map(([sliceChoiceApiId, sliceChoice]) =>
-        fieldToType(sliceChoiceApiId, sliceChoice, [...path, apiId], {
-          ...context,
-          sliceZoneId: apiId,
-        }),
+      const sliceChoiceTypes = Object.entries(sliceChoices).map(
+        ([sliceChoiceApiId, sliceChoice]) =>
+          fieldToType(sliceChoiceApiId, sliceChoice, [...path, apiId], {
+            ...context,
+            sliceZoneId: apiId,
+          }),
       )
 
       enqueueTypeDef(

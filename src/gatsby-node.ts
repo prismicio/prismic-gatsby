@@ -1,7 +1,6 @@
-import path from 'path'
 import { writeFileSync, copyFileSync } from 'fs-extra'
+import path from 'path'
 import md5 from 'md5'
-import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 
 import { validatePluginOptions } from './validateOptions'
 import { schemasToTypeDefs } from './schemasToTypeDefs'
@@ -10,6 +9,8 @@ import { documentsToNodes } from './documentsToNodes'
 import { createEnvironment } from './environment.node'
 import { resolvers as gatsbyImageResolvers } from './gatsbyImage'
 import { msg } from './utils'
+
+import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 import { PluginOptions } from './types'
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
