@@ -8,6 +8,7 @@ import {
   FieldSchema,
   FieldType,
   GraphQLType,
+  GraphQLTypeObj,
   GroupFieldSchema,
   ImageFieldSchema,
   Schema,
@@ -15,6 +16,7 @@ import {
   SliceFieldSchema,
   SlicesFieldSchema,
   TypePath,
+  SliceIDsField,
 } from './types'
 
 /**
@@ -45,7 +47,7 @@ const fieldToType = (
   field: FieldSchema,
   path: string[],
   context: SchemasToTypeDefsContext,
-): GraphQLType | string => {
+): GraphQLTypeObj | GraphQLType | string => {
   const {
     customTypeApiId,
     enqueueTypeDef,
@@ -79,13 +81,11 @@ const fieldToType = (
       return type
     }
 
-    // TODO: Add dateformat support via the extensions property.
-    // e.g. { type: 'Date', extensions: { dateformat: {} } }
     case FieldType.Date:
     case FieldType.Timestamp: {
       const type = GraphQLType.Date
       enqueueTypePath([...path, apiId], type)
-      return type
+      return { type, extensions: { dateformat: {} } }
     }
 
     case FieldType.GeoPoint: {
@@ -132,7 +132,7 @@ const fieldToType = (
             (subfield, subfieldApiId) =>
               fieldToType(subfieldApiId, subfield, [...path, apiId], context),
             (field as GroupFieldSchema).config.fields,
-          ),
+          ) as { [key: string]: GraphQLType },
           extensions: { infer: false },
         }),
       )
@@ -158,13 +158,17 @@ const fieldToType = (
       enqueueTypeDef(
         gatsbySchema.buildUnionType({
           name: slicesTypeName,
-          types: sliceChoiceTypes,
+          types: sliceChoiceTypes as string[],
         }),
       )
 
       const type = `[${slicesTypeName}]`
       enqueueTypePath([...path, apiId], type)
-      return type
+      return {
+        type,
+        resolve: (parent: SliceIDsField, _args: any, context: any, info: any) =>
+          context.nodeModel.getNodesByIds({ ids: parent[info.path.key] }),
+      }
     }
 
     case FieldType.Slice: {
@@ -173,7 +177,10 @@ const fieldToType = (
         repeat: itemsFields,
       } = field as SliceFieldSchema
 
-      const sliceFieldTypes: { primary?: string; items?: string } = {}
+      const sliceFieldTypes: { [key: string]: string } = {
+        slice_type: `${GraphQLType.String}!`,
+        slice_label: GraphQLType.String,
+      }
 
       if (primaryFields && !isEmptyObj(primaryFields)) {
         const primaryTypeName = pascalcase(
@@ -192,7 +199,7 @@ const fieldToType = (
                   context,
                 ),
               primaryFields,
-            ),
+            ) as { [key: string]: GraphQLType },
             extensions: { infer: false },
           }),
         )
@@ -218,7 +225,7 @@ const fieldToType = (
                   context,
                 ),
               itemsFields,
-            ),
+            ) as { [key: string]: GraphQLType },
             interfaces: ['Node'],
             extensions: { infer: false },
           }),
@@ -232,6 +239,16 @@ const fieldToType = (
       const type = pascalcase(
         `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId}`,
       )
+
+      enqueueTypeDef(
+        gatsbySchema.buildObjectType({
+          name: type,
+          fields: sliceFieldTypes,
+          interfaces: ['PrismicSliceType', 'Node'],
+          extensions: { infer: false },
+        }),
+      )
+
       enqueueTypePath([...path, apiId], type)
       return type
     }
@@ -281,7 +298,8 @@ const schemaToTypeDefs = (
   // UID fields must be conditionally processed since not all custom types
   // implement a UID field.
   let uidFieldType: string | undefined
-  if (uidField) uidFieldType = fieldToType('uid', uidField, [apiId], context)
+  if (uidField)
+    uidFieldType = fieldToType('uid', uidField, [apiId], context) as string
 
   // The alternate languages field acts as a list of Link fields. Note:
   // AlternateLanguages is an internal plugin-specific type, not from Prismic.
@@ -302,24 +320,32 @@ const schemaToTypeDefs = (
         (dataField, dataFieldApiId) =>
           fieldToType(dataFieldApiId, dataField, [apiId, 'data'], context),
         dataFields,
-      ),
+      ) as { [key: string]: GraphQLType },
       extensions: { infer: false },
     }),
   )
 
   // Create the main schema type.
   const schemaTypeName = buildSchemaTypeName(apiId)
-  const schemaFieldTypes: { [key: string]: string } = {
+  const schemaFieldTypes: {
+    [key: string]: GraphQLTypeObj | GraphQLType | string
+  } = {
     data: dataTypeName,
     dataRaw: `${GraphQLType.JSON}!`,
     dataString: `${GraphQLType.String}!`,
-    first_publication_date: `${GraphQLType.Date}!`,
+    first_publication_date: {
+      type: `${GraphQLType.Date}!`,
+      extensions: { dateformat: {} },
+    },
     href: `${GraphQLType.String}!`,
     url: GraphQLType.String,
     lang: `${GraphQLType.String}!`,
-    last_publication_date: `${GraphQLType.Date}!`,
+    last_publication_date: {
+      type: `${GraphQLType.Date}!`,
+      extensions: { dateformat: {} },
+    },
     tags: `[${GraphQLType.String}!]!`,
-    alternate_languages: alternateLanguagesFieldType,
+    alternate_languages: alternateLanguagesFieldType as string,
     type: `${GraphQLType.String}!`,
     prismicId: `${GraphQLType.ID}!`,
   }
@@ -329,7 +355,7 @@ const schemaToTypeDefs = (
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
       name: schemaTypeName,
-      fields: schemaFieldTypes,
+      fields: schemaFieldTypes as { [key: string]: GraphQLType },
       interfaces: ['PrismicDocument', 'Node'],
       extensions: { infer: false },
     }),

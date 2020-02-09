@@ -19,6 +19,8 @@ export interface DocumentNodeInput extends NodeInput {
 }
 
 export interface SliceNodeInput extends NodeInput {
+  slice_type: string
+  slice_label?: string
   primary: { [key: string]: NormalizedField }
   items: { [key: string]: NormalizedField }[]
 }
@@ -249,6 +251,12 @@ export enum GraphQLType {
   Group = 'Group',
   Slices = 'Slices',
   AlternateLanguages = 'AlternateLanguages',
+}
+
+export interface GraphQLTypeObj {
+  type: GraphQLType | string
+  extensions?: { [key: string]: any }
+  resolve?: Function
 }
 
 interface BaseFieldConfigSchema {

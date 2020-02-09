@@ -122,6 +122,8 @@ const normalizeField = async (
 
           const node: SliceNodeInput = {
             id: sliceNodeId,
+            slice_type: slice.slice_type,
+            slice_label: slice.slice_label ?? undefined,
             primary: normalizedPrimary,
             items: normalizedItems,
             internal: {

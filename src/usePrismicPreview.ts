@@ -1,7 +1,6 @@
 import { useReducer, useEffect, useCallback, useMemo } from 'react'
 import { set as setCookie } from 'es-cookie'
 import { previewCookie } from 'prismic-javascript'
-import { Link as PrismicDOMLink } from 'prismic-dom'
 import camelCase from 'camelcase'
 
 import { validateBrowserOptions } from './validateOptions'
@@ -15,7 +14,6 @@ import { QueryOptions } from 'prismic-javascript/d.ts/ResolvedApi'
 import {
   PluginOptions,
   DocumentsToNodesEnvironmentBrowserContext,
-  LinkResolver,
   BrowserPluginOptions,
 } from './types'
 
@@ -166,13 +164,9 @@ export const usePrismicPreview = (options: Options) => {
     const rootNodeId = await documentToNodes(doc, env)
     const rootNode = getNodeById(rootNodeId)
 
-    let linkResolverForDoc: LinkResolver | undefined = undefined
-    if (hydratedOptions.pathResolver) {
-      linkResolverForDoc = hydratedOptions.pathResolver({ node: doc })
-    } else if (hydratedOptions.linkResolver) {
-      linkResolverForDoc = hydratedOptions.linkResolver({ node: doc })
-    }
-    const path = PrismicDOMLink.url(doc, linkResolverForDoc)
+    const path = (
+      hydratedOptions.pathResolver ?? hydratedOptions.linkResolver
+    )?.({ node: doc })?.(doc)
 
     dispatch({ type: ActionType.DOCUMENT_LOADED, payload: { rootNode, path } })
   }, [state.isPreview])

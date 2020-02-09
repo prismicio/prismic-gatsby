@@ -9,6 +9,7 @@ import { documentsToNodes } from './documentsToNodes'
 import { createEnvironment } from './environment.node'
 import { resolvers as gatsbyImageResolvers } from './gatsbyImage'
 import { msg } from './utils'
+import { types } from './gqlTypes'
 
 import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
 import { PluginOptions } from './types'
@@ -50,6 +51,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     gatsbyContext,
   )
   createTypes(typeDefs)
+  createTypes(types)
 
   createTypesActivity.end()
 
@@ -111,7 +113,7 @@ export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = gatsbyCont
 
   // Add fragments for GatsbyPrismicImage to .cache/fragments.
   copyFileSync(
-    './fragments.js',
+    path.resolve(__dirname, 'fragments.js'),
     path.resolve(
       program.directory,
       '.cache/fragments/gatsby-source-prismic-fragments.js',
