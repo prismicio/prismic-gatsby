@@ -204,16 +204,14 @@ describe('createResolvers', () => {
 })
 
 describe('onPreExtractQueries', () => {
-  test('creates resolvers', async () => {
+  test('copies fragments file to program cache', async () => {
     onPreExtractQueries!(mockGatsbyContext, pluginOptions)
 
-    expect(copyFileSync.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "./fragments.js",
-          "/__PROGRAM_DIRECTORY__/.cache/fragments/gatsby-source-prismic-fragments.js",
-        ],
-      ]
-    `)
+    const call = copyFileSync.mock.calls[0]
+
+    expect(call[0]).toMatch(/\/fragments.js$/)
+    expect(call[1]).toBe(
+      '/__PROGRAM_DIRECTORY__/.cache/fragments/gatsby-source-prismic-fragments.js',
+    )
   })
 })
