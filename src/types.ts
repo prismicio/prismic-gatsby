@@ -15,7 +15,7 @@ export interface DocumentNodeInput extends NodeInput {
   dataString: string
   dataRaw: PrismicDocument['data']
   alternate_languages: NormalizedAlternateLanguagesField
-  url: string
+  url?: string
 }
 
 export interface SliceNodeInput extends NodeInput {
