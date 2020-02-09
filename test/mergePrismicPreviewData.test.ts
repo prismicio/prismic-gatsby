@@ -46,13 +46,15 @@ describe('mergePrismicPreviewData', () => {
   })
 
   test('returns static data if no preview data', () => {
-    const staticData = { staticData: 'static' }
+    const staticData = { prismicPage: { name: 'static' } }
     const result = mergePrismicPreviewData({ staticData })
+
     expect(result).toBe(staticData)
   })
 
   test('returns preview data if no static data', () => {
     const result = mergePrismicPreviewData({ previewData })
+
     expect(result).toBe(previewData)
   })
 })
