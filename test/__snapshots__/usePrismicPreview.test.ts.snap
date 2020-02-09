@@ -29,6 +29,8 @@ Object {
               "text": "Example text",
             },
           },
+          "slice_label": undefined,
+          "slice_type": "text",
         },
         Object {
           "__typename": "PrismicPageBodyImages",
@@ -82,6 +84,8 @@ Object {
             },
           ],
           "primary": Object {},
+          "slice_label": undefined,
+          "slice_type": "images",
         },
       ],
       "main": Array [],
