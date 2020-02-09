@@ -328,23 +328,6 @@ exports[`sourceNodes creates types 1`] = `
 }
 `;
 
-exports[`sourceNodes writes type paths to filesystem 1`] = `
-[MockFunction] {
-  "calls": Array [
-    Array [
-      "/Users/angeloashmore/projects/js/gatsby-source-prismic/public/prismic-typepaths---0d5871ff6ad802968216a91db927d1b7.json",
-      "[{\\"path\\":[\\"page\\",\\"uid\\"],\\"type\\":\\"String\\"},{\\"path\\":[\\"page\\",\\"alternate_languages\\"],\\"type\\":\\"AlternateLanguages\\"},{\\"path\\":[\\"page\\",\\"data\\"],\\"type\\":\\"PrismicPageDataType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"title\\"],\\"type\\":\\"PrismicStructuredTextType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"meta_title\\"],\\"type\\":\\"String\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"meta_description\\"],\\"type\\":\\"String\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"parent\\"],\\"type\\":\\"PrismicLinkType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\",\\"news_post\\",\\"primary\\",\\"published_on\\"],\\"type\\":\\"Date\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\",\\"news_post\\",\\"primary\\"],\\"type\\":\\"PrismicPageMainNewsPostPrimaryType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\",\\"news_post\\"],\\"type\\":\\"PrismicPageMainNewsPost\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"main\\"],\\"type\\":\\"[PrismicPageMainSlicesType]\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"text\\",\\"primary\\",\\"text\\"],\\"type\\":\\"PrismicStructuredTextType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"text\\",\\"primary\\"],\\"type\\":\\"PrismicPageBodyTextPrimaryType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"text\\"],\\"type\\":\\"PrismicPageBodyText\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\",\\"items\\",\\"image\\"],\\"type\\":\\"PrismicImageType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\",\\"items\\",\\"caption\\"],\\"type\\":\\"PrismicStructuredTextType\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\",\\"items\\"],\\"type\\":\\"[PrismicPageBodyImagesItemType]\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\",\\"images\\"],\\"type\\":\\"PrismicPageBodyImages\\"},{\\"path\\":[\\"page\\",\\"data\\",\\"body\\"],\\"type\\":\\"[PrismicPageBodySlicesType]\\"},{\\"path\\":[\\"page\\"],\\"type\\":\\"PrismicPage\\"}]",
-    ],
-  ],
-  "results": Array [
-    Object {
-      "type": "return",
-      "value": undefined,
-    },
-  ],
-}
-`;
-
 exports[`sourceNodes writes type paths to filesystem 2`] = `
 Array [
   Object {

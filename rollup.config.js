@@ -38,4 +38,10 @@ export default [
     external: externalPkgs,
     plugins: [typescript()],
   },
+  {
+    input: 'src/fragments.ts',
+    output: { file: 'dist/fragments.js', format: 'cjs' },
+    external: externalPkgs,
+    plugins: [typescript()],
+  },
 ]

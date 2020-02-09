@@ -16,8 +16,9 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   gatsbyContext: SourceNodesArgs,
   pluginOptions: PluginOptions,
 ) => {
-  const { actions, reporter } = gatsbyContext
+  const { actions, reporter, store } = gatsbyContext
   const { createTypes } = actions
+  const { program } = store.getState()
 
   const createTypesActivity = reporter.activityTimer(msg('create types'))
   const fetchDocumentsActivity = reporter.activityTimer(msg('fetch documents'))
@@ -83,6 +84,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
 
   const schemasDigest = md5(JSON.stringify(pluginOptions.schemas))
   const typePathsFilename = path.resolve(
+    program.directory,
     'public',
     [pluginOptions.typePathsFilenamePrefix, schemasDigest, '.json']
       .filter(part => part !== undefined && part !== null)
@@ -105,12 +107,14 @@ export const createResolvers: GatsbyNode['createResolvers'] = async (
 
 export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = gatsbyContext => {
   const { store } = gatsbyContext
-
-  const program = store.getState().program
+  const { program } = store.getState()
 
   // Add fragments for GatsbyPrismicImage to .cache/fragments.
   copyFileSync(
-    path.join(__dirname, '../src/fragments.ts'),
-    `${program.directory}/.cache/fragments/gatsby-source-prismic-fragments.js`,
+    './fragments.js',
+    path.resolve(
+      program.directory,
+      '.cache/fragments/gatsby-source-prismic-fragments.js',
+    ),
   )
 }

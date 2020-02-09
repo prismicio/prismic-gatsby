@@ -1,9 +1,19 @@
-import { SourceNodesArgs } from 'gatsby'
+import {
+  SourceNodesArgs,
+  CreateResolversArgs,
+  ParentSpanPluginArgs,
+} from 'gatsby'
 
-import { sourceNodes } from '../src/gatsby-node'
+import {
+  sourceNodes,
+  createResolvers,
+  onPreExtractQueries,
+} from '../src/gatsby-node'
 
-import { writeFileSync } from './__mocks__/fs-extra'
+import { writeFileSync, copyFileSync } from './__mocks__/fs-extra'
 import mockSchema from './__fixtures__/schema.json'
+
+const PROGRAM_DIRECTORY_PATH = '/__PROGRAM_DIRECTORY__/'
 
 const mockActions = {
   deletePage: jest.fn(),
@@ -30,7 +40,7 @@ const mockActions = {
   createFieldExtension: jest.fn(),
 }
 
-const mockGatsbyContext: SourceNodesArgs = {
+const mockGatsbyContext: ParentSpanPluginArgs = {
   pathPrefix: 'pathPrefix',
   boundActionCreators: mockActions,
   actions: mockActions,
@@ -38,7 +48,9 @@ const mockGatsbyContext: SourceNodesArgs = {
   store: {
     dispatch: jest.fn(),
     subscribe: jest.fn(),
-    getState: jest.fn(),
+    getState: jest
+      .fn()
+      .mockReturnValue({ program: { directory: PROGRAM_DIRECTORY_PATH } }),
     replaceReducer: jest.fn(),
   },
   emitter: {
@@ -106,8 +118,6 @@ const mockGatsbyContext: SourceNodesArgs = {
     parentSpan: {},
     startSpan: jest.fn(),
   },
-  traceId: 'initial-sourceNodes',
-  waitForCascadingActions: false,
   parentSpan: {},
   schema: {
     buildObjectType: jest
@@ -132,6 +142,19 @@ const mockGatsbyContext: SourceNodesArgs = {
   },
 }
 
+const mockSourceNodesGatsbyContext: SourceNodesArgs = {
+  ...mockGatsbyContext,
+  traceId: 'initial-sourceNodes',
+  waitForCascadingActions: false,
+}
+
+const mockCreateResolversGatsbyContext: CreateResolversArgs = {
+  ...mockSourceNodesGatsbyContext,
+  traceId: 'initial-createResolvers',
+  intermediateSchema: {},
+  createResolvers: jest.fn(),
+}
+
 const pluginOptions = {
   repositoryName: 'repositoryName',
   plugins: [],
@@ -142,23 +165,55 @@ describe('sourceNodes', () => {
   beforeEach(() => jest.clearAllMocks())
 
   test('creates types', async () => {
-    await sourceNodes!(mockGatsbyContext, pluginOptions)
+    await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
 
-    expect(mockGatsbyContext.actions.createTypes).toMatchSnapshot()
+    expect(mockSourceNodesGatsbyContext.actions.createTypes).toMatchSnapshot()
   })
 
   test('creates nodes', async () => {
-    await sourceNodes!(mockGatsbyContext, pluginOptions)
+    await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
 
-    expect(mockGatsbyContext.actions.createNode).toMatchSnapshot()
+    expect(mockSourceNodesGatsbyContext.actions.createNode).toMatchSnapshot()
   })
 
   test('writes type paths to filesystem', async () => {
-    await sourceNodes!(mockGatsbyContext, pluginOptions)
+    await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
 
-    expect(writeFileSync).toMatchSnapshot()
+    expect(writeFileSync.mock.calls[0][0]).toMatchInlineSnapshot(
+      `"/__PROGRAM_DIRECTORY__/public/prismic-typepaths---0d5871ff6ad802968216a91db927d1b7.json"`,
+    )
 
     // Ensure valid JSON.
     expect(JSON.parse(writeFileSync.mock.calls[0][1])).toMatchSnapshot()
+  })
+})
+
+describe('createResolvers', () => {
+  test('creates resolvers', async () => {
+    await createResolvers!(mockCreateResolversGatsbyContext, pluginOptions)
+
+    expect(
+      mockCreateResolversGatsbyContext.createResolvers,
+    ).toHaveBeenCalledWith({
+      PrismicImageType: {
+        fixed: { resolve: expect.any(Function) },
+        fluid: { resolve: expect.any(Function) },
+      },
+    })
+  })
+})
+
+describe('onPreExtractQueries', () => {
+  test('creates resolvers', async () => {
+    onPreExtractQueries!(mockGatsbyContext, pluginOptions)
+
+    expect(copyFileSync.mock.calls).toMatchInlineSnapshot(`
+      Array [
+        Array [
+          "./fragments.js",
+          "/__PROGRAM_DIRECTORY__/.cache/fragments/gatsby-source-prismic-fragments.js",
+        ],
+      ]
+    `)
   })
 })
