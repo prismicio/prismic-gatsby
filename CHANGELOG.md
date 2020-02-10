@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.23](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.22...v3.0.0-beta.23) (2020-02-10)
+
+
+### Bug Fixes
+
+* add thumbnail resolvers ([9268dff](https://github.com/angeloashmore/gatsby-source-prismic/commit/9268dff4c2de41d1651579d4197721f33b685d48))
+
 ## [3.0.0-beta.19](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.18...v3.0.0-beta.19) (2019-12-13)
 
 
