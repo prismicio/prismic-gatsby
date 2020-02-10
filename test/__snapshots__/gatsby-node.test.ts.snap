@@ -1,0 +1,841 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sourceNodes creates nodes 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Object {
+        "id": "createNodeId",
+        "internal": Object {
+          "contentDigest": "createContentDigest",
+          "type": "PrismicPageBodyText",
+        },
+        "items": Array [
+          Object {},
+        ],
+        "primary": Object {
+          "text": Object {
+            "html": "<p>Example text</p>",
+            "raw": Array [
+              Object {
+                "spans": Array [],
+                "text": "Example text",
+                "type": "paragraph",
+              },
+            ],
+            "text": "Example text",
+          },
+        },
+        "slice_label": undefined,
+        "slice_type": "text",
+      },
+    ],
+    Array [
+      Object {
+        "id": "createNodeId",
+        "internal": Object {
+          "contentDigest": "createContentDigest",
+          "type": "PrismicPageBodyImages",
+        },
+        "items": Array [
+          Object {
+            "caption": Object {
+              "html": "<p>Example camption</p>",
+              "raw": Array [
+                Object {
+                  "spans": Array [],
+                  "text": "Example camption",
+                  "type": "paragraph",
+                },
+              ],
+              "text": "Example camption",
+            },
+            "image": Object {
+              "alt": "Example alt text",
+              "copyright": null,
+              "dimensions": Object {
+                "height": 1333,
+                "width": 2000,
+              },
+              "thumbnails": Object {
+                "Mobile": Object {
+                  "dimensions": Object {
+                    "height": 667,
+                    "width": 1000,
+                  },
+                  "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667",
+                },
+              },
+              "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333",
+            },
+          },
+        ],
+        "primary": Object {},
+        "slice_label": undefined,
+        "slice_type": "images",
+      },
+    ],
+    Array [
+      Object {
+        "alternate_languages": Array [],
+        "data": Object {
+          "body": Array [
+            "createNodeId",
+            "createNodeId",
+          ],
+          "main": Array [],
+          "meta_description": null,
+          "meta_title": null,
+          "parent": Object {
+            "document": "createNodeId",
+            "link_type": "Document",
+            "raw": Object {
+              "link_type": "Document",
+            },
+            "url": undefined,
+          },
+          "title": Object {
+            "html": "<h1>Home</h1>",
+            "raw": Array [
+              Object {
+                "spans": Array [],
+                "text": "Home",
+                "type": "heading1",
+              },
+            ],
+            "text": "Home",
+          },
+        },
+        "dataRaw": Object {
+          "body": Array [
+            Object {
+              "items": Array [
+                Object {},
+              ],
+              "primary": Object {
+                "text": Array [
+                  Object {
+                    "spans": Array [],
+                    "text": "Example text",
+                    "type": "paragraph",
+                  },
+                ],
+              },
+              "slice_label": null,
+              "slice_type": "text",
+            },
+            Object {
+              "items": Array [
+                Object {
+                  "caption": Array [
+                    Object {
+                      "spans": Array [],
+                      "text": "Example camption",
+                      "type": "paragraph",
+                    },
+                  ],
+                  "image": Object {
+                    "Mobile": Object {
+                      "dimensions": Object {
+                        "height": 667,
+                        "width": 1000,
+                      },
+                      "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667",
+                    },
+                    "alt": "Example alt text",
+                    "copyright": null,
+                    "dimensions": Object {
+                      "height": 1333,
+                      "width": 2000,
+                    },
+                    "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333",
+                  },
+                },
+              ],
+              "primary": Object {},
+              "slice_label": null,
+              "slice_type": "images",
+            },
+          ],
+          "main": Array [],
+          "meta_description": null,
+          "meta_title": null,
+          "parent": Object {
+            "link_type": "Document",
+          },
+          "title": Array [
+            Object {
+              "spans": Array [],
+              "text": "Home",
+              "type": "heading1",
+            },
+          ],
+        },
+        "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\"},\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\",\\"Mobile\\":{\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667\\",\\"dimensions\\":{\\"width\\":1000,\\"height\\":667}}},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
+        "first_publication_date": "2019-01-06T04:03:51+0000",
+        "href": "https://gatsby-starter-ww.cdn.prismic.io/api/v2/documents/search?ref=Xj9DrRUAACcAJ33X&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22XDF-DhEAACAA5b4F%22%29+%5D%5D",
+        "id": "createNodeId",
+        "internal": Object {
+          "contentDigest": "createContentDigest",
+          "type": "PrismicPage",
+        },
+        "lang": "en-us",
+        "last_publication_date": "2020-02-08T23:26:37+0000",
+        "linked_documents": Array [],
+        "prismicId": "XDF-DhEAACAA5b4F",
+        "slugs": Array [
+          "home",
+        ],
+        "tags": Array [],
+        "type": "page",
+        "uid": "home",
+        "url": undefined,
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`sourceNodes creates types 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      Array [
+        Object {
+          "config": Object {
+            "fields": Object {
+              "published_on": Object {
+                "extensions": Object {
+                  "dateformat": Object {},
+                },
+                "type": "Date",
+              },
+            },
+            "name": "PrismicPageMainNewsPostPrimaryType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "primary": "PrismicPageMainNewsPostPrimaryType",
+              "slice_label": "String",
+              "slice_type": "String!",
+            },
+            "interfaces": Array [
+              "PrismicSliceType",
+              "Node",
+            ],
+            "name": "PrismicPageMainNewsPost",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "name": "PrismicPageMainSlicesType",
+            "types": Array [
+              "PrismicPageMainNewsPost",
+            ],
+          },
+          "kind": "UNION",
+        },
+        Object {
+          "config": Object {
+            "fields": Object {
+              "text": "PrismicStructuredTextType",
+            },
+            "name": "PrismicPageBodyTextPrimaryType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "primary": "PrismicPageBodyTextPrimaryType",
+              "slice_label": "String",
+              "slice_type": "String!",
+            },
+            "interfaces": Array [
+              "PrismicSliceType",
+              "Node",
+            ],
+            "name": "PrismicPageBodyText",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "fields": Object {
+              "caption": "PrismicStructuredTextType",
+              "image": "PrismicImageType",
+            },
+            "name": "PrismicPageBodyImagesItemType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "items": "[PrismicPageBodyImagesItemType]",
+              "slice_label": "String",
+              "slice_type": "String!",
+            },
+            "interfaces": Array [
+              "PrismicSliceType",
+              "Node",
+            ],
+            "name": "PrismicPageBodyImages",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "name": "PrismicPageBodySlicesType",
+            "types": Array [
+              "PrismicPageBodyText",
+              "PrismicPageBodyImages",
+            ],
+          },
+          "kind": "UNION",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "body": Object {
+                "resolve": [Function],
+                "type": "[PrismicPageBodySlicesType]",
+              },
+              "main": Object {
+                "resolve": [Function],
+                "type": "[PrismicPageMainSlicesType]",
+              },
+              "meta_description": "String",
+              "meta_title": "String",
+              "parent": "PrismicLinkType",
+              "title": "PrismicStructuredTextType",
+            },
+            "name": "PrismicPageDataType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
+            "fields": Object {
+              "alternate_languages": "[PrismicLinkType!]!",
+              "data": "PrismicPageDataType",
+              "dataRaw": "JSON!",
+              "dataString": "String!",
+              "first_publication_date": Object {
+                "extensions": Object {
+                  "dateformat": Object {},
+                },
+                "type": "Date!",
+              },
+              "href": "String!",
+              "lang": "String!",
+              "last_publication_date": Object {
+                "extensions": Object {
+                  "dateformat": Object {},
+                },
+                "type": "Date!",
+              },
+              "prismicId": "ID!",
+              "tags": "[String!]!",
+              "type": "String!",
+              "uid": "String",
+              "url": "String",
+            },
+            "interfaces": Array [
+              "PrismicDocument",
+              "Node",
+            ],
+            "name": "PrismicPage",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "name": "PrismicAllDocumentTypes",
+            "types": Array [
+              "PrismicPage",
+            ],
+          },
+          "kind": "UNION",
+        },
+        Object {
+          "config": Object {
+            "fields": Object {
+              "Mobile": "PrismicImageThumbnailType",
+            },
+            "name": "PrismicImageThumbnailsType",
+          },
+          "kind": "OBJECT",
+        },
+      ],
+    ],
+    Array [
+      "   \\"A text field with formatting options.\\"
+  type PrismicStructuredTextType {
+    \\"The HTML value of the text using \`prismic-dom\` and the HTML serializer.\\"
+    html: String
+    \\"The plain text value of the text using \`prismic-dom\`.\\"
+    text: String
+    \\"The field's value without transformations exactly as it comes from the Prismic API.\\"
+    raw: JSON
+  }
+
+  \\"A field for storing geo-coordinates.\\"
+  type PrismicGeoPointType {
+    \\"The latitude value of the geo-coordinate.\\"
+    latitude: Float
+    \\"The longitude value of the geo-coordinate.\\"
+    longitude: Float
+  }
+
+  \\"Embed videos, songs, tweets, slices, etc.\\"
+  type PrismicEmbedType {
+    \\"The name of the author/owner of the resource. Fetched via oEmbed data.\\"
+    author_name: String
+    \\"A URL for the author/owner of the resource. Fetched via oEmbed data.\\"
+    author_url: String
+    \\"The suggested cache lifetime for this resource, in seconds. Consumers may choose to use this value or not. Fetched via oEmbed data.\\"
+    cache_age: String
+    \\"The URL of the resource.\\"
+    embed_url: String
+    \\"The HTML required to display the resource. The HTML should have no padding or margins. Consumers may wish to load the HTML in an off-domain iframe to avoid XSS vulnerabilities. Fetched via oEmbed data.\\"
+    html: String
+    \\"The name of the resource.\\"
+    name: String
+    \\"The name of the resource provider. Fetched via oEmbed data.\\"
+    provider_name: String
+    \\"The URL of the resource provider. Fetched via oEmbed data.\\"
+    provider_url: String
+    \\"The width of the resource's thumbnail. Fetched via oEmbed data.\\"
+    thumbnail_height: Int
+    \\"A URL to a thumbnail image representing the resource. Fetched via oEmbed data.\\"
+    thumbnail_url: String
+    \\"The width of the resource's thumbnail. Fetched via oEmbed data.\\"
+    thumbnail_width: Int
+    \\"A text title, describing the resource. Fetched via oEmbed data.\\"
+    title: String
+    \\"The resource type. Fetched via oEmbed data.\\"
+    type: String
+    \\"The oEmbed version number.\\"
+    version: String
+  }
+
+  \\"Dimensions for images.\\"
+  type PrismicImageDimensionsType {
+    \\"Width of the image in pixels.\\"
+    width: Int!
+    \\"Height of the image in pixels.\\"
+    height: Int!
+  }
+
+  \\"\`gatsby-image\`-compatible image data for \`fixed\` images.\\"
+  type PrismicImageFixedType {
+    base64: String
+    aspectRatio: Float
+    width: Float
+    height: Float
+    src: String
+    srcSet: String
+    srcWebp: String
+    srcSetWebp: String
+  }
+
+  \\"\`gatsby-image\`-compatible image data for \`fluid\` images.\\"
+  type PrismicImageFluidType {
+    base64: String
+    aspectRatio: Float
+    src: String
+    srcSet: String
+    srcWebp: String
+    srcSetWebp: String
+    sizes: String
+  }
+
+  \\"An image thumbnail with constraints.\\"
+  type PrismicImageThumbnailType implements PrismicImageInterface {
+    alt: String
+    copyright: String
+    dimensions: PrismicImageDimensionsType
+    url: String
+    localFile: File @link
+    \\"\`gatsby-image\`-compatible image data for \`fixed\` images.\\"
+    fixed(width: Int, height: Int): PrismicImageFixedType
+    \\"\`gatsby-image\`-compatible image data for \`fluid\` images.\\"
+    fluid(
+      maxWidth: Int
+      maxHeight: Int
+      srcSetBreakpoints: [Int!]
+    ): PrismicImageFluidType
+  }
+
+  \\"An image field with optional constrained thumbnails.\\"
+  type PrismicImageType implements PrismicImageInterface {
+    alt: String
+    copyright: String
+    dimensions: PrismicImageDimensionsType
+    url: String
+    localFile: File @link
+    \\"\`gatsby-image\`-compatible image data for \`fixed\` images.\\"
+    fixed(width: Int, height: Int): PrismicImageFixedType
+    \\"\`gatsby-image\`-compatible image data for \`fluid\` images.\\"
+    fluid(
+      maxWidth: Int
+      maxHeight: Int
+      srcSetBreakpoints: [Int!]
+    ): PrismicImageFluidType
+    \\"The image's thumbnails.\\"
+    thumbnails: PrismicImageThumbnailsType
+  }
+
+  \\"Types of links.\\"
+  enum PrismicLinkTypes {
+    \\"Any of the other types\\"
+    Any
+    \\"Internal content\\"
+    Document
+    \\"Internal media content\\"
+    Media
+    \\"URL\\"
+    Web
+  }
+
+  \\"Link to web, media, and internal content.\\"
+  type PrismicLinkType {
+    \\"The type of link.\\"
+    link_type: PrismicLinkTypes!
+    \\"If a Document link, \`true\` if linked document does not exist, \`false\` otherwise.\\"
+    isBroken: Boolean
+    \\"The document's URL derived via the link resolver.\\"
+    url: String
+    \\"The link's target.\\"
+    target: String
+    \\"If a Media link, the size of the file.\\"
+    size: Int
+    \\"If a Document link, the linked document's Prismic ID.\\"
+    id: ID
+    \\"If a Document link, the linked document's Prismic custom type API ID\\"
+    type: String
+    \\"If a Document link, the linked document's list of tags.\\"
+    tags: [String]
+    \\"If a Document link, the linked document's language.\\"
+    lang: String
+    \\"If a Document link, the linked document's slug.\\"
+    slug: String
+    \\"If a Document link, the linked document's UID.\\"
+    uid: String
+    \\"If a Document link, the linked document.\\"
+    document: PrismicAllDocumentTypes @link
+    \\"The field's value without transformations exactly as it comes from the Prismic API.\\"
+    raw: JSON
+  }
+
+  interface PrismicSliceType {
+    \\"The slice type API ID.\\"
+    slice_type: String!
+
+    \\"The slice label.\\"
+    slice_label: String
+  }
+
+  interface PrismicImageInterface {
+    \\"The image's alternative text.\\"
+    alt: String
+    \\"The image's copyright text.\\"
+    copyright: String
+    \\"The image's dimensions.\\"
+    dimensions: PrismicImageDimensionsType
+    \\"The image's URL on Prismic's CDN.\\"
+    url: String
+    \\"The locally downloaded image if \`shouldNormalizeImage\` returns true.\\"
+    localFile: File
+    fixed: PrismicImageFixedType
+    fluid: PrismicImageFluidType
+  }
+
+  interface PrismicDocument {
+    \\"The document's data object without transformations exactly as it comes from the Prismic API.\\"
+    dataRaw: JSON!
+    \\"The document's data object without transformations. The object is stringified via \`JSON.stringify\` to eliminate the need to declare subfields.\\"
+    dataString: String
+      @deprecated(reason: \\"Use \`dataRaw\` instead which returns JSON.\\")
+    \\"The document's initial publication date.\\"
+    first_publication_date(
+      \\"Format the date using Moment.js' date tokens, e.g. \`date(formatString: \\\\\\"YYYY MMMM DD\\\\\\")\`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens.\\"
+      formatString: String
+      \\"Returns a string generated with Moment.js' \`fromNow\` function\\"
+      fromNow: Boolean
+      \\"Returns the difference between this date and the current time. Defaults to \\\\\\"milliseconds\\\\\\" but you can also pass in as the measurement \\\\\\"years\\\\\\", \\\\\\"months\\\\\\", \\\\\\"weeks\\\\\\", \\\\\\"days\\\\\\", \\\\\\"hours\\\\\\", \\\\\\"minutes\\\\\\", and \\\\\\"seconds\\\\\\".\\"
+      difference: String
+      \\"Configures the locale Moment.js will use to format the date.\\"
+      locale: String
+    ): Date
+    \\"The document's Prismic API URL.\\"
+    href: String
+    \\"The document's URL derived via the link resolver.\\"
+    url: String
+    \\"Globally unique identifier. Note that this differs from the \`prismicID\` field.\\"
+    id: ID!
+    \\"The document's language.\\"
+    lang: String!
+    \\"The document's most recent publication date\\"
+    last_publication_date(
+      \\"Format the date using Moment.js' date tokens, e.g. \`date(formatString: \\\\\\"YYYY MMMM DD\\\\\\")\`. See https://momentjs.com/docs/#/displaying/format/ for documentation for different tokens.\\"
+      formatString: String
+      \\"Returns a string generated with Moment.js' \`fromNow\` function\\"
+      fromNow: Boolean
+      \\"Returns the difference between this date and the current time. Defaults to \\\\\\"milliseconds\\\\\\" but you can also pass in as the measurement \\\\\\"years\\\\\\", \\\\\\"months\\\\\\", \\\\\\"weeks\\\\\\", \\\\\\"days\\\\\\", \\\\\\"hours\\\\\\", \\\\\\"minutes\\\\\\", and \\\\\\"seconds\\\\\\".\\"
+      difference: String
+      \\"Configures the locale Moment.js will use to format the date.\\"
+      locale: String
+    ): Date
+    \\"The document's list of tags.\\"
+    tags: [String!]!
+    \\"Alternate languages for the document.\\"
+    alternate_languages: [PrismicLinkType!]!
+    \\"The document's Prismic API ID type.\\"
+    type: String!
+    \\"The document's Prismic ID.\\"
+    prismicId: ID!
+  }
+",
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`sourceNodes writes type paths to filesystem 2`] = `
+Array [
+  Object {
+    "path": Array [
+      "page",
+      "uid",
+    ],
+    "type": "String",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "alternate_languages",
+    ],
+    "type": "AlternateLanguages",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+    ],
+    "type": "PrismicPageDataType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "title",
+    ],
+    "type": "PrismicStructuredTextType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "meta_title",
+    ],
+    "type": "String",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "meta_description",
+    ],
+    "type": "String",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "parent",
+    ],
+    "type": "PrismicLinkType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+      "news_post",
+      "primary",
+      "published_on",
+    ],
+    "type": "Date",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+      "news_post",
+      "primary",
+    ],
+    "type": "PrismicPageMainNewsPostPrimaryType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+      "news_post",
+    ],
+    "type": "PrismicPageMainNewsPost",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "main",
+    ],
+    "type": "[PrismicPageMainSlicesType]",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "text",
+      "primary",
+      "text",
+    ],
+    "type": "PrismicStructuredTextType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "text",
+      "primary",
+    ],
+    "type": "PrismicPageBodyTextPrimaryType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "text",
+    ],
+    "type": "PrismicPageBodyText",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+      "image",
+    ],
+    "type": "PrismicImageType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+      "image",
+      "thumbnails",
+      "Mobile",
+    ],
+    "type": "PrismicImageThumbnailType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+      "caption",
+    ],
+    "type": "PrismicStructuredTextType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+    ],
+    "type": "[PrismicPageBodyImagesItemType]",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+    ],
+    "type": "PrismicPageBodyImages",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+    ],
+    "type": "[PrismicPageBodySlicesType]",
+  },
+  Object {
+    "path": Array [
+      "page",
+    ],
+    "type": "PrismicPage",
+  },
+]
+`;
