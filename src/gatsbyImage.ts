@@ -172,29 +172,39 @@ export const buildFluidGatsbyImage = (
   }
 }
 
+const resolveFluid = (
+  source: NormalizedImageField,
+  args: GatsbyImageFixedArgs,
+) =>
+  source.url
+    ? buildFixedGatsbyImage(
+        source.url,
+        source.dimensions!.width,
+        source.dimensions!.height,
+        args,
+      )
+    : undefined
+
+const resolveFixed = (
+  source: NormalizedImageField,
+  args: GatsbyImageFixedArgs,
+) =>
+  source.url
+    ? buildFixedGatsbyImage(
+        source.url,
+        source.dimensions!.width,
+        source.dimensions!.height,
+        args,
+      )
+    : undefined
+
 export const resolvers = {
   [GraphQLType.Image]: {
-    fixed: {
-      resolve: (source: NormalizedImageField, args: GatsbyImageFixedArgs) =>
-        source.url
-          ? buildFixedGatsbyImage(
-              source.url,
-              source.dimensions!.width,
-              source.dimensions!.height,
-              args,
-            )
-          : undefined,
-    },
-    fluid: {
-      resolve: (source: NormalizedImageField, args: GatsbyImageFluidArgs) =>
-        source.url
-          ? buildFluidGatsbyImage(
-              source.url,
-              source.dimensions!.width,
-              source.dimensions!.height,
-              args,
-            )
-          : undefined,
-    },
+    fixed: { resolve: resolveFixed },
+    fluid: { resolve: resolveFluid },
+  },
+  [GraphQLType.ImageThumbnail]: {
+    fixed: { resolve: resolveFixed },
+    fluid: { resolve: resolveFluid },
   },
 }

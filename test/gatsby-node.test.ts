@@ -199,6 +199,10 @@ describe('createResolvers', () => {
         fixed: { resolve: expect.any(Function) },
         fluid: { resolve: expect.any(Function) },
       },
+      PrismicImageThumbnailType: {
+        fixed: { resolve: expect.any(Function) },
+        fluid: { resolve: expect.any(Function) },
+      },
     })
   })
 })
