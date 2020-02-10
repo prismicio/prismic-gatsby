@@ -174,10 +174,10 @@ export const buildFluidGatsbyImage = (
 
 const resolveFluid = (
   source: NormalizedImageField,
-  args: GatsbyImageFixedArgs,
+  args: GatsbyImageFluidArgs,
 ) =>
   source.url
-    ? buildFixedGatsbyImage(
+    ? buildFluidGatsbyImage(
         source.url,
         source.dimensions!.width,
         source.dimensions!.height,
