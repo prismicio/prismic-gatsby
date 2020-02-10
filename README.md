@@ -165,7 +165,7 @@ Each schema file should be populated with the contents of the "JSON editor" tab
 in the Prismic Custom Type editor.
 
 **Note**: The names of your schemas in the `schemas` object should be _exactly_
-the same as your custom type's API ID. For example, if you API ID is
+the same as your custom type's API ID. For example, if your API ID is
 "`blog-post`", your key should be "`blog-post`", not "`blog_post`".
 
 See the official docs for more details on version controlling your custom types:
