@@ -57,7 +57,15 @@ exports[`sourceNodes creates nodes 1`] = `
                 "height": 1333,
                 "width": 2000,
               },
-              "thumbnails": Object {},
+              "thumbnails": Object {
+                "Mobile": Object {
+                  "dimensions": Object {
+                    "height": 667,
+                    "width": 1000,
+                  },
+                  "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667",
+                },
+              },
               "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333",
             },
           },
@@ -127,6 +135,13 @@ exports[`sourceNodes creates nodes 1`] = `
                     },
                   ],
                   "image": Object {
+                    "Mobile": Object {
+                      "dimensions": Object {
+                        "height": 667,
+                        "width": 1000,
+                      },
+                      "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667",
+                    },
                     "alt": "Example alt text",
                     "copyright": null,
                     "dimensions": Object {
@@ -156,7 +171,7 @@ exports[`sourceNodes creates nodes 1`] = `
             },
           ],
         },
-        "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\"},\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\"},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
+        "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\"},\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\",\\"Mobile\\":{\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667\\",\\"dimensions\\":{\\"width\\":1000,\\"height\\":667}}},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
         "first_publication_date": "2019-01-06T04:03:51+0000",
         "href": "https://gatsby-starter-ww.cdn.prismic.io/api/v2/documents/search?ref=Xj9DrRUAACcAJ33X&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22XDF-DhEAACAA5b4F%22%29+%5D%5D",
         "id": "createNodeId",
@@ -378,10 +393,12 @@ exports[`sourceNodes creates types 1`] = `
         },
         Object {
           "config": Object {
+            "fields": Object {
+              "Mobile": "PrismicImageThumbnailType",
+            },
             "name": "PrismicImageThumbnailsType",
-            "serialize": [Function],
           },
-          "kind": "SCALAR",
+          "kind": "OBJECT",
         },
       ],
     ],
@@ -762,6 +779,19 @@ Array [
       "image",
     ],
     "type": "PrismicImageType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+      "image",
+      "thumbnails",
+      "Mobile",
+    ],
+    "type": "PrismicImageThumbnailType",
   },
   Object {
     "path": Array [

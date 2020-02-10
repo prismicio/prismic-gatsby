@@ -108,7 +108,12 @@
                   "constraint": {
                     "width": 2000
                   },
-                  "thumbnails": [],
+                  "thumbnails": [
+                    {
+                      "name": "Mobile",
+                      "width": "1000"
+                    }
+                  ],
                   "label": "Image"
                 }
               },

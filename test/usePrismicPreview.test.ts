@@ -13,12 +13,12 @@ const createMockFetch = (map: { [url: string]: any }) =>
     if (response) return { ok: true, json: () => response }
 
     throw new Error(
-      '404 - Mocked fetch does not have a response for the requested URL.',
+      `404 - Mocked fetch does not have a response for the requested URL: ${url}`,
     )
   })
 
 window.fetch = createMockFetch({
-  '/prismic-typepaths---0d5871ff6ad802968216a91db927d1b7.json': mockTypePaths,
+  '/prismic-typepaths---bddfaa332f938c548a0759880e939d16.json': mockTypePaths,
 })
 
 const mockGatsbyContext = {

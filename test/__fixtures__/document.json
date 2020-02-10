@@ -34,7 +34,11 @@
               "dimensions": { "width": 2000, "height": 1333 },
               "alt": "Example alt text",
               "copyright": null,
-              "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333"
+              "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333",
+              "Mobile": {
+                "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667",
+                "dimensions": { "width": 1000, "height": 667 }
+              }
             },
             "caption": [
               {

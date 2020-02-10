@@ -180,7 +180,7 @@ describe('sourceNodes', () => {
     await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
 
     expect(writeFileSync.mock.calls[0][0]).toMatchInlineSnapshot(
-      `"/__PROGRAM_DIRECTORY__/public/prismic-typepaths---0d5871ff6ad802968216a91db927d1b7.json"`,
+      `"/__PROGRAM_DIRECTORY__/public/prismic-typepaths---bddfaa332f938c548a0759880e939d16.json"`,
     )
 
     // Ensure valid JSON.
