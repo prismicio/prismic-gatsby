@@ -32,6 +32,9 @@ const DEFAULT_PARAMS: ImgixUrlQueryParams = {
 
   // 50 is fairly aggressive.
   q: 50,
+
+  // Automatically apply compression and use webp when possible.
+  auto: { compress: true, format: true },
 }
 
 /**
