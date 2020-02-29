@@ -21,6 +21,8 @@ export const types = gql`
 
   "Embed videos, songs, tweets, slices, etc."
   type PrismicEmbedType {
+    "The ID of the resource author. Fetched via oEmbed data."
+    author_id: ID
     "The name of the author/owner of the resource. Fetched via oEmbed data."
     author_name: String
     "A URL for the author/owner of the resource. Fetched via oEmbed data."
@@ -49,6 +51,14 @@ export const types = gql`
     type: String
     "The oEmbed version number."
     version: String
+    "The source URL of the resource. Fetched via oEmbed data."
+    url: String
+    "The width in pixel of the resource. Fetched via oEmbed data."
+    width: Int
+    "The height in pixel of the resource. Fetched via oEmbed data."
+    height: Int
+    "The ID of the resource media. Fetched via oEmbed data."
+    media_id: ID
   }
 
   "Dimensions for images."
