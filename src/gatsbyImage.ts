@@ -82,6 +82,7 @@ const buildFixedSrcSet = (
 
 const buildFluidSrcSet = (
   baseURL: string,
+  aspectRatio: number,
   params: ImgixUrlQueryParams & { w: number; rect?: string },
   breakpoints?: number[],
 ) => {
@@ -96,7 +97,11 @@ const buildFluidSrcSet = (
   return uniqSortedBreakpoints
     .map(breakpoint => {
       if (!breakpoint) return
-      const url = buildURL(baseURL, { ...params, w: breakpoint })
+      const url = buildURL(baseURL, {
+        ...params,
+        w: breakpoint,
+        h: Math.round(breakpoint / aspectRatio),
+      })
       return `${url} ${breakpoint}w`
     })
     .filter(Boolean)
@@ -157,6 +162,7 @@ export const buildFluidGatsbyImage = (
   const src = buildURL(baseURL, { w: width, h: height, rect, q: quality })
   const srcSet = buildFluidSrcSet(
     baseURL,
+    aspectRatio,
     { w: width, h: height, rect, q: quality },
     breakpoints,
   )
