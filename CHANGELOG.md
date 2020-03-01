@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.25](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.24...v3.0.0-beta.25) (2020-03-01)
+
+
+### Bug Fixes
+
+* remove image URL decoding ([800431c](https://github.com/angeloashmore/gatsby-source-prismic/commit/800431c01972edd9da17ac4ecf6e1f5459c1bdf6))
+* restore automatic compression and format ([ebf9b82](https://github.com/angeloashmore/gatsby-source-prismic/commit/ebf9b823c40f156e829781b0b343fce778d776c8))
+* restore width and height oembed fields ([c919a3a](https://github.com/angeloashmore/gatsby-source-prismic/commit/c919a3a2230efee8a9e8c2d75a4176c34299c17f))
+* use correct scaled height for fluid ([dad48b9](https://github.com/angeloashmore/gatsby-source-prismic/commit/dad48b940dd9b1ee3b181191f6c5143e82984fdc))
+
 ## [3.0.0-beta.24](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.23...v3.0.0-beta.24) (2020-02-10)
 
 
