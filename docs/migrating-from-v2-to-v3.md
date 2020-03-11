@@ -342,8 +342,8 @@ escape hatch if the untouched data is needed.
 
 ## Setting up previews
 
-See the [Previews guide](./previews.md) to learn how to setup previews, a new
-feature in v3.
+See the [Previews guide](./previews-guide.md) to learn how to setup previews, a
+new feature in v3.
 
 [react-hooks]: https://reactjs.org/docs/hooks-intro.html
 
