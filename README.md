@@ -1,24 +1,37 @@
-# gatsby-source-prismic
+# gatsby-source-prismic <!-- omit in toc -->
 
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
 
-## v3 Beta
+## Table of Contents
 
-The following documentation is for the stable v2 version.
-
-If you are starting a new project or want to try out the new schema and preview
-features, check out the v3 beta.
-
-- [Documentation for v3 beta](https://github.com/angeloashmore/gatsby-source-prismic/blob/v3-beta/README.md)
-- [Migrating from v2 to v3](https://github.com/angeloashmore/gatsby-source-prismic/blob/v3-beta/docs/migrating-from-v2-to-v3.md)
+- [Table of Contents](#Table-of-Contents)
+- [Features](#Features)
+- [Install](#Install)
+- [Migration Guide](#Migration-Guide)
+- [How to use](#How-to-use)
+- [Providing JSON schemas](#Providing-JSON-schemas)
+- [How to query](#How-to-query)
+  - [Query Rich Text fields](#Query-Rich-Text-fields)
+  - [Query Link fields](#Query-Link-fields)
+  - [Query Image fields](#Query-image-fields)
+  - [Query Content Relation fields](#Query-Content-Relation-fields)
+  - [Query Slices](#Query-slices)
+  - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
+  - [Image processing](#Image-processing)
+- [Previews](#Previews)
+- [Limitations](#Limitations)
+  - [GraphQL-valid field names](#GraphQL-valid-field-names)
+- [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
 
 ## Features
 
 - Supports Rich Text fields, slices, and content relation fields
-- Supports `gatsby-transformer-sharp` and `gatsby-image` for image fields
+- Supports `gatsby-image` using [Imgix][prismic-imgix] or
+  `gatsby-transformer-sharp` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
+- Supports Prismic previews
 
 ## Install
 
@@ -26,9 +39,17 @@ features, check out the v3 beta.
 npm install --save gatsby-source-prismic
 ```
 
+## Migration Guide
+
+Read the migration guide to learn why and how to upgrade from v2 to v3. Then
+read the previews guide to learn how to setup previews.
+
+- [Migrating from v2 to v3](./docs/migrating-from-v2-to-v3.md)
+- [Previews](./docs/previews-guide.md)
+
 ## How to use
 
-```js
+```javascript
 // In your gatsby-config.js
 plugins: [
   /*
@@ -83,6 +104,12 @@ plugins: [
         // Your HTML serializer
       },
 
+      // Provide an object of Prismic custom type JSON schemas to load into
+      // Gatsby. This is required.
+      schemas: {
+        // Your custom types mapped to schemas
+      }
+
       // Set a default language when fetching documents. The default value is
       // '*' which will fetch all languages.
       // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
@@ -93,14 +120,56 @@ plugins: [
       // The document node, field key (i.e. API ID), and field value are
       // provided to the function, as seen below. This allows you to use
       // different logic for each field if necessary.
-      // This defaults to always return true.
-      shouldNormalizeImage: ({ node, key, value }) => {
-        // Return true to normalize the image or false to skip.
+      // This defaults to always return false.
+      shouldDownloadImage: ({ node, key, value }) => {
+        // Return true to download the image or false to skip.
       },
+
+      // Set the prefix for the filename where type paths for your schemas are
+      // stored. The filename will include the MD5 hash of your schemas after
+      // the prefix.
+      // This defaults to 'prismic-typepaths---${repositoryName}'.
+      typePathsFilenamePrefix: 'prismic-typepaths---gatsby-source-prismic-test-site',
     },
   },
 ]
 ```
+
+## Providing JSON schemas
+
+In order for Gatsby to know about your Prismic custom types, you must provide
+the full JSON schema of each custom type. This is done via the plugin's
+`schemas` option in `gatsby-config.js`.
+
+The recommended approach is to create a `schemas` directory in your project and
+import them into your `gatsby-config.js` file.
+
+```javascript
+// In your gatsby-config.js
+plugins: [
+  {
+    resolve: 'gatsby-source-prismic',
+    options: {
+      // ...
+      schemas: {
+        page: require('./src/schemas/page.json'),
+        blog_post: require('./src/schemas/blog_post.json'),
+      },
+      // ...
+    },
+  },
+]
+```
+
+Each schema file should be populated with the contents of the "JSON editor" tab
+in the Prismic Custom Type editor.
+
+**Note**: The names of your schemas in the `schemas` object should be _exactly_
+the same as your custom type's API ID. For example, if your API ID is
+"`blog-post`", your key should be "`blog-post`", not "`blog_post`".
+
+See the official docs for more details on version controlling your custom types:
+[How to version custom types][prismic-version-custom-types].
 
 ## How to query
 
@@ -225,6 +294,42 @@ using the `raw` field, though use of this field is discouraged.
 }
 ```
 
+### Query Image fields
+
+Prismic allows setting multiple images for a single image field with optional
+constraints. This is useful when different versions of an image are required
+based on its surrouding context. One such example could be a responsive image
+where a different image may be necessary on smaller or larger screens.
+
+Image thumbnails are available on the `thumbnail` field of all image fields.
+
+See the official docs for more details on configuring thumbnails on your custom
+types: [How to set up responsive images][prismic-responsive-images].
+
+See the [Image processing](#Image-processing) section to learn how to enable
+Gatsby Image support.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      nodes {
+        data {
+          image_field {
+            url
+            thumbnails {
+              thumbnail_name {
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ### Query Content Relation fields
 
 Content Relation fields relate a field to another document. Since fields from
@@ -232,11 +337,6 @@ within the related document is often needed, the document data is provided at
 the `document` field. The resolved URL to the document using the official
 [prismic-dom][prismic-dom] library and the `linkResolver` function from your
 site's `gatsby-node.js` is also provided at the `url` field.
-
-**Note**: Data within the `document` field is wrapped in an array. Due to the
-method in which Gatsby processes one-to-one node relationships, this
-work-around is necessary to ensure the field can accommodate different content
-types. This may be fixed in a later Gatsby relase.
 
 Querying data on the `document` field is handled the same as querying slices.
 Please read the [Query slices](#query-slices) section for details.
@@ -273,9 +373,9 @@ using the `raw` field, though use of this field is discouraged.
 
 ### Query slices
 
-Prismic slices allow you to build a flexible series of content blocks. Since
-the content structure is dynamic, querying the content is handled differently
-than other fields.
+Prismic slices allow you to build a flexible series of content blocks. Since the
+content structure is dynamic, querying the content is handled differently than
+other fields.
 
 To access slice fields, you need to use GraphQL [inline
 fragments][graphql-inline-fragments]. This requires you to know types of nodes.
@@ -344,8 +444,8 @@ If you find you cannot query the data you need through the GraphQL interface,
 you can get the raw response from the [prismic-javascript][prismic-javascript]
 API using the `dataString` field.
 
-This field contains the whole node's original data before processing as a
-string generated using `JSON.stringify`.
+This field contains the whole node's original data before processing as a string
+generated using `JSON.stringify`.
 
 This is absolutely discouraged as it defeats the purpose of Gatsby's GraphQL
 data interface, but it is available if necessary
@@ -365,13 +465,108 @@ data interface, but it is available if necessary
 
 ### Image processing
 
-To use image processing you need `gatsby-transformer-sharp`,
+You can process images using one of the following methods:
+
+- **Recommended: On-the-fly transformed using Imgix**: Images are **not**
+  downloaded to your computer or server and instead are transformed using
+  Prismic's Imgix integration to resize images on-the-fly.
+- **Locally transformed at build-time**: Images are downloaded to your computer
+  or server which resizes images at build-time.
+
+You can apply image processing to any image field and its thumbnails on a
+document. Image processing of inline images added to Rich Text fields is
+currently not supported.
+
+#### Using Imgix transformed images
+
+Using this method, images are manipulated on Imgix's servers at request time,
+eliminating the need to download and resize images on your computer or server.
+
+To access image processing in your queries, you need to use this pattern, where
+`...ImageFragment` is one of the following fragments:
+
+- `GatsbyPrismicImageFixed`
+- `GatsbyPrismicImageFixed_noBase64`
+- `GatsbyPrismicImageFluid`
+- `GatsbyPrismicImageFluid_noBase64`
+
+Learn about the different types of responsive images and fragments from
+[`gatsby-image`'s official docs][gatsby-image-types].
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            fluid {
+              ...ImageFragment
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Full example:
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      node {
+        id
+        data {
+          imageFieldName {
+            fluid(maxWidth: 1000, maxHeight: 800) {
+              ...GatsbyPrismicImageFluid
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Using locally transformed images
+
+To use local image processing, you need `gatsby-transformer-sharp`,
 `gatsby-plugin-sharp`, and their dependencies `gatsby-image` and
 `gatsby-source-filesystem` in your `gatsby-config.js`.
 
-You can apply image processing to any image field on a document. Image
-processing of inline images added to Rich Text fields is currently not
-supported.
+Note that this will incur additional build time as image processing is
+time-consuming.
+
+In your `gatsby-config.js` file, set the `shouldDownloadImage` plugin option to
+a function that returns `true` for images requiring local transformations.
+
+```javascript
+// In your gatsby-config.js
+plugins: [
+  {
+    resolve: 'gatsby-source-prismic',
+    options: {
+      // Along with your other options...
+
+      // Set a function to determine if images are downloaded locally and made
+      // available for gatsby-transformer-sharp for use with gatsby-image.
+      // The document node, field key (i.e. API ID), and field value are
+      // provided to the function, as seen below. This allows you to use
+      // different logic for each field if necessary.
+      // This defaults to always return false.
+      shouldDownloadImage: ({ node, key, value }) => {
+        // Return true to download the image or false to skip.
+        return true
+      },
+    },
+  },
+]
+```
 
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the [`gatsby-transformer-sharp`
@@ -410,8 +605,8 @@ Full example:
           imageFieldName {
             localFile {
               childImageSharp {
-                resolutions(width: 500, height: 300) {
-                  ...GatsbyImageSharpResolutions_withWebp
+                fixed(width: 500, height: 300) {
+                  ...GatsbyImageSharpFixed_withWebp
                 }
               }
             }
@@ -423,24 +618,47 @@ Full example:
 }
 ```
 
-To learn more about image processing, check the documentation of
+To learn more about local image processing, check the documentation of
 [gatsby-plugin-sharp][gatsby-plugin-sharp].
+
+## Previews
+
+For an in-depth guide on using previews, please refer to
+[this guide](./docs/previews-guide.md).
+
+## Limitations
+
+### GraphQL-valid field names
+
+All field names must adhere to GraphQL's field name requirements:
+
+- `a-z`: Any lowercase letter.
+- `A-Z`: Any uppercase letter.
+- `0-9`: Any number. Name must not start with a number.
+- `_`: Underscores
+
+Note that this does not allow fields containing the following:
+
+- Starting with a number (e.g. `0_my_field`)
+- Dashes (e.g. `my-field`)
+- Symbols (e.g. `!@#$%^&*()`)
 
 ## Site's `gatsby-node.js` example
 
-```js
+```jsx
 const path = require('path')
 
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
+  // Query all Pages with their IDs and template data.
   const pages = await graphql(`
     {
       allPrismicPage {
-        edges {
-          node {
-            id
-            uid
+        nodes {
+          id
+          uid
+          data {
             template
           }
         }
@@ -449,16 +667,17 @@ exports.createPages = async ({ graphql, actions }) => {
   `)
 
   const pageTemplates = {
-    Light: path.resolve('./src/templates/light.js'),
-    Dark: path.resolve('./src/templates/dark.js'),
+    Light: path.resolve(__dirname, 'src/templates/light.js'),
+    Dark: path.resolve(__dirname, 'src/templates/dark.js'),
   }
 
-  pages.data.allPrismicPage.edges.forEach(edge => {
+  // Create pages for each Page in Prismic using the selected template.
+  pages.data.allPrismicPage.nodes.forEach(node => {
     createPage({
-      path: `/${edge.node.uid}`,
-      component: pageTemplates[edge.node.template],
+      path: `/${node.uid}`,
+      component: pageTemplates[node.template],
       context: {
-        id: edge.node.id,
+        id: node.id,
       },
     })
   })
@@ -467,8 +686,18 @@ exports.createPages = async ({ graphql, actions }) => {
 
 [gatsby]: https://www.gatsbyjs.org/
 [prismic]: https://prismic.io/
+[prismic-imgix]:
+  https://user-guides.prismic.io/en/articles/3309829-image-optimization-imgix-integration
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
+[prismic-version-custom-types]:
+  https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
-[gatsby-plugin-sharp]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
-[gatsby-image-fragments]: https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
+[gatsby-plugin-sharp]:
+  https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-plugin-sharp
+[gatsby-image-fragments]:
+  https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-image#gatsby-transformer-sharp
+[prismic-responsive-images]:
+  https://user-guides.prismic.io/en/articles/762324-how-to-set-up-responsive-images
+[gatsby-image-types]:
+  https://www.gatsbyjs.org/packages/gatsby-image/?=gatsby-image#two-types-of-responsive-images

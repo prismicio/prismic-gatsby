@@ -1,5 +1,4 @@
 *.log
-/gatsby-node.js
-/fetch.js
-/normalize.js
+.DS_Store
 node_modules
+dist

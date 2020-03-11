@@ -1,13 +1,25 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "2.2.0",
+  "version": "3.0.0-beta.26",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
+  "license": "MIT",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "typings": "dist/src/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "gatsby-node.js",
+    "gatsby-browser.js",
+    "fragments.js"
+  ],
   "scripts": {
-    "prepublish": "npm run build",
-    "build": "babel src --out-dir .",
-    "format": "prettier --trailing-comma all --no-semi --single-quote --write 'src/**/*.js'",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "babel -w src --out-dir ."
+    "clean": "rimraf ./dist",
+    "build": "cross-env NODE_ENV=production npm run clean && rollup -c",
+    "format": "prettier --write '{{src,docs}/**/*.{ts,tsx,md}}'",
+    "prepare": "npm run build",
+    "release": "standard-version",
+    "test": "jest"
   },
   "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
   "repository": {
@@ -17,23 +29,73 @@
   "keywords": [
     "gatsby",
     "gatsby-plugin",
-    "gatsby-source-plugin"
+    "gatsby-source-plugin",
+    "prismic"
   ],
-  "author": "Angelo Ashmore <angelo.ashmore@walltowall.com>",
-  "license": "MIT",
   "dependencies": {
-    "asyncro": "^3.0.0",
-    "gatsby-node-helpers": "^0.3.0",
-    "gatsby-source-filesystem": "^2.0.1",
+    "camelcase": "^5.3.1",
+    "es-cookie": "^1.3.2",
+    "fs-extra": "^8.1.0",
+    "gatsby-source-filesystem": "^2.1.53",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.omit": "^4.5.0",
+    "lodash.pick": "^4.4.0",
+    "md5": "^2.2.1",
+    "pascalcase": "^1.0.0",
     "prismic-dom": "^2.1.0",
-    "prismic-javascript": "^1.1.5"
+    "prismic-javascript": "^2.2.0",
+    "superstruct": "^0.8.3",
+    "ts-imgix": "^0.0.10",
+    "uuid": "^7.0.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-plugin-transform-async-to-generator": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.0",
-    "prettier": "^1.14.3"
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@rollup/plugin-json": "^4.0.2",
+    "@testing-library/react-hooks": "^3.2.1",
+    "@types/fs-extra": "^8.1.0",
+    "@types/jest": "^25.1.4",
+    "@types/lodash.isplainobject": "^4.0.6",
+    "@types/lodash.omit": "^4.5.6",
+    "@types/lodash.pick": "^4.4.6",
+    "@types/md5": "^2.1.33",
+    "@types/prismic-dom": "^2.1.1",
+    "@types/uuid": "^7.0.0",
+    "cross-env": "^7.0.2",
+    "gatsby": "^2.19.39",
+    "husky": "^4.2.3",
+    "jest": "^25.1.0",
+    "prettier": "^1.19.1",
+    "react": "^16.13.0",
+    "react-test-renderer": "^16.13.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.0.3",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "standard-version": "^7.1.0",
+    "ts-jest": "^25.2.1",
+    "tslib": "^1.11.1",
+    "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "gatsby": ">=2.3",
+    "react": ">=16.8"
+  },
+  "browserslist": ">1%, not ie 11, not op_mini all",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "proseWrap": "always",
+    "printWidth": 80
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
