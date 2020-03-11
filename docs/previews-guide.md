@@ -110,7 +110,10 @@ We must provide the following arguments to the hook:
 
 - **`repositoryName`**: Your Prismic repository name just like in your
   `gatsby-config.js` file.
-- **`location`**: The `location` prop from Gatsby to grab the preview URL.
+
+`usePrismicPreview` can optionally accept other options that override settings
+provided in `gatsby-config.js`, but we we'll skip those for this walkthough.
+[See a full list of options here](./previews-api.md#usePrismicPreview).
 
 ```jsx
 // src/pages/preview.js
@@ -119,8 +122,8 @@ import React from 'react'
 import { usePrismicPreview } from 'gatsby-source-prismic'
 
 // Note that the `location` prop is taken and provided to the `usePrismicPreview` hook.
-const PreviewPage = ({ location }) => {
-  const { isPreview, previewData, path } = usePrismicPreview(location, {
+const PreviewPage = () => {
+  const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
     repositoryName: 'myRepository',
   })
@@ -148,7 +151,7 @@ import { usePrismicPreview } from 'gatsby-source-prismic'
 
 // Note that the `location` prop is taken and provided to the `usePrismicPreview` hook.
 const PreviewPage = ({ location }) => {
-  const { isPreview, previewData, path } = usePrismicPreview(location, {
+  const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
     repositoryName: 'myRepository',
   })
@@ -193,7 +196,7 @@ import { usePrismicPreview } from 'gatsby-source-prismic'
 
 // Note that the `location` prop is taken and provided to the `usePrismicPreview` hook.
 const PreviewPage = ({ location }) => {
-  const { isPreview, previewData, path } = usePrismicPreview(location, {
+  const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
     repositoryName: 'myRepository',
   })
@@ -241,7 +244,7 @@ For this example, let's assume we navigated to a page generated using a template
 at `src/templates/page.js`. If your site uses a static page or a different
 template, these changes will go there instead.
 
-```js
+```javascript
 // src/templates/page.js
 
 import React, { useMemo } from 'react'
@@ -252,6 +255,7 @@ import { mergePrismicPreviewData } from 'gatsby-source-prismic'
 // against SSR issues when building the site.
 const IS_BROWSER = typeof window !== 'undefined'
 
+// Note that staticData below is the non-preview data from Gatsby.
 export const PageTemplate = ({ data: staticData }) => {
   const data = useMemo(() => {
     // If we're not in a browser (i.e. we're in SSR) or preview data has not been
@@ -294,15 +298,16 @@ After the last step, you should have a `/preview` page that fetches preview
 data, redirects to the document's page, and displays the changed data along with
 unchanged data.
 
-The power of the preview system comes from the plugin's two main functions:
+The power of the preview system comes from the plugin's two main preview
+functions:
 
 - **`usePrismicPreview`**: React hook to fetch preview data using Prismic's
   preview URL parameters.
 - **`mergePrismicPreviewData`**: Helper function to merge preview data with
   static data.
 
-With both functions, custom preview functionality can be built within your
-Gatsby site. This guide shows a basic implementation, but the system allows for
+With both helpers, custom preview functionality can be built within your Gatsby
+site. This guide shows a basic implementation, but the system allows for
 building your own preview system tailored to your setup.
 
 For more details on the preview functions' API, see the

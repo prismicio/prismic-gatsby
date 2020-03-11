@@ -49,7 +49,7 @@ read the previews guide to learn how to setup previews.
 
 ## How to use
 
-```js
+```javascript
 // In your gatsby-config.js
 plugins: [
   /*
@@ -144,7 +144,7 @@ the full JSON schema of each custom type. This is done via the plugin's
 The recommended approach is to create a `schemas` directory in your project and
 import them into your `gatsby-config.js` file.
 
-```js
+```javascript
 // In your gatsby-config.js
 plugins: [
   {
@@ -545,7 +545,7 @@ time-consuming.
 In your `gatsby-config.js` file, set the `shouldDownloadImage` plugin option to
 a function that returns `true` for images requiring local transformations.
 
-```js
+```javascript
 // In your gatsby-config.js
 plugins: [
   {
