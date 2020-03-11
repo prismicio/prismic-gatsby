@@ -35,10 +35,10 @@ preview requests on demand. With Gatsby, no such infrastructure exists to
 accomplish this. Asking content creators, editors, and clients to "wait a few
 minutes" for a site to rebuild is often not an acceptable solution.
 
-With v3 of `gatsby-source-prismic`, client-rendered previews are now available!
-By rendering previews client-side, we can retain the benefits of Gatsby's HTML
-pre-rendering while still provding the dynamic and rich content editing
-experience of a traditional server setup.
+Luckily, `gatsby-source-prismic` provides a way to load previews directly from
+Prismic. By rendering previews client-side, we can retain the benefits of
+Gatsby's HTML pre-rendering while still provding the dynamic and rich content
+editing experience of a traditional server setup.
 
 ## Summary
 
