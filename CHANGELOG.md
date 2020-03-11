@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-beta.26](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.25...v3.0.0-beta.26) (2020-03-11)
+
+
+### Features
+
+* support Boolean fields ([8c4ca4c](https://github.com/angeloashmore/gatsby-source-prismic/commit/8c4ca4ce6a19065f6fb0c825c1c68efbde6d9841))
+
 ## [3.0.0-beta.25](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.24...v3.0.0-beta.25) (2020-03-01)
 
 
