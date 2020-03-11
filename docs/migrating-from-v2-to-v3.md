@@ -408,7 +408,7 @@ Prismic API to fetch the preview data. Plugin options are automatically assigned
 to a `window` property to allow the preview hook to reuse the options.
 
 All options _except your custom type schemas_ are set on
-`window.___PRISMIC___.pluginOptions`.
+`window.__GATSBY_SOURCE_PRISMIC__[your_repo_name].pluginOptions`.
 
 Additionally, the MD5 digest of your custom type schemas is set on
-`window.___PRISMIC___.schemasDigest`.
+`window.__GATSBY_SOURCE_PRISMIC__[your_repo_name].schemasDigest`.
