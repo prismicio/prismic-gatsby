@@ -187,6 +187,8 @@ export default PreviewPage
 Our last addition to the preview page will navigate the user to the previewed
 document's page using Gatsby's navigate function.
 
+The call to `navigate()` is added at the end of the `useEffect()`.
+
 ```jsx
 // src/pages/preview.js
 
