@@ -288,6 +288,7 @@ exports[`sourceNodes creates types 1`] = `
             "fields": Object {
               "caption": "PrismicStructuredTextType",
               "image": "PrismicImageType",
+              "orientation": "Boolean",
             },
             "name": "PrismicPageBodyImagesItemType",
           },
@@ -813,6 +814,17 @@ Array [
       "caption",
     ],
     "type": "PrismicStructuredTextType",
+  },
+  Object {
+    "path": Array [
+      "page",
+      "data",
+      "body",
+      "images",
+      "items",
+      "orientation",
+    ],
+    "type": "Boolean",
   },
   Object {
     "path": Array [

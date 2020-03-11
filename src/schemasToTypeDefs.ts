@@ -69,6 +69,12 @@ const fieldToType = (
       return type
     }
 
+    case FieldType.Boolean: {
+      const type = GraphQLType.Boolean
+      enqueueTypePath([...path, apiId], type)
+      return type
+    }
+
     case FieldType.StructuredText: {
       const type = GraphQLType.StructuredText
       enqueueTypePath([...path, apiId], type)

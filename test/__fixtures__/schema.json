@@ -124,6 +124,15 @@
                   "label": "Caption",
                   "placeholder": "Optional - Caption below image"
                 }
+              },
+              "orientation": {
+                "type": "Boolean",
+                "config": {
+                  "placeholder_false": "Vertical",
+                  "placeholder_true": "Horizontal",
+                  "default_value": false,
+                  "label": "Orientation"
+                }
               }
             }
           }

@@ -215,6 +215,7 @@ export type GroupField = { [key: string]: Field }[]
 export type NormalizedGroupField = { [key: string]: NormalizedField }[]
 
 export enum FieldType {
+  Boolean = 'Boolean',
   Color = 'Color',
   Date = 'Date',
   Embed = 'Embed',
@@ -236,6 +237,7 @@ export enum FieldType {
 
 export enum GraphQLType {
   ID = 'ID',
+  Boolean = 'Boolean',
   String = 'String',
   Float = 'Float',
   Date = 'Date',
