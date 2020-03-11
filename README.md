@@ -27,8 +27,8 @@ repositories.
 ## Features
 
 - Supports Rich Text fields, slices, and content relation fields
-- Supports `gatsby-image` using Imgix or `gatsby-transformer-sharp` for image
-  fields
+- Supports `gatsby-image` using [Imgix][prismic-imgix] or
+  `gatsby-transformer-sharp` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
 - Supports Prismic previews
@@ -686,6 +686,8 @@ exports.createPages = async ({ graphql, actions }) => {
 
 [gatsby]: https://www.gatsbyjs.org/
 [prismic]: https://prismic.io/
+[prismic-imgix]:
+  https://user-guides.prismic.io/en/articles/3309829-image-optimization-imgix-integration
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
 [prismic-version-custom-types]:
