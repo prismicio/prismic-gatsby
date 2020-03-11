@@ -624,7 +624,7 @@ To learn more about local image processing, check the documentation of
 ## Previews
 
 For an in-depth guide on using previews, please refer to
-[this guide](./docs/previews.md).
+[this guide](./docs/previews-guide.md).
 
 ## Limitations
 
