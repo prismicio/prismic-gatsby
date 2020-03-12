@@ -5,7 +5,6 @@ repositories.
 
 ## Table of Contents
 
-- [Table of Contents](#Table-of-Contents)
 - [Features](#Features)
 - [Install](#Install)
 - [Migration Guide](#Migration-Guide)
