@@ -37,12 +37,12 @@ export default [
     input: 'src/gatsby-browser.ts',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript(), json()],
+    plugins: [typescript()],
   },
   {
     input: 'src/gatsby-ssr.ts',
     output: { file: 'dist/gatsby-ssr.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript(), json()]
+    plugins: [typescript()]
   }
 ]
