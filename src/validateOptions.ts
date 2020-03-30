@@ -10,6 +10,7 @@ const baseSchema = {
   fetchLinks: struct.optional(['string']),
   lang: 'string?',
   typePathsFilenamePrefix: 'string?',
+  omitPrismicScript: 'boolean?',
 }
 
 const baseDefaults = {
@@ -18,6 +19,7 @@ const baseDefaults = {
   fetchLinks: [],
   lang: '*',
   typePathsFilenamePrefix: 'prismic-typepaths---',
+  omitPrismicScript: false,
 }
 
 const PluginOptionsValidator = struct(
