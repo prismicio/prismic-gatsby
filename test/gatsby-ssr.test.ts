@@ -22,6 +22,23 @@ describe("onRenderBody", () => {
         
 
     });
-    
+
+    test("expect setHeadComponents not to have been called", () => {
+        const repositoryName: string = "foo";
+        const setHeadComponents: jest.Mock<any, any>= jest.fn();
+  
+        const options: PluginOptions = {
+            repositoryName,
+            plugins: [],
+            schemas: { page: {} },
+            omitPrismicScript: true,
+        };
+
+        onRenderBody({ setHeadComponents }, options);
+
+        expect(setHeadComponents).not.toHaveBeenCalled
+        
+
+    });
 
 });

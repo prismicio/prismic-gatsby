@@ -390,4 +390,5 @@ export interface PluginOptions extends GatsbyPluginOptions {
   shouldDownloadImage?: ShouldDownloadImage
   shouldNormalizeImage?: ShouldDownloadImage
   typePathsFilenamePrefix?: string
+  omitPrismicScript?: boolean
 }
