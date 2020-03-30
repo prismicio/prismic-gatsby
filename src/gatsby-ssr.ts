@@ -1,7 +1,7 @@
 import React from 'react'
 import { PluginOptions } from './types'
 
-interface OnRenderBodyArgs {
+export interface OnRenderBodyArgs {
   setHeadComponents(args: React.ReactElement<any>[]): void;
 }
 
