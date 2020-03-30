@@ -14,8 +14,9 @@ const makeExternalPredicate = externalArr => {
 const externalPkgs = makeExternalPredicate([
   ...Object.keys(pkg.dependencies || {}),
   ...Object.keys(pkg.peerDependencies || {}),
+  ...Object.keys(pkg.devDependencies || {}),
   'path',
-])
+]);
 
 export default [
   {
@@ -37,12 +38,12 @@ export default [
     input: 'src/gatsby-browser.ts',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript()],
+    plugins: [typescript(), json()],
   },
   {
     input: 'src/gatsby-ssr.ts',
     output: { file: 'dist/gatsby-ssr.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript()]
+    plugins: [typescript(), json()]
   }
 ]
