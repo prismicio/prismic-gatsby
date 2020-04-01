@@ -6,7 +6,7 @@ export interface OnRenderBodyArgs {
 }
 
 export const onRenderBody = ({ setHeadComponents }: OnRenderBodyArgs, options: PluginOptions) => {
-  if(options.omitPrismicScript === true) return;
+  if(options.prismicScript === false) return;
 
   const src = `//static.cdn.prismic.io/prismic.js?repo=${options.repositoryName}&new=true`;
   const key = 'prismic-script';

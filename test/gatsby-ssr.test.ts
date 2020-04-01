@@ -6,7 +6,7 @@ import { PluginOptions } from '../src/types';
 
 describe("onRenderBody", () => {
 
-    test("expect setHeadComponents to have been called", () => {
+    test("expect setHeadComponents to not have been called", () => {
         const repositoryName: string = "foo";
         const setHeadComponents: jest.Mock<any, any>= jest.fn();
   
@@ -23,7 +23,7 @@ describe("onRenderBody", () => {
 
     });
 
-    test("expect setHeadComponents not to have been called", () => {
+    test("expect setHeadComponents to have been called", () => {
         const repositoryName: string = "foo";
         const setHeadComponents: jest.Mock<any, any>= jest.fn();
   
@@ -31,7 +31,7 @@ describe("onRenderBody", () => {
             repositoryName,
             plugins: [],
             schemas: { page: {} },
-            omitPrismicScript: true,
+            prismicScript: true,
         };
 
         onRenderBody({ setHeadComponents }, options);

@@ -19,7 +19,7 @@ const baseDefaults = {
   fetchLinks: [],
   lang: '*',
   typePathsFilenamePrefix: 'prismic-typepaths---',
-  omitPrismicScript: false,
+  prismicToolbar: false,
 }
 
 const PluginOptionsValidator = struct(
