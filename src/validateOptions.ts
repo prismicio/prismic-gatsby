@@ -10,7 +10,7 @@ const baseSchema = {
   fetchLinks: struct.optional(['string']),
   lang: 'string?',
   typePathsFilenamePrefix: 'string?',
-  omitPrismicScript: 'boolean?',
+  prismicToolbar: 'boolean?',
 }
 
 const baseDefaults = {
