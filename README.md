@@ -63,6 +63,9 @@ plugins: [
       // is 'gatsby-source-prismic-test-site.prismic.io'.
       repositoryName: 'gatsby-source-prismic-test-site',
 
+      // Add prismic-toolbar script to the site: defaults to false,
+      prismicToolbar: true,
+
       // An API access token to your prismic.io repository. This is required.
       // You can generate an access token in the "API & Security" section of
       // your repository settings. Setting a "Callback URL" is not necessary.
