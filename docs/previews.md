@@ -68,6 +68,10 @@ of a traditional server setup.
   Pass your merged data to your template exactly where you would your static
   data!
 
+- **Prismic-toolbar**
+
+  The [prismic-toolbar](https://user-guides.prismic.io/en/articles/768820-preview-a-release) can be added to the website by enabling the `prismicToolbar` option in this plugins configuration. This toolbar provides features to make previewing releases and generating sharable links much easier.
+
 ### Guide
 
 To get started with previews, it's key to understand the two main functions that
