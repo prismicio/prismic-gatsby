@@ -43,7 +43,7 @@
     "md5": "^2.2.1",
     "pascalcase": "^1.0.0",
     "prismic-dom": "^2.1.0",
-    "prismic-javascript": "^2.2.0",
+    "prismic-javascript": "^2.7.0",
     "superstruct": "^0.8.3",
     "ts-imgix": "^0.0.10",
     "uuid": "^7.0.3"
