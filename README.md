@@ -1,4 +1,4 @@
-# gatsby-source-prismic <!-- omit in toc -->
+# gatsby-source-prismic
 
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
@@ -30,7 +30,8 @@ repositories.
   `gatsby-transformer-sharp` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
-- Supports Prismic previews
+- Supports [Prismic previews](prismic-previews) and automatically adds the
+  [Prismic Toolbar](prismic-toolbar)
 
 ## Install
 
@@ -63,10 +64,7 @@ plugins: [
       // is 'gatsby-source-prismic-test-site.prismic.io'.
       repositoryName: 'gatsby-source-prismic-test-site',
 
-      // Add prismic-toolbar script to the site: defaults to false,
-      prismicToolbar: true,
-
-      // An API access token to your prismic.io repository. This is required.
+      // An API access token to your prismic.io repository. This is optional.
       // You can generate an access token in the "API & Security" section of
       // your repository settings. Setting a "Callback URL" is not necessary.
       // The token will be listed under "Permanent access tokens".
@@ -116,6 +114,10 @@ plugins: [
       // '*' which will fetch all languages.
       // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
       lang: '*',
+
+      // Add the Prismic Toolbar script to the site. Defaults to false,
+      // See: https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
+      prismicToolbar: true,
 
       // Set a function to determine if images are downloaded locally and made
       // available for gatsby-transformer-sharp for use with gatsby-image.
@@ -692,6 +694,9 @@ exports.createPages = async ({ graphql, actions }) => {
   https://user-guides.prismic.io/en/articles/3309829-image-optimization-imgix-integration
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
+[prismic-previews]:
+  https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
+[prismic-toolbar]: https://github.com/prismicio/prismic-toolbar
 [prismic-version-custom-types]:
   https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
