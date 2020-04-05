@@ -44,8 +44,8 @@ editing experience of a traditional server setup.
 
 Each step is described in full detail below.
 
-1. [**Enable previews in Prismic**](#enable-previews-in-prismic): Enable
-   previews in Prismic with your preview URL.
+1. [**Enable previews**](#enable-previews): Enable previews in Prismic with your
+   preview URL and optionally include the Prismic Toolbar.
 
 1. [**Create a preview page**](#create-a-preview-page): Create a page to which
    Prismic will redirect previews.
@@ -76,6 +76,24 @@ While developing, you would typically set up multiple preview sites:
 
 - **Development**: Domain: `http://localhost:8000`, Link Resolver: `/preview`
 - **Production**: Domain: `https://<your_url>`, Link Resolver: `/preview`
+
+You may optionally enable the Prismic Toolbar script to make previewing
+[Releases][prismic-releases] and creating sharable links much easier. You can
+enable this by setting the `prismicToolbar` option in your `gatsby-config.js`
+file to `true`.
+
+```diff
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        repositoryName: 'gatsby-source-prismic-test-site',
+        accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
++       prismicToolbar: true
+      }
+    }
+  ]
+```
 
 Once previews are enabled, we can open the code for our site.
 
@@ -317,3 +335,5 @@ For more details on the preview functions' API, see the
 
 [prismic-setup-preview]:
   https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
+[prismic-releases]:
+  https://user-guides.prismic.io/en/articles/778358-what-is-a-release
