@@ -1,16 +1,21 @@
+import { RenderBodyArgs } from 'gatsby'
 import React from 'react'
+
 import { PluginOptions } from './types'
 
-export interface OnRenderBodyArgs {
-  setHeadComponents(args: React.ReactElement<any>[]): void;
-}
+export const onRenderBody = (
+  gatsbyContext: RenderBodyArgs,
+  options: PluginOptions,
+) => {
+  const { setHeadComponents } = gatsbyContext
 
-export const onRenderBody = ({ setHeadComponents }: OnRenderBodyArgs, options: PluginOptions) => {
-  if(options.prismicScript === false) return;
+  if (!options.prismicScript) return
 
-  const src = `//static.cdn.prismic.io/prismic.js?repo=${options.repositoryName}&new=true`;
-  const key = 'prismic-script';
-  const toolbarScript = React.createElement('script', { key, src, async: true, defer: true });
+  const toolbarScript = React.createElement('script', {
+    src: `//static.cdn.prismic.io/prismic.js?repo=${options.repositoryName}&new=true`,
+    async: true,
+    defer: true,
+  })
 
-  setHeadComponents([ toolbarScript ]);
+  setHeadComponents([toolbarScript])
 }
