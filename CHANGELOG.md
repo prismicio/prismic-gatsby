@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0...v3.0.1) (2020-04-06)
+
+
+### Bug Fixes
+
+* ensure gatsby-image fluid srcset uses integer descriptors ([d149d89](https://github.com/angeloashmore/gatsby-source-prismic/commit/d149d8924ec9701f371afe56535dbefd439c72fa))
+* update dependencies ([#211](https://github.com/angeloashmore/gatsby-source-prismic/issues/211)) ([879bc76](https://github.com/angeloashmore/gatsby-source-prismic/commit/879bc7680aacfcebc619cf7c645455322751cf80))
+* wait for linked documents to fully load in browser environment ([5bd6840](https://github.com/angeloashmore/gatsby-source-prismic/commit/5bd684069363038d989c990aed4e53940e19985e))
+
 ## [3.0.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0-beta.26...v3.0.0) (2020-03-11)
 
 
