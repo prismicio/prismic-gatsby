@@ -105,7 +105,7 @@ const buildFluidSrcSet = (
         w: breakpoint,
         h: Math.round(breakpoint / aspectRatio),
       })
-      return `${url} ${breakpoint}w`
+      return `${url} ${Math.round(breakpoint)}w`
     })
     .filter(Boolean)
     .join(', ')
