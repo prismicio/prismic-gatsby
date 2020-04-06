@@ -105,7 +105,7 @@ const normalizeImageField: ImageFieldNormalizer = async (
 }
 
 // TODO: Abstract proxy handler for any `getNodeById` needs (e.g. Slices).
-const normalizeLinkField: LinkFieldNormalizer = (
+const normalizeLinkField: LinkFieldNormalizer = async (
   apiId,
   field,
   _path,
@@ -126,7 +126,7 @@ const normalizeLinkField: LinkFieldNormalizer = (
   const linkedDocId = createNodeId(`${field.type} ${field.id}`)
 
   if (field.link_type === LinkFieldType.Document && field.id && !field.isBroken)
-    loadLinkFieldDocument(field as UnbrokenDocumentLinkField, env)
+    await loadLinkFieldDocument(field as UnbrokenDocumentLinkField, env)
 
   return new Proxy(
     {
