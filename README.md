@@ -260,7 +260,7 @@ using the `raw` field, though use of this field is discouraged.
 ### Query Link fields
 
 Link fields are processed using the official [prismic-dom][prismic-dom] library
-and the `linkResolver` function from your site's `gatsby-node.js`. The resolved
+and the `linkResolver` function from your site's `gatsby-config.js`. The resolved
 URL is provided at the `url` field.
 
 If the link type is a web link (i.e. a URL external from your site), the URL is
