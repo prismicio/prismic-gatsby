@@ -107,7 +107,7 @@ plugins: [
       // Gatsby. This is required.
       schemas: {
         // Your custom types mapped to schemas
-      }
+      },
 
       // Set a default language when fetching documents. The default value is
       // '*' which will fetch all languages.
