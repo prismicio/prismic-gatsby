@@ -189,7 +189,10 @@ Our last addition to the preview page will navigate the user to the previewed
 document's page using Gatsby's navigate function.
 
 We will also handle here the unpublished document case. So first let's create an
-unpublished document route handler:
+unpublished document route handler.
+For this example, let's assume we have a page generated using a template
+at `src/templates/page.js`. If your site uses a different template, you will
+need to adapt accordingly.
 
 ```js
 // src/pages/unpublishedPreview.js
@@ -381,7 +384,7 @@ redirected to the corresponding page in your website, and only the changes
 associated to that document will be loaded. So the preview won't work for other
 cases such as:
 
-- static queries used in other components
+- static queries used in other components than a page component
 - compound page queries where you load data from more than one prismic document
 
 Also see other technical limitations described in the
