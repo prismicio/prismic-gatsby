@@ -18,6 +18,7 @@ customizations are encouraged.
 - [Navigate to the document's page](#navigate-to-the-documents-page)
 - [Merge with non-preview data](#merge-with-non-preview-data)
 - [Wrap-up](#wrap-up)
+- [Limitations](#limitations)
 
 ## Why previews are useful
 
@@ -187,17 +188,54 @@ export default PreviewPage
 Our last addition to the preview page will navigate the user to the previewed
 document's page using Gatsby's navigate function.
 
-The call to `navigate()` is added at the end of the `useEffect()`.
+We will also handle here the unpublished document case. So first let's create an
+unpublished document route handler.
+For this example, let's assume we have a page generated using a template
+at `src/templates/page.js`. If your site uses a different template, you will
+need to adapt accordingly.
+
+```js
+// src/pages/unpublishedPreview.js
+
+import { PageTemplate } from 'src/templates/page'
+
+export const UnpublishedPage = props => {
+  // const previewData = window.__PRISMIC_PREVIEW_DATA__
+  // => Perform any logic from previewData to determine the correct page or template component to use.
+
+  return <PageTemplate {...props} />
+}
+
+export default UnpublishedPage
+```
+
+Then let's modify our preview page. The call to `navigate()` is added at the end
+of the `useEffect()`.
 
 ```jsx
 // src/pages/preview.js
 
 import React, { useEffect } from 'react'
-import { navigate } from 'gatsby'
+import { navigate, useStaticQuery } from 'gatsby'
 import { usePrismicPreview } from 'gatsby-source-prismic'
 
 // Note that the `location` prop is taken and provided to the `usePrismicPreview` hook.
 const PreviewPage = ({ location }) => {
+
+  // Let's use a static query to retrieve all known paths. We'll use it later
+  // to navigate to the unpublishedPreview page if the document is not
+  // published.
+  const { allSitePage } = useStaticQuery(graphql`
+      {
+        allSitePage {
+          nodes {
+              path
+          }
+        }
+      }
+    `)
+  const allPaths = allSitePage.nodes.map(node => node.path)
+
   const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
     repositoryName: 'myRepository',
@@ -211,7 +249,7 @@ const PreviewPage = ({ location }) => {
     //   null = Not yet determined if previewing.
     //   true = Preview is available.
     //   false = Preview is not available.
-    if (isPreview === false) return
+    if (isPreview === false || !previewData) return
 
     // Save the preview data to somewhere globally accessible. This could be
     // something like a global Redux store or React context.
@@ -219,8 +257,12 @@ const PreviewPage = ({ location }) => {
     // We'll just put it on window.
     window.__PRISMIC_PREVIEW_DATA__ = previewData
 
-    // Navigate to the document's page.
-    navigate(path)
+    // Navigate to the document's page if page exists.
+    if (allPaths.includes(path)) {
+      navigate(path)
+    } else {
+      navigate('/unpublishedPreview')
+    }
   }, [isPreview, previewData, path])
 
   // Tell the user if this is not a preview.
@@ -242,24 +284,23 @@ This function accepts the static and preview data and recursively merges every
 level. The resulting object should match the static data, but with the new
 preview data where changed.
 
-For this example, let's assume we navigated to a page generated using a template
-at `src/templates/page.js`. If your site uses a static page or a different
-template, these changes will go there instead.
+First, let's create a simple helper that can be reused in different templates:
 
-```javascript
-// src/templates/page.js
-
-import React, { useMemo } from 'react'
-import { graphql } from 'gatsby'
-import { mergePrismicPreviewData } from 'gatsby-source-prismic'
+```js
+// src/utils/usePreviewData.js
+import { useMemo } from 'react'
+import { mergePrismicPreviewData } from 'gatsby-source-prismic';
 
 // Returns true if we're in a browser, false otherwise. This will help guard
 // against SSR issues when building the site.
 const IS_BROWSER = typeof window !== 'undefined'
 
-// Note that staticData below is the non-preview data from Gatsby.
-export const PageTemplate = ({ data: staticData }) => {
-  const data = useMemo(() => {
+/**
+ * Prismic preview hook
+ * @param {object} staticData Data object from Gatsby page
+ */
+export default function usePreviewData(staticData) {
+  return useMemo(() => {
     // If we're not in a browser (i.e. we're in SSR) or preview data has not been
     // set, use the non-preview static data.
     if (!IS_BROWSER || !window.__PRISMIC_PREVIEW_DATA__) return staticData
@@ -269,12 +310,27 @@ export const PageTemplate = ({ data: staticData }) => {
       previewData: window.__PRISMIC_PREVIEW_DATA__,
     })
   }, [staticData])
+}
+```
+
+For this example, let's assume we navigated to a page generated using a template
+at `src/templates/page.js`. If your site uses a static page or a different
+template, these changes will go there instead.
+
+```javascript
+// src/templates/page.js
+import React from 'react'
+import { graphql } from 'gatsby'
+import usePreviewData from './utils/usePreviewData'
+
+export const PageTemplate = ({ data }) => {
+  const liveData = usePreviewData(data)
 
   return (
     <Layout>
-      <h1>{data.prismicPage.data.title}</h1>
+      <h1>{liveData.prismicPage.data.title}</h1>
       <div
-        dangerouslySetInnerHTML={{ __html: data.prismicPage.data.body.html }}
+        dangerouslySetInnerHTML={{ __html: liveData.prismicPage.data.body.html }}
       />
     </Layout>
   )
@@ -317,3 +373,19 @@ For more details on the preview functions' API, see the
 
 [prismic-setup-preview]:
   https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
+
+## Limitations
+
+The preview setup described in this guide works well to preview changes in a
+prismic document that maps directly to a page in your site.
+
+When you click the "Preview" button in the prismic editor, you will be
+redirected to the corresponding page in your website, and only the changes
+associated to that document will be loaded. So the preview won't work for other
+cases such as:
+
+- static queries used in other components than a page component
+- compound page queries where you load data from more than one prismic document
+
+Also see other technical limitations described in the
+[Previews API](./previews-api.md#limitations) document.
