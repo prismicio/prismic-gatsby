@@ -81,7 +81,7 @@ Once previews are enabled, we can open the code for our site.
 
 ## Create a preview page
 
-Prismic sends previews to an endpoint on your site along with data represeting
+Prismic sends previews to an endpoint on your site along with data representing
 the preview. This endpoint can be set to any page, but `/preview` is the most
 common choice. The rest of this guide assumes the endpoint to be `/preview`, but
 you can replace this as needed.
@@ -111,8 +111,8 @@ We must provide the following arguments to the hook:
 - **`repositoryName`**: Your Prismic repository name just like in your
   `gatsby-config.js` file.
 
-`usePrismicPreview` can optionally accept other options that override settings
-provided in `gatsby-config.js`, but we we'll skip those for this walkthough.
+`usePrismicPreview` can accept other options that override settings provided in
+`gatsby-config.js`, but we will skip those for this walkthough.
 [See a full list of options here](./previews-api.md#usePrismicPreview).
 
 ```jsx
