@@ -59,6 +59,8 @@ export const types = gql`
     height: Int
     "The ID of the resource media. Fetched via oEmbed data."
     media_id: ID
+    "A description for the resource."
+    description: String
   }
 
   "Dimensions for images."
