@@ -47,12 +47,20 @@ export const fetchAllDocuments = async (
   pluginOptions: PluginOptions,
   gatsbyContext: SourceNodesArgs,
 ) => {
-  const { repositoryName, accessToken, fetchLinks, lang } = pluginOptions
+  const { repositoryName, releaseID, accessToken, fetchLinks, lang } = pluginOptions
   const { reporter } = gatsbyContext
 
   const client = await createClient(repositoryName, accessToken)
 
   const queryOptions: QueryOptions = {}
+  if (releaseID) {
+    const ref = client.refs.find(r => r.id === releaseID)
+    if (ref) {
+      queryOptions.ref = ref.ref
+    } else {
+      console.warn(`The release ${releaseID} was not found`)
+    }
+  }
   if (fetchLinks) queryOptions.fetchLinks = fetchLinks
   if (lang) queryOptions.lang = lang
 

@@ -381,6 +381,7 @@ export type BrowserPluginOptions = GatsbyPluginOptions &
 
 export interface PluginOptions extends GatsbyPluginOptions {
   repositoryName: string
+  releaseID?: string
   accessToken?: string
   linkResolver?: PluginLinkResolver
   htmlSerializer?: PluginHTMLSerializer

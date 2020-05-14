@@ -5,6 +5,7 @@ import { PluginOptions, BrowserPluginOptions } from './types'
 const baseSchema = {
   repositoryName: 'string',
   accessToken: 'string?',
+  releaseID: 'string?',
   linkResolver: 'function?',
   htmlSerializer: 'function?',
   fetchLinks: struct.optional(['string']),
