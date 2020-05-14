@@ -19,6 +19,7 @@ repositories.
   - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
   - [Image processing](#Image-processing)
 - [Previews](#Previews)
+- [Releases](#Releases)
 - [Limitations](#Limitations)
   - [GraphQL-valid field names](#GraphQL-valid-field-names)
 - [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
@@ -633,6 +634,24 @@ To learn more about local image processing, check the documentation of
 
 For an in-depth guide on using previews, please refer to
 [this guide](./docs/previews-guide.md).
+
+## Releases
+
+You can provide a `releaseID` option to build a release version of your website.
+See [How to use](#How-to-use) section.
+To learn more about prismic releases, see:
+https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
+
+You can get a releaseID by using the prismic API:
+
+```
+curl https://my-repository-name.prismic.io/api/v2
+{"refs":[{"id":"master","ref":"XoS0aRAAAB8AmarD","label":"Master","isMasterRef":true},{"id":"Xny9FRAAAB4AdbNo","ref":"Xr024BEAAFNM2PNM~XoS0aRAAAB8AmarD","label":"My release"}], ... }
+```
+
+In the `refs` array you want to look at the `id` field of the `ref` object where
+the label of your release is.
+
 
 ## Limitations
 
