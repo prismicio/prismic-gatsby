@@ -652,6 +652,11 @@ curl https://my-repository-name.prismic.io/api/v2
 In the `refs` array you want to look at the `id` field of the `ref` object where
 the label of your release is.
 
+Note that a release build is totally compatible with the preview system
+explained in the [preview guide](./docs/previews-guide.md). Using a `releaseID`
+is a way to view at once another version of your website, but under the hood
+it works the same way as the default build. So you can preview a draft of one
+document of your release just like you would do with the master version.
 
 ## Limitations
 
