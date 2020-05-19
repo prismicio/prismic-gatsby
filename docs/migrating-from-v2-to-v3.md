@@ -348,13 +348,17 @@ In v3, integration fields return a plain JSON and don't have subselections.
 There's no need to parse the JSON though.
 
 ```diff
-- event_shopify_product {
--   id
--   variants {
--     id
--   }
-+ event_shopify_product
-}
+  const query = graphql`
+    prismicPage {
++    event_shopify_product
+-    event_shopify_product {
+-      id
+-      variants {
+-        id
+-      }
+-    }
+    }
+  `
 ```
 
 ## Setting up previews
