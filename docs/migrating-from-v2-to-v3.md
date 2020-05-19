@@ -13,6 +13,7 @@
   - [Namespacing image thumbnails](#namespacing-image-thumbnails)
   - [Using `raw` fields](#using-raw-fields)
   - [Replace `dataString` with `dataRaw`](#replace-datastring-with-dataraw)
+  - [Update `IntegrationFields`](#update-integrationfields)
 - [Setting up previews](#setting-up-previews)
 - [Things to know](#things-to-know)
   - [Type paths file in `/public`](#type-paths-file-in-public)
@@ -350,13 +351,13 @@ There's no need to parse the JSON though.
 ```diff
   const query = graphql`
     prismicPage {
-+    event_shopify_product
 -    event_shopify_product {
 -      id
 -      variants {
 -        id
 -      }
 -    }
++    event_shopify_product
     }
   `
 ```
