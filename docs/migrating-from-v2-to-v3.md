@@ -340,6 +340,23 @@ escape hatch if the untouched data is needed.
   `
 ```
 
+### Update `IntegrationFields`
+
+In v2, integration fields properties were available through the GraphQL API.
+
+In v3, integration fields return a plain JSON and don't have subselections.
+There's no need to parse the JSON though.
+
+```diff
+- event_shopify_product {
+-   id
+-   variants {
+-     id
+-   }
++ event_shopify_product
+}
+```
+
 ## Setting up previews
 
 See the [Previews guide](./previews-guide.md) to learn how to setup previews, a
