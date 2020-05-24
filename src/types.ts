@@ -6,6 +6,7 @@ import {
 } from 'gatsby'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import * as PrismicDOM from 'prismic-dom'
+import { ImgixUrlParams } from 'gatsby-plugin-imgix'
 
 export type NodeID = string
 
@@ -390,4 +391,6 @@ export interface PluginOptions extends GatsbyPluginOptions {
   shouldDownloadImage?: ShouldDownloadImage
   shouldNormalizeImage?: ShouldDownloadImage
   typePathsFilenamePrefix?: string
+  imageImgixParams?: ImgixUrlParams
+  imagePlaceholderImgixParams?: ImgixUrlParams
 }

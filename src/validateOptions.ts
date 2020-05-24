@@ -10,6 +10,14 @@ const baseSchema = {
   fetchLinks: struct.optional(['string']),
   lang: 'string?',
   typePathsFilenamePrefix: 'string?',
+  imageImgixParams: struct.record([
+    'string',
+    struct.union(['string', 'number', 'boolean']),
+  ]),
+  imagePlaceholderImgixParams: struct.record([
+    'string',
+    struct.union(['string', 'number', 'boolean']),
+  ]),
 }
 
 const baseDefaults = {
@@ -18,6 +26,16 @@ const baseDefaults = {
   fetchLinks: [],
   lang: '*',
   typePathsFilenamePrefix: 'prismic-typepaths---',
+  imageImgixParams: {
+    auto: 'format,compress',
+    fit: 'max',
+    q: 50,
+  },
+  imagePlaceholderImgixParams: {
+    w: 100,
+    blur: 15,
+    q: 20,
+  },
 }
 
 const PluginOptionsValidator = struct(

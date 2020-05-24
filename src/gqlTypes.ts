@@ -1,21 +1,35 @@
 import { NodePluginSchema, Cache } from 'gatsby'
 import {
-  createImgixUrlFieldConfig,
-  createImgixFixedFieldConfig,
-  createImgixFluidFieldConfig,
+  createImgixFixedType,
+  createImgixFluidType,
+  createImgixFixedSchemaFieldConfig,
+  createImgixFluidSchemaFieldConfig,
+  createImgixUrlSchemaFieldConfig,
+  ImgixUrlParams,
 } from 'gatsby-plugin-imgix'
 
 type BuildPrismicImageTypesArgs = {
   schema: NodePluginSchema
   cache: Cache['cache']
+  defaultImgixParams?: ImgixUrlParams
 }
 
 export const buildPrismicImageTypes = ({
   schema,
   cache,
+  defaultImgixParams,
 }: BuildPrismicImageTypesArgs) => {
-  // TODO: Type properly
-  const resolveUrl = (obj: any) => obj.url
+  const resolveUrl = (obj: { url?: string }) => obj.url
+
+  const PrismicImageFixedType = createImgixFixedType({
+    name: 'PrismicImageFixedType',
+    cache,
+  })
+
+  const PrismicImageFluidType = createImgixFluidType({
+    name: 'PrismicImageFluidType',
+    cache,
+  })
 
   const PrismicImageType = schema.buildObjectType({
     name: 'PrismicImageType',
@@ -25,20 +39,25 @@ export const buildPrismicImageTypes = ({
       alt: 'String',
       copyright: 'String',
       dimensions: 'PrismicImageDimensionsType',
-      url: createImgixUrlFieldConfig({
+      url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
+        defaultImgixParams,
       }),
-      fixed: createImgixFixedFieldConfig({
+      fixed: createImgixFixedSchemaFieldConfig({
+        type: PrismicImageFixedType,
         resolveUrl,
         cache,
+        defaultImgixParams,
       }),
-      fluid: createImgixFluidFieldConfig({
+      fluid: createImgixFluidSchemaFieldConfig({
+        type: PrismicImageFluidType,
         resolveUrl,
         cache,
+        defaultImgixParams,
       }),
       localFile: {
         type: 'File',
-        extensions: { link: true },
+        extensions: { link: {} },
       },
       thumbnails: 'PrismicImageThumbnailsType',
     },
@@ -52,20 +71,25 @@ export const buildPrismicImageTypes = ({
       alt: 'String',
       copyright: 'String',
       dimensions: 'PrismicImageDimensionsType',
-      url: createImgixUrlFieldConfig({
+      url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
+        defaultImgixParams,
       }),
-      fixed: createImgixFixedFieldConfig({
+      fixed: createImgixFixedSchemaFieldConfig({
+        type: PrismicImageFixedType,
         resolveUrl,
         cache,
+        defaultImgixParams,
       }),
-      fluid: createImgixFluidFieldConfig({
+      fluid: createImgixFluidSchemaFieldConfig({
+        type: PrismicImageFluidType,
         resolveUrl,
         cache,
+        defaultImgixParams,
       }),
       localFile: {
         type: 'File',
-        extensions: { link: true },
+        extensions: { link: {} },
       },
     },
   })
