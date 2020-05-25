@@ -134,12 +134,11 @@ const fieldToType = (
       enqueueTypeDef(
         gatsbySchema.buildObjectType({
           name: groupTypeName,
-          fields:
-            mapObjVals(
-              (subfield, subfieldApiId) =>
-                fieldToType(subfieldApiId, subfield, [...path, apiId], context),
-              (field as GroupFieldSchema).config.fields,
-            ) as { [key: string]: GraphQLType },
+          fields: mapObjVals(
+            (subfield, subfieldApiId) =>
+              fieldToType(subfieldApiId, subfield, [...path, apiId], context),
+            (field as GroupFieldSchema).config.fields,
+          ) as { [key: string]: GraphQLType },
           extensions: { infer: false },
         }),
       )
@@ -179,8 +178,10 @@ const fieldToType = (
     }
 
     case FieldType.Slice: {
-      const { 'non-repeat': primaryFields, repeat: itemsFields } =
-        field as SliceFieldSchema
+      const {
+        'non-repeat': primaryFields,
+        repeat: itemsFields,
+      } = field as SliceFieldSchema
 
       const sliceFieldTypes: { [key: string]: string } = {
         slice_type: `${GraphQLType.String}!`,
@@ -195,17 +196,16 @@ const fieldToType = (
         enqueueTypeDef(
           gatsbySchema.buildObjectType({
             name: primaryTypeName,
-            fields:
-              mapObjVals(
-                (primaryField, primaryFieldApiId) =>
-                  fieldToType(
-                    primaryFieldApiId,
-                    primaryField,
-                    [...path, apiId, 'primary'],
-                    context,
-                  ),
-                primaryFields,
-              ) as { [key: string]: GraphQLType },
+            fields: mapObjVals(
+              (primaryField, primaryFieldApiId) =>
+                fieldToType(
+                  primaryFieldApiId,
+                  primaryField,
+                  [...path, apiId, 'primary'],
+                  context,
+                ),
+              primaryFields,
+            ) as { [key: string]: GraphQLType },
           }),
         )
 
@@ -221,17 +221,16 @@ const fieldToType = (
         enqueueTypeDef(
           gatsbySchema.buildObjectType({
             name: itemTypeName,
-            fields:
-              mapObjVals(
-                (itemField, itemFieldApiId) =>
-                  fieldToType(
-                    itemFieldApiId,
-                    itemField,
-                    [...path, apiId, 'items'],
-                    context,
-                  ),
-                itemsFields,
-              ) as { [key: string]: GraphQLType },
+            fields: mapObjVals(
+              (itemField, itemFieldApiId) =>
+                fieldToType(
+                  itemFieldApiId,
+                  itemField,
+                  [...path, apiId, 'items'],
+                  context,
+                ),
+              itemsFields,
+            ) as { [key: string]: GraphQLType },
           }),
         )
 
@@ -320,12 +319,11 @@ const schemaToTypeDefs = (
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
       name: dataTypeName,
-      fields:
-        mapObjVals(
-          (dataField, dataFieldApiId) =>
-            fieldToType(dataFieldApiId, dataField, [apiId, 'data'], context),
-          dataFields,
-        ) as { [key: string]: GraphQLType },
+      fields: mapObjVals(
+        (dataField, dataFieldApiId) =>
+          fieldToType(dataFieldApiId, dataField, [apiId, 'data'], context),
+        dataFields,
+      ) as { [key: string]: GraphQLType },
       extensions: { infer: false },
     }),
   )

@@ -62,11 +62,9 @@ const normalizeField = async (
   switch (type) {
     case GraphQLType.Image: {
       const baseObj: ImageField = pick(field as ImageField, IMAGE_FIELD_KEYS)
-      const thumbsObj =
-        omit(field as ImageField, IMAGE_FIELD_KEYS) as
-        {
-          [key: string]: ImageField
-        }
+      const thumbsObj = omit(field as ImageField, IMAGE_FIELD_KEYS) as {
+        [key: string]: ImageField
+      }
 
       const base = await normalizeImageField(apiId, baseObj, path, doc, env)
       const thumbs = await mapObjValsP(
@@ -217,14 +215,13 @@ export const documentToNodes = async (
     doc,
     env,
   )
-  const normalizedAlernativeLanguages =
-    (await normalizeField(
-      'alternate_languages',
-      (doc.alternate_languages as unknown) as AlternateLanguagesField,
-      [doc.type],
-      doc,
-      env,
-    )) as NormalizedAlternateLanguagesField
+  const normalizedAlernativeLanguages = (await normalizeField(
+    'alternate_languages',
+    (doc.alternate_languages as unknown) as AlternateLanguagesField,
+    [doc.type],
+    doc,
+    env,
+  )) as NormalizedAlternateLanguagesField
 
   const node: DocumentNodeInput = {
     ...doc,
