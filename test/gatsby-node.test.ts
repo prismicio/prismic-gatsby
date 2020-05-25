@@ -1,3 +1,4 @@
+import fs from 'fs'
 import {
   SourceNodesArgs,
   CreateResolversArgs,
@@ -10,8 +11,9 @@ import {
   onPreExtractQueries,
 } from '../src/gatsby-node'
 
-import { writeFileSync, copyFileSync } from './__mocks__/fs-extra'
 import mockSchema from './__fixtures__/schema.json'
+
+jest.mock('fs')
 
 const PROGRAM_DIRECTORY_PATH = '/__PROGRAM_DIRECTORY__/'
 
@@ -122,23 +124,23 @@ const mockGatsbyContext: ParentSpanPluginArgs = {
   schema: {
     buildObjectType: jest
       .fn()
-      .mockImplementation(config => ({ kind: 'OBJECT', config })),
-    buildUnionType: jest.fn().mockImplementation(config => ({
+      .mockImplementation((config) => ({ kind: 'OBJECT', config })),
+    buildUnionType: jest.fn().mockImplementation((config) => ({
       kind: 'UNION',
       config,
     })),
     buildInterfaceType: jest
       .fn()
-      .mockImplementation(config => ({ kind: 'INTERFACE', config })),
+      .mockImplementation((config) => ({ kind: 'INTERFACE', config })),
     buildInputObjectType: jest
       .fn()
-      .mockImplementation(config => ({ kind: 'INPUT', config })),
+      .mockImplementation((config) => ({ kind: 'INPUT', config })),
     buildEnumType: jest
       .fn()
-      .mockImplementation(config => ({ kind: 'ENUM', config })),
+      .mockImplementation((config) => ({ kind: 'ENUM', config })),
     buildScalarType: jest
       .fn()
-      .mockImplementation(config => ({ kind: 'SCALAR', config })),
+      .mockImplementation((config) => ({ kind: 'SCALAR', config })),
   },
 }
 
@@ -179,12 +181,16 @@ describe('sourceNodes', () => {
   test('writes type paths to filesystem', async () => {
     await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
 
-    expect(writeFileSync.mock.calls[0][0]).toMatchInlineSnapshot(
+    expect(
+      (fs.writeFileSync as jest.Mock).mock.calls[0][0],
+    ).toMatchInlineSnapshot(
       `"/__PROGRAM_DIRECTORY__/public/prismic-typepaths---9769f52526da286b236e9bd2cb0d0291.json"`,
     )
 
     // Ensure valid JSON.
-    expect(JSON.parse(writeFileSync.mock.calls[0][1])).toMatchSnapshot()
+    expect(
+      JSON.parse((fs.writeFileSync as jest.Mock).mock.calls[0][1]),
+    ).toMatchSnapshot()
   })
 })
 
@@ -211,7 +217,7 @@ describe('onPreExtractQueries', () => {
   test('copies fragments file to program cache', async () => {
     onPreExtractQueries!(mockGatsbyContext, pluginOptions)
 
-    const call = copyFileSync.mock.calls[0]
+    const call = (fs.copyFileSync as jest.Mock).mock.calls[0]
 
     expect(call[0]).toMatch(/\/fragments.js$/)
     expect(call[1]).toBe(
