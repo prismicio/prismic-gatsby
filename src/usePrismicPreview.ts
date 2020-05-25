@@ -1,7 +1,7 @@
 import { useReducer, useEffect, useCallback, useMemo } from 'react'
 import { set as setCookie } from 'es-cookie'
 import { previewCookie } from 'prismic-javascript'
-import camelCase from 'camelcase'
+import { camelCase } from 'camel-case'
 
 import { validateBrowserOptions } from './validateOptions'
 import { createClient } from './api'
