@@ -386,7 +386,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   linkResolver?: PluginLinkResolver
   htmlSerializer?: PluginHTMLSerializer
   fetchLinks?: string[]
-  schemas: Schemas
+  schemas?: Schemas
   lang?: string
   shouldDownloadImage?: ShouldDownloadImage
   shouldNormalizeImage?: ShouldDownloadImage
