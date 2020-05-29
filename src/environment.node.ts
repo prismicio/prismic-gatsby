@@ -57,7 +57,7 @@ const normalizeImageField: ImageFieldNormalizer = async (
   } else {
     try {
       const fileNode = await createRemoteFileNode({
-        url: field.url,
+        url: field.url.split('?').shift() || field.url,
         store,
         cache,
         createNode,
