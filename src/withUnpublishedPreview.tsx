@@ -2,6 +2,7 @@ import * as React from 'react'
 import { PageProps } from 'gatsby'
 
 import { usePreviewStore } from './usePreviewStore'
+import { withPreview } from './withPreview'
 import { msg, getComponentDisplayName } from './utils'
 
 type WithUnpublishedPreviewArgs = {
@@ -39,5 +40,5 @@ export const withUnpublishedPreview = <TProps extends PageProps>(
     WrappedComponent,
   )})`
 
-  return WithUnpublishedPreview
+  return withPreview(WithUnpublishedPreview)
 }

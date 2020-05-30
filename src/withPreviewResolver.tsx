@@ -6,6 +6,11 @@ import { usePrismicPreview } from './usePrismicPreview'
 import { usePreviewStore, ActionType } from './usePreviewStore'
 import { getComponentDisplayName } from './utils'
 
+export interface WithPreviewResolverProps {
+  isPreview: boolean | undefined
+  isLoading: boolean
+}
+
 type WithPreviewResolverArgs = {
   repositoryName: string
   linkResolver?: PluginLinkResolver
