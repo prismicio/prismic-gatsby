@@ -645,24 +645,42 @@ For an in-depth guide on using previews, please refer to
 ## Releases
 
 You can provide a `releaseID` option to build a release version of your website.
-See [How to use](#How-to-use) section.
-To learn more about prismic releases, see:
-https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
+See [How to use](#How-to-use) section for a description of the option. To learn
+more about Prismic releases, see Prismic's official documentation here: [The
+basics of a release][prismic-releases].
 
-You can get a releaseID by using the prismic API:
+You can get a release ID by using the Prismic REST API:
 
-```
+```sh
 curl https://my-repository-name.prismic.io/api/v2
-{"refs":[{"id":"master","ref":"XoS0aRAAAB8AmarD","label":"Master","isMasterRef":true},{"id":"Xny9FRAAAB4AdbNo","ref":"Xr024BEAAFNM2PNM~XoS0aRAAAB8AmarD","label":"My release"}], ... }
+# =>
+#   {
+#     "refs": [
+#       {
+#         "id": "master",
+#         "ref": "XoS0aRAAAB8AmarD",
+#         "label": "Master",
+#         "isMasterRef": true
+#       },
+#       {
+#         "id": "Xny9FRAAAB4AdbNo",
+#         "ref": "Xr024BEAAFNM2PNM~XoS0aRAAAB8AmarD",
+#         "label": "My release"
+#       }
+#       ...
+#     ],
+#   }
 ```
 
-In the `refs` array you want to look at the `id` field of the `ref` object where
-the label of your release is.
+In the `refs` array of the response, the `id` property of the `refs` object is a
+release ID. The label identifies the release's purpose. Master, for example, is
+the latest published version of all your documents. Your other Prismic Releases
+will be listed here with their names.
 
 Note that a release build is totally compatible with the preview system
 explained in the [preview guide](./docs/previews-guide.md). Using a `releaseID`
-is a way to view at once another version of your website, but under the hood
-it works the same way as the default build. So you can preview a draft of one
+is a way to view at once another version of your website, but under the hood it
+works the same way as the default build. So you can preview a draft of one
 document of your release just like you would do with the master version.
 
 ## Limitations
@@ -732,6 +750,8 @@ exports.createPages = async ({ graphql, actions }) => {
 [prismic-previews]:
   https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
 [prismic-toolbar]: https://github.com/prismicio/prismic-toolbar
+[prismic-releases]:
+  https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
 [prismic-version-custom-types]:
   https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
