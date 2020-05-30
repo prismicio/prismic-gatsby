@@ -96,6 +96,29 @@ file to `true`.
   ]
 ```
 
+> **Note**: If your repository is not relatively new and requires the older
+> Prismic Toolbar script, set `prismicToolbar` to `"legacy"` instead of true.
+>
+> ```diff
+>   plugins: [
+>     {
+>       resolve: 'gatsby-source-prismic',
+>       options: {
+>         repositoryName: 'gatsby-source-prismic-test-site',
+>         accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
+> +       prismicToolbar: 'true'
+>       }
+>     }
+>   ]
+> ```
+>
+> To check if you need the `legacy` option, go to your Prismic repository and
+> navigate to **Settings** > **Previews**. In the _Include the Prismic Toolbar
+> javascript file_ section, check the URL for the `<script>` code snippet.
+>
+> If the `src` attribute ends with `&new=true`, set `prismicToolbar` to `true`.
+> If it does _not_ end with `&new=true`, set `prismicToolbar` to `"legacy"`.
+
 Once previews are enabled, we can open the code for our site.
 
 ## Create a preview page
@@ -407,6 +430,5 @@ Also see other technical limitations described in the
 
 [prismic-setup-preview]:
   https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
-
 [prismic-releases]:
   https://user-guides.prismic.io/en/articles/778358-what-is-a-release

@@ -11,7 +11,9 @@ const baseSchema = {
   fetchLinks: struct.optional(['string']),
   lang: 'string?',
   typePathsFilenamePrefix: 'string?',
-  prismicToolbar: 'boolean?',
+  prismicToolbar: struct.optional(
+    struct.union(['boolean', struct.enum(['legacy'])]),
+  ),
 }
 
 const baseDefaults = {

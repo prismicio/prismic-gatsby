@@ -77,7 +77,7 @@ plugins: [
       // provided to the function, as seen below. This allows you to use
       // different link resolver logic for each field if necessary.
       // See: https://prismic.io/docs/javascript/query-the-api/link-resolving
-      linkResolver: ({ node, key, value }) => doc => {
+      linkResolver: ({ node, key, value }) => (doc) => {
         // Your link resolver
       },
 
@@ -115,7 +115,8 @@ plugins: [
       // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
       lang: '*',
 
-      // Add the Prismic Toolbar script to the site. Defaults to false,
+      // Add the Prismic Toolbar script to the site. Defaults to false.
+      // Set to "legacy" if your repository requires the older toolbar script.
       // See: https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
       prismicToolbar: true,
 
@@ -133,7 +134,8 @@ plugins: [
       // stored. The filename will include the MD5 hash of your schemas after
       // the prefix.
       // This defaults to 'prismic-typepaths---${repositoryName}'.
-      typePathsFilenamePrefix: 'prismic-typepaths---gatsby-source-prismic-test-site',
+      typePathsFilenamePrefix:
+        'prismic-typepaths---gatsby-source-prismic-test-site',
     },
   },
 ]
@@ -265,8 +267,8 @@ using the `raw` field, though use of this field is discouraged.
 ### Query Link fields
 
 Link fields are processed using the official [prismic-dom][prismic-dom] library
-and the `linkResolver` function from your site's `gatsby-config.js`. The resolved
-URL is provided at the `url` field.
+and the `linkResolver` function from your site's `gatsby-config.js`. The
+resolved URL is provided at the `url` field.
 
 If the link type is a web link (i.e. a URL external from your site), the URL is
 provided without additional processing.
@@ -676,7 +678,7 @@ exports.createPages = async ({ graphql, actions }) => {
   }
 
   // Create pages for each Page in Prismic using the selected template.
-  pages.data.allPrismicPage.nodes.forEach(node => {
+  pages.data.allPrismicPage.nodes.forEach((node) => {
     createPage({
       path: `/${node.uid}`,
       component: pageTemplates[node.template],

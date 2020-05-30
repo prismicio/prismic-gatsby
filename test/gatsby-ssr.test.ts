@@ -133,18 +133,41 @@ const pluginOptions = {
 }
 
 describe('onRenderBody', () => {
-  test('expect setHeadComponents to not have been called', async () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  test('expect Prismic Toolbar script not to be included by default', async () => {
     await onRenderBody!(mockGatsbyContext, pluginOptions)
 
     expect(mockGatsbyContext.setHeadComponents).not.toHaveBeenCalled()
   })
 
-  test('expect setHeadComponents to have been called', async () => {
+  test('expect Prismic Toolbar script to be included if `prismicToolbar` is set to `true`', async () => {
     await onRenderBody!(mockGatsbyContext, {
       ...pluginOptions,
       prismicToolbar: true,
     })
 
     expect(mockGatsbyContext.setHeadComponents).toHaveBeenCalledTimes(1)
+
+    expect(
+      (mockGatsbyContext.setHeadComponents as jest.Mock).mock.calls[0][0][0]
+        .props.src,
+    ).toBe(
+      `//static.cdn.prismic.io/prismic.js?repo=${pluginOptions.repositoryName}&new=true`,
+    )
+  })
+
+  test('expect Prismic Toolbar script to use the legacy URL if the `legacy` option is provided', async () => {
+    await onRenderBody!(mockGatsbyContext, {
+      ...pluginOptions,
+      prismicToolbar: 'legacy',
+    })
+
+    expect(
+      (mockGatsbyContext.setHeadComponents as jest.Mock).mock.calls[0][0][0]
+        .props.src,
+    ).toBe(
+      `//static.cdn.prismic.io/prismic.js?repo=${pluginOptions.repositoryName}`,
+    )
   })
 })
