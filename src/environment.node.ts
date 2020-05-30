@@ -56,8 +56,15 @@ const normalizeImageField: ImageFieldNormalizer = async (
     touchNode({ nodeId: fileNodeID })
   } else {
     try {
+      const fullQualityUrl = new URL(field.url)
+      // Remove auto parameter to download the original, full-quality image
+      // from Imgix. Prismic automatically adds `auto=format,compress`, which,
+      // when compounded with Sharp's compression, results in a doubly
+      // compressed image.
+      fullQualityUrl.searchParams.delete('auto')
+
       const fileNode = await createRemoteFileNode({
-        url: field.url,
+        url: fullQualityUrl.toString(),
         store,
         cache,
         createNode,
