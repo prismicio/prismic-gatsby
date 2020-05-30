@@ -207,17 +207,16 @@ Our last addition to the preview page will navigate the user to the previewed
 document's page using Gatsby's navigate function.
 
 We will also handle here the unpublished document case. So first let's create an
-unpublished document route handler.
-For this example, let's assume we have a page generated using a template
-at `src/templates/page.js`. If your site uses a different template, you will
-need to adapt accordingly.
+unpublished document route handler. For this example, let's assume we have a
+page generated using a template at `src/templates/page.js`. If your site uses a
+different template, you will need to adapt accordingly.
 
 ```js
 // src/pages/unpublishedPreview.js
 
 import { PageTemplate } from 'src/templates/page'
 
-export const UnpublishedPage = props => {
+export const UnpublishedPage = (props) => {
   // const previewData = window.__PRISMIC_PREVIEW_DATA__
   // => Perform any logic from previewData to determine the correct page or template component to use.
 
@@ -239,20 +238,19 @@ import { usePrismicPreview } from 'gatsby-source-prismic'
 
 // Note that the `location` prop is taken and provided to the `usePrismicPreview` hook.
 const PreviewPage = ({ location }) => {
-
   // Let's use a static query to retrieve all known paths. We'll use it later
   // to navigate to the unpublishedPreview page if the document is not
   // published.
   const { allSitePage } = useStaticQuery(graphql`
-      {
-        allSitePage {
-          nodes {
-              path
-          }
+    {
+      allSitePage {
+        nodes {
+          path
         }
       }
-    `)
-  const allPaths = allSitePage.nodes.map(node => node.path)
+    }
+  `)
+  const allPaths = allSitePage.nodes.map((node) => node.path)
 
   const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
@@ -307,7 +305,7 @@ First, let's create a simple helper that can be reused in different templates:
 ```js
 // src/utils/usePreviewData.js
 import { useMemo } from 'react'
-import { mergePrismicPreviewData } from 'gatsby-source-prismic';
+import { mergePrismicPreviewData } from 'gatsby-source-prismic'
 
 // Returns true if we're in a browser, false otherwise. This will help guard
 // against SSR issues when building the site.
@@ -348,7 +346,9 @@ export const PageTemplate = ({ data }) => {
     <Layout>
       <h1>{liveData.prismicPage.data.title}</h1>
       <div
-        dangerouslySetInnerHTML={{ __html: liveData.prismicPage.data.body.html }}
+        dangerouslySetInnerHTML={{
+          __html: liveData.prismicPage.data.body.html,
+        }}
       />
     </Layout>
   )

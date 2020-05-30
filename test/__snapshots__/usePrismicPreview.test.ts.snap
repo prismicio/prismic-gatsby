@@ -124,7 +124,7 @@ Object {
         "raw": Object {
           "link_type": "Document",
         },
-        "url": undefined,
+        "url": "",
       },
       "title": Object {
         "html": "<h1>Home</h1>",

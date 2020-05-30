@@ -5,6 +5,7 @@ import { PluginOptions, BrowserPluginOptions } from './types'
 const baseSchema = {
   repositoryName: 'string',
   accessToken: 'string?',
+  schemas: struct.record(['string', 'object']),
   linkResolver: 'function?',
   htmlSerializer: 'function?',
   fetchLinks: struct.optional(['string']),
@@ -25,7 +26,6 @@ const baseDefaults = {
 const PluginOptionsValidator = struct(
   {
     ...baseSchema,
-    schemas: struct.record(['string', 'object']),
     shouldDownloadImage: 'function?',
     plugins: struct.size([0, 0]),
   },
