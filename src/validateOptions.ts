@@ -6,11 +6,15 @@ const baseSchema = {
   repositoryName: 'string',
   accessToken: 'string?',
   releaseID: 'string?',
+  schemas: struct.record(['string', 'object']),
   linkResolver: 'function?',
   htmlSerializer: 'function?',
   fetchLinks: struct.optional(['string']),
   lang: 'string?',
   typePathsFilenamePrefix: 'string?',
+  prismicToolbar: struct.optional(
+    struct.union(['boolean', struct.enum(['legacy'])]),
+  ),
 }
 
 const baseDefaults = {
@@ -19,12 +23,12 @@ const baseDefaults = {
   fetchLinks: [],
   lang: '*',
   typePathsFilenamePrefix: 'prismic-typepaths---',
+  prismicToolbar: false,
 }
 
 const PluginOptionsValidator = struct(
   {
     ...baseSchema,
-    schemas: struct.record(['string', 'object']),
     shouldDownloadImage: 'function?',
     plugins: struct.size([0, 0]),
   },

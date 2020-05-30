@@ -1,4 +1,4 @@
-# gatsby-source-prismic <!-- omit in toc -->
+# gatsby-source-prismic
 
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
@@ -31,7 +31,8 @@ repositories.
   `gatsby-transformer-sharp` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
-- Supports Prismic previews
+- Supports [Prismic previews](prismic-previews) and automatically adds the
+  [Prismic Toolbar](prismic-toolbar)
 
 ## Install
 
@@ -64,7 +65,7 @@ plugins: [
       // is 'gatsby-source-prismic-test-site.prismic.io'.
       repositoryName: 'gatsby-source-prismic-test-site',
 
-      // An API access token to your prismic.io repository. This is required.
+      // An API access token to your prismic.io repository. This is optional.
       // You can generate an access token in the "API & Security" section of
       // your repository settings. Setting a "Callback URL" is not necessary.
       // The token will be listed under "Permanent access tokens".
@@ -86,7 +87,7 @@ plugins: [
       // provided to the function, as seen below. This allows you to use
       // different link resolver logic for each field if necessary.
       // See: https://prismic.io/docs/javascript/query-the-api/link-resolving
-      linkResolver: ({ node, key, value }) => doc => {
+      linkResolver: ({ node, key, value }) => (doc) => {
         // Your link resolver
       },
 
@@ -124,6 +125,11 @@ plugins: [
       // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
       lang: '*',
 
+      // Add the Prismic Toolbar script to the site. Defaults to false.
+      // Set to "legacy" if your repository requires the older toolbar script.
+      // See: https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
+      prismicToolbar: true,
+
       // Set a function to determine if images are downloaded locally and made
       // available for gatsby-transformer-sharp for use with gatsby-image.
       // The document node, field key (i.e. API ID), and field value are
@@ -138,7 +144,8 @@ plugins: [
       // stored. The filename will include the MD5 hash of your schemas after
       // the prefix.
       // This defaults to 'prismic-typepaths---${repositoryName}'.
-      typePathsFilenamePrefix: 'prismic-typepaths---gatsby-source-prismic-test-site',
+      typePathsFilenamePrefix:
+        'prismic-typepaths---gatsby-source-prismic-test-site',
     },
   },
 ]
@@ -270,8 +277,8 @@ using the `raw` field, though use of this field is discouraged.
 ### Query Link fields
 
 Link fields are processed using the official [prismic-dom][prismic-dom] library
-and the `linkResolver` function from your site's `gatsby-config.js`. The resolved
-URL is provided at the `url` field.
+and the `linkResolver` function from your site's `gatsby-config.js`. The
+resolved URL is provided at the `url` field.
 
 If the link type is a web link (i.e. a URL external from your site), the URL is
 provided without additional processing.
@@ -704,7 +711,7 @@ exports.createPages = async ({ graphql, actions }) => {
   }
 
   // Create pages for each Page in Prismic using the selected template.
-  pages.data.allPrismicPage.nodes.forEach(node => {
+  pages.data.allPrismicPage.nodes.forEach((node) => {
     createPage({
       path: `/${node.uid}`,
       component: pageTemplates[node.template],
@@ -722,6 +729,9 @@ exports.createPages = async ({ graphql, actions }) => {
   https://user-guides.prismic.io/en/articles/3309829-image-optimization-imgix-integration
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
+[prismic-previews]:
+  https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
+[prismic-toolbar]: https://github.com/prismicio/prismic-toolbar
 [prismic-version-custom-types]:
   https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments

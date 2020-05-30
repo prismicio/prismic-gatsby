@@ -77,7 +77,7 @@ const buildFixedSrcSet = (
   resolutions: number[] = DEFAULT_FIXED_RESOLUTIONS,
 ) =>
   resolutions
-    .map(resolution => {
+    .map((resolution) => {
       const url = buildURL(baseURL, { ...params, dpr: resolution })
       return `${url} ${resolution}x`
     })
@@ -92,13 +92,15 @@ const buildFluidSrcSet = (
   const { w: width } = params
 
   if (!breakpoints)
-    breakpoints = DEFAULT_FLUID_BREAKPOINT_FACTORS.map(x => width * x)
+    breakpoints = DEFAULT_FLUID_BREAKPOINT_FACTORS.map((x) => width * x)
 
   // Remove duplicates, sort by numerical value, and ensure maxWidth is added.
-  const uniqSortedBreakpoints = [...new Set([...breakpoints, width].sort())]
+  const uniqSortedBreakpoints = Array.from(
+    new Set([...breakpoints, width].sort()),
+  )
 
   return uniqSortedBreakpoints
-    .map(breakpoint => {
+    .map((breakpoint) => {
       if (!breakpoint) return
       const url = buildURL(baseURL, {
         ...params,

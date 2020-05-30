@@ -1,7 +1,7 @@
 import { useReducer, useEffect, useCallback, useMemo } from 'react'
 import { set as setCookie } from 'es-cookie'
 import { previewCookie } from 'prismic-javascript'
-import camelCase from 'camelcase'
+import { camelCase } from 'camel-case'
 
 import { validateBrowserOptions } from './validateOptions'
 import { createClient } from './api'
@@ -97,6 +97,7 @@ export const usePrismicPreview = (options: Options) => {
 
   const hydratedOptions: Options & {
     plugins: []
+    schemas: {}
     lang: string
     typePathsFilenamePrefix: string
     schemasDigest: string
@@ -113,6 +114,9 @@ export const usePrismicPreview = (options: Options) => {
     return validateBrowserOptions({
       ...context.pluginOptions,
       schemasDigest: context.schemasDigest,
+      // Need to include an empty object because environment.browser.ts is
+      // expecting it. We do not include the actual schemas in the browser.
+      schemas: {},
       ...options,
     })
   }, [options])
