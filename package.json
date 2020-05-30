@@ -12,6 +12,7 @@
     "src",
     "gatsby-node.js",
     "gatsby-browser.js",
+    "gatsby-ssr.js",
     "fragments.js"
   ],
   "scripts": {
