@@ -645,9 +645,9 @@ For an in-depth guide on using previews, please refer to
 ## Releases
 
 You can provide a `releaseID` option to build a release version of your website.
-See [How to use](#How-to-use) section for a description of the option. To learn
-more about Prismic releases, see Prismic's official documentation here: [The
-basics of a release][prismic-releases].
+See the [How to use](#How-to-use) section for a description of the option. To
+learn more about Prismic releases, see Prismic's official documentation here:
+[The basics of a release][prismic-releases].
 
 You can get a release ID by using the Prismic REST API:
 

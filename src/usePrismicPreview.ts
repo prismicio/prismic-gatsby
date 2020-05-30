@@ -27,7 +27,6 @@ type Options = Pick<
   | 'fetchLinks'
   | 'lang'
   | 'typePathsFilenamePrefix'
-  | 'schemas'
 > & {
   pathResolver?: PluginOptions['linkResolver']
   schemasDigest?: string
