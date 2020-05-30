@@ -1,21 +1,7 @@
 import typescript from '@rollup/plugin-typescript'
+import autoExternal from 'rollup-plugin-auto-external'
 
-import pkg from './package.json'
-
-const makeExternalPredicate = (externalArr) => {
-  if (externalArr.length === 0) {
-    return () => false
-  }
-  const pattern = new RegExp(`^(${externalArr.join('|')})($|/)`)
-  return (id) => pattern.test(id)
-}
-
-const externalPkgs = makeExternalPredicate([
-  ...Object.keys(pkg.dependencies || {}),
-  ...Object.keys(pkg.peerDependencies || {}),
-  'fs',
-  'path',
-])
+const externalPkgs = ['gatsby/graphql']
 
 export default [
   {
@@ -30,27 +16,28 @@ export default [
     plugins: [
       typescript({
         declaration: true,
-        declarationDir: 'dist/types',
+        declarationDir: 'dist',
         rootDir: 'src',
       }),
+      autoExternal(),
     ],
   },
   {
     input: 'src/index.ts',
     output: { file: 'dist/index.esm.js', format: 'es', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript()],
+    plugins: [typescript(), autoExternal()],
   },
   {
     input: 'src/gatsby-node.ts',
     output: { file: 'dist/gatsby-node.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript()],
+    plugins: [typescript(), autoExternal()],
   },
   {
     input: 'src/gatsby-browser.ts',
     output: { file: 'dist/gatsby-browser.js', format: 'cjs', sourcemap: true },
     external: externalPkgs,
-    plugins: [typescript()],
+    plugins: [typescript(), autoExternal()],
   },
 ]

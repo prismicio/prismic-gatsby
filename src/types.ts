@@ -4,6 +4,7 @@ import {
   NodeInput,
   Node,
 } from 'gatsby'
+import { FixedObject, FluidObject } from 'gatsby-image'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import * as PrismicDOM from 'prismic-dom'
 import { ImgixUrlParams } from 'gatsby-plugin-imgix'
@@ -168,43 +169,9 @@ export interface ImageField {
 
 export interface NormalizedImageField extends ImageField {
   thumbnails?: { [key: string]: NormalizedImageField }
-  fixed?: GatsbyFixedImageProps
-  fluid?: GatsbyFluidImageProps
+  fixed?: FixedObject
+  fluid?: FluidObject
   localFile?: NodeID
-}
-
-interface GatsbyImageProps {
-  base64?: string
-  aspectRatio: number
-  src: string
-  srcWebp: string
-  srcSet: string
-  srcSetWebp: string
-}
-
-export interface GatsbyFixedImageProps extends GatsbyImageProps {
-  width: number
-  height: number
-}
-
-export interface GatsbyFluidImageProps extends GatsbyImageProps {
-  sizes: string
-}
-
-interface GatsbyImageArgs {
-  quality?: number
-}
-
-export interface GatsbyImageFluidArgs extends GatsbyImageArgs {
-  maxWidth?: number
-  maxHeight?: number
-  sizes?: string
-  srcSetBreakpoints?: number[]
-}
-
-export interface GatsbyImageFixedArgs extends GatsbyImageArgs {
-  width?: number
-  height?: number
 }
 
 export type AlternateLanguagesField = LinkField[]
