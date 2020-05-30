@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { pascalCase } from 'pascal-case'
 
 /**
@@ -132,3 +133,7 @@ export const buildSchemaTypeName = (apiId: string) =>
  * @returns `true` if the current context is the browser, `false` otherwise.
  */
 export const isBrowser = typeof window !== 'undefined'
+
+export const getComponentDisplayName = (
+  WrappedComponent: React.ComponentType<any>,
+) => WrappedComponent.displayName || WrappedComponent.name || 'Component'

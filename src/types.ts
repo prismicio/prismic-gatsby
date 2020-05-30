@@ -349,14 +349,14 @@ export interface Schemas {
 }
 
 export type LinkResolver = (doc: object) => string
-type PluginLinkResolver = (input: {
+export type PluginLinkResolver = (input: {
   key?: string
   value?: unknown
   node: PrismicDocument
 }) => LinkResolver
 
 export type HTMLSerializer = typeof PrismicDOM.HTMLSerializer
-type PluginHTMLSerializer = (input: {
+export type PluginHTMLSerializer = (input: {
   key: string
   value: unknown
   node: PrismicDocument
