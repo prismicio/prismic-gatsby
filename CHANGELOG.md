@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.2](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.1...v3.0.2) (2020-05-12)
+
+
+### Bug Fixes
+
+* enable description field on PrismicEmbedType ([#225](https://github.com/angeloashmore/gatsby-source-prismic/issues/225)) ([8f5ce90](https://github.com/angeloashmore/gatsby-source-prismic/commit/8f5ce907a0404cf6eaf94c83449fa3f4bc8d7ae8))
+
 ### [3.0.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.0...v3.0.1) (2020-04-06)
 
 

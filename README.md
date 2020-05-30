@@ -108,7 +108,7 @@ plugins: [
       // Gatsby. This is required.
       schemas: {
         // Your custom types mapped to schemas
-      }
+      },
 
       // Set a default language when fetching documents. The default value is
       // '*' which will fetch all languages.
@@ -265,7 +265,7 @@ using the `raw` field, though use of this field is discouraged.
 ### Query Link fields
 
 Link fields are processed using the official [prismic-dom][prismic-dom] library
-and the `linkResolver` function from your site's `gatsby-node.js`. The resolved
+and the `linkResolver` function from your site's `gatsby-config.js`. The resolved
 URL is provided at the `url` field.
 
 If the link type is a web link (i.e. a URL external from your site), the URL is
