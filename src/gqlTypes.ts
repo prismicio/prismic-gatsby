@@ -1,4 +1,4 @@
-import { NodePluginSchema, Cache } from 'gatsby'
+import { NodePluginSchema, GatsbyCache } from 'gatsby'
 import { ImgixUrlParams } from 'gatsby-plugin-imgix'
 import {
   createImgixFixedType,
@@ -6,11 +6,11 @@ import {
   createImgixFixedSchemaFieldConfig,
   createImgixFluidSchemaFieldConfig,
   createImgixUrlSchemaFieldConfig,
-} from 'gatsby-plugin-imgix/lib/node'
+} from 'gatsby-plugin-imgix/dist/node'
 
 type BuildPrismicImageTypesArgs = {
   schema: NodePluginSchema
-  cache: Cache['cache']
+  cache: GatsbyCache
   defaultImgixParams?: ImgixUrlParams
 }
 

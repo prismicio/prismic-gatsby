@@ -427,7 +427,7 @@ exports[`sourceNodes creates types 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "ImgixFixed",
+                "type": "PrismicImageFixedType",
               },
               "fluid": Object {
                 "args": Object {
@@ -447,11 +447,11 @@ exports[`sourceNodes creates types 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "ImgixFluid",
+                "type": "PrismicImageFluidType",
               },
               "localFile": Object {
                 "extensions": Object {
-                  "link": true,
+                  "link": Object {},
                 },
                 "type": "File",
               },
@@ -496,7 +496,7 @@ exports[`sourceNodes creates types 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "ImgixFixed",
+                "type": "PrismicImageFixedType",
               },
               "fluid": Object {
                 "args": Object {
@@ -516,11 +516,11 @@ exports[`sourceNodes creates types 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "ImgixFluid",
+                "type": "PrismicImageFluidType",
               },
               "localFile": Object {
                 "extensions": Object {
-                  "link": true,
+                  "link": Object {},
                 },
                 "type": "File",
               },

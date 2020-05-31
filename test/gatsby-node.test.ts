@@ -1,15 +1,7 @@
 import fs from 'fs'
-import {
-  SourceNodesArgs,
-  CreateResolversArgs,
-  ParentSpanPluginArgs,
-} from 'gatsby'
+import { SourceNodesArgs, ParentSpanPluginArgs } from 'gatsby'
 
-import {
-  sourceNodes,
-  createResolvers,
-  onPreExtractQueries,
-} from '../src/gatsby-node'
+import { sourceNodes, onPreExtractQueries } from '../src/gatsby-node'
 
 import mockSchema from './__fixtures__/schema.json'
 
@@ -104,14 +96,8 @@ const mockGatsbyContext: ParentSpanPluginArgs = {
   },
   getNodeAndSavePathDependency: jest.fn(),
   cache: {
-    getAndPassUp: jest.fn(),
-    wrap: jest.fn(),
     set: jest.fn(),
-    mset: jest.fn(),
     get: jest.fn(),
-    mget: jest.fn(),
-    del: jest.fn(),
-    reset: jest.fn(),
   },
   createNodeId: jest.fn().mockReturnValue('createNodeId'),
   createContentDigest: jest.fn().mockReturnValue('createContentDigest'),
@@ -150,13 +136,6 @@ const mockSourceNodesGatsbyContext: SourceNodesArgs = {
   waitForCascadingActions: false,
 }
 
-const mockCreateResolversGatsbyContext: CreateResolversArgs = {
-  ...mockSourceNodesGatsbyContext,
-  traceId: 'initial-createResolvers',
-  intermediateSchema: {},
-  createResolvers: jest.fn(),
-}
-
 const pluginOptions = {
   repositoryName: 'repositoryName',
   plugins: [],
@@ -191,25 +170,6 @@ describe('sourceNodes', () => {
     expect(
       JSON.parse((fs.writeFileSync as jest.Mock).mock.calls[0][1]),
     ).toMatchSnapshot()
-  })
-})
-
-describe('createResolvers', () => {
-  test('creates resolvers', async () => {
-    await createResolvers!(mockCreateResolversGatsbyContext, pluginOptions)
-
-    expect(
-      mockCreateResolversGatsbyContext.createResolvers,
-    ).toHaveBeenCalledWith({
-      PrismicImageType: {
-        fixed: { resolve: expect.any(Function) },
-        fluid: { resolve: expect.any(Function) },
-      },
-      PrismicImageThumbnailType: {
-        fixed: { resolve: expect.any(Function) },
-        fluid: { resolve: expect.any(Function) },
-      },
-    })
   })
 })
 
