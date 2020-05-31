@@ -3,9 +3,9 @@
   "version": "3.0.2",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "license": "MIT",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
-  "typings": "dist/types/index.d.ts",
+  "main": "dist/gatsby-source-prismic.js",
+  "module": "dist/gatsby-source-prismic.modern.js",
+  "typings": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
     "dist",
@@ -17,11 +17,12 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "cross-env NODE_ENV=production npm run clean && rollup -c",
+    "start": "yarn clean && microbundle watch src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts -o dist -f modern,cjs --jsx React.createElement",
+    "build": "yarn clean && microbundle build src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts -o dist -f modern,cjs --jsx React.createElement",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
-    "prepare": "npm run build",
-    "release": "standard-version",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "yarn build",
+    "release": "standard-version"
   },
   "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
   "repository": {
@@ -46,13 +47,13 @@
     "prismic-dom": "^2.2.3",
     "prismic-javascript": "^2.7.1",
     "superstruct": "^0.8.3",
-    "ts-imgix": "^0.0.10",
+    "ts-imgix": "0.0.10",
     "uuid": "^8.1.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.10.1",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
-    "@rollup/plugin-typescript": "^4.1.2",
     "@testing-library/react-hooks": "^3.2.1",
     "@types/jest": "^25.2.3",
     "@types/lodash.isplainobject": "^4.0.6",
@@ -62,16 +63,16 @@
     "@types/prismic-dom": "^2.1.1",
     "@types/uuid": "^8.0.0",
     "cross-env": "^7.0.2",
-    "gatsby": "^2.22.9",
+    "gatsby": "^2.22.15",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
+    "microbundle": "^0.12.0",
     "prettier": "^2.0.5",
     "react": "^16.13.1",
     "react-test-renderer": "^16.13.1",
     "rimraf": "^3.0.2",
-    "rollup": "^2.10.9",
     "standard-version": "^8.0.0",
-    "ts-jest": "^26.0.0",
+    "ts-jest": "^26.1.0",
     "tslib": "^2.0.0",
     "typescript": "^3.9.3"
   },
@@ -86,6 +87,11 @@
     "trailingComma": "all",
     "proseWrap": "always",
     "printWidth": 80
+  },
+  "babel": {
+    "plugins": [
+      "@babel/plugin-proposal-optional-chaining"
+    ]
   },
   "husky": {
     "hooks": {

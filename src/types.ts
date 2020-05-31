@@ -28,7 +28,7 @@ export interface SliceNodeInput extends NodeInput {
 export interface DocumentsToNodesEnvironment {
   createNode: (node: NodeInput) => void
   createNodeId: (input: string) => string
-  createContentDigest: (input: unknown) => string
+  createContentDigest: (input: string | object) => string
   normalizeImageField: ImageFieldNormalizer
   normalizeLinkField: LinkFieldNormalizer
   normalizeSlicesField: SlicesFieldNormalizer
