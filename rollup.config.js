@@ -40,4 +40,10 @@ export default [
     external: externalPkgs,
     plugins: [typescript(), autoExternal()],
   },
+  {
+    input: 'src/gatsby-ssr.ts',
+    output: { file: 'dist/gatsby-ssr.js', format: 'cjs', sourcemap: true },
+    external: externalPkgs,
+    plugins: [typescript()],
+  },
 ]

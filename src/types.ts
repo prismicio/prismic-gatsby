@@ -317,14 +317,14 @@ export interface Schemas {
 }
 
 export type LinkResolver = (doc: object) => string
-type PluginLinkResolver = (input: {
+export type PluginLinkResolver = (input: {
   key?: string
   value?: unknown
   node: PrismicDocument
 }) => LinkResolver
 
 export type HTMLSerializer = typeof PrismicDOM.HTMLSerializer
-type PluginHTMLSerializer = (input: {
+export type PluginHTMLSerializer = (input: {
   key: string
   value: unknown
   node: PrismicDocument
@@ -345,10 +345,12 @@ export type BrowserPluginOptions = GatsbyPluginOptions &
     | 'schemas'
     | 'lang'
     | 'typePathsFilenamePrefix'
+    | 'prismicToolbar'
   >
 
 export interface PluginOptions extends GatsbyPluginOptions {
   repositoryName: string
+  releaseID?: string
   accessToken?: string
   linkResolver?: PluginLinkResolver
   htmlSerializer?: PluginHTMLSerializer
@@ -358,6 +360,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   shouldDownloadImage?: ShouldDownloadImage
   shouldNormalizeImage?: ShouldDownloadImage
   typePathsFilenamePrefix?: string
+  prismicToolbar?: boolean | 'legacy'
   imageImgixParams?: ImgixUrlParams
   imagePlaceholderImgixParams?: ImgixUrlParams
 }

@@ -5,12 +5,16 @@ import { PluginOptions, BrowserPluginOptions } from './types'
 const baseSchema = {
   repositoryName: 'string',
   accessToken: 'string?',
+  releaseID: 'string?',
   schemas: struct.record(['string', 'object']),
   linkResolver: 'function?',
   htmlSerializer: 'function?',
   fetchLinks: struct.optional(['string']),
   lang: 'string?',
   typePathsFilenamePrefix: 'string?',
+  prismicToolbar: struct.optional(
+    struct.union(['boolean', struct.enum(['legacy'])]),
+  ),
   imageImgixParams: struct.record([
     'string',
     struct.union(['string', 'number', 'boolean']),
@@ -27,6 +31,7 @@ const baseDefaults = {
   fetchLinks: [],
   lang: '*',
   typePathsFilenamePrefix: 'prismic-typepaths---',
+  prismicToolbar: false,
   imageImgixParams: {
     auto: 'format,compress',
     fit: 'max',

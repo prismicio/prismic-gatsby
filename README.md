@@ -1,4 +1,4 @@
-# gatsby-source-prismic <!-- omit in toc -->
+# gatsby-source-prismic
 
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
@@ -19,6 +19,7 @@ repositories.
   - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
   - [Image processing](#Image-processing)
 - [Previews](#Previews)
+- [Releases](#Releases)
 - [Limitations](#Limitations)
   - [GraphQL-valid field names](#GraphQL-valid-field-names)
 - [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
@@ -30,7 +31,8 @@ repositories.
   `gatsby-transformer-sharp` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
-- Supports Prismic previews
+- Supports [Prismic previews](prismic-previews) and automatically adds the
+  [Prismic Toolbar](prismic-toolbar)
 
 ## Install
 
@@ -63,11 +65,20 @@ plugins: [
       // is 'gatsby-source-prismic-test-site.prismic.io'.
       repositoryName: 'gatsby-source-prismic-test-site',
 
-      // An API access token to your prismic.io repository. This is required.
+      // An API access token to your prismic.io repository. This is optional.
       // You can generate an access token in the "API & Security" section of
       // your repository settings. Setting a "Callback URL" is not necessary.
       // The token will be listed under "Permanent access tokens".
       accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
+
+      // Optional. If you provide a releaseID, the plugin will fetch prismic
+      // data for a specific release. A prismic release is a way to
+      // gather a collection of changes for a future version of your website.
+      // Note that if you add changes to a release, you'll need to build again
+      // your website to see them.
+      // Learn more about prismic releases here:
+      // https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
+      releaseID: 'XXXXXXXXXXXXXXXX',
 
       // Set a link resolver function used to process links in your content.
       // Fields with rich text formatting or links to internal content use this
@@ -76,7 +87,7 @@ plugins: [
       // provided to the function, as seen below. This allows you to use
       // different link resolver logic for each field if necessary.
       // See: https://prismic.io/docs/javascript/query-the-api/link-resolving
-      linkResolver: ({ node, key, value }) => doc => {
+      linkResolver: ({ node, key, value }) => (doc) => {
         // Your link resolver
       },
 
@@ -114,6 +125,11 @@ plugins: [
       // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
       lang: '*',
 
+      // Add the Prismic Toolbar script to the site. Defaults to false.
+      // Set to "legacy" if your repository requires the older toolbar script.
+      // See: https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
+      prismicToolbar: true,
+
       // Set a function to determine if images are downloaded locally and made
       // available for gatsby-transformer-sharp for use with gatsby-image.
       // The document node, field key (i.e. API ID), and field value are
@@ -128,7 +144,8 @@ plugins: [
       // stored. The filename will include the MD5 hash of your schemas after
       // the prefix.
       // This defaults to 'prismic-typepaths---${repositoryName}'.
-      typePathsFilenamePrefix: 'prismic-typepaths---gatsby-source-prismic-test-site',
+      typePathsFilenamePrefix:
+        'prismic-typepaths---gatsby-source-prismic-test-site',
     },
   },
 ]
@@ -260,8 +277,8 @@ using the `raw` field, though use of this field is discouraged.
 ### Query Link fields
 
 Link fields are processed using the official [prismic-dom][prismic-dom] library
-and the `linkResolver` function from your site's `gatsby-config.js`. The resolved
-URL is provided at the `url` field.
+and the `linkResolver` function from your site's `gatsby-config.js`. The
+resolved URL is provided at the `url` field.
 
 If the link type is a web link (i.e. a URL external from your site), the URL is
 provided without additional processing.
@@ -625,6 +642,47 @@ To learn more about local image processing, check the documentation of
 For an in-depth guide on using previews, please refer to
 [this guide](./docs/previews-guide.md).
 
+## Releases
+
+You can provide a `releaseID` option to build a release version of your website.
+See the [How to use](#How-to-use) section for a description of the option. To
+learn more about Prismic releases, see Prismic's official documentation here:
+[The basics of a release][prismic-releases].
+
+You can get a release ID by using the Prismic REST API:
+
+```sh
+curl https://my-repository-name.prismic.io/api/v2
+# =>
+#   {
+#     "refs": [
+#       {
+#         "id": "master",
+#         "ref": "XoS0aRAAAB8AmarD",
+#         "label": "Master",
+#         "isMasterRef": true
+#       },
+#       {
+#         "id": "Xny9FRAAAB4AdbNo",
+#         "ref": "Xr024BEAAFNM2PNM~XoS0aRAAAB8AmarD",
+#         "label": "My release"
+#       }
+#       ...
+#     ],
+#   }
+```
+
+In the `refs` array of the response, the `id` property of the `refs` object is a
+release ID. The label identifies the release's purpose. Master, for example, is
+the latest published version of all your documents. Your other Prismic Releases
+will be listed here with their names.
+
+Note that a release build is totally compatible with the preview system
+explained in the [preview guide](./docs/previews-guide.md). Using a `releaseID`
+is a way to view at once another version of your website, but under the hood it
+works the same way as the default build. So you can preview a draft of one
+document of your release just like you would do with the master version.
+
 ## Limitations
 
 ### GraphQL-valid field names
@@ -671,7 +729,7 @@ exports.createPages = async ({ graphql, actions }) => {
   }
 
   // Create pages for each Page in Prismic using the selected template.
-  pages.data.allPrismicPage.nodes.forEach(node => {
+  pages.data.allPrismicPage.nodes.forEach((node) => {
     createPage({
       path: `/${node.uid}`,
       component: pageTemplates[node.template],
@@ -689,6 +747,11 @@ exports.createPages = async ({ graphql, actions }) => {
   https://user-guides.prismic.io/en/articles/3309829-image-optimization-imgix-integration
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
+[prismic-previews]:
+  https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
+[prismic-toolbar]: https://github.com/prismicio/prismic-toolbar
+[prismic-releases]:
+  https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
 [prismic-version-custom-types]:
   https://user-guides.prismic.io/content-modeling-and-custom-types/version-and-changes-of-custom-types/how-to-version-custom-types
 [graphql-inline-fragments]: http://graphql.org/learn/queries/#inline-fragments
