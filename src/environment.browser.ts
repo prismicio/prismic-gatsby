@@ -83,22 +83,31 @@ const normalizeImageField: ImageFieldNormalizer = async (
   field,
   _path,
   _doc,
-  _env,
+  env,
 ) => {
-  const url = field.url
+  const { pluginOptions } = env
 
+  const url = field.url
   if (!url) return field
 
   const fixed = buildImgixFixed({
     url,
     sourceWidth: field.dimensions!.width,
     sourceHeight: field.dimensions!.height,
+    args: {
+      imgixParams: pluginOptions.imageImgixParams,
+      placeholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
+    },
   })
 
   const fluid = buildImgixFluid({
     url,
     sourceWidth: field.dimensions!.width,
     sourceHeight: field.dimensions!.height,
+    args: {
+      imgixParams: pluginOptions.imageImgixParams,
+      placeholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
+    },
   })
 
   return { ...field, fixed, fluid }

@@ -12,12 +12,14 @@ type BuildPrismicImageTypesArgs = {
   schema: NodePluginSchema
   cache: GatsbyCache
   defaultImgixParams?: ImgixUrlParams
+  defaultPlaceholderImgixParams?: ImgixUrlParams
 }
 
 export const buildPrismicImageTypes = ({
   schema,
   cache,
   defaultImgixParams,
+  defaultPlaceholderImgixParams,
 }: BuildPrismicImageTypesArgs) => {
   const resolveUrl = (obj: { url?: string }) => obj.url
 
@@ -48,12 +50,14 @@ export const buildPrismicImageTypes = ({
         resolveUrl,
         cache,
         defaultImgixParams,
+        defaultPlaceholderImgixParams,
       }),
       fluid: createImgixFluidSchemaFieldConfig({
         type: PrismicImageFluidType,
         resolveUrl,
         cache,
         defaultImgixParams,
+        defaultPlaceholderImgixParams,
       }),
       localFile: {
         type: 'File',

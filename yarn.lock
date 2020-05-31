@@ -7949,10 +7949,10 @@ gatsby-page-utils@^0.2.7:
     lodash "^4.17.15"
     micromatch "^3.1.10"
 
-gatsby-plugin-imgix@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/gatsby-plugin-imgix/-/gatsby-plugin-imgix-0.6.1.tgz#ba7a0960761fd9eb6477b2b1f14d12d533744941"
-  integrity sha512-xdpNB0hbKZ7qoVtN0ADKF3cu04/Hb7qI6K4J1sSzqQEyZRQm8md1yZM6r0qRTzfj9Z1SxdZ54Gbo2ZysuT6kkA==
+gatsby-plugin-imgix@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-imgix/-/gatsby-plugin-imgix-0.7.1.tgz#69aa9133c00c86fb2dbf008d7e12381d100391c9"
+  integrity sha512-586rRPEum4lNuMcdS97AgsgWQBdAh2BSxPpf1svBetUo7AJl0wTQywp+tyPPqNcx8248L/epbhmjoXheswdW8Q==
   dependencies:
     camel-case "^4.1.1"
     fp-ts "^2.6.2"

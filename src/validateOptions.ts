@@ -17,11 +17,11 @@ const baseSchema = {
   ),
   imageImgixParams: struct.record([
     'string',
-    struct.union(['string', 'number', 'boolean']),
+    struct.union(['string', 'number', 'boolean', 'undefined']),
   ]),
   imagePlaceholderImgixParams: struct.record([
     'string',
-    struct.union(['string', 'number', 'boolean']),
+    struct.union(['string', 'number', 'boolean', 'undefined']),
   ]),
 }
 

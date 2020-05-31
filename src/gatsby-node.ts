@@ -53,6 +53,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     schema,
     cache,
     defaultImgixParams: pluginOptions.imageImgixParams,
+    defaultPlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
   })
   createTypes(typeDefs)
   createTypes(imageTypes)
