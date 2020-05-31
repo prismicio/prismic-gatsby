@@ -207,7 +207,7 @@ export const documentToNodes = async (
   if (linkResolver) linkResolverForDoc = linkResolver({ node: doc })
 
   const docNodeId = createNodeId(`${doc.type} ${doc.id}`)
-  const docUrl = linkResolverForDoc?.(doc)
+  const docUrl = linkResolverForDoc ? linkResolverForDoc(doc) : undefined
 
   const normalizedData = await normalizeObj(
     doc.data,

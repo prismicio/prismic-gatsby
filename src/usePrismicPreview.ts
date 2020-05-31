@@ -173,9 +173,11 @@ export const usePrismicPreview = (options: Options) => {
     const rootNodeId = await documentToNodes(doc, env)
     const rootNode = getNodeById(rootNodeId)
 
-    const path = (
+    const resolvedPathResolver =
       hydratedOptions.pathResolver ?? hydratedOptions.linkResolver
-    )?.({ node: doc })?.(doc)
+    const path = resolvedPathResolver
+      ? resolvedPathResolver({ node: doc })(doc)
+      : undefined
 
     dispatch({ type: ActionType.DOCUMENT_LOADED, payload: { rootNode, path } })
   }, [state.isPreview])
