@@ -7,18 +7,17 @@ import { schemasToTypeDefs } from './schemasToTypeDefs'
 import { fetchAllDocuments } from './api'
 import { documentsToNodes } from './documentsToNodes'
 import { createEnvironment } from './environment.node'
-import { resolvers as gatsbyImageResolvers } from './gatsbyImage'
+import { types, buildPrismicImageTypes } from './gqlTypes'
 import { msg } from './utils'
-import { types } from './gqlTypes'
 
-import { GatsbyNode, SourceNodesArgs, CreateResolversArgs } from 'gatsby'
+import { GatsbyNode, SourceNodesArgs } from 'gatsby'
 import { PluginOptions } from './types'
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   gatsbyContext: SourceNodesArgs,
   pluginOptions: PluginOptions,
 ) => {
-  const { actions, reporter, store } = gatsbyContext
+  const { actions, reporter, store, schema, cache } = gatsbyContext
   const { createTypes } = actions
   const { program } = store.getState()
 
@@ -50,7 +49,14 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     pluginOptions.schemas,
     gatsbyContext,
   )
+  const imageTypes = buildPrismicImageTypes({
+    schema,
+    cache,
+    defaultImgixParams: pluginOptions.imageImgixParams,
+    defaultPlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
+  })
   createTypes(typeDefs)
+  createTypes(imageTypes)
   createTypes(types)
 
   createTypesActivity.end()
@@ -97,14 +103,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   fs.writeFileSync(typePathsFilename, JSON.stringify(typePaths))
 
   writeTypePathsActivity.end()
-}
-
-export const createResolvers: GatsbyNode['createResolvers'] = async (
-  gatsbyContext: CreateResolversArgs,
-  _pluginOptions: PluginOptions,
-) => {
-  const { createResolvers } = gatsbyContext
-  createResolvers(gatsbyImageResolvers)
 }
 
 export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = (

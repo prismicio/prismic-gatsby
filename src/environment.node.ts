@@ -66,9 +66,9 @@ const normalizeImageField: ImageFieldNormalizer = async (
       const fileNode = await createRemoteFileNode({
         url: fullQualityUrl.toString(),
         store,
-        // @ts-expect-error Remove this comment once gatsby-source-filesystem
-        // updates its `cache` parameter type to the updated GatsbyCache
-        // interface.
+        // @ts-expect-error Gatsby recently deprecated Cache['cache'] in favor
+        // of GatsbyCache. gatsby-source-filesystem has yet to update its types
+        // to reflect this.
         cache,
         createNode,
         createNodeId,

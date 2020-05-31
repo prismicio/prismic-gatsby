@@ -15,6 +15,14 @@ const baseSchema = {
   prismicToolbar: struct.optional(
     struct.union(['boolean', struct.enum(['legacy'])]),
   ),
+  imageImgixParams: struct.record([
+    'string',
+    struct.union(['string', 'number', 'boolean', 'undefined']),
+  ]),
+  imagePlaceholderImgixParams: struct.record([
+    'string',
+    struct.union(['string', 'number', 'boolean', 'undefined']),
+  ]),
 }
 
 const baseDefaults = {
@@ -24,6 +32,16 @@ const baseDefaults = {
   lang: '*',
   typePathsFilenamePrefix: 'prismic-typepaths---',
   prismicToolbar: false,
+  imageImgixParams: {
+    auto: 'format,compress',
+    fit: 'max',
+    q: 50,
+  },
+  imagePlaceholderImgixParams: {
+    w: 100,
+    blur: 15,
+    q: 20,
+  },
 }
 
 const PluginOptionsValidator = struct(
