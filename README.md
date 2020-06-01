@@ -46,7 +46,7 @@ Read the migration guide to learn why and how to upgrade from v2 to v3. Then
 read the previews guide to learn how to setup previews.
 
 - [Migrating from v2 to v3](./docs/migrating-from-v2-to-v3.md)
-- [Previews](./docs/previews-guide.md)
+- [Previews](./docs/previews.md)
 
 ## How to use
 
