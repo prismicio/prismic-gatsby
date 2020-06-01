@@ -175,7 +175,7 @@ the underlying `usePrismicPreview` hook and `mergePrismicPreviewData` helper
 function directly.
 
 See the [Previews Manual Setup](./previews-manual-setup.md) guide and the
-[Previews API](./previews-api.md) documetnation for more details.
+[Previews API](./previews-api.md) documentation for more details.
 
 [react-hocs]: https://reactjs.org/docs/higher-order-components.html
 [useprismicpreview]:
