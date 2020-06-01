@@ -71,14 +71,13 @@ plugins: [
       // The token will be listed under "Permanent access tokens".
       accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
 
-      // Optional. If you provide a releaseID, the plugin will fetch prismic
-      // data for a specific release. A prismic release is a way to
-      // gather a collection of changes for a future version of your website.
-      // Note that if you add changes to a release, you'll need to build again
-      // your website to see them.
-      // Learn more about prismic releases here:
-      // https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
-      releaseID: 'XXXXXXXXXXXXXXXX',
+      // If you provide a release ID, the plugin will fetch data from Prismic
+      // for a specific release. A Prismic release is a way to gather a
+      // collection of changes for a future version of your website. Note that
+      // if you add changes to a release, you'll need to rebuild your website
+      // to see them.
+      // See: https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
+      releaseID: 'example-eiyaingiefahyi7z',
 
       // Set a link resolver function used to process links in your content.
       // Fields with rich text formatting or links to internal content use this
