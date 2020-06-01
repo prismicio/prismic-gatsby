@@ -421,6 +421,10 @@ exports[`sourceNodes creates types 1`] = `
                     "defaultValue": Object {},
                     "type": "ImgixUrlParamsInput",
                   },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
                   "width": Object {
                     "defaultValue": 400,
                     "type": "Int",
@@ -441,6 +445,10 @@ exports[`sourceNodes creates types 1`] = `
                   "maxWidth": Object {
                     "defaultValue": 800,
                     "type": "Int",
+                  },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
                   },
                   "srcSetBreakpoints": Object {
                     "type": "[Int]",
@@ -490,6 +498,10 @@ exports[`sourceNodes creates types 1`] = `
                     "defaultValue": Object {},
                     "type": "ImgixUrlParamsInput",
                   },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
                   "width": Object {
                     "defaultValue": 400,
                     "type": "Int",
@@ -510,6 +522,10 @@ exports[`sourceNodes creates types 1`] = `
                   "maxWidth": Object {
                     "defaultValue": 800,
                     "type": "Int",
+                  },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
                   },
                   "srcSetBreakpoints": Object {
                     "type": "[Int]",
