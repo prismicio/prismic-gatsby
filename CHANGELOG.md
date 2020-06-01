@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.2...v3.1.0) (2020-06-01)
+
+
+### Features
+
+* add initial gatsby-plugin-imgix integration ([2a1e56c](https://github.com/angeloashmore/gatsby-source-prismic/commit/2a1e56c7c0d5de3a21468604b7df27b0ea49fb3e))
+* add preview HOCs ([ccef925](https://github.com/angeloashmore/gatsby-source-prismic/commit/ccef92570a33d673e03ade3d870aae8b921e6a3e))
+* add prismic-toolbar script to gatsby-ssr.js ([cf8cf60](https://github.com/angeloashmore/gatsby-source-prismic/commit/cf8cf60118537b160babf35186f8db62bc2c9f2e))
+* add releaseID option ([992d604](https://github.com/angeloashmore/gatsby-source-prismic/commit/992d604164752b958afc37a6f695d1d33c57eac3))
+* adding the prismic script can be disabled ([32820b2](https://github.com/angeloashmore/gatsby-source-prismic/commit/32820b2304a3e44f4bdfb8c586fbac9d4388bd7b))
+* convert PrismicImageType to gatsby-plugin-imgix ([813f975](https://github.com/angeloashmore/gatsby-source-prismic/commit/813f97585c1935ebcd781d7678a70c2675834198))
+* include legacy support for Prismic Toolbar ([d0c8270](https://github.com/angeloashmore/gatsby-source-prismic/commit/d0c8270d85a33ea716151379d98a04745e386fa1))
+* optionally include prismicToolbar, default to false ([6534d42](https://github.com/angeloashmore/gatsby-source-prismic/commit/6534d4219a1ea8c28c63dbc3f3aba2ebf51f499c))
+* support placeholder imgix params ([36bb9e2](https://github.com/angeloashmore/gatsby-source-prismic/commit/36bb9e27be07f1919f8d5077caf4ec0315a4135c))
+* update to dev imgix plugin ([cbcae70](https://github.com/angeloashmore/gatsby-source-prismic/commit/cbcae70b144b805fff1dd087e95b51570628a955))
+* upgrade gatsby-plugin-imgix ([b8b70a2](https://github.com/angeloashmore/gatsby-source-prismic/commit/b8b70a268c211da4d294bb2f87ec193a82c09fda))
+
+
+### Bug Fixes
+
+* add missing parts to HOCs ([00dae2d](https://github.com/angeloashmore/gatsby-source-prismic/commit/00dae2dd1313bcfba4558dae880cea7ff59c0022))
+* add omirPrismicScript to validateOptions ([4368897](https://github.com/angeloashmore/gatsby-source-prismic/commit/43688974baa799975ade69eaf4b01adf199e11d0))
+* correct prismicToolbar option name ([f575057](https://github.com/angeloashmore/gatsby-source-prismic/commit/f5750573122cb574493dd567653141cbe1c51708))
+* different fix for the last error due to this error ([d6ec00e](https://github.com/angeloashmore/gatsby-source-prismic/commit/d6ec00eaddaa3324ea44ab77935356e76d5ab307))
+* download full-quality image from Prismic for localFile ([e4d6298](https://github.com/angeloashmore/gatsby-source-prismic/commit/e4d62988825ef4bb652f42b14c510ae2fa81ae3b)), closes [#233](https://github.com/angeloashmore/gatsby-source-prismic/issues/233)
+* error when trying to build ([b1866a9](https://github.com/angeloashmore/gatsby-source-prismic/commit/b1866a9c9e0935469d17a71702a1475d3c9b5c19))
+* featch script using https protocol ([07dba6a](https://github.com/angeloashmore/gatsby-source-prismic/commit/07dba6a7a0a003a5a4920a0dff327734a3803117))
+* gatsby-ssr not correctly exported ([aa607d7](https://github.com/angeloashmore/gatsby-source-prismic/commit/aa607d71841f584b38e883d2d5e0d200dc882082))
+* import ssr function from dist ([5d45740](https://github.com/angeloashmore/gatsby-source-prismic/commit/5d45740ecc9c51855ea7f6a60281adc020f1e1f1))
+* load and configure toolbar correctly ([eea005a](https://github.com/angeloashmore/gatsby-source-prismic/commit/eea005a2576f1353c172ecb0d19f84ca0c588ea6))
+* move explicit for when to omit prismic script ([a806007](https://github.com/angeloashmore/gatsby-source-prismic/commit/a806007091e23e9da353f1e95dac1cea345bf6fb))
+* remove devDependencies from build. ([5012bcc](https://github.com/angeloashmore/gatsby-source-prismic/commit/5012bcc9efb979c0325aeeaed881f59c4470e3bd))
+* remove package-lock.json ([bfae1ea](https://github.com/angeloashmore/gatsby-source-prismic/commit/bfae1ea2e63979a363fe5c310a1ca96841e81df7))
+* rename option to include prismic-toolbar ([6025f1c](https://github.com/angeloashmore/gatsby-source-prismic/commit/6025f1cacc02cd6baa1d6d76e7988d9a6258cc53))
+* support all usePrismicPreview options on withPreviewResolver ([0099d06](https://github.com/angeloashmore/gatsby-source-prismic/commit/0099d066f620387415ca6c7e19b61744fb1dfa66))
+* type error ([132ccb3](https://github.com/angeloashmore/gatsby-source-prismic/commit/132ccb35e710970fc265422ef285ad20d58b19d0))
+* update gatsby-plugin-imgix ([cfa7b17](https://github.com/angeloashmore/gatsby-source-prismic/commit/cfa7b17d75461735b5fd363bf0949b1a043f4742))
+* upgrade infrastructure and packages ([574431e](https://github.com/angeloashmore/gatsby-source-prismic/commit/574431efa76217672684704df2c2a33b7c4aeb37))
+* use old version of the toolbar ([b1f8122](https://github.com/angeloashmore/gatsby-source-prismic/commit/b1f812232caccb575c3dc8c3b956d04fe33b53d4))
+* use reporter for invalid release ID ([793dec3](https://github.com/angeloashmore/gatsby-source-prismic/commit/793dec32de13959a652aeb865865239e878d4a05))
+
 ### [3.0.2](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.1...v3.0.2) (2020-05-12)
 
 
