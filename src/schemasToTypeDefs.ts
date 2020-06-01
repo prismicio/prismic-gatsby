@@ -1,5 +1,3 @@
-import { pascalCase } from 'pascal-case'
-
 import { msg, mapObjVals, isEmptyObj, buildSchemaTypeName } from './utils'
 
 import { SourceNodesArgs, GatsbyGraphQLType, NodePluginSchema } from 'gatsby'
@@ -128,8 +126,8 @@ const fieldToType = (
     }
 
     case FieldType.Group: {
-      const groupTypeName = pascalCase(
-        `Prismic ${customTypeApiId} ${apiId} GroupType`,
+      const groupTypeName = buildSchemaTypeName(
+        `${customTypeApiId} ${apiId} GroupType`,
       )
       enqueueTypeDef(
         gatsbySchema.buildObjectType({
@@ -149,8 +147,8 @@ const fieldToType = (
     }
 
     case FieldType.Slices: {
-      const slicesTypeName = pascalCase(
-        `Prismic ${customTypeApiId} ${apiId} SlicesType`,
+      const slicesTypeName = buildSchemaTypeName(
+        `${customTypeApiId} ${apiId} SlicesType`,
       )
       const sliceChoices = (field as SlicesFieldSchema).config.choices
       const sliceChoiceTypes = Object.entries(sliceChoices).map(
@@ -189,8 +187,8 @@ const fieldToType = (
       }
 
       if (primaryFields && !isEmptyObj(primaryFields)) {
-        const primaryTypeName = pascalCase(
-          `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId} PrimaryType`,
+        const primaryTypeName = buildSchemaTypeName(
+          `${customTypeApiId} ${sliceZoneId} ${apiId} PrimaryType`,
         )
 
         enqueueTypeDef(
@@ -214,8 +212,8 @@ const fieldToType = (
       }
 
       if (itemsFields && !isEmptyObj(itemsFields)) {
-        const itemTypeName = pascalCase(
-          `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId} ItemType`,
+        const itemTypeName = buildSchemaTypeName(
+          `${customTypeApiId} ${sliceZoneId} ${apiId} ItemType`,
         )
 
         enqueueTypeDef(
@@ -239,8 +237,8 @@ const fieldToType = (
         sliceFieldTypes.items = type
       }
 
-      const type = pascalCase(
-        `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId}`,
+      const type = buildSchemaTypeName(
+        `${customTypeApiId} ${sliceZoneId} ${apiId}`,
       )
 
       enqueueTypeDef(
@@ -314,7 +312,7 @@ const schemaToTypeDefs = (
   )
 
   // Create a type for all data fields.
-  const dataTypeName = pascalCase(`Prismic ${apiId} DataType`)
+  const dataTypeName = buildSchemaTypeName(`${apiId} DataType`)
   enqueueTypePath([apiId, 'data'], dataTypeName)
   enqueueTypeDef(
     gatsbySchema.buildObjectType({

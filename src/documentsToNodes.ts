@@ -1,4 +1,3 @@
-import { pascalCase } from 'pascal-case'
 import pick from 'lodash.pick'
 import omit from 'lodash.omit'
 
@@ -127,8 +126,8 @@ const normalizeField = async (
             primary: normalizedPrimary,
             items: normalizedItems,
             internal: {
-              type: pascalCase(
-                `Prismic ${doc.type} ${apiId} ${slice.slice_type}`,
+              type: buildSchemaTypeName(
+                `${doc.type} ${apiId} ${slice.slice_type}`,
               ),
               contentDigest: createContentDigest(slice),
             },

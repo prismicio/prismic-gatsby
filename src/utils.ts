@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { pascalCase } from 'pascal-case'
+import { pascalCase, pascalCaseTransformMerge } from 'pascal-case'
 
 /**
  * Returns a namespaced string intended for logging.
@@ -125,7 +125,7 @@ export const isEmptyObj = (obj: object) => {
  * @returns Type name for the schema.
  */
 export const buildSchemaTypeName = (apiId: string) =>
-  pascalCase(`Prismic ${apiId}`)
+  pascalCase(`Prismic ${apiId}`, { transform: pascalCaseTransformMerge })
 
 /**
  * Determines whether the current context is the browser.
