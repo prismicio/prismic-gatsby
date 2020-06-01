@@ -16,10 +16,12 @@ templates.
 ## PreviewStoreProvider
 
 All preview data is saved in a global store. In order for the preview HOCs to
-work, wrap your app with the `PreviewStoreProvider` component. You can do this
-by setting up `wrapRootElement` in `gatsby-ssr.js`.
+work, wrap your app with the `PreviewStoreProvider` component.
 
-```javascript
+You can do this by setting up `wrapRootElement` in `gatsby-ssr.js` like the
+following:
+
+```jsx
 // gatsby-ssr.js
 
 import * as React from 'react'
@@ -78,22 +80,24 @@ redirected to the preview resolver page desginated in your Prismic repository
 settings. This page then determines the previewed document's URL and redirects
 to that page while storing the preview data.
 
-`withPreviewResolver` accepts the same options as `usePrismicPreview` which
-requires at least your repository name. If you use a `linkResolver` in
-`gatsby-config.js`, be sure to provide it here as well.
+`withPreviewResolver` accepts the same options as
+[`usePrismicPreview`][useprismicpreview] which requires at least your repository
+name. If you use a `linkResolver` in `gatsby-config.js`, be sure to provide it
+here as well.
 
 To use `withPreviewResolver`, create a dedicated preview resolver page, such as
 `src/pages/preview.js`, and wrap the `export default` with `withPreviewResolver`
 like the following:
 
-```javascript
+```jsx
 // src/pages/preview.js
 
 import * as React from 'react'
 import { withPreviewResolver } from 'gatsby-source-prismic'
 
-import { Layout } from '../components/Layout'
 import { linkResolver } from '../linkResolver'
+
+import { Layout } from '../components/Layout'
 
 const PreviewPage = ({ isPreview, isLoading }) => {
   if (isPreview === false) return 'Not a preview!'
@@ -123,14 +127,14 @@ previewing a page, the correct template is displayed. If not, the HOC skips its
 logic and renders the page as normal. In the case of a 404 page, it would
 continue to render your "Page Not Found" message.
 
-The template to render is determined by the `templateMap` option which maps a
+The template to render is determined using the `templateMap` option which maps a
 Prismic custom type ID to a component.
 
 To use `withUnpublishedPreview`, create a dedicated page that accepts all
 non-existing routes, such as a 404 page at `src/pages/404.js`, and wrap the
 `export default` with `withUnpublishedPreview` like the following:
 
-```javascript
+```jsx
 // src/pages/404.js
 
 import * as React from 'react'
@@ -147,6 +151,7 @@ const NotFoundPage = () => (
   </Layout>
 )
 
+// If an unpublished `page` document is previewed, PageTemplate will be rendered.
 export default withUnpublishedPreview(PreviewPage, {
   templateMap: {
     page: PageTemplate,
@@ -156,3 +161,5 @@ export default withUnpublishedPreview(PreviewPage, {
 ```
 
 [react-hocs]: https://reactjs.org/docs/higher-order-components.html
+[useprismicpreview]:
+  https://github.com/angeloashmore/gatsby-source-prismic/blob/v3.1/docs/previews-api.md#usePrismicPreview
