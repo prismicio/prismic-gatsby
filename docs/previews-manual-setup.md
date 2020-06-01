@@ -1,4 +1,4 @@
-# Previewing with Prismic
+# Manual Previews Setup
 
 `gatsby-source-prismic`'s preview system aims to be unopinionated in its
 implementation. This allows the system to be flexible and work alongside other

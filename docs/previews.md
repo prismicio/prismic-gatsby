@@ -170,9 +170,9 @@ That's it! Your Gatsby site now allows editors to preview edits from Prismic.
 
 ## Advanced previews
 
-If you find the HOCs do not provide enough control over providing preview
-support, you can use the underlying `usePrismicPreview` hook and
-`mergePrismicPreviewData` helper function directly.
+If you find the HOCs do not provide enough control over previews, you can use
+the underlying `usePrismicPreview` hook and `mergePrismicPreviewData` helper
+function directly.
 
 See the [Previews Manual Setup](./previews-manual-setup.md) guide and the
 [Previews API](./previews-api.md) documetnation for more details.
