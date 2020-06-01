@@ -168,7 +168,7 @@ export default withUnpublishedPreview(PreviewPage, {
 
 That's it! Your Gatsby site now allows editors to preview edits from Prismic.
 
-## Advance usage
+## Advanced previews
 
 If you find the HOCs do not provide enough control over providing preview
 support, you can use the underlying `usePrismicPreview` hook and
