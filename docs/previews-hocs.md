@@ -2,7 +2,8 @@
 
 Setting up previews involves setting up a few key pages and registering a global
 store. `gatsby-source-prismic` provides ready-to-use [higher order
-components][reat-hocs] so you can simply wrap your existing pages and templates.
+components][react-hocs] so you can simply wrap your existing pages and
+templates.
 
 1. [**PreviewStoreProvider**](#PreviewStoreProvider): Setup a global store.
 1. [**withPreview**](#withPreview): Wrap your pages and templates to accept
