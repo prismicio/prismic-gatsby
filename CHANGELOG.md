@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.1.0...v3.1.1) (2020-06-01)
+
+
+### Bug Fixes
+
+* remove underscore before numbers in type names (regression) ([e0505f7](https://github.com/angeloashmore/gatsby-source-prismic/commit/e0505f74497357d0d867ff2b59fcdbd1a0811f02)), closes [#235](https://github.com/angeloashmore/gatsby-source-prismic/issues/235)
+
 ## [3.1.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.0.2...v3.1.0) (2020-06-01)
 
 
