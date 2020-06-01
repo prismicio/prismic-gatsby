@@ -31,7 +31,7 @@ repositories.
   `gatsby-transformer-sharp` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
-- Supports [Prismic previews](prismic-previews) and automatically adds the
+- Supports [Prismic previews](#Previews) and automatically adds the
   [Prismic Toolbar](prismic-toolbar)
 
 ## Install
@@ -774,7 +774,8 @@ exports.createPages = async ({ graphql, actions }) => {
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
 [prismic-previews]:
   https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
-[prismic-toolbar]: https://github.com/prismicio/prismic-toolbar
+[prismic-toolbar]:
+  https://prismic.io/docs/rest-api/beyond-the-api/in-website-edit-button
 [prismic-releases]:
   https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
 [prismic-version-custom-types]:
