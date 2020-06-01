@@ -1,8 +1,10 @@
 import * as React from 'react'
 import { navigate, PageProps } from 'gatsby'
 
-import { PluginLinkResolver } from './types'
-import { usePrismicPreview } from './usePrismicPreview'
+import {
+  usePrismicPreview,
+  UsePrismicPreviewOptions,
+} from './usePrismicPreview'
 import { usePreviewStore, ActionType } from './usePreviewStore'
 import { getComponentDisplayName } from './utils'
 
@@ -11,22 +13,16 @@ export interface WithPreviewResolverProps {
   isLoading: boolean
 }
 
-type WithPreviewResolverArgs = {
-  repositoryName: string
-  linkResolver?: PluginLinkResolver
-}
-
 export const withPreviewResolver = <TProps extends PageProps>(
   WrappedComponent: React.ComponentType<TProps>,
-  options: WithPreviewResolverArgs,
+  options: UsePrismicPreviewOptions,
 ): React.ComponentType<TProps> => {
   const WithPreviewResolver = (props: TProps) => {
     const [, dispatch] = usePreviewStore()
 
-    const { isLoading, isPreview, previewData, path } = usePrismicPreview({
-      repositoryName: options.repositoryName,
-      linkResolver: options.linkResolver,
-    })
+    const { isLoading, isPreview, previewData, path } = usePrismicPreview(
+      options,
+    )
 
     React.useEffect(() => {
       if (isPreview && previewData && path) {

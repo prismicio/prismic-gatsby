@@ -18,7 +18,7 @@ import {
   BrowserPluginOptions,
 } from './types'
 
-type Options = Pick<
+export type UsePrismicPreviewOptions = Pick<
   PluginOptions,
   | 'repositoryName'
   | 'accessToken'
@@ -91,10 +91,10 @@ const reducer = (state: State, action: Action) => {
   }
 }
 
-export const usePrismicPreview = (options: Options) => {
+export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const hydratedOptions: Options & {
+  const hydratedOptions: UsePrismicPreviewOptions & {
     plugins: []
     schemas: {}
     lang: string
