@@ -1,11 +1,8 @@
-import fs from 'fs'
-import { SourceNodesArgs, ParentSpanPluginArgs } from 'gatsby'
+import { RenderBodyArgs } from 'gatsby'
 
-import { sourceNodes, onPreExtractQueries } from '../src/gatsby-node'
+import { onRenderBody } from '../src/gatsby-ssr'
 
 import mockSchema from './__fixtures__/schema.json'
-
-jest.mock('fs')
 
 const PROGRAM_DIRECTORY_PATH = '/__PROGRAM_DIRECTORY__/'
 
@@ -34,11 +31,17 @@ const mockActions = {
   createFieldExtension: jest.fn(),
 }
 
-const mockGatsbyContext: ParentSpanPluginArgs = {
-  pathPrefix: 'pathPrefix',
+const mockGatsbyContext: RenderBodyArgs = {
   boundActionCreators: mockActions,
   actions: mockActions,
-  loadNodeContent: jest.fn(),
+  setHeadComponents: jest.fn(),
+  setHtmlAttributes: jest.fn(),
+  setBodyAttributes: jest.fn(),
+  setBodyProps: jest.fn(),
+  setPreBodyComponents: jest.fn(),
+  setPostBodyComponents: jest.fn(),
+  pathPrefix: 'pathPrefix',
+  pathname: 'pathname',
   store: {
     dispatch: jest.fn(),
     subscribe: jest.fn(),
@@ -64,9 +67,11 @@ const mockGatsbyContext: ParentSpanPluginArgs = {
     eventNames: jest.fn(),
     listenerCount: jest.fn(),
   },
+  loadNodeContent: jest.fn(),
   getNodes: jest.fn(),
   getNode: jest.fn(),
   getNodesByType: jest.fn(),
+  getNodeAndSavePathDependency: jest.fn(),
   hasNodeChanged: jest.fn(),
   reporter: {
     stripIndent: jest.fn(),
@@ -94,7 +99,6 @@ const mockGatsbyContext: ParentSpanPluginArgs = {
     }),
     createProgress: jest.fn(),
   },
-  getNodeAndSavePathDependency: jest.fn(),
   cache: {
     set: jest.fn(),
     get: jest.fn(),
@@ -106,34 +110,14 @@ const mockGatsbyContext: ParentSpanPluginArgs = {
     parentSpan: {},
     startSpan: jest.fn(),
   },
-  parentSpan: {},
   schema: {
-    buildObjectType: jest
-      .fn()
-      .mockImplementation((config) => ({ kind: 'OBJECT', config })),
-    buildUnionType: jest.fn().mockImplementation((config) => ({
-      kind: 'UNION',
-      config,
-    })),
-    buildInterfaceType: jest
-      .fn()
-      .mockImplementation((config) => ({ kind: 'INTERFACE', config })),
-    buildInputObjectType: jest
-      .fn()
-      .mockImplementation((config) => ({ kind: 'INPUT', config })),
-    buildEnumType: jest
-      .fn()
-      .mockImplementation((config) => ({ kind: 'ENUM', config })),
-    buildScalarType: jest
-      .fn()
-      .mockImplementation((config) => ({ kind: 'SCALAR', config })),
+    buildObjectType: jest.fn(),
+    buildUnionType: jest.fn(),
+    buildInterfaceType: jest.fn(),
+    buildInputObjectType: jest.fn(),
+    buildEnumType: jest.fn(),
+    buildScalarType: jest.fn(),
   },
-}
-
-const mockSourceNodesGatsbyContext: SourceNodesArgs = {
-  ...mockGatsbyContext,
-  traceId: 'initial-sourceNodes',
-  waitForCascadingActions: false,
 }
 
 const pluginOptions = {
@@ -142,46 +126,42 @@ const pluginOptions = {
   schemas: { page: mockSchema },
 }
 
-describe('sourceNodes', () => {
+describe('onRenderBody', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  test('creates types', async () => {
-    await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
+  test('expect Prismic Toolbar script not to be included by default', async () => {
+    await onRenderBody!(mockGatsbyContext, pluginOptions)
 
-    expect(mockSourceNodesGatsbyContext.actions.createTypes).toMatchSnapshot()
+    expect(mockGatsbyContext.setHeadComponents).not.toHaveBeenCalled()
   })
 
-  test('creates nodes', async () => {
-    await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
+  test('expect Prismic Toolbar script to be included if `prismicToolbar` is set to `true`', async () => {
+    await onRenderBody!(mockGatsbyContext, {
+      ...pluginOptions,
+      prismicToolbar: true,
+    })
 
-    expect(mockSourceNodesGatsbyContext.actions.createNode).toMatchSnapshot()
-  })
-
-  test('writes type paths to filesystem', async () => {
-    await sourceNodes!(mockSourceNodesGatsbyContext, pluginOptions)
+    expect(mockGatsbyContext.setHeadComponents).toHaveBeenCalledTimes(1)
 
     expect(
-      (fs.writeFileSync as jest.Mock).mock.calls[0][0],
-    ).toMatchInlineSnapshot(
-      `"/__PROGRAM_DIRECTORY__/public/prismic-typepaths---9769f52526da286b236e9bd2cb0d0291.json"`,
+      (mockGatsbyContext.setHeadComponents as jest.Mock).mock.calls[0][0][0]
+        .props.src,
+    ).toBe(
+      `//static.cdn.prismic.io/prismic.js?repo=${pluginOptions.repositoryName}&new=true`,
     )
-
-    // Ensure valid JSON.
-    expect(
-      JSON.parse((fs.writeFileSync as jest.Mock).mock.calls[0][1]),
-    ).toMatchSnapshot()
   })
-})
 
-describe('onPreExtractQueries', () => {
-  test('copies fragments file to program cache', async () => {
-    onPreExtractQueries!(mockGatsbyContext, pluginOptions)
+  test('expect Prismic Toolbar script to use the legacy URL if the `legacy` option is provided', async () => {
+    await onRenderBody!(mockGatsbyContext, {
+      ...pluginOptions,
+      prismicToolbar: 'legacy',
+    })
 
-    const call = (fs.copyFileSync as jest.Mock).mock.calls[0]
-
-    expect(call[0]).toMatch(/\/fragments.js$/)
-    expect(call[1]).toBe(
-      '/__PROGRAM_DIRECTORY__/.cache/fragments/gatsby-source-prismic-fragments.js',
+    expect(
+      (mockGatsbyContext.setHeadComponents as jest.Mock).mock.calls[0][0][0]
+        .props.src,
+    ).toBe(
+      `//static.cdn.prismic.io/prismic.js?repo=${pluginOptions.repositoryName}`,
     )
   })
 })

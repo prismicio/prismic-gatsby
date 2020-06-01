@@ -1,6 +1,6 @@
 import { graphql } from 'gatsby'
 
-export const GatsbyPrismicImageFixedType = graphql`
+export const GatsbyPrismicImageFixed = graphql`
   fragment GatsbyPrismicImageFixed on PrismicImageFixedType {
     base64
     width
@@ -50,7 +50,7 @@ export const GatsbyPrismicImageFixed_withWebp_noBase64 = graphql`
   }
 `
 
-export const GatsbyPrismicImageFluidType = graphql`
+export const GatsbyPrismicImageFluid = graphql`
   fragment GatsbyPrismicImageFluid on PrismicImageFluidType {
     base64
     aspectRatio

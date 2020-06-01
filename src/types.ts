@@ -4,8 +4,10 @@ import {
   NodeInput,
   Node,
 } from 'gatsby'
+import { FixedObject, FluidObject } from 'gatsby-image'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
 import * as PrismicDOM from 'prismic-dom'
+import { ImgixUrlParams } from 'gatsby-plugin-imgix'
 
 export type NodeID = string
 
@@ -28,7 +30,7 @@ export interface SliceNodeInput extends NodeInput {
 export interface DocumentsToNodesEnvironment {
   createNode: (node: NodeInput) => void
   createNodeId: (input: string) => string
-  createContentDigest: (input: unknown) => string
+  createContentDigest: (input: string | object) => string
   normalizeImageField: ImageFieldNormalizer
   normalizeLinkField: LinkFieldNormalizer
   normalizeSlicesField: SlicesFieldNormalizer
@@ -167,43 +169,9 @@ export interface ImageField {
 
 export interface NormalizedImageField extends ImageField {
   thumbnails?: { [key: string]: NormalizedImageField }
-  fixed?: GatsbyFixedImageProps
-  fluid?: GatsbyFluidImageProps
+  fixed?: FixedObject
+  fluid?: FluidObject
   localFile?: NodeID
-}
-
-interface GatsbyImageProps {
-  base64?: string
-  aspectRatio: number
-  src: string
-  srcWebp: string
-  srcSet: string
-  srcSetWebp: string
-}
-
-export interface GatsbyFixedImageProps extends GatsbyImageProps {
-  width: number
-  height: number
-}
-
-export interface GatsbyFluidImageProps extends GatsbyImageProps {
-  sizes: string
-}
-
-interface GatsbyImageArgs {
-  quality?: number
-}
-
-export interface GatsbyImageFluidArgs extends GatsbyImageArgs {
-  maxWidth?: number
-  maxHeight?: number
-  sizes?: string
-  srcSetBreakpoints?: number[]
-}
-
-export interface GatsbyImageFixedArgs extends GatsbyImageArgs {
-  width?: number
-  height?: number
 }
 
 export type AlternateLanguagesField = LinkField[]
@@ -349,14 +317,14 @@ export interface Schemas {
 }
 
 export type LinkResolver = (doc: object) => string
-type PluginLinkResolver = (input: {
+export type PluginLinkResolver = (input: {
   key?: string
   value?: unknown
   node: PrismicDocument
 }) => LinkResolver
 
 export type HTMLSerializer = typeof PrismicDOM.HTMLSerializer
-type PluginHTMLSerializer = (input: {
+export type PluginHTMLSerializer = (input: {
   key: string
   value: unknown
   node: PrismicDocument
@@ -377,10 +345,12 @@ export type BrowserPluginOptions = GatsbyPluginOptions &
     | 'schemas'
     | 'lang'
     | 'typePathsFilenamePrefix'
+    | 'prismicToolbar'
   >
 
 export interface PluginOptions extends GatsbyPluginOptions {
   repositoryName: string
+  releaseID?: string
   accessToken?: string
   linkResolver?: PluginLinkResolver
   htmlSerializer?: PluginHTMLSerializer
@@ -390,4 +360,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   shouldDownloadImage?: ShouldDownloadImage
   shouldNormalizeImage?: ShouldDownloadImage
   typePathsFilenamePrefix?: string
+  prismicToolbar?: boolean | 'legacy'
+  imageImgixParams?: ImgixUrlParams
+  imagePlaceholderImgixParams?: ImgixUrlParams
 }

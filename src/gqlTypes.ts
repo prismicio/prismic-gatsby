@@ -1,3 +1,106 @@
+import { NodePluginSchema, GatsbyCache } from 'gatsby'
+import { ImgixUrlParams } from 'gatsby-plugin-imgix'
+import {
+  createImgixFixedType,
+  createImgixFluidType,
+  createImgixFixedSchemaFieldConfig,
+  createImgixFluidSchemaFieldConfig,
+  createImgixUrlSchemaFieldConfig,
+} from 'gatsby-plugin-imgix/dist/node'
+
+type BuildPrismicImageTypesArgs = {
+  schema: NodePluginSchema
+  cache: GatsbyCache
+  defaultImgixParams?: ImgixUrlParams
+  defaultPlaceholderImgixParams?: ImgixUrlParams
+}
+
+export const buildPrismicImageTypes = ({
+  schema,
+  cache,
+  defaultImgixParams,
+  defaultPlaceholderImgixParams,
+}: BuildPrismicImageTypesArgs) => {
+  const resolveUrl = (obj: { url?: string }) => obj.url
+
+  const PrismicImageFixedType = createImgixFixedType({
+    name: 'PrismicImageFixedType',
+    cache,
+  })
+
+  const PrismicImageFluidType = createImgixFluidType({
+    name: 'PrismicImageFluidType',
+    cache,
+  })
+
+  const PrismicImageType = schema.buildObjectType({
+    name: 'PrismicImageType',
+    description: 'An image field with optional constrained thumbnails.',
+    interfaces: ['PrismicImageInterface'],
+    fields: {
+      alt: 'String',
+      copyright: 'String',
+      dimensions: 'PrismicImageDimensionsType',
+      url: createImgixUrlSchemaFieldConfig({
+        resolveUrl,
+        defaultImgixParams,
+      }),
+      fixed: createImgixFixedSchemaFieldConfig({
+        type: PrismicImageFixedType,
+        resolveUrl,
+        cache,
+        defaultImgixParams,
+        defaultPlaceholderImgixParams,
+      }),
+      fluid: createImgixFluidSchemaFieldConfig({
+        type: PrismicImageFluidType,
+        resolveUrl,
+        cache,
+        defaultImgixParams,
+        defaultPlaceholderImgixParams,
+      }),
+      localFile: {
+        type: 'File',
+        extensions: { link: {} },
+      },
+      thumbnails: 'PrismicImageThumbnailsType',
+    },
+  })
+
+  const PrismicImageThumbnailType = schema.buildObjectType({
+    name: 'PrismicImageThumbnailType',
+    description: 'An image thumbnail with constraints.',
+    interfaces: ['PrismicImageInterface'],
+    fields: {
+      alt: 'String',
+      copyright: 'String',
+      dimensions: 'PrismicImageDimensionsType',
+      url: createImgixUrlSchemaFieldConfig({
+        resolveUrl,
+        defaultImgixParams,
+      }),
+      fixed: createImgixFixedSchemaFieldConfig({
+        type: PrismicImageFixedType,
+        resolveUrl,
+        cache,
+        defaultImgixParams,
+      }),
+      fluid: createImgixFluidSchemaFieldConfig({
+        type: PrismicImageFluidType,
+        resolveUrl,
+        cache,
+        defaultImgixParams,
+      }),
+      localFile: {
+        type: 'File',
+        extensions: { link: {} },
+      },
+    },
+  })
+
+  return [PrismicImageType, PrismicImageThumbnailType]
+}
+
 const gql = (query: TemplateStringsArray) => String(query).replace(`\n`, ` `)
 
 export const types = gql`
@@ -69,65 +172,6 @@ export const types = gql`
     width: Int!
     "Height of the image in pixels."
     height: Int!
-  }
-
-  "\`gatsby-image\`-compatible image data for \`fixed\` images."
-  type PrismicImageFixedType {
-    base64: String
-    aspectRatio: Float
-    width: Float
-    height: Float
-    src: String
-    srcSet: String
-    srcWebp: String
-    srcSetWebp: String
-  }
-
-  "\`gatsby-image\`-compatible image data for \`fluid\` images."
-  type PrismicImageFluidType {
-    base64: String
-    aspectRatio: Float
-    src: String
-    srcSet: String
-    srcWebp: String
-    srcSetWebp: String
-    sizes: String
-  }
-
-  "An image thumbnail with constraints."
-  type PrismicImageThumbnailType implements PrismicImageInterface {
-    alt: String
-    copyright: String
-    dimensions: PrismicImageDimensionsType
-    url: String
-    localFile: File @link
-    "\`gatsby-image\`-compatible image data for \`fixed\` images."
-    fixed(width: Int, height: Int): PrismicImageFixedType
-    "\`gatsby-image\`-compatible image data for \`fluid\` images."
-    fluid(
-      maxWidth: Int
-      maxHeight: Int
-      srcSetBreakpoints: [Int!]
-    ): PrismicImageFluidType
-  }
-
-  "An image field with optional constrained thumbnails."
-  type PrismicImageType implements PrismicImageInterface {
-    alt: String
-    copyright: String
-    dimensions: PrismicImageDimensionsType
-    url: String
-    localFile: File @link
-    "\`gatsby-image\`-compatible image data for \`fixed\` images."
-    fixed(width: Int, height: Int): PrismicImageFixedType
-    "\`gatsby-image\`-compatible image data for \`fluid\` images."
-    fluid(
-      maxWidth: Int
-      maxHeight: Int
-      srcSetBreakpoints: [Int!]
-    ): PrismicImageFluidType
-    "The image's thumbnails."
-    thumbnails: PrismicImageThumbnailsType
   }
 
   "Types of links."

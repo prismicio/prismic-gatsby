@@ -1,11 +1,12 @@
-# Previewing with Prismic
+# Manual Previews Setup
 
 `gatsby-source-prismic`'s preview system aims to be unopinionated in its
 implementation. This allows the system to be flexible and work alongside other
 parts of your site.
 
-The following guide is a recommended approach to implementing previews, but
-customizations are encouraged.
+The following guide is a recommended approach **only** if the provided
+higher-order components do not serve your use-case. See the main
+[Previews][./previews-hocs.md] docs for more information on using the HOCs.
 
 ## Table on Contents
 
@@ -45,8 +46,8 @@ editing experience of a traditional server setup.
 
 Each step is described in full detail below.
 
-1. [**Enable previews in Prismic**](#enable-previews-in-prismic): Enable
-   previews in Prismic with your preview URL.
+1. [**Enable previews**](#enable-previews): Enable previews in Prismic with your
+   preview URL and optionally include the Prismic Toolbar.
 
 1. [**Create a preview page**](#create-a-preview-page): Create a page to which
    Prismic will redirect previews.
@@ -77,6 +78,34 @@ While developing, you would typically set up multiple preview sites:
 
 - **Development**: Domain: `http://localhost:8000`, Link Resolver: `/preview`
 - **Production**: Domain: `https://<your_url>`, Link Resolver: `/preview`
+
+You may optionally enable the Prismic Toolbar script to make previewing
+[Releases][prismic-releases] and creating sharable links much easier. You can
+enable this by setting the `prismicToolbar` option in your `gatsby-config.js`
+file to `true`.
+
+```diff
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        repositoryName: 'gatsby-source-prismic-test-site',
+        accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
++       prismicToolbar: true
+      }
+    }
+  ]
+```
+
+> **Note**: If your repository is not relatively new and requires the older
+> Prismic Toolbar script, set `prismicToolbar` to `"legacy"` instead of true.
+>
+> To check if you need the `legacy` option, go to your Prismic repository and
+> navigate to **Settings** > **Previews**. In the _Include the Prismic Toolbar
+> javascript file_ section, check the URL for the `<script>` code snippet.
+>
+> If the `src` attribute ends with `&new=true`, set `prismicToolbar` to `true`.
+> If it does _not_ end with `&new=true`, set `prismicToolbar` to `"legacy"`.
 
 Once previews are enabled, we can open the code for our site.
 
@@ -189,17 +218,16 @@ Our last addition to the preview page will navigate the user to the previewed
 document's page using Gatsby's navigate function.
 
 We will also handle here the unpublished document case. So first let's create an
-unpublished document route handler.
-For this example, let's assume we have a page generated using a template
-at `src/templates/page.js`. If your site uses a different template, you will
-need to adapt accordingly.
+unpublished document route handler. For this example, let's assume we have a
+page generated using a template at `src/templates/page.js`. If your site uses a
+different template, you will need to adapt accordingly.
 
 ```js
 // src/pages/unpublishedPreview.js
 
 import { PageTemplate } from 'src/templates/page'
 
-export const UnpublishedPage = props => {
+export const UnpublishedPage = (props) => {
   // const previewData = window.__PRISMIC_PREVIEW_DATA__
   // => Perform any logic from previewData to determine the correct page or template component to use.
 
@@ -221,20 +249,19 @@ import { usePrismicPreview } from 'gatsby-source-prismic'
 
 // Note that the `location` prop is taken and provided to the `usePrismicPreview` hook.
 const PreviewPage = ({ location }) => {
-
   // Let's use a static query to retrieve all known paths. We'll use it later
   // to navigate to the unpublishedPreview page if the document is not
   // published.
   const { allSitePage } = useStaticQuery(graphql`
-      {
-        allSitePage {
-          nodes {
-              path
-          }
+    {
+      allSitePage {
+        nodes {
+          path
         }
       }
-    `)
-  const allPaths = allSitePage.nodes.map(node => node.path)
+    }
+  `)
+  const allPaths = allSitePage.nodes.map((node) => node.path)
 
   const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
@@ -289,7 +316,7 @@ First, let's create a simple helper that can be reused in different templates:
 ```js
 // src/utils/usePreviewData.js
 import { useMemo } from 'react'
-import { mergePrismicPreviewData } from 'gatsby-source-prismic';
+import { mergePrismicPreviewData } from 'gatsby-source-prismic'
 
 // Returns true if we're in a browser, false otherwise. This will help guard
 // against SSR issues when building the site.
@@ -330,7 +357,9 @@ export const PageTemplate = ({ data }) => {
     <Layout>
       <h1>{liveData.prismicPage.data.title}</h1>
       <div
-        dangerouslySetInnerHTML={{ __html: liveData.prismicPage.data.body.html }}
+        dangerouslySetInnerHTML={{
+          __html: liveData.prismicPage.data.body.html,
+        }}
       />
     </Layout>
   )
@@ -371,9 +400,6 @@ building your own preview system tailored to your setup.
 For more details on the preview functions' API, see the
 [Previews API](./previews-api.md) document.
 
-[prismic-setup-preview]:
-  https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
-
 ## Limitations
 
 The preview setup described in this guide works well to preview changes in a
@@ -389,3 +415,8 @@ cases such as:
 
 Also see other technical limitations described in the
 [Previews API](./previews-api.md#limitations) document.
+
+[prismic-setup-preview]:
+  https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
+[prismic-releases]:
+  https://user-guides.prismic.io/en/articles/778358-what-is-a-release

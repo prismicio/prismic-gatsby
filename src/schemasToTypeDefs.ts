@@ -1,4 +1,4 @@
-import pascalcase from 'pascalcase'
+import { pascalCase } from 'pascal-case'
 
 import { msg, mapObjVals, isEmptyObj, buildSchemaTypeName } from './utils'
 
@@ -128,7 +128,7 @@ const fieldToType = (
     }
 
     case FieldType.Group: {
-      const groupTypeName = pascalcase(
+      const groupTypeName = pascalCase(
         `Prismic ${customTypeApiId} ${apiId} GroupType`,
       )
       enqueueTypeDef(
@@ -149,7 +149,7 @@ const fieldToType = (
     }
 
     case FieldType.Slices: {
-      const slicesTypeName = pascalcase(
+      const slicesTypeName = pascalCase(
         `Prismic ${customTypeApiId} ${apiId} SlicesType`,
       )
       const sliceChoices = (field as SlicesFieldSchema).config.choices
@@ -189,7 +189,7 @@ const fieldToType = (
       }
 
       if (primaryFields && !isEmptyObj(primaryFields)) {
-        const primaryTypeName = pascalcase(
+        const primaryTypeName = pascalCase(
           `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId} PrimaryType`,
         )
 
@@ -214,7 +214,7 @@ const fieldToType = (
       }
 
       if (itemsFields && !isEmptyObj(itemsFields)) {
-        const itemTypeName = pascalcase(
+        const itemTypeName = pascalCase(
           `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId} ItemType`,
         )
 
@@ -239,7 +239,7 @@ const fieldToType = (
         sliceFieldTypes.items = type
       }
 
-      const type = pascalcase(
+      const type = pascalCase(
         `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId}`,
       )
 
@@ -314,7 +314,7 @@ const schemaToTypeDefs = (
   )
 
   // Create a type for all data fields.
-  const dataTypeName = pascalcase(`Prismic ${apiId} DataType`)
+  const dataTypeName = pascalCase(`Prismic ${apiId} DataType`)
   enqueueTypePath([apiId, 'data'], dataTypeName)
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
@@ -378,8 +378,8 @@ const buildImageThumbnailsType = (
   gatsbySchema: NodePluginSchema,
 ) => {
   const keys = typePaths
-    .filter(typePath => typePath.type === GraphQLType.ImageThumbnail)
-    .map(typePath => typePath.path[typePath.path.length - 1])
+    .filter((typePath) => typePath.type === GraphQLType.ImageThumbnail)
+    .map((typePath) => typePath.path[typePath.path.length - 1])
 
   if (keys.length < 1)
     return gatsbySchema.buildScalarType({
@@ -414,7 +414,8 @@ export const schemasToTypeDefs = (
   const { schema: gatsbySchema } = gatsbyContext
 
   const typeDefs: GatsbyGraphQLType[] = []
-  const enqueueTypeDef: EnqueueTypeDef = typeDef => void typeDefs.push(typeDef)
+  const enqueueTypeDef: EnqueueTypeDef = (typeDef) =>
+    void typeDefs.push(typeDef)
 
   const typePaths: TypePath[] = []
   const enqueueTypePath: EnqueueTypePath = (path, type) =>
@@ -432,7 +433,7 @@ export const schemasToTypeDefs = (
   enqueueTypeDef(
     gatsbySchema.buildUnionType({
       name: GraphQLType.AllDocumentTypes,
-      types: Object.keys(schemas).map(apiId => buildSchemaTypeName(apiId)),
+      types: Object.keys(schemas).map((apiId) => buildSchemaTypeName(apiId)),
     }),
   )
 
