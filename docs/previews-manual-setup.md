@@ -4,8 +4,9 @@
 implementation. This allows the system to be flexible and work alongside other
 parts of your site.
 
-The following guide is a recommended approach to implementing previews, but
-customizations are encouraged.
+The following guide is a recommended approach **only** if the provided
+higher-order components do not serve your use-case. See the main
+[Previews][./previews-hocs.md] docs for more information on using the HOCs.
 
 ## Table on Contents
 

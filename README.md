@@ -639,8 +639,13 @@ To learn more about local image processing, check the documentation of
 
 ## Previews
 
+`gatsby-source-prismic` provides a way to preview document changes directly from
+Prismic without rebuilding your site. By rendering previews client-side, we can
+retain the benefits of Gatsby's HTML pre-rendering while still provding the
+dynamic and rich content editing experience of a traditional server setup.
+
 For an in-depth guide on using previews, please refer to
-[this guide](./docs/previews-guide.md).
+[this guide](./docs/previews.md).
 
 ## Releases
 

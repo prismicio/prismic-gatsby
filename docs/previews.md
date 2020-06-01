@@ -1,9 +1,9 @@
 # Previews
 
-Setting up previews involves setting up a few key pages and registering a global
-store. `gatsby-source-prismic` provides ready-to-use [higher order
-components][react-hocs] so you can simply wrap your existing pages and
-templates.
+Setting up live Prismic previews involves setting up a few key pages and
+registering a global store. `gatsby-source-prismic` provides ready-to-use
+[higher order components][react-hocs] so you can simply wrap your existing pages
+and templates.
 
 1. [**PreviewStoreProvider**](#PreviewStoreProvider): Setup a global store.
 1. [**withPreview**](#withPreview): Wrap your pages and templates to accept
@@ -12,6 +12,11 @@ templates.
    page for previews.
 1. [**withUnpublishedPreview**](#withUnpublishedPreview): Create a fallback page
    for unpublished documents.
+
+The underlying `usePrismicPreview` hook and `mergePrismicPreviewData` helper
+function are available to use for more advanced use cases. Almost all users
+should be able to stick with the HOC. If you're not sure how to setup previews,
+stick with the following approach.
 
 ## PreviewStoreProvider
 
@@ -159,6 +164,17 @@ export default withUnpublishedPreview(PreviewPage, {
   },
 })
 ```
+
+That's it! Your Gatsby site now allows editors to preview edits from Prismic.
+
+## Advance usage
+
+If you find the HOCs do not provide enough control over providing preview
+support, you can use the underlying `usePrismicPreview` hook and
+`mergePrismicPreviewData` helper function directly.
+
+See the [Previews Manual Setup](./previews-manual-setup.md) guide and the
+[Previews API](./previews-api.md) documetnation for more details.
 
 [react-hocs]: https://reactjs.org/docs/higher-order-components.html
 [useprismicpreview]:
