@@ -151,8 +151,8 @@ plugins: [
 
       // Provide a default set of Imgix image transformations applied to
       // the placeholder images of Imgix-backed gatsby-image fields. These
-      // parameters will be applied over those provided in the
-      // above `imageImgixParams` option.
+      // parameters will be applied over those provided in the above
+      // `imageImgixParams` option.
       // See: https://docs.imgix.com/apis/url
       imagePlaceholderImgixParams: {
         w: 100,
