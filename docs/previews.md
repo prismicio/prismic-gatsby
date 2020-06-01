@@ -13,10 +13,11 @@ and templates.
 1. [**withUnpublishedPreview**](#withUnpublishedPreview): Create a fallback page
    for unpublished documents.
 
-The underlying `usePrismicPreview` hook and `mergePrismicPreviewData` helper
-function are available to use for more advanced use cases. Almost all users
-should be able to stick with the HOC. If you're not sure how to setup previews,
-stick with the following approach.
+The underlying [`usePrismicPreview`][useprismicpreview] hook and
+[`mergePrismicPreviewData`][mergeprismicpreviewdata] helper function are
+available to use for more advanced use cases. Almost all users should be able to
+use the HOCs instead of these lower-level methods. If you're not sure how to
+setup previews, stick with the following approach.
 
 ## PreviewStoreProvider
 
@@ -178,4 +179,6 @@ See the [Previews Manual Setup](./previews-manual-setup.md) guide and the
 
 [react-hocs]: https://reactjs.org/docs/higher-order-components.html
 [useprismicpreview]:
-  https://github.com/angeloashmore/gatsby-source-prismic/blob/v3.1/docs/previews-api.md#usePrismicPreview
+  https://github.com/angeloashmore/gatsby-source-prismic/blob/v3.1/docs/previews-api.md#useprismicpreview
+[mergeprismicpreviewdata]:
+  https://github.com/angeloashmore/gatsby-source-prismic/blob/v3.1/docs/previews-api.md#mergeprismicpreviewdata
