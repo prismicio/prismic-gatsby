@@ -49,8 +49,8 @@ export const wrapRootElement = ({ element }) => (
 )
 ```
 
-Yes, it's the same code in both files, [as per gatsby recommendation](
-https://www.gatsbyjs.org/docs/browser-apis/#wrapRootElement).
+Yes, it is the same code in both files,
+[as per Gatsby's recommendation](https://www.gatsbyjs.org/docs/browser-apis/#wrapRootElement).
 
 ## withPreview
 
