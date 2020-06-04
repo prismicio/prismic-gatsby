@@ -7,8 +7,6 @@ export const GatsbyPrismicImageFixed = graphql`
     height
     src
     srcSet
-    srcWebp
-    srcSetWebp
   }
 `
 
@@ -18,13 +16,11 @@ export const GatsbyPrismicImageFixed_noBase64 = graphql`
     height
     src
     srcSet
-    srcWebp
-    srcSetWebp
   }
 `
 
-// Not actually necessary - since Imgix is scaling,
-// there is no "penalty" for including WebP by default
+// Not actually necessary since applying `auto=format` to the source URL
+// automatically returns WebP for all URLs.
 export const GatsbyPrismicImageFixed_withWebp = graphql`
   fragment GatsbyPrismicImageFixed_withWebp on PrismicImageFixedType {
     base64
@@ -37,8 +33,8 @@ export const GatsbyPrismicImageFixed_withWebp = graphql`
   }
 `
 
-// Not actually necessary - since Imgix is scaling,
-// there is no "penalty" for including WebP by default
+// Not actually necessary since applying `auto=format` to the source URL
+// automatically returns WebP for all URLs.
 export const GatsbyPrismicImageFixed_withWebp_noBase64 = graphql`
   fragment GatsbyPrismicImageFixed_withWebp_noBase64 on PrismicImageFixedType {
     width
@@ -53,49 +49,45 @@ export const GatsbyPrismicImageFixed_withWebp_noBase64 = graphql`
 export const GatsbyPrismicImageFluid = graphql`
   fragment GatsbyPrismicImageFluid on PrismicImageFluidType {
     base64
-    aspectRatio
+    width
+    height
     src
     srcSet
-    srcWebp
-    srcSetWebp
-    sizes
   }
 `
 
 export const GatsbyPrismicImageFluid_noBase64 = graphql`
   fragment GatsbyPrismicImageFluid_noBase64 on PrismicImageFluidType {
-    aspectRatio
+    width
+    height
     src
     srcSet
-    srcWebp
-    srcSetWebp
-    sizes
   }
 `
 
-// Not actually necessary - since Imgix is scaling,
-// there is no "penalty" for including WebP by default
+// Not actually necessary since applying `auto=format` to the source URL
+// automatically returns WebP for all URLs.
 export const GatsbyPrismicImageFluid_withWebp = graphql`
   fragment GatsbyPrismicImageFluid_withWebp on PrismicImageFluidType {
     base64
-    aspectRatio
+    width
+    height
     src
     srcSet
     srcWebp
     srcSetWebp
-    sizes
   }
 `
 
-// Not actually necessary - since Imgix is scaling,
-// there is no "penalty" for including WebP by default
+// Not actually necessary since applying `auto=format` to the source URL
+// automatically returns WebP for all URLs.
 export const GatsbyPrismicImageFluid_withWebp_noBase64 = graphql`
   fragment GatsbyPrismicImageFluid_withWebp_noBase64 on PrismicImageFluidType {
-    aspectRatio
+    width
+    height
     src
     srcSet
     srcWebp
     srcSetWebp
-    sizes
   }
 `
