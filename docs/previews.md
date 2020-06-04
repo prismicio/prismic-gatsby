@@ -24,8 +24,8 @@ setup previews, stick with the following approach.
 All preview data is saved in a global store. In order for the preview HOCs to
 work, wrap your app with the `PreviewStoreProvider` component.
 
-You can do this by setting up `wrapRootElement` in `gatsby-ssr.js` like the
-following:
+You can do this by setting up `wrapRootElement` in `gatsby-ssr.js` and
+`gatsby-browser.js`, like the following:
 
 ```jsx
 // gatsby-ssr.js
@@ -37,6 +37,20 @@ export const wrapRootElement = ({ element }) => (
   <PreviewStoreProvider>{element}</PreviewStoreProvider>
 )
 ```
+
+```jsx
+// gatsby-browser.js
+
+import * as React from 'react'
+import { PreviewStoreProvider } from 'gatsby-source-prismic'
+
+export const wrapRootElement = ({ element }) => (
+  <PreviewStoreProvider>{element}</PreviewStoreProvider>
+)
+```
+
+Yes, it's the same code in both files, [as per gatsby recommendation](
+https://www.gatsbyjs.org/docs/browser-apis/#wrapRootElement).
 
 ## withPreview
 
