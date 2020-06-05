@@ -8,6 +8,14 @@ import {
   createImgixUrlSchemaFieldConfig,
 } from 'gatsby-plugin-imgix/dist/node'
 
+interface PartialPrismicImageType {
+  url?: string
+  dimensions?: {
+    width: number
+    height: number
+  }
+}
+
 type BuildPrismicImageTypesArgs = {
   schema: NodePluginSchema
   cache: GatsbyCache
@@ -21,7 +29,9 @@ export const buildPrismicImageTypes = ({
   defaultImgixParams,
   defaultPlaceholderImgixParams,
 }: BuildPrismicImageTypesArgs) => {
-  const resolveUrl = (obj: { url?: string }) => obj.url
+  const resolveUrl = (obj: PartialPrismicImageType) => obj.url
+  const resolveWidth = (obj: PartialPrismicImageType) => obj.dimensions?.width
+  const resolveHeight = (obj: PartialPrismicImageType) => obj.dimensions?.height
 
   const PrismicImageFixedType = createImgixFixedType({
     name: 'PrismicImageFixedType',
@@ -48,6 +58,8 @@ export const buildPrismicImageTypes = ({
       fixed: createImgixFixedSchemaFieldConfig({
         type: PrismicImageFixedType,
         resolveUrl,
+        resolveWidth,
+        resolveHeight,
         cache,
         defaultImgixParams,
         defaultPlaceholderImgixParams,
@@ -55,6 +67,8 @@ export const buildPrismicImageTypes = ({
       fluid: createImgixFluidSchemaFieldConfig({
         type: PrismicImageFluidType,
         resolveUrl,
+        resolveWidth,
+        resolveHeight,
         cache,
         defaultImgixParams,
         defaultPlaceholderImgixParams,
@@ -82,12 +96,16 @@ export const buildPrismicImageTypes = ({
       fixed: createImgixFixedSchemaFieldConfig({
         type: PrismicImageFixedType,
         resolveUrl,
+        resolveWidth,
+        resolveHeight,
         cache,
         defaultImgixParams,
       }),
       fluid: createImgixFluidSchemaFieldConfig({
         type: PrismicImageFluidType,
         resolveUrl,
+        resolveWidth,
+        resolveHeight,
         cache,
         defaultImgixParams,
       }),
