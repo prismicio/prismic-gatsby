@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.2](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.1.1...v3.1.2) (2020-06-05)
+
+
+### Bug Fixes
+
+* correct fluid fragments ([9a50ae4](https://github.com/angeloashmore/gatsby-source-prismic/commit/9a50ae44ac902908b81509f3caae628a92f0da55))
+* prevent Imgix metadata request ([2338ce0](https://github.com/angeloashmore/gatsby-source-prismic/commit/2338ce0cc5d070333fab8372e38206ef04e52ed8)), closes [#236](https://github.com/angeloashmore/gatsby-source-prismic/issues/236)
+* remove WebP fields from non-WebP image fragments ([676eea1](https://github.com/angeloashmore/gatsby-source-prismic/commit/676eea12e3158a9a698d1ebe7993ac74cfd7d9cb)), closes [#237](https://github.com/angeloashmore/gatsby-source-prismic/issues/237)
+
 ### [3.1.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.1.0...v3.1.1) (2020-06-01)
 
 
