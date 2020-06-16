@@ -2,12 +2,12 @@ import {
   Link as PrismicDOMLink,
   RichText as PrismicDOMRichText,
 } from 'prismic-dom'
+import { buildImgixFixed, buildImgixFluid } from 'gatsby-plugin-imgix'
 import { v5 as uuidv5 } from 'uuid'
 import md5 from 'md5'
 
 import { createClient } from './api'
 import { documentToNodes } from './documentsToNodes'
-import { buildFixedGatsbyImage, buildFluidGatsbyImage } from './gatsbyImage'
 import { buildSchemaTypeName } from './utils'
 import { UUID_NAMESPACE, PLACEHOLDER_NODE_TYPE_SUFFIX } from './constants'
 
@@ -83,29 +83,38 @@ const normalizeImageField: ImageFieldNormalizer = async (
   field,
   _path,
   _doc,
-  _env,
+  env,
 ) => {
-  const url = field.url
+  const { pluginOptions } = env
 
+  const url = field.url
   if (!url) return field
 
-  const fixed = buildFixedGatsbyImage(
+  const fixed = buildImgixFixed({
     url,
-    field.dimensions!.width,
-    field.dimensions!.height,
-  )
+    sourceWidth: field.dimensions!.width,
+    sourceHeight: field.dimensions!.height,
+    args: {
+      imgixParams: pluginOptions.imageImgixParams,
+      placeholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
+    },
+  })
 
-  const fluid = buildFluidGatsbyImage(
+  const fluid = buildImgixFluid({
     url,
-    field.dimensions!.width,
-    field.dimensions!.height,
-  )
+    sourceWidth: field.dimensions!.width,
+    sourceHeight: field.dimensions!.height,
+    args: {
+      imgixParams: pluginOptions.imageImgixParams,
+      placeholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
+    },
+  })
 
   return { ...field, fixed, fluid }
 }
 
 // TODO: Abstract proxy handler for any `getNodeById` needs (e.g. Slices).
-const normalizeLinkField: LinkFieldNormalizer = (
+const normalizeLinkField: LinkFieldNormalizer = async (
   apiId,
   field,
   _path,
@@ -126,7 +135,7 @@ const normalizeLinkField: LinkFieldNormalizer = (
   const linkedDocId = createNodeId(`${field.type} ${field.id}`)
 
   if (field.link_type === LinkFieldType.Document && field.id && !field.isBroken)
-    loadLinkFieldDocument(field as UnbrokenDocumentLinkField, env)
+    await loadLinkFieldDocument(field as UnbrokenDocumentLinkField, env)
 
   return new Proxy(
     {

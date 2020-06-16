@@ -1,7 +1,7 @@
 import { useReducer, useEffect, useCallback, useMemo } from 'react'
 import { set as setCookie } from 'es-cookie'
 import { previewCookie } from 'prismic-javascript'
-import camelCase from 'camelcase'
+import { camelCase } from 'camel-case'
 
 import { validateBrowserOptions } from './validateOptions'
 import { createClient } from './api'
@@ -18,7 +18,7 @@ import {
   BrowserPluginOptions,
 } from './types'
 
-type Options = Pick<
+export type UsePrismicPreviewOptions = Pick<
   PluginOptions,
   | 'repositoryName'
   | 'accessToken'
@@ -91,11 +91,12 @@ const reducer = (state: State, action: Action) => {
   }
 }
 
-export const usePrismicPreview = (options: Options) => {
+export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const hydratedOptions: Options & {
+  const hydratedOptions: UsePrismicPreviewOptions & {
     plugins: []
+    schemas: {}
     lang: string
     typePathsFilenamePrefix: string
     schemasDigest: string
@@ -112,6 +113,9 @@ export const usePrismicPreview = (options: Options) => {
     return validateBrowserOptions({
       ...context.pluginOptions,
       schemasDigest: context.schemasDigest,
+      // Need to include an empty object because environment.browser.ts is
+      // expecting it. We do not include the actual schemas in the browser.
+      schemas: {},
       ...options,
     })
   }, [options])
@@ -169,9 +173,11 @@ export const usePrismicPreview = (options: Options) => {
     const rootNodeId = await documentToNodes(doc, env)
     const rootNode = getNodeById(rootNodeId)
 
-    const path = (
+    const resolvedPathResolver =
       hydratedOptions.pathResolver ?? hydratedOptions.linkResolver
-    )?.({ node: doc })?.(doc)
+    const path = resolvedPathResolver
+      ? resolvedPathResolver({ node: doc })(doc)
+      : undefined
 
     dispatch({ type: ActionType.DOCUMENT_LOADED, payload: { rootNode, path } })
   }, [state.isPreview])

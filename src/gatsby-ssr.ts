@@ -1,16 +1,38 @@
 import React from 'react'
+import { GatsbySSR, RenderBodyArgs } from 'gatsby'
+
 import { PluginOptions } from './types'
 
-export interface OnRenderBodyArgs {
-  setHeadComponents(args: React.ReactElement<any>[]): void;
-}
+export const onRenderBody: GatsbySSR['onRenderBody'] = async (
+  gatsbyContext: RenderBodyArgs,
+  pluginOptions: PluginOptions,
+) => {
+  const { setHeadComponents } = gatsbyContext
 
-export const onRenderBody = ({ setHeadComponents }: OnRenderBodyArgs, options: PluginOptions) => {
-  if(options.prismicScript === false) return;
+  if (!pluginOptions.prismicToolbar) return
 
-  const src = `//static.cdn.prismic.io/prismic.js?repo=${options.repositoryName}&new=true`;
-  const key = 'prismic-script';
-  const toolbarScript = React.createElement('script', { key, src, async: true, defer: true });
+  let toolbarScriptUrl: string
 
-  setHeadComponents([ toolbarScript ]);
+  switch (pluginOptions.prismicToolbar) {
+    // Use the latest script URL. Note the `new` URL parameter.
+    case true: {
+      toolbarScriptUrl = `//static.cdn.prismic.io/prismic.js?repo=${pluginOptions.repositoryName}&new=true`
+      break
+    }
+
+    // Use the legacy script URL for older repositories. Note the lack of the
+    // `new` URL parameter.
+    case 'legacy': {
+      toolbarScriptUrl = `//static.cdn.prismic.io/prismic.js?repo=${pluginOptions.repositoryName}`
+      break
+    }
+  }
+
+  const toolbarScript = React.createElement('script', {
+    src: toolbarScriptUrl,
+    async: true,
+    defer: true,
+  })
+
+  setHeadComponents([toolbarScript])
 }

@@ -1,5 +1,3 @@
-import pascalcase from 'pascalcase'
-
 import { msg, mapObjVals, isEmptyObj, buildSchemaTypeName } from './utils'
 
 import { SourceNodesArgs, GatsbyGraphQLType, NodePluginSchema } from 'gatsby'
@@ -128,8 +126,8 @@ const fieldToType = (
     }
 
     case FieldType.Group: {
-      const groupTypeName = pascalcase(
-        `Prismic ${customTypeApiId} ${apiId} GroupType`,
+      const groupTypeName = buildSchemaTypeName(
+        `${customTypeApiId} ${apiId} GroupType`,
       )
       enqueueTypeDef(
         gatsbySchema.buildObjectType({
@@ -149,8 +147,8 @@ const fieldToType = (
     }
 
     case FieldType.Slices: {
-      const slicesTypeName = pascalcase(
-        `Prismic ${customTypeApiId} ${apiId} SlicesType`,
+      const slicesTypeName = buildSchemaTypeName(
+        `${customTypeApiId} ${apiId} SlicesType`,
       )
       const sliceChoices = (field as SlicesFieldSchema).config.choices
       const sliceChoiceTypes = Object.entries(sliceChoices).map(
@@ -189,8 +187,8 @@ const fieldToType = (
       }
 
       if (primaryFields && !isEmptyObj(primaryFields)) {
-        const primaryTypeName = pascalcase(
-          `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId} PrimaryType`,
+        const primaryTypeName = buildSchemaTypeName(
+          `${customTypeApiId} ${sliceZoneId} ${apiId} PrimaryType`,
         )
 
         enqueueTypeDef(
@@ -214,8 +212,8 @@ const fieldToType = (
       }
 
       if (itemsFields && !isEmptyObj(itemsFields)) {
-        const itemTypeName = pascalcase(
-          `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId} ItemType`,
+        const itemTypeName = buildSchemaTypeName(
+          `${customTypeApiId} ${sliceZoneId} ${apiId} ItemType`,
         )
 
         enqueueTypeDef(
@@ -239,8 +237,8 @@ const fieldToType = (
         sliceFieldTypes.items = type
       }
 
-      const type = pascalcase(
-        `Prismic ${customTypeApiId} ${sliceZoneId} ${apiId}`,
+      const type = buildSchemaTypeName(
+        `${customTypeApiId} ${sliceZoneId} ${apiId}`,
       )
 
       enqueueTypeDef(
@@ -314,7 +312,7 @@ const schemaToTypeDefs = (
   )
 
   // Create a type for all data fields.
-  const dataTypeName = pascalcase(`Prismic ${apiId} DataType`)
+  const dataTypeName = buildSchemaTypeName(`${apiId} DataType`)
   enqueueTypePath([apiId, 'data'], dataTypeName)
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
@@ -378,8 +376,8 @@ const buildImageThumbnailsType = (
   gatsbySchema: NodePluginSchema,
 ) => {
   const keys = typePaths
-    .filter(typePath => typePath.type === GraphQLType.ImageThumbnail)
-    .map(typePath => typePath.path[typePath.path.length - 1])
+    .filter((typePath) => typePath.type === GraphQLType.ImageThumbnail)
+    .map((typePath) => typePath.path[typePath.path.length - 1])
 
   if (keys.length < 1)
     return gatsbySchema.buildScalarType({
@@ -414,7 +412,8 @@ export const schemasToTypeDefs = (
   const { schema: gatsbySchema } = gatsbyContext
 
   const typeDefs: GatsbyGraphQLType[] = []
-  const enqueueTypeDef: EnqueueTypeDef = typeDef => void typeDefs.push(typeDef)
+  const enqueueTypeDef: EnqueueTypeDef = (typeDef) =>
+    void typeDefs.push(typeDef)
 
   const typePaths: TypePath[] = []
   const enqueueTypePath: EnqueueTypePath = (path, type) =>
@@ -432,7 +431,7 @@ export const schemasToTypeDefs = (
   enqueueTypeDef(
     gatsbySchema.buildUnionType({
       name: GraphQLType.AllDocumentTypes,
-      types: Object.keys(schemas).map(apiId => buildSchemaTypeName(apiId)),
+      types: Object.keys(schemas).map((apiId) => buildSchemaTypeName(apiId)),
     }),
   )
 

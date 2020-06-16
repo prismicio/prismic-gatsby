@@ -92,7 +92,7 @@ exports[`sourceNodes creates nodes 1`] = `
             "raw": Object {
               "link_type": "Document",
             },
-            "url": undefined,
+            "url": "",
           },
           "title": Object {
             "html": "<h1>Home</h1>",
@@ -404,6 +404,163 @@ exports[`sourceNodes creates types 1`] = `
       ],
     ],
     Array [
+      Array [
+        Object {
+          "config": Object {
+            "description": "An image field with optional constrained thumbnails.",
+            "fields": Object {
+              "alt": "String",
+              "copyright": "String",
+              "dimensions": "PrismicImageDimensionsType",
+              "fixed": Object {
+                "args": Object {
+                  "height": Object {
+                    "type": "Int",
+                  },
+                  "imgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "width": Object {
+                    "defaultValue": 400,
+                    "type": "Int",
+                  },
+                },
+                "resolve": [Function],
+                "type": "PrismicImageFixedType",
+              },
+              "fluid": Object {
+                "args": Object {
+                  "imgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "maxHeight": Object {
+                    "type": "Int",
+                  },
+                  "maxWidth": Object {
+                    "defaultValue": 800,
+                    "type": "Int",
+                  },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "srcSetBreakpoints": Object {
+                    "type": "[Int]",
+                  },
+                },
+                "resolve": [Function],
+                "type": "PrismicImageFluidType",
+              },
+              "localFile": Object {
+                "extensions": Object {
+                  "link": Object {},
+                },
+                "type": "File",
+              },
+              "thumbnails": "PrismicImageThumbnailsType",
+              "url": Object {
+                "args": Object {
+                  "imgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                },
+                "resolve": [Function],
+                "type": "String",
+              },
+            },
+            "interfaces": Array [
+              "PrismicImageInterface",
+            ],
+            "name": "PrismicImageType",
+          },
+          "kind": "OBJECT",
+        },
+        Object {
+          "config": Object {
+            "description": "An image thumbnail with constraints.",
+            "fields": Object {
+              "alt": "String",
+              "copyright": "String",
+              "dimensions": "PrismicImageDimensionsType",
+              "fixed": Object {
+                "args": Object {
+                  "height": Object {
+                    "type": "Int",
+                  },
+                  "imgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "width": Object {
+                    "defaultValue": 400,
+                    "type": "Int",
+                  },
+                },
+                "resolve": [Function],
+                "type": "PrismicImageFixedType",
+              },
+              "fluid": Object {
+                "args": Object {
+                  "imgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "maxHeight": Object {
+                    "type": "Int",
+                  },
+                  "maxWidth": Object {
+                    "defaultValue": 800,
+                    "type": "Int",
+                  },
+                  "placeholderImgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                  "srcSetBreakpoints": Object {
+                    "type": "[Int]",
+                  },
+                },
+                "resolve": [Function],
+                "type": "PrismicImageFluidType",
+              },
+              "localFile": Object {
+                "extensions": Object {
+                  "link": Object {},
+                },
+                "type": "File",
+              },
+              "url": Object {
+                "args": Object {
+                  "imgixParams": Object {
+                    "defaultValue": Object {},
+                    "type": "ImgixUrlParamsInput",
+                  },
+                },
+                "resolve": [Function],
+                "type": "String",
+              },
+            },
+            "interfaces": Array [
+              "PrismicImageInterface",
+            ],
+            "name": "PrismicImageThumbnailType",
+          },
+          "kind": "OBJECT",
+        },
+      ],
+    ],
+    Array [
       "   \\"A text field with formatting options.\\"
   type PrismicStructuredTextType {
     \\"The HTML value of the text using \`prismic-dom\` and the HTML serializer.\\"
@@ -462,6 +619,8 @@ exports[`sourceNodes creates types 1`] = `
     height: Int
     \\"The ID of the resource media. Fetched via oEmbed data.\\"
     media_id: ID
+    \\"A description for the resource.\\"
+    description: String
   }
 
   \\"Dimensions for images.\\"
@@ -470,65 +629,6 @@ exports[`sourceNodes creates types 1`] = `
     width: Int!
     \\"Height of the image in pixels.\\"
     height: Int!
-  }
-
-  \\"\`gatsby-image\`-compatible image data for \`fixed\` images.\\"
-  type PrismicImageFixedType {
-    base64: String
-    aspectRatio: Float
-    width: Float
-    height: Float
-    src: String
-    srcSet: String
-    srcWebp: String
-    srcSetWebp: String
-  }
-
-  \\"\`gatsby-image\`-compatible image data for \`fluid\` images.\\"
-  type PrismicImageFluidType {
-    base64: String
-    aspectRatio: Float
-    src: String
-    srcSet: String
-    srcWebp: String
-    srcSetWebp: String
-    sizes: String
-  }
-
-  \\"An image thumbnail with constraints.\\"
-  type PrismicImageThumbnailType implements PrismicImageInterface {
-    alt: String
-    copyright: String
-    dimensions: PrismicImageDimensionsType
-    url: String
-    localFile: File @link
-    \\"\`gatsby-image\`-compatible image data for \`fixed\` images.\\"
-    fixed(width: Int, height: Int): PrismicImageFixedType
-    \\"\`gatsby-image\`-compatible image data for \`fluid\` images.\\"
-    fluid(
-      maxWidth: Int
-      maxHeight: Int
-      srcSetBreakpoints: [Int!]
-    ): PrismicImageFluidType
-  }
-
-  \\"An image field with optional constrained thumbnails.\\"
-  type PrismicImageType implements PrismicImageInterface {
-    alt: String
-    copyright: String
-    dimensions: PrismicImageDimensionsType
-    url: String
-    localFile: File @link
-    \\"\`gatsby-image\`-compatible image data for \`fixed\` images.\\"
-    fixed(width: Int, height: Int): PrismicImageFixedType
-    \\"\`gatsby-image\`-compatible image data for \`fluid\` images.\\"
-    fluid(
-      maxWidth: Int
-      maxHeight: Int
-      srcSetBreakpoints: [Int!]
-    ): PrismicImageFluidType
-    \\"The image's thumbnails.\\"
-    thumbnails: PrismicImageThumbnailsType
   }
 
   \\"Types of links.\\"
@@ -645,6 +745,10 @@ exports[`sourceNodes creates types 1`] = `
     ],
   ],
   "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
     Object {
       "type": "return",
       "value": undefined,

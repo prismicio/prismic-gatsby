@@ -29,7 +29,7 @@ const traverseAndReplace = (node: any, replacementNode: Node): any => {
 
   // Iterate all elements in the node to find the Node.
   if (Array.isArray(node))
-    return node.map(subnode => traverseAndReplace(subnode, replacementNode))
+    return node.map((subnode) => traverseAndReplace(subnode, replacementNode))
 
   // If the node is not an object or array, it cannot be a Node.
   return node

@@ -56,9 +56,19 @@ const normalizeImageField: ImageFieldNormalizer = async (
     touchNode({ nodeId: fileNodeID })
   } else {
     try {
+      const fullQualityUrl = new URL(field.url)
+      // Remove auto parameter to download the original, full-quality image
+      // from Imgix. Prismic automatically adds `auto=format,compress`, which,
+      // when compounded with Sharp's compression, results in a doubly
+      // compressed image.
+      fullQualityUrl.searchParams.delete('auto')
+
       const fileNode = await createRemoteFileNode({
-        url: field.url,
+        url: fullQualityUrl.toString(),
         store,
+        // @ts-expect-error Gatsby recently deprecated Cache['cache'] in favor
+        // of GatsbyCache. gatsby-source-filesystem has yet to update its types
+        // to reflect this.
         cache,
         createNode,
         createNodeId,

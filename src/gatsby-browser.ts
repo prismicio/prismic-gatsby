@@ -9,6 +9,10 @@ import { BrowserPluginOptions } from './types'
 declare global {
   interface Window {
     [BROWSER_STORE_KEY]: BrowserPluginOptionsStore
+    // Used for the legacy Prismic Toolbar script.
+    prismic?: {
+      endpoint?: string
+    }
   }
 }
 
@@ -27,6 +31,14 @@ export const onClientEntry: GatsbyBrowser['onClientEntry'] = (
   const isPreviewSession = params.has('token') && params.has('documentId')
 
   if (!isPreviewSession) return
+
+  if (pluginOptions.prismicToolbar === 'legacy') {
+    // The legacy Prismic Toolbar script requires setting the endpoint globally
+    // to window.
+    window.prismic = {
+      endpoint: `https://${pluginOptions.repositoryName}.prismic.io/api/v2`,
+    }
+  }
 
   window[BROWSER_STORE_KEY] = window[BROWSER_STORE_KEY] || {}
 
