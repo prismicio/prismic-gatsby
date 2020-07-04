@@ -1,18 +1,27 @@
 import * as React from 'react'
-import { PageProps, Node } from 'gatsby'
+import { PageProps } from 'gatsby'
 
-import { mergePrismicPreviewData } from './mergePrismicPreviewData'
+import {
+  mergePrismicPreviewData,
+  MergePrismicPreviewDataStrategy,
+} from './mergePrismicPreviewData'
 import { usePreviewStore } from './usePreviewStore'
 import { getComponentDisplayName } from './utils'
+import { NodeTree } from './types'
+
+type WithPreviewArgs = {
+  mergeStrategy?: MergePrismicPreviewDataStrategy
+}
 
 export const withPreview = <TProps extends PageProps>(
   WrappedComponent: React.ComponentType<TProps>,
+  options?: WithPreviewArgs,
 ): React.ComponentType<TProps> => {
   const WithPreview = (props: TProps) => {
     const [state] = usePreviewStore()
 
     const path = props.location.pathname
-    const staticData = props.data
+    const staticData = props.data as NodeTree
     const previewData = state.pages[path]
 
     const data = React.useMemo(
@@ -20,7 +29,8 @@ export const withPreview = <TProps extends PageProps>(
         state.enabled
           ? mergePrismicPreviewData({
               staticData,
-              previewData: previewData as { [key: string]: Node },
+              previewData,
+              strategy: options?.mergeStrategy,
             })
           : staticData,
       [state.enabled, staticData, previewData],

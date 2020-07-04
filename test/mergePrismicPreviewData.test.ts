@@ -1,31 +1,48 @@
 import { mergePrismicPreviewData } from '../src/mergePrismicPreviewData'
 
+const mockNode = {
+  id: 'id',
+  parent: '__SOURCE__',
+  children: [],
+  internal: {
+    type: 'MockNode',
+    contentDigest: 'contentDigest',
+    owner: 'owner',
+  },
+}
+
 const previewData = {
   prismicPage: {
+    ...mockNode,
     id: 'previewId',
     prismicId: 'prismicId',
     name: 'preview',
-    parent: '__SOURCE__',
-    children: [],
     internal: {
+      ...mockNode.internal,
       type: 'PrismicPage',
-      contentDigest: 'contentDigest',
-      owner: 'owner',
     },
   },
 }
 
 describe('mergePrismicPreviewData', () => {
   test('replaces static data with preview data', () => {
-    const staticData = { prismicPage: { name: 'static' } }
+    // TODO: Remove deprecation warning in v4.0.0.
+    const spy = jest.spyOn(console, 'warn')
+    spy.mockImplementation(() => {})
+
+    const staticData = { prismicPage: mockNode }
     const result = mergePrismicPreviewData({ staticData, previewData })
 
+    expect(spy.mock.calls[0][0]).toMatch(/deprecated/)
     expect(result).toEqual(previewData)
+
+    spy.mockReset()
   })
 
   test('replaces nested nodes with Prismic IDs matching preview data', () => {
     const staticData = {
       notPrismicPage: {
+        ...mockNode,
         object: { prismicId: previewData.prismicPage.prismicId },
         array: [
           { prismicId: previewData.prismicPage.prismicId },
@@ -46,7 +63,7 @@ describe('mergePrismicPreviewData', () => {
   })
 
   test('returns static data if no preview data', () => {
-    const staticData = { prismicPage: { name: 'static' } }
+    const staticData = { prismicPage: mockNode }
     const result = mergePrismicPreviewData({ staticData })
 
     expect(result).toBe(staticData)

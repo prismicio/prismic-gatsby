@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { NodeTree } from './types'
 
 export enum ActionType {
   AddPage,
@@ -9,12 +10,12 @@ export enum ActionType {
 type Action =
   | {
       type: ActionType.AddPage
-      payload: { path: string; data: object }
+      payload: { path: string; data: NodeTree }
     }
   | { type: Exclude<ActionType, ActionType.AddPage> }
 
 interface State {
-  pages: Record<string, object>
+  pages: Record<string, NodeTree>
   enabled: boolean
 }
 
