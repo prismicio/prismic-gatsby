@@ -62,6 +62,7 @@ const BrowserOptionsValidator = struct(
     ...baseSchema,
     pathResolver: 'function?',
     schemasDigest: 'string',
+    plugins: struct.union([struct.literal(undefined), struct.size([0, 0])]),
   },
   baseDefaults,
 )

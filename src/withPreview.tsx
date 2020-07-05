@@ -20,7 +20,7 @@ export const withPreview = <TProps extends PageProps>(
   const WithPreview = (props: TProps) => {
     const [state] = usePreviewStore()
 
-    const path = props.location.pathname
+    const path = props.path
     const staticData = props.data as NodeTree
     const previewData = state.pages[path]
 
