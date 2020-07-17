@@ -3,14 +3,14 @@ import { PageProps } from 'gatsby'
 
 import {
   mergePrismicPreviewData,
-  MergePrismicPreviewDataStrategy,
+  MergePrismicPreviewDataArgs,
 } from './mergePrismicPreviewData'
 import { usePreviewStore } from './usePreviewStore'
 import { getComponentDisplayName } from './utils'
 import { NodeTree } from './types'
 
 type WithPreviewArgs = {
-  mergeStrategy?: MergePrismicPreviewDataStrategy
+  mergeStrategy?: MergePrismicPreviewDataArgs['strategy']
 }
 
 export const withPreview = <TProps extends PageProps>(
@@ -20,7 +20,7 @@ export const withPreview = <TProps extends PageProps>(
   const WithPreview = (props: TProps) => {
     const [state] = usePreviewStore()
 
-    const path = props.path
+    const path = props.location.pathname
     const staticData = props.data as NodeTree
     const previewData = state.pages[path]
 

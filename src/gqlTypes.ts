@@ -301,5 +301,7 @@ export const types = gql`
     type: String!
     "The document's Prismic ID."
     prismicId: ID!
+    "Marks the document as previewable using Prismic's preview system. Include this field if updates to the document should be previewable by content editors before publishing. **Note: the value of this field is not stable and should not be used directly**."
+    _previewable: ID!
   }
 `

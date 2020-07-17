@@ -4,7 +4,6 @@ import { PageProps } from 'gatsby'
 import { usePreviewStore } from './usePreviewStore'
 import { withPreview } from './withPreview'
 import { msg, getComponentDisplayName } from './utils'
-import { MergePrismicPreviewDataStrategy } from './mergePrismicPreviewData'
 
 type WithUnpublishedPreviewArgs = {
   templateMap: Record<string, React.ComponentType<any>>
@@ -43,6 +42,6 @@ export const withUnpublishedPreview = <TProps extends PageProps>(
   return withPreview(WithUnpublishedPreview, {
     // In an unpublished preview, we have to assume the component accepts the
     // preview data as a root-level field.
-    mergeStrategy: MergePrismicPreviewDataStrategy.RootReplaceOrInsert,
+    mergeStrategy: 'rootReplaceOrInsert',
   })
 }

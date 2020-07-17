@@ -6,7 +6,7 @@ import { NodeTree } from './types'
 // Root node field used to compare static data with preview data. If values are
 // equal, the preview node can be treated as an updated version of the static
 // node.
-const PREVIEWABLE_NODE_ID_FIELD = 'prismicId'
+const PREVIEWABLE_NODE_ID_FIELD = '_previewable'
 
 const traverseAndReplace = (node: any, replacementNode: Node): any => {
   if (isPlainObject(node)) {
@@ -36,17 +36,16 @@ const traverseAndReplace = (node: any, replacementNode: Node): any => {
   return node
 }
 
-export enum MergePrismicPreviewDataStrategy {
-  /** Traverse static data nodes and replace with preview data if IDs match. */
-  TraverseAndReplace = 'traverseAndReplace',
-  /** Replace or insert preview data at the root level */
-  RootReplaceOrInsert = 'rootReplaceOrInsert',
-}
-
-interface MergePrismicPreviewDataArgs {
+export interface MergePrismicPreviewDataArgs {
   staticData?: NodeTree
   previewData?: NodeTree
-  strategy?: MergePrismicPreviewDataStrategy
+  /**
+   * Determines the method with which the function merges preview data into static data.
+   *
+   * - `traverseAndReplace`: Traverse static data nodes and replace with preview data if IDs match.
+   * - `rootReplaceOrInsert`: Replace or insert preview data at the root level.
+   */
+  strategy?: 'traverseAndReplace' | 'rootReplaceOrInsert'
 }
 
 /**
@@ -56,7 +55,7 @@ interface MergePrismicPreviewDataArgs {
 export const mergePrismicPreviewData = ({
   staticData,
   previewData,
-  strategy = MergePrismicPreviewDataStrategy.TraverseAndReplace,
+  strategy = 'traverseAndReplace',
 }: MergePrismicPreviewDataArgs): NodeTree | undefined => {
   if (!staticData && !previewData) return
   if (!staticData) return previewData
@@ -66,11 +65,11 @@ export const mergePrismicPreviewData = ({
     // Unpublished previews must return data at the root to ensure it is always
     // available. If staticData and previewData share root-level keys, they are
     // merged. Otherwise, data will be sibilings.
-    case MergePrismicPreviewDataStrategy.RootReplaceOrInsert:
+    case 'rootReplaceOrInsert':
       return { ...staticData, ...previewData }
 
     // Traverse static data nodes and replace with preview data if IDs match.
-    case MergePrismicPreviewDataStrategy.TraverseAndReplace:
+    case 'traverseAndReplace':
     default: {
       const previewDataRootNodeKey = Object.keys(previewData)[0]
 
@@ -81,7 +80,7 @@ export const mergePrismicPreviewData = ({
       ) {
         // TODO: Add link to more details on @previewable.
         console.warn(
-          'Warning: Merging preview data implicitly will be deprecated in gatsby-source-prismic v4.0.0.\n\nIf you are relying on this functionality, please update your GraphQL query to include the @previewable directive on nodes that should be previewable.\n\nSee <URL HERE> for more details.',
+          'Warning: Merging preview data implicitly will be deprecated in gatsby-source-prismic v4.0.0.\n\nIf you are relying on this functionality, please update your GraphQL query to include the _previewable field on nodes that should be previewable.\n\nSee <URL HERE> for more details.',
         )
         return { ...staticData, ...previewData }
       }

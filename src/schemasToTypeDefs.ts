@@ -349,6 +349,7 @@ const schemaToTypeDefs = (
     alternate_languages: alternateLanguagesFieldType as string,
     type: `${GraphQLType.String}!`,
     prismicId: `${GraphQLType.ID}!`,
+    _previewable: `${GraphQLType.ID}!`,
   }
   if (uidFieldType) schemaFieldTypes.uid = uidFieldType
 
