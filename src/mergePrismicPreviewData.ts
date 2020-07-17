@@ -80,7 +80,7 @@ export const mergePrismicPreviewData = ({
       ) {
         // TODO: Add link to more details on @previewable.
         console.warn(
-          'Warning: Merging preview data implicitly will be deprecated in gatsby-source-prismic v4.0.0.\n\nIf you are relying on this functionality, please update your GraphQL query to include the _previewable field on nodes that should be previewable.\n\nSee <URL HERE> for more details.',
+          'Warning: Merging preview data implicitly will be deprecated in gatsby-source-prismic v4.0.0.\n\nIf you are relying on this functionality, please update your GraphQL query to include the _previewable field on documents that should be previewable.\n\nSee <URL HERE> for more details.',
         )
         return { ...staticData, ...previewData }
       }
