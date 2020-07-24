@@ -8,6 +8,10 @@ import { NodeTree } from './types'
 // node.
 const PREVIEWABLE_NODE_ID_FIELD = '_previewable'
 
+// TODO: Remove in v4.0.0
+// Same as PREVIEWABLE_NODE_ID_FIELD, but the legacy version that will be phased out in v4.0.0.
+const LEGACY_PREVIEWABLE_NODE_ID_FIELD = 'prismicId'
+
 const traverseAndReplace = (node: any, replacementNode: Node): any => {
   if (isPlainObject(node)) {
     // If the nodes share an ID, replace it.
@@ -16,6 +20,17 @@ const traverseAndReplace = (node: any, replacementNode: Node): any => {
       replacementNode[PREVIEWABLE_NODE_ID_FIELD]
     )
       return replacementNode
+
+    // TODO: Remove in v4.0.0
+    if (
+      node[LEGACY_PREVIEWABLE_NODE_ID_FIELD] ===
+      replacementNode[LEGACY_PREVIEWABLE_NODE_ID_FIELD]
+    ) {
+      console.warn(
+        'Warning: Merging nested preview data using the prismicId field will be deprecated in gatsby-source-prismic v4.0.0.\n\nIf you are relying on this functionality, please update your GraphQL query to include the _previewable field on documents that should be previewable.',
+      )
+      return replacementNode
+    }
 
     // We did not find the Node to replace. Iterate all properties and continue
     // to find the Node.
@@ -76,7 +91,8 @@ export const mergePrismicPreviewData = ({
       // TODO: Remove in v4.0.0.
       if (
         staticData.hasOwnProperty(previewDataRootNodeKey) &&
-        !staticData[previewDataRootNodeKey][PREVIEWABLE_NODE_ID_FIELD]
+        !staticData[previewDataRootNodeKey][PREVIEWABLE_NODE_ID_FIELD] &&
+        !staticData[previewDataRootNodeKey][LEGACY_PREVIEWABLE_NODE_ID_FIELD]
       ) {
         // TODO: Add link to more details on _previewable.
         console.warn(
