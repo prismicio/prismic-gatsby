@@ -7,7 +7,7 @@ export const onRenderBody: GatsbySSR['onRenderBody'] = async (
   gatsbyContext: RenderBodyArgs,
   pluginOptions: PluginOptions,
 ) => {
-  const { setHeadComponents } = gatsbyContext
+  const { setPostBodyComponents } = gatsbyContext
 
   if (!pluginOptions.prismicToolbar) return
 
@@ -30,9 +30,8 @@ export const onRenderBody: GatsbySSR['onRenderBody'] = async (
 
   const toolbarScript = React.createElement('script', {
     src: toolbarScriptUrl,
-    async: true,
     defer: true,
   })
 
-  setHeadComponents([toolbarScript])
+  setPostBodyComponents([toolbarScript])
 }

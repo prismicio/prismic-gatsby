@@ -31,7 +31,7 @@ export const onClientEntry: GatsbyBrowser['onClientEntry'] = (
     // The legacy Prismic Toolbar script requires setting the endpoint globally
     // to window.
     window.prismic = {
-      endpoint: `https://${pluginOptions.repositoryName}.prismic.io/api/v2`,
+      endpoint: `https://${pluginOptions.repositoryName}.cdn.prismic.io/api/v2`,
     }
 
   window[BROWSER_STORE_KEY] = Object.assign({}, window[BROWSER_STORE_KEY], {
