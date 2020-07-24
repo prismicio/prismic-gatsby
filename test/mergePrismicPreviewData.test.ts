@@ -1,6 +1,7 @@
 import { mergePrismicPreviewData } from '../src/mergePrismicPreviewData'
 
 const mockNode = {
+  _previewable: 'id',
   id: 'id',
   parent: '__SOURCE__',
   children: [],
@@ -15,7 +16,6 @@ const previewData = {
   prismicPage: {
     ...mockNode,
     id: 'previewId',
-    prismicId: 'prismicId',
     name: 'preview',
     internal: {
       ...mockNode.internal,
@@ -30,7 +30,7 @@ describe('mergePrismicPreviewData', () => {
     const spy = jest.spyOn(console, 'warn')
     spy.mockImplementation(() => {})
 
-    const staticData = { prismicPage: mockNode }
+    const staticData = { prismicPage: { ...mockNode, _previewable: undefined } }
     const result = mergePrismicPreviewData({ staticData, previewData })
 
     expect(spy.mock.calls[0][0]).toMatch(/deprecated/)
@@ -43,9 +43,10 @@ describe('mergePrismicPreviewData', () => {
     const staticData = {
       notPrismicPage: {
         ...mockNode,
-        object: { prismicId: previewData.prismicPage.prismicId },
+        _previewable: 'noPrismicPageId',
+        object: { _previewable: previewData.prismicPage._previewable },
         array: [
-          { prismicId: previewData.prismicPage.prismicId },
+          { _previewable: previewData.prismicPage._previewable },
           { foo: 'bar' },
         ],
         foo: 'bar',

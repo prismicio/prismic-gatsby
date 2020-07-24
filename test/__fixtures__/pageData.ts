@@ -7,6 +7,7 @@ export const MOCK_PAGE_PROPS = {
 }
 
 export const MOCK_NODE = {
+  _previewable: 'id',
   id: 'id',
   parent: '__SOURCE__',
   children: [],

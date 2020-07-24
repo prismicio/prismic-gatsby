@@ -3,6 +3,7 @@
 exports[`usePrismicPreview updates state while fetching preview 1`] = `
 Object {
   "prismicPage": Object {
+    "_previewable": "documentId",
     "alternate_languages": Array [],
     "data": Object {
       "body": Array [

@@ -13,7 +13,7 @@ import { msg } from './utils'
 import { GatsbyNode, SourceNodesArgs } from 'gatsby'
 import { PluginOptions } from './types'
 
-export const sourceNodes: GatsbyNode['sourceNodes'] = async (
+export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   gatsbyContext: SourceNodesArgs,
   pluginOptions: PluginOptions,
 ) => {
@@ -105,9 +105,9 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   writeTypePathsActivity.end()
 }
 
-export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = (
-  gatsbyContext,
-) => {
+export const onPreExtractQueries: NonNullable<
+  GatsbyNode['onPreExtractQueries']
+> = (gatsbyContext) => {
   const { store } = gatsbyContext
   const { program } = store.getState()
 

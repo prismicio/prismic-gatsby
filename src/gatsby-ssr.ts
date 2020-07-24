@@ -3,7 +3,7 @@ import { GatsbySSR, RenderBodyArgs } from 'gatsby'
 
 import { PluginOptions } from './types'
 
-export const onRenderBody: GatsbySSR['onRenderBody'] = async (
+export const onRenderBody: NonNullable<GatsbySSR['onRenderBody']> = async (
   gatsbyContext: RenderBodyArgs,
   pluginOptions: PluginOptions,
 ) => {
