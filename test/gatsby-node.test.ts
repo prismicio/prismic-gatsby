@@ -35,6 +35,10 @@ describe('sourceNodes', () => {
       activityTimer: jest
         .fn()
         .mockReturnValue({ start: jest.fn(), end: jest.fn() }),
+      error: jest.fn(),
+      panic: jest.fn<never, any>((msg: string | Error, err?: Error) => {
+        throw err ?? msg
+      }),
       verbose: jest.fn(),
     },
     // @ts-expect-error - partial implementation
@@ -49,6 +53,10 @@ describe('sourceNodes', () => {
     },
     createNodeId: jest.fn().mockReturnValue('createNodeId'),
     createContentDigest: jest.fn().mockReturnValue('createContentDigest'),
+    // @ts-expect-error - partial implementation
+    cache: {
+      get: jest.fn(),
+    },
   }
 
   test('creates types', async () => {
