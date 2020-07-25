@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.1.4-previews-fix.1...v3.2.0) (2020-07-25)
+
+
+### Bug Fixes
+
+* ensure legacy preview toolbar has correct repo endpoint URL ([c64aab3](https://github.com/angeloashmore/gatsby-source-prismic/commit/c64aab3c72026a9308f557796c4ea9e87782ec1b))
+* ensure legacy prismicId nested preview data merging still works ([575414e](https://github.com/angeloashmore/gatsby-source-prismic/commit/575414ea6502fd97f30c4ce4221863a97ae873f7))
+* remove mention of _previewable docs (not yet written) ([0dc6014](https://github.com/angeloashmore/gatsby-source-prismic/commit/0dc6014edd53b6c131096944ffee0066289fbbad))
+* update all dependencies ([4e16769](https://github.com/angeloashmore/gatsby-source-prismic/commit/4e16769220e3e38a0ea8393b5fdb22e84d5190d3))
+* update missing _previewable warning message ([fbcd4b9](https://github.com/angeloashmore/gatsby-source-prismic/commit/fbcd4b98ee5d42a4eef4d608d8799debe7859e93))
+
 ### [3.1.4](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.1.3...v3.1.4) (2020-06-06)
 
 ### [3.1.3](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.1.2...v3.1.3) (2020-06-06)
