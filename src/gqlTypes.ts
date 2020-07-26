@@ -116,7 +116,15 @@ export const buildPrismicImageTypes = ({
     },
   })
 
-  return [PrismicImageType, PrismicImageThumbnailType]
+  // The following types must be separated to in order to pass them separately
+  // to two different `createTypes` calls in gatsby-node.ts. `createTypes`
+  // requires that all passed types are of the same class.
+  return [
+    // Imgix GraphQLObjectType instances
+    [PrismicImageFixedType, PrismicImageFluidType],
+    // Prismic GatsbyGraphQLObjectType instances
+    [PrismicImageType, PrismicImageThumbnailType],
+  ]
 }
 
 const gql = (query: TemplateStringsArray) => String(query).replace(`\n`, ` `)

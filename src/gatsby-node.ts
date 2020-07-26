@@ -49,13 +49,14 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     pluginOptions.schemas,
     gatsbyContext,
   )
-  const imageTypes = buildPrismicImageTypes({
+  const [imgixImageTypes, imageTypes] = buildPrismicImageTypes({
     schema,
     cache,
     defaultImgixParams: pluginOptions.imageImgixParams,
     defaultPlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
   })
   createTypes(typeDefs)
+  createTypes(imgixImageTypes)
   createTypes(imageTypes)
   createTypes(types)
 
