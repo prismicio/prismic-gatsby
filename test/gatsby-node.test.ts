@@ -46,6 +46,12 @@ describe('sourceNodes', () => {
       buildObjectType: jest
         .fn()
         .mockImplementation((config) => ({ kind: 'OBJECT', config })),
+      buildEnumType: jest
+        .fn()
+        .mockImplementation((config) => ({ kind: 'ENUM', config })),
+      buildInterfaceType: jest
+        .fn()
+        .mockImplementation((config) => ({ kind: 'INTERFACE', config })),
       buildUnionType: jest.fn().mockImplementation((config) => ({
         kind: 'UNION',
         config,

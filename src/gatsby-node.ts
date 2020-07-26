@@ -7,7 +7,7 @@ import { schemasToTypeDefs } from './schemasToTypeDefs'
 import { fetchAllDocuments } from './api'
 import { documentsToNodes } from './documentsToNodes'
 import { createEnvironment } from './environment.node'
-import { types, buildPrismicImageTypes } from './gqlTypes'
+import { buildTypes, buildPrismicImageTypes } from './gqlTypes'
 import { msg } from './utils'
 
 import { GatsbyNode, SourceNodesArgs } from 'gatsby'
@@ -49,6 +49,7 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     pluginOptions.schemas,
     gatsbyContext,
   )
+  const types = buildTypes({ schema })
   const [imgixImageTypes, imageTypes] = buildPrismicImageTypes({
     schema,
     cache,

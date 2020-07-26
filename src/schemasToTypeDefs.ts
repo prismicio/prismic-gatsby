@@ -245,7 +245,7 @@ const fieldToType = (
         gatsbySchema.buildObjectType({
           name: type,
           fields: sliceFieldTypes,
-          interfaces: ['PrismicSliceType', 'Node'],
+          interfaces: ['PrismicSliceInterface', 'Node'],
           extensions: { infer: false },
         }),
       )
@@ -328,36 +328,67 @@ const schemaToTypeDefs = (
 
   // Create the main schema type.
   const schemaTypeName = buildSchemaTypeName(apiId)
-  const schemaFieldTypes: {
-    [key: string]: GraphQLTypeObj | GraphQLType | string
-  } = {
-    data: dataTypeName,
-    dataRaw: `${GraphQLType.JSON}!`,
-    dataString: `${GraphQLType.String}!`,
+  const schemaFieldTypes = {
+    _previewable: {
+      type: 'ID!',
+      description:
+        "Marks the document as previewable using Prismic's preview system. Include this field if updates to the document should be previewable by content editors before publishing. **Note: the value of this field is not stable and should not be used directly**.",
+    },
+    data: {
+      type: dataTypeName,
+      description: "The document's fields and their content.",
+    },
+    dataRaw: {
+      type: 'JSON!',
+      description:
+        "The document's data object without transformations exactly as it comes from the Prismic API.",
+    },
+    dataString: {
+      type: 'String!',
+      description:
+        "The document's data object without transformations. The object is stringified via `JSON.stringify` to eliminate the need to declare subfields.",
+      deprecationReason: 'Use `dataRaw` instead which returns JSON.',
+    },
     first_publication_date: {
-      type: `${GraphQLType.Date}!`,
+      type: 'Date!',
+      description: "The document's initial publication date.",
       extensions: { dateformat: {} },
     },
-    href: `${GraphQLType.String}!`,
-    url: GraphQLType.String,
-    lang: `${GraphQLType.String}!`,
+    href: { type: 'String!', description: "The document's Prismic API URL." },
+    url: {
+      type: 'String',
+      description: "The document's URL derived via the link resolver.",
+    },
+    id: {
+      type: 'ID!',
+      description:
+        'Globally unique identifier. Note that this differs from the `prismicID` field.',
+    },
+    lang: { type: 'String!', description: "The document's language." },
     last_publication_date: {
-      type: `${GraphQLType.Date}!`,
+      type: 'Date!',
+      description: "The document's most recent publication date",
       extensions: { dateformat: {} },
     },
-    tags: `[${GraphQLType.String}!]!`,
-    alternate_languages: alternateLanguagesFieldType as string,
-    type: `${GraphQLType.String}!`,
-    prismicId: `${GraphQLType.ID}!`,
-    _previewable: `${GraphQLType.ID}!`,
+    tags: { type: '[String!]!', description: "The document's list of tags." },
+    alternate_languages: {
+      type: alternateLanguagesFieldType as string,
+      description: 'Alternate languages for the document.',
+    },
+    type: {
+      type: 'String!',
+      description: "The document's Prismic API ID type.",
+    },
+    prismicId: { type: 'ID!', description: "The document's Prismic ID." },
   }
+  // @ts-expect-error - uid field is not present in the object's type
   if (uidFieldType) schemaFieldTypes.uid = uidFieldType
 
   enqueueTypePath([apiId], schemaTypeName)
   enqueueTypeDef(
     gatsbySchema.buildObjectType({
       name: schemaTypeName,
-      fields: schemaFieldTypes as { [key: string]: GraphQLType },
+      fields: schemaFieldTypes,
       interfaces: ['PrismicDocument', 'Node'],
       extensions: { infer: false },
     }),
