@@ -407,6 +407,12 @@ exports[`sourceNodes creates types 1`] = `
     ],
     Array [
       Array [
+        "PrismicImageFixedType",
+        "PrismicImageFluidType",
+      ],
+    ],
+    Array [
+      Array [
         Object {
           "config": Object {
             "description": "An image field with optional constrained thumbnails.",
@@ -749,6 +755,10 @@ exports[`sourceNodes creates types 1`] = `
     ],
   ],
   "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
     Object {
       "type": "return",
       "value": undefined,
