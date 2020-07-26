@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.2.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.2.0...v3.2.1) (2020-07-26)
+
+
+### Bug Fixes
+
+* support repositories without image fields ([#250](https://github.com/angeloashmore/gatsby-source-prismic/issues/250)) ([1f68757](https://github.com/angeloashmore/gatsby-source-prismic/commit/1f68757d7759861cdf6bdcbfdd4259eb42471a7b)), closes [#238](https://github.com/angeloashmore/gatsby-source-prismic/issues/238)
+
 ## [3.2.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.1.4-previews-fix.1...v3.2.0) (2020-07-25)
 
 
