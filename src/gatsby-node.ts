@@ -13,7 +13,7 @@ import { msg } from './utils'
 import { GatsbyNode, SourceNodesArgs } from 'gatsby'
 import { PluginOptions } from './types'
 
-export const sourceNodes: GatsbyNode['sourceNodes'] = async (
+export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   gatsbyContext: SourceNodesArgs,
   pluginOptions: PluginOptions,
 ) => {
@@ -49,13 +49,14 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     pluginOptions.schemas,
     gatsbyContext,
   )
-  const imageTypes = buildPrismicImageTypes({
+  const [imgixImageTypes, imageTypes] = buildPrismicImageTypes({
     schema,
     cache,
     defaultImgixParams: pluginOptions.imageImgixParams,
     defaultPlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
   })
   createTypes(typeDefs)
+  createTypes(imgixImageTypes)
   createTypes(imageTypes)
   createTypes(types)
 
@@ -105,9 +106,9 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   writeTypePathsActivity.end()
 }
 
-export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = (
-  gatsbyContext,
-) => {
+export const onPreExtractQueries: NonNullable<
+  GatsbyNode['onPreExtractQueries']
+> = (gatsbyContext) => {
   const { store } = gatsbyContext
   const { program } = store.getState()
 

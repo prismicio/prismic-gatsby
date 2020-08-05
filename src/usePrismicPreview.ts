@@ -94,6 +94,7 @@ const reducer = (state: State, action: Action) => {
 export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
+  // @ts-expect-error
   const hydratedOptions: UsePrismicPreviewOptions & {
     plugins: []
     schemas: {}

@@ -1,73 +1,69 @@
-import { struct } from 'superstruct'
+import * as struct from 'superstruct'
 
 import { PluginOptions, BrowserPluginOptions } from './types'
 
 const baseSchema = {
-  repositoryName: 'string',
-  accessToken: 'string?',
-  releaseID: 'string?',
-  schemas: struct.record(['string', 'object']),
-  linkResolver: 'function?',
-  htmlSerializer: 'function?',
-  fetchLinks: struct.optional(['string']),
-  lang: 'string?',
-  typePathsFilenamePrefix: 'string?',
-  prismicToolbar: struct.optional(
-    struct.union(['boolean', struct.enum(['legacy'])]),
+  repositoryName: struct.string(),
+  accessToken: struct.optional(struct.string()),
+  releaseID: struct.optional(struct.string()),
+  schemas: struct.record(struct.string(), struct.object()),
+  linkResolver: struct.defaulted(struct.func(), () => () => () => {}),
+  htmlSerializer: struct.defaulted(struct.func(), () => () => () => {}),
+  fetchLinks: struct.defaulted(struct.array(struct.string()), []),
+  lang: struct.defaulted(struct.string(), '*'),
+  typePathsFilenamePrefix: struct.defaulted(
+    struct.string(),
+    'prismic-typepaths---',
   ),
-  imageImgixParams: struct.record([
-    'string',
-    struct.union(['string', 'number', 'boolean', 'undefined']),
-  ]),
-  imagePlaceholderImgixParams: struct.record([
-    'string',
-    struct.union(['string', 'number', 'boolean', 'undefined']),
-  ]),
+  prismicToolbar: struct.defaulted(
+    struct.union([struct.boolean(), struct.enums(['legacy'])]),
+    false,
+  ),
+  imageImgixParams: struct.defaulted(
+    struct.record(
+      struct.string(),
+      struct.optional(
+        struct.union([struct.string(), struct.number(), struct.boolean()]),
+      ),
+    ),
+    { auto: 'format,compress', fit: 'max', q: 50 },
+  ),
+  imagePlaceholderImgixParams: struct.defaulted(
+    struct.record(
+      struct.string(),
+      struct.optional(
+        struct.union([struct.string(), struct.number(), struct.boolean()]),
+      ),
+    ),
+    { w: 100, blur: 15, q: 20 },
+  ),
+  plugins: struct.defaulted(struct.empty(struct.array()), []),
+} as const
+
+const PluginOptions = struct.object({
+  ...baseSchema,
+  shouldDownloadImage: struct.defaulted(
+    struct.optional(struct.func()),
+    () => () => false,
+  ),
+})
+
+const BrowserPluginOptions = struct.object({
+  ...baseSchema,
+  pathResolver: struct.optional(struct.func()),
+  schemasDigest: struct.string(),
+})
+
+export const validatePluginOptions = (pluginOptions: PluginOptions) => {
+  const coerced = struct.coerce(pluginOptions, PluginOptions)
+  struct.assert(coerced, PluginOptions)
+  return (coerced as unknown) as PluginOptions
 }
 
-const baseDefaults = {
-  linkResolver: () => () => () => {},
-  htmlSerializer: () => () => () => {},
-  fetchLinks: [],
-  lang: '*',
-  typePathsFilenamePrefix: 'prismic-typepaths---',
-  prismicToolbar: false,
-  imageImgixParams: {
-    auto: 'format,compress',
-    fit: 'max',
-    q: 50,
-  },
-  imagePlaceholderImgixParams: {
-    w: 100,
-    blur: 15,
-    q: 20,
-  },
+export const validateBrowserOptions = (
+  browserOptions: BrowserPluginOptions,
+) => {
+  const coerced = struct.coerce(browserOptions, BrowserPluginOptions)
+  struct.assert(coerced, BrowserPluginOptions)
+  return (coerced as unknown) as BrowserPluginOptions
 }
-
-const PluginOptionsValidator = struct(
-  {
-    ...baseSchema,
-    shouldDownloadImage: 'function?',
-    plugins: struct.size([0, 0]),
-  },
-  {
-    ...baseDefaults,
-    shouldDownloadImage: () => () => false,
-    plugins: [],
-  },
-)
-
-const BrowserOptionsValidator = struct(
-  {
-    ...baseSchema,
-    pathResolver: 'function?',
-    schemasDigest: 'string',
-  },
-  baseDefaults,
-)
-
-export const validatePluginOptions = (pluginOptions: PluginOptions) =>
-  PluginOptionsValidator(pluginOptions)
-
-export const validateBrowserOptions = (browserOptions: BrowserPluginOptions) =>
-  BrowserOptionsValidator(browserOptions)

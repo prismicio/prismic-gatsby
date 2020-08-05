@@ -11,6 +11,10 @@ import { ImgixUrlParams } from 'gatsby-plugin-imgix'
 
 export type NodeID = string
 
+export interface NodeTree {
+  [key: string]: Node
+}
+
 export interface DocumentNodeInput extends NodeInput {
   prismicId: PrismicDocument['id']
   data: { [key: string]: NormalizedField }

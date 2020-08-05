@@ -77,6 +77,7 @@ exports[`sourceNodes creates nodes 1`] = `
     ],
     Array [
       Object {
+        "_previewable": "XDF-DhEAACAA5b4F",
         "alternate_languages": Array [],
         "data": Object {
           "body": Array [
@@ -351,6 +352,7 @@ exports[`sourceNodes creates types 1`] = `
               "infer": false,
             },
             "fields": Object {
+              "_previewable": "ID!",
               "alternate_languages": "[PrismicLinkType!]!",
               "data": "PrismicPageDataType",
               "dataRaw": "JSON!",
@@ -401,6 +403,12 @@ exports[`sourceNodes creates types 1`] = `
           },
           "kind": "OBJECT",
         },
+      ],
+    ],
+    Array [
+      Array [
+        "PrismicImageFixedType",
+        "PrismicImageFluidType",
       ],
     ],
     Array [
@@ -740,11 +748,17 @@ exports[`sourceNodes creates types 1`] = `
     type: String!
     \\"The document's Prismic ID.\\"
     prismicId: ID!
+    \\"Marks the document as previewable using Prismic's preview system. Include this field if updates to the document should be previewable by content editors before publishing. **Note: the value of this field is not stable and should not be used directly**.\\"
+    _previewable: ID!
   }
 ",
     ],
   ],
   "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
     Object {
       "type": "return",
       "value": undefined,

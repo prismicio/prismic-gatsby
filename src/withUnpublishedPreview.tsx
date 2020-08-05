@@ -15,23 +15,22 @@ export const withUnpublishedPreview = <TProps extends PageProps>(
 ): React.ComponentType<TProps> => {
   const WithUnpublishedPreview = (props: TProps) => {
     const [state] = usePreviewStore()
-    const isPreview = state.pages.hasOwnProperty(props.location.pathname)
+    const path = props.location.pathname
+    const isPreview = state.pages.hasOwnProperty(path)
 
     if (isPreview) {
-      const key = Object.keys(props.data)[0]
-      const TemplateComp =
-        options.templateMap[
-          (props.data as Record<string, { type?: string }>)[key]
-            .type as keyof typeof options.templateMap
-        ]
-
-      console.warn(
-        msg(
-          `An unpublished preview was detected, but a template component could not be found for a custom type of "${key}". Check that the templateMap option in withUnpublishedPreview includes a component for "${key}". withUnpublishedPreview will yield to the wrapped component to render.`,
-        ),
-      )
+      const previewData = state.pages[path]
+      const key = Object.keys(previewData)[0]
+      const type = previewData[key].type as string
+      const TemplateComp = options.templateMap[type]
 
       if (TemplateComp) return <TemplateComp {...props} />
+      else
+        console.warn(
+          msg(
+            `An unpublished preview was detected, but a template component could not be found for a custom type of "${type}". Check that the templateMap option in withUnpublishedPreview includes a component for "${type}". withUnpublishedPreview will yield to the wrapped component to render.`,
+          ),
+        )
     }
 
     return <WrappedComponent {...props} />
@@ -40,5 +39,9 @@ export const withUnpublishedPreview = <TProps extends PageProps>(
     WrappedComponent,
   )})`
 
-  return withPreview(WithUnpublishedPreview)
+  return withPreview(WithUnpublishedPreview, {
+    // In an unpublished preview, we have to assume the component accepts the
+    // preview data as a root-level field.
+    mergeStrategy: 'rootReplaceOrInsert',
+  })
 }

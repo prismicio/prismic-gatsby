@@ -235,6 +235,7 @@ export const documentToNodes = async (
       type: buildSchemaTypeName(doc.type),
       contentDigest: createContentDigest(doc),
     },
+    _previewable: doc.id,
   }
 
   createNode(node)
