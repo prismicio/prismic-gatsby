@@ -1,0 +1,26 @@
+{
+  "type": "api-update",
+  "releases": {
+      "update": [
+          {
+              "id": "XyrILPl3p70AsQ-9",
+              "ref": "XyrVpPl3p7oBsUsA~XyrIYPl3p7MAsRCn",
+              "label": "foo",
+              "documents": {
+                  "deletion": [
+                      {
+                          "id": "XyrIXPl3p7wAsRCU"
+                      }
+                  ]
+              }
+          }
+      ]
+  },
+  "masks": {},
+  "tags": {},
+  "experiments": {},
+  "documents": {},
+  "domain": "qwerty",
+  "apiUrl": "https://qwerty.prismic.io/api",
+  "secret": "secret-password"
+}
