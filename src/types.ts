@@ -368,3 +368,68 @@ export interface PluginOptions extends GatsbyPluginOptions {
   imageImgixParams?: ImgixUrlParams
   imagePlaceholderImgixParams?: ImgixUrlParams
 }
+
+
+export interface WebhookBase {
+  type: 'api-update' | 'test-trigger';
+  domain: string;
+  apiUrl: string;
+  "secret": string | null;
+}
+
+export interface TestWebhook extends WebhookBase {
+  type: 'test-trigger';
+}
+
+interface Operations<T> {
+  update?: T[];
+  addition?: T[];
+  deletion?: T[];
+}
+
+export interface PrismicWebhook extends WebhookBase {
+  type: 'api-update';
+  masterRef?: string;
+  releases: Operations<WebhookRelease>;
+  masks: Operations<WebhookMask>;
+  tags: Operations<WebhookTag>;
+
+  documents: WebhookDocumentOperations;
+  experiments?: Operations<WebhookExperiment>;
+}
+
+export interface WebhookDocument {
+  id: string;
+}
+
+export interface WebhookDocumentOperations {
+  addition?: WebhookDocument[];
+  deletion?: WebhookDocument[];
+}
+
+export interface WebhookRelease {
+  id: string;
+  ref: string;
+  label: string;
+  documents: WebhookDocumentOperations;
+}
+
+export interface WebhookMask {
+  id: string;
+  label: string;
+}
+
+
+export interface WebhookTag { id: string; }
+
+// Legacy fields
+interface WebhookExperimentVariation {
+  id: string;
+  ref: string;
+  label: string;
+}
+interface WebhookExperiment {
+  id: string;
+  name: string;
+  variations: WebhookExperimentVariation[]
+}
