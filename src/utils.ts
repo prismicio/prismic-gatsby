@@ -137,3 +137,10 @@ export const isBrowser = typeof window !== 'undefined'
 export const getComponentDisplayName = (
   WrappedComponent: React.ComponentType<any>,
 ) => WrappedComponent.displayName || WrappedComponent.name || 'Component'
+
+
+export const isPrismicUrl = (url: string): boolean => {
+  if(!url) return false;
+  const regexp = /^https?:\/\/([^.]+)\.(wroom\.(?:test|io)|prismic\.io)\/api\/?/;
+  return regexp.test(url);
+}
