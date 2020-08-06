@@ -367,6 +367,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   prismicToolbar?: boolean | 'legacy'
   imageImgixParams?: ImgixUrlParams
   imagePlaceholderImgixParams?: ImgixUrlParams
+  webhookSecret?: string
 }
 
 
