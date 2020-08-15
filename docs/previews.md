@@ -172,7 +172,7 @@ const NotFoundPage = () => (
 )
 
 // If an unpublished `page` document is previewed, PageTemplate will be rendered.
-export default withUnpublishedPreview(PreviewPage, {
+export default withUnpublishedPreview(NotFoundPage, {
   templateMap: {
     page: PageTemplate,
     blog_post: BlogPostTemplate,
