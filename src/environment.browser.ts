@@ -63,7 +63,7 @@ const loadLinkFieldDocument = async (
   createNode({
     id: linkedDocId,
     internal: {
-      type: buildSchemaTypeName(field.type!) + PLACEHOLDER_NODE_TYPE_SUFFIX,
+      type: buildSchemaTypeName(field.type!, pluginOptions.typenamePrefix) + PLACEHOLDER_NODE_TYPE_SUFFIX,
       contentDigest: createContentDigest(linkedDocId),
     },
   })
@@ -75,7 +75,7 @@ const loadLinkFieldDocument = async (
   const client = await createClient(repositoryName, accessToken)
   const doc = await client.getByID(field.id, queryOptions)
 
-  await documentToNodes(doc, env)
+  await documentToNodes(doc, env, pluginOptions.typenamePrefix)
 }
 
 const normalizeImageField: ImageFieldNormalizer = async (

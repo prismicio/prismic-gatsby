@@ -40,6 +40,7 @@ const getTypeForPath = (
 
 const normalizeField = async (
   apiId: string,
+  typenamePrefix: string,
   field: Field,
   path: TypePath['path'],
   doc: PrismicDocument,
@@ -95,6 +96,7 @@ const normalizeField = async (
         [...path, apiId],
         doc,
         env,
+        typenamePrefix,
       )
     }
 
@@ -110,6 +112,7 @@ const normalizeField = async (
             [...path, apiId, slice.slice_type, 'primary'],
             doc,
             env,
+            typenamePrefix,
           )
 
           const normalizedItems = await normalizeObjs(
@@ -117,6 +120,7 @@ const normalizeField = async (
             [...path, apiId, slice.slice_type, 'items'],
             doc,
             env,
+            typenamePrefix,
           )
 
           const node: SliceNodeInput = {
@@ -128,6 +132,7 @@ const normalizeField = async (
             internal: {
               type: buildSchemaTypeName(
                 `${doc.type} ${apiId} ${slice.slice_type}`,
+                typenamePrefix,
               ),
               contentDigest: createContentDigest(slice),
             },
@@ -182,9 +187,10 @@ const normalizeObj = (
   path: TypePath['path'],
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
+  typenamePrefix: string,
 ): Promise<{ [key: string]: NormalizedField }> =>
   mapObjValsP(
-    (field, fieldApiId) => normalizeField(fieldApiId, field, path, doc, env),
+    (field, fieldApiId) => normalizeField(fieldApiId, typenamePrefix, field, path, doc, env),
     obj,
   )
 
@@ -193,11 +199,13 @@ const normalizeObjs = (
   path: TypePath['path'],
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
-) => Promise.all(objs.map((obj) => normalizeObj(obj, path, doc, env)))
+  typenamePrefix: string,
+) => Promise.all(objs.map((obj) => normalizeObj(obj, path, doc, env, typenamePrefix)))
 
 export const documentToNodes = async (
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
+  typenamePrefix: string,
 ) => {
   const { createNode, createContentDigest, createNodeId, pluginOptions } = env
   const { linkResolver } = pluginOptions
@@ -213,9 +221,11 @@ export const documentToNodes = async (
     [doc.type, 'data'],
     doc,
     env,
+    typenamePrefix,
   )
   const normalizedAlernativeLanguages = (await normalizeField(
     'alternate_languages',
+    typenamePrefix,
     (doc.alternate_languages as unknown) as AlternateLanguagesField,
     [doc.type],
     doc,
@@ -232,7 +242,7 @@ export const documentToNodes = async (
     alternate_languages: normalizedAlernativeLanguages,
     url: docUrl,
     internal: {
-      type: buildSchemaTypeName(doc.type),
+      type: buildSchemaTypeName(doc.type, typenamePrefix),
       contentDigest: createContentDigest(doc),
     },
     _previewable: doc.id,
@@ -246,4 +256,5 @@ export const documentToNodes = async (
 export const documentsToNodes = async (
   docs: PrismicDocument[],
   env: DocumentsToNodesEnvironment,
-) => await Promise.all(docs.map((doc) => documentToNodes(doc, env)))
+  typenamePrefix: string,
+) => await Promise.all(docs.map((doc) => documentToNodes(doc, env, typenamePrefix)))

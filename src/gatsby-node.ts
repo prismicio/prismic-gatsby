@@ -47,10 +47,12 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
 
   const { typeDefs, typePaths } = schemasToTypeDefs(
     pluginOptions.schemas,
+    pluginOptions.typenamePrefix,
     gatsbyContext,
   )
   const [imgixImageTypes, imageTypes] = buildPrismicImageTypes({
     schema,
+    typenamePrefix: pluginOptions.typenamePrefix,
     cache,
     defaultImgixParams: pluginOptions.imageImgixParams,
     defaultPlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
@@ -81,7 +83,7 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
 
   const env = createEnvironment(pluginOptions, gatsbyContext, typePaths)
   // TODO: Implement queue like `schemasToTypeDefs` and create nodes here.
-  await documentsToNodes(documents, env)
+  await documentsToNodes(documents, env, pluginOptions.typenamePrefix)
 
   createNodesActivity.end()
 

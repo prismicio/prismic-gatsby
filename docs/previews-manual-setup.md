@@ -156,6 +156,7 @@ const PreviewPage = () => {
   const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
     repositoryName: 'myRepository',
+    typenamePrefix: 'myPrefix',
   })
 
   return <div>Loading preview...</div>
@@ -184,6 +185,7 @@ const PreviewPage = ({ location }) => {
   const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
     repositoryName: 'myRepository',
+    typenamePrefix: 'myPrefix',
   })
 
   // This useEffect runs when values from usePrismicPreview update. When
@@ -266,6 +268,7 @@ const PreviewPage = ({ location }) => {
   const { isPreview, previewData, path } = usePrismicPreview({
     // The repositoryName value from your `gatsby-config.js`.
     repositoryName: 'myRepository',
+    typenamePrefix: 'myPrefix',
   })
 
   // This useEffect runs when values from usePrismicPreview update. When

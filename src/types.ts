@@ -350,6 +350,7 @@ export type BrowserPluginOptions = GatsbyPluginOptions &
     | 'lang'
     | 'typePathsFilenamePrefix'
     | 'prismicToolbar'
+    | 'typenamePrefix'
   >
 
 export interface PluginOptions extends GatsbyPluginOptions {
@@ -367,4 +368,5 @@ export interface PluginOptions extends GatsbyPluginOptions {
   prismicToolbar?: boolean | 'legacy'
   imageImgixParams?: ImgixUrlParams
   imagePlaceholderImgixParams?: ImgixUrlParams
+  typenamePrefix: string
 }

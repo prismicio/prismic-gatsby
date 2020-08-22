@@ -30,6 +30,7 @@ Component.displayName = 'Template'
 const WrappedComponent = withPreviewResolver(Component, {
   repositoryName: 'repositoryName',
   linkResolver: () => () => '/doc/',
+  typenamePrefix: '',
 })
 
 window[BROWSER_STORE_KEY] = {
@@ -38,6 +39,7 @@ window[BROWSER_STORE_KEY] = {
       plugins: [],
       repositoryName: 'repositoryName',
       schemas: {},
+      typenamePrefix: '',
     },
     schemasDigest: 'schemasDigest',
   },

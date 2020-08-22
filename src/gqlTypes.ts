@@ -1,4 +1,5 @@
 import { NodePluginSchema, GatsbyCache } from 'gatsby'
+import { pascalCase, pascalCaseTransformMerge } from 'pascal-case'
 import { ImgixUrlParams } from 'gatsby-plugin-imgix'
 import {
   createImgixFixedType,
@@ -18,6 +19,7 @@ interface PartialPrismicImageType {
 
 type BuildPrismicImageTypesArgs = {
   schema: NodePluginSchema
+  typenamePrefix: string
   cache: GatsbyCache
   defaultImgixParams?: ImgixUrlParams
   defaultPlaceholderImgixParams?: ImgixUrlParams
@@ -25,6 +27,7 @@ type BuildPrismicImageTypesArgs = {
 
 export const buildPrismicImageTypes = ({
   schema,
+  typenamePrefix,
   cache,
   defaultImgixParams,
   defaultPlaceholderImgixParams,
@@ -34,23 +37,23 @@ export const buildPrismicImageTypes = ({
   const resolveHeight = (obj: PartialPrismicImageType) => obj.dimensions?.height
 
   const PrismicImageFixedType = createImgixFixedType({
-    name: 'PrismicImageFixedType',
+    name: pascalCase(`Prismic ${typenamePrefix} ImageFixedType`, { transform: pascalCaseTransformMerge }),
     cache,
   })
 
   const PrismicImageFluidType = createImgixFluidType({
-    name: 'PrismicImageFluidType',
+    name: pascalCase(`Prismic ${typenamePrefix} ImageFluidType`, { transform: pascalCaseTransformMerge }),
     cache,
   })
 
   const PrismicImageType = schema.buildObjectType({
-    name: 'PrismicImageType',
+    name: pascalCase(`Prismic ${typenamePrefix} ImageType`, { transform: pascalCaseTransformMerge }),
     description: 'An image field with optional constrained thumbnails.',
     interfaces: ['PrismicImageInterface'],
     fields: {
       alt: 'String',
       copyright: 'String',
-      dimensions: 'PrismicImageDimensionsType',
+      dimensions: pascalCase(`Prismic ${typenamePrefix} ImageDimensionsType`, { transform: pascalCaseTransformMerge }),
       url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
         defaultImgixParams,
@@ -77,18 +80,18 @@ export const buildPrismicImageTypes = ({
         type: 'File',
         extensions: { link: {} },
       },
-      thumbnails: 'PrismicImageThumbnailsType',
+      thumbnails: pascalCase(`Prismic ${typenamePrefix} ImageThumbnailsType`, { transform: pascalCaseTransformMerge }),
     },
   })
 
   const PrismicImageThumbnailType = schema.buildObjectType({
-    name: 'PrismicImageThumbnailType',
+    name: pascalCase(`Prismic ${typenamePrefix} ImageThumbnailType`, { transform: pascalCaseTransformMerge }) ,
     description: 'An image thumbnail with constraints.',
     interfaces: ['PrismicImageInterface'],
     fields: {
       alt: 'String',
       copyright: 'String',
-      dimensions: 'PrismicImageDimensionsType',
+      dimensions: pascalCase(`Prismic ${typenamePrefix} ImageDimensionsType`, { transform: pascalCaseTransformMerge }),
       url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
         defaultImgixParams,

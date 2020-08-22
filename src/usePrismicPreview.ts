@@ -27,6 +27,7 @@ export type UsePrismicPreviewOptions = Pick<
   | 'fetchLinks'
   | 'lang'
   | 'typePathsFilenamePrefix'
+  | 'typenamePrefix'
 > & {
   pathResolver?: PluginOptions['linkResolver']
   schemasDigest?: string
@@ -101,6 +102,7 @@ export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
     lang: string
     typePathsFilenamePrefix: string
     schemasDigest: string
+    typenamePrefix: string
   } = useMemo(() => {
     if (!isBrowser) return options
 
@@ -171,7 +173,7 @@ export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
     )
     const { context } = env
     const { getNodeById } = context as DocumentsToNodesEnvironmentBrowserContext
-    const rootNodeId = await documentToNodes(doc, env)
+    const rootNodeId = await documentToNodes(doc, env, hydratedOptions.typenamePrefix)
     const rootNode = getNodeById(rootNodeId)
 
     const resolvedPathResolver =
