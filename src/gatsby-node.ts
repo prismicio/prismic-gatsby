@@ -82,7 +82,7 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
 
   const env = createEnvironment(pluginOptions, gatsbyContext, typePaths)
   // TODO: Implement queue like `schemasToTypeDefs` and create nodes here.
-  await documentsToNodes(documents, env, pluginOptions.typenamePrefix)
+  await documentsToNodes(documents, env)
 
   createNodesActivity.end()
 

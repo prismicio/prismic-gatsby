@@ -42,7 +42,7 @@ interface SchemasToTypeDefsContext {
 
 const fieldToType = (
   apiId: string,
-  typenamePrefix: string,
+  typenamePrefix: string | undefined,
   field: FieldSchema,
   path: string[],
   context: SchemasToTypeDefsContext,
@@ -129,14 +129,20 @@ const fieldToType = (
     case FieldType.Group: {
       const groupTypeName = buildSchemaTypeName(
         `${customTypeApiId} ${apiId} GroupType`,
-        typenamePrefix
+        typenamePrefix,
       )
       enqueueTypeDef(
         gatsbySchema.buildObjectType({
           name: groupTypeName,
           fields: mapObjVals(
             (subfield, subfieldApiId) =>
-              fieldToType(subfieldApiId, typenamePrefix, subfield, [...path, apiId], context),
+              fieldToType(
+                subfieldApiId,
+                typenamePrefix,
+                subfield,
+                [...path, apiId],
+                context,
+              ),
             (field as GroupFieldSchema).config.fields,
           ) as { [key: string]: GraphQLType },
           extensions: { infer: false },
@@ -151,15 +157,21 @@ const fieldToType = (
     case FieldType.Slices: {
       const slicesTypeName = buildSchemaTypeName(
         `${customTypeApiId} ${apiId} SlicesType`,
-        typenamePrefix
+        typenamePrefix,
       )
       const sliceChoices = (field as SlicesFieldSchema).config.choices
       const sliceChoiceTypes = Object.entries(sliceChoices).map(
         ([sliceChoiceApiId, sliceChoice]) =>
-          fieldToType(sliceChoiceApiId, typenamePrefix, sliceChoice, [...path, apiId], {
-            ...context,
-            sliceZoneId: apiId,
-          }),
+          fieldToType(
+            sliceChoiceApiId,
+            typenamePrefix,
+            sliceChoice,
+            [...path, apiId],
+            {
+              ...context,
+              sliceZoneId: apiId,
+            },
+          ),
       )
 
       enqueueTypeDef(
@@ -192,7 +204,7 @@ const fieldToType = (
       if (primaryFields && !isEmptyObj(primaryFields)) {
         const primaryTypeName = buildSchemaTypeName(
           `${customTypeApiId} ${sliceZoneId} ${apiId} PrimaryType`,
-          typenamePrefix
+          typenamePrefix,
         )
 
         enqueueTypeDef(
@@ -219,7 +231,7 @@ const fieldToType = (
       if (itemsFields && !isEmptyObj(itemsFields)) {
         const itemTypeName = buildSchemaTypeName(
           `${customTypeApiId} ${sliceZoneId} ${apiId} ItemType`,
-          typenamePrefix
+          typenamePrefix,
         )
 
         enqueueTypeDef(
@@ -246,7 +258,7 @@ const fieldToType = (
 
       const type = buildSchemaTypeName(
         `${customTypeApiId} ${sliceZoneId} ${apiId}`,
-        typenamePrefix
+        typenamePrefix,
       )
 
       enqueueTypeDef(
@@ -288,7 +300,7 @@ const fieldToType = (
 const schemaToTypeDefs = (
   apiId: string,
   schema: Schema,
-  typenamePrefix: string,
+  typenamePrefix: string | undefined,
   context: SchemasToTypeDefsContext,
 ) => {
   const { enqueueTypeDef, enqueueTypePath, gatsbyContext } = context
@@ -309,7 +321,13 @@ const schemaToTypeDefs = (
   // implement a UID field.
   let uidFieldType: string | undefined
   if (uidField)
-    uidFieldType = fieldToType('uid', typenamePrefix, uidField, [apiId], context) as string
+    uidFieldType = fieldToType(
+      'uid',
+      typenamePrefix,
+      uidField,
+      [apiId],
+      context,
+    ) as string
 
   // The alternate languages field acts as a list of Link fields. Note:
   // AlternateLanguages is an internal plugin-specific type, not from Prismic.
@@ -329,7 +347,13 @@ const schemaToTypeDefs = (
       name: dataTypeName,
       fields: mapObjVals(
         (dataField, dataFieldApiId) =>
-          fieldToType(dataFieldApiId, typenamePrefix, dataField, [apiId, 'data'], context),
+          fieldToType(
+            dataFieldApiId,
+            typenamePrefix,
+            dataField,
+            [apiId, 'data'],
+            context,
+          ),
         dataFields,
       ) as { [key: string]: GraphQLType },
       extensions: { infer: false },
@@ -418,7 +442,7 @@ const buildImageThumbnailsType = (
  */
 export const schemasToTypeDefs = (
   schemas: Schemas,
-  typenamePrefix: string,
+  typenamePrefix: string | undefined,
   gatsbyContext: SourceNodesArgs,
 ) => {
   const { schema: gatsbySchema } = gatsbyContext
@@ -443,7 +467,9 @@ export const schemasToTypeDefs = (
   enqueueTypeDef(
     gatsbySchema.buildUnionType({
       name: GraphQLType.AllDocumentTypes,
-      types: Object.keys(schemas).map((apiId) => buildSchemaTypeName(apiId, typenamePrefix)),
+      types: Object.keys(schemas).map((apiId) =>
+        buildSchemaTypeName(apiId, typenamePrefix),
+      ),
     }),
   )
 

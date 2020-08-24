@@ -11,7 +11,7 @@ const baseSchema = {
   htmlSerializer: struct.defaulted(struct.func(), () => () => () => {}),
   fetchLinks: struct.defaulted(struct.array(struct.string()), []),
   lang: struct.defaulted(struct.string(), '*'),
-  typenamePrefix: struct.defaulted(struct.string(), ''),
+  typenamePrefix: struct.optional(struct.string()),
   typePathsFilenamePrefix: struct.defaulted(
     struct.string(),
     'prismic-typepaths---',

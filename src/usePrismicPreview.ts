@@ -173,7 +173,7 @@ export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
     )
     const { context } = env
     const { getNodeById } = context as DocumentsToNodesEnvironmentBrowserContext
-    const rootNodeId = await documentToNodes(doc, env, hydratedOptions.typenamePrefix)
+    const rootNodeId = await documentToNodes(doc, env)
     const rootNode = getNodeById(rootNodeId)
 
     const resolvedPathResolver =

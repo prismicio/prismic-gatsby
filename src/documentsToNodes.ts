@@ -200,10 +200,9 @@ const normalizeObjs = (
 export const documentToNodes = async (
   doc: PrismicDocument,
   env: DocumentsToNodesEnvironment,
-  typenamePrefix: string,
 ) => {
   const { createNode, createContentDigest, createNodeId, pluginOptions } = env
-  const { linkResolver } = pluginOptions
+  const { linkResolver, typenamePrefix } = pluginOptions
 
   let linkResolverForDoc: LinkResolver | undefined = undefined
   if (linkResolver) linkResolverForDoc = linkResolver({ node: doc })
@@ -249,8 +248,4 @@ export const documentToNodes = async (
 export const documentsToNodes = async (
   docs: PrismicDocument[],
   env: DocumentsToNodesEnvironment,
-  typenamePrefix: string,
-) =>
-  await Promise.all(
-    docs.map((doc) => documentToNodes(doc, env, typenamePrefix)),
-  )
+) => await Promise.all(docs.map((doc) => documentToNodes(doc, env)))
