@@ -52,7 +52,6 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   )
   const [imgixImageTypes, imageTypes] = buildPrismicImageTypes({
     schema,
-    typenamePrefix: pluginOptions.typenamePrefix,
     cache,
     defaultImgixParams: pluginOptions.imageImgixParams,
     defaultPlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,

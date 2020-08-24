@@ -1,5 +1,4 @@
 import { NodePluginSchema, GatsbyCache } from 'gatsby'
-import { pascalCase, pascalCaseTransformMerge } from 'pascal-case'
 import { ImgixUrlParams } from 'gatsby-plugin-imgix'
 import {
   createImgixFixedType,
@@ -8,6 +7,8 @@ import {
   createImgixFluidSchemaFieldConfig,
   createImgixUrlSchemaFieldConfig,
 } from 'gatsby-plugin-imgix/dist/node'
+
+import { GraphQLType } from './types'
 
 interface PartialPrismicImageType {
   url?: string
@@ -19,7 +20,6 @@ interface PartialPrismicImageType {
 
 type BuildPrismicImageTypesArgs = {
   schema: NodePluginSchema
-  typenamePrefix: string
   cache: GatsbyCache
   defaultImgixParams?: ImgixUrlParams
   defaultPlaceholderImgixParams?: ImgixUrlParams
@@ -27,7 +27,6 @@ type BuildPrismicImageTypesArgs = {
 
 export const buildPrismicImageTypes = ({
   schema,
-  typenamePrefix,
   cache,
   defaultImgixParams,
   defaultPlaceholderImgixParams,
@@ -37,23 +36,24 @@ export const buildPrismicImageTypes = ({
   const resolveHeight = (obj: PartialPrismicImageType) => obj.dimensions?.height
 
   const PrismicImageFixedType = createImgixFixedType({
-    name: pascalCase(`Prismic ${typenamePrefix} ImageFixedType`, { transform: pascalCaseTransformMerge }),
+    // name: pascalCase(`Prismic ${typenamePrefix} ImageFixedType`, { transform: pascalCaseTransformMerge }),
+    name: GraphQLType.ImageFixed,
     cache,
   })
 
   const PrismicImageFluidType = createImgixFluidType({
-    name: pascalCase(`Prismic ${typenamePrefix} ImageFluidType`, { transform: pascalCaseTransformMerge }),
+    name: GraphQLType.ImageFixed,
     cache,
   })
 
   const PrismicImageType = schema.buildObjectType({
-    name: pascalCase(`Prismic ${typenamePrefix} ImageType`, { transform: pascalCaseTransformMerge }),
+    name: GraphQLType.Image,
     description: 'An image field with optional constrained thumbnails.',
-    interfaces: ['PrismicImageInterface'],
+    interfaces: [GraphQLType.ImageInterface],
     fields: {
-      alt: 'String',
-      copyright: 'String',
-      dimensions: pascalCase(`Prismic ${typenamePrefix} ImageDimensionsType`, { transform: pascalCaseTransformMerge }),
+      alt: GraphQLType.String,
+      copyright: GraphQLType.String,
+      dimensions: GraphQLType.ImageDimensions,
       url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
         defaultImgixParams,
@@ -77,21 +77,21 @@ export const buildPrismicImageTypes = ({
         defaultPlaceholderImgixParams,
       }),
       localFile: {
-        type: 'File',
+        type: GraphQLType.File,
         extensions: { link: {} },
       },
-      thumbnails: pascalCase(`Prismic ${typenamePrefix} ImageThumbnailsType`, { transform: pascalCaseTransformMerge }),
+      thumbnails: GraphQLType.ImageThumbnails,
     },
   })
 
   const PrismicImageThumbnailType = schema.buildObjectType({
-    name: pascalCase(`Prismic ${typenamePrefix} ImageThumbnailType`, { transform: pascalCaseTransformMerge }) ,
+    name: GraphQLType.ImageThumbnail,
     description: 'An image thumbnail with constraints.',
-    interfaces: ['PrismicImageInterface'],
+    interfaces: [GraphQLType.ImageInterface],
     fields: {
-      alt: 'String',
-      copyright: 'String',
-      dimensions: pascalCase(`Prismic ${typenamePrefix} ImageDimensionsType`, { transform: pascalCaseTransformMerge }),
+      alt: GraphQLType.String,
+      copyright: GraphQLType.String,
+      dimensions: GraphQLType.ImageDimensions,
       url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
         defaultImgixParams,
@@ -113,7 +113,7 @@ export const buildPrismicImageTypes = ({
         defaultImgixParams,
       }),
       localFile: {
-        type: 'File',
+        type: GraphQLType.File,
         extensions: { link: {} },
       },
     },
