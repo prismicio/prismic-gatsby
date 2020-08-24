@@ -8,6 +8,8 @@ import {
   createImgixUrlSchemaFieldConfig,
 } from 'gatsby-plugin-imgix/dist/node'
 
+import { GraphQLType } from './types'
+
 interface PartialPrismicImageType {
   url?: string
   dimensions?: {
@@ -34,23 +36,23 @@ export const buildPrismicImageTypes = ({
   const resolveHeight = (obj: PartialPrismicImageType) => obj.dimensions?.height
 
   const PrismicImageFixedType = createImgixFixedType({
-    name: 'PrismicImageFixedType',
+    name: GraphQLType.ImageFixed,
     cache,
   })
 
   const PrismicImageFluidType = createImgixFluidType({
-    name: 'PrismicImageFluidType',
+    name: GraphQLType.ImageFluid,
     cache,
   })
 
   const PrismicImageType = schema.buildObjectType({
-    name: 'PrismicImageType',
+    name: GraphQLType.Image,
     description: 'An image field with optional constrained thumbnails.',
-    interfaces: ['PrismicImageInterface'],
+    interfaces: [GraphQLType.ImageInterface],
     fields: {
-      alt: 'String',
-      copyright: 'String',
-      dimensions: 'PrismicImageDimensionsType',
+      alt: GraphQLType.String,
+      copyright: GraphQLType.String,
+      dimensions: GraphQLType.ImageDimensions,
       url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
         defaultImgixParams,
@@ -74,21 +76,21 @@ export const buildPrismicImageTypes = ({
         defaultPlaceholderImgixParams,
       }),
       localFile: {
-        type: 'File',
+        type: GraphQLType.File,
         extensions: { link: {} },
       },
-      thumbnails: 'PrismicImageThumbnailsType',
+      thumbnails: GraphQLType.ImageThumbnails,
     },
   })
 
   const PrismicImageThumbnailType = schema.buildObjectType({
-    name: 'PrismicImageThumbnailType',
+    name: GraphQLType.ImageThumbnail,
     description: 'An image thumbnail with constraints.',
-    interfaces: ['PrismicImageInterface'],
+    interfaces: [GraphQLType.ImageInterface],
     fields: {
-      alt: 'String',
-      copyright: 'String',
-      dimensions: 'PrismicImageDimensionsType',
+      alt: GraphQLType.String,
+      copyright: GraphQLType.String,
+      dimensions: GraphQLType.ImageDimensions,
       url: createImgixUrlSchemaFieldConfig({
         resolveUrl,
         defaultImgixParams,
@@ -110,7 +112,7 @@ export const buildPrismicImageTypes = ({
         defaultImgixParams,
       }),
       localFile: {
-        type: 'File',
+        type: GraphQLType.File,
         extensions: { link: {} },
       },
     },

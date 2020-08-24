@@ -63,7 +63,9 @@ const loadLinkFieldDocument = async (
   createNode({
     id: linkedDocId,
     internal: {
-      type: buildSchemaTypeName(field.type!) + PLACEHOLDER_NODE_TYPE_SUFFIX,
+      type:
+        buildSchemaTypeName(field.type!, pluginOptions.typenamePrefix) +
+        PLACEHOLDER_NODE_TYPE_SUFFIX,
       contentDigest: createContentDigest(linkedDocId),
     },
   })

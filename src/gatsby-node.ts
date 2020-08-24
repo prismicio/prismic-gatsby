@@ -47,6 +47,7 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
 
   const { typeDefs, typePaths } = schemasToTypeDefs(
     pluginOptions.schemas,
+    pluginOptions.typenamePrefix,
     gatsbyContext,
   )
   const types = buildTypes({ schema })

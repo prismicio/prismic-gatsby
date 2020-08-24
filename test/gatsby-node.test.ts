@@ -71,6 +71,15 @@ describe('sourceNodes', () => {
     expect(mockGatsbyContext.actions.createTypes).toMatchSnapshot()
   })
 
+  test('creates types with prefix, if provided', async () => {
+    await sourceNodes(mockGatsbyContext, {
+      ...pluginOptions,
+      typenamePrefix: 'Prefix',
+    })
+
+    expect(mockGatsbyContext.actions.createTypes).toMatchSnapshot()
+  })
+
   test('creates nodes', async () => {
     await sourceNodes(mockGatsbyContext, pluginOptions)
 
@@ -108,9 +117,9 @@ describe('onPreExtractQueries', () => {
 
     const call = (fs.copyFileSync as jest.Mock).mock.calls[0]
 
-    expect(call[0]).toMatch(/\/fragments.js$/)
-    expect(call[1]).toBe(
-      '/__PROGRAM_DIRECTORY__/.cache/fragments/gatsby-source-prismic-fragments.js',
+    expect(call[0]).toMatch(/(\/|\\)fragments.js$/)
+    expect(call[1]).toMatch(
+      /(\/|\\)__PROGRAM_DIRECTORY__(\/|\\)\.cache(\/|\\)fragments(\/|\\)gatsby-source-prismic-fragments\.js/,
     )
   })
 })

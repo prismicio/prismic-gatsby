@@ -214,10 +214,15 @@ export enum GraphQLType {
   Float = 'Float',
   Date = 'Date',
   JSON = 'JSON',
+  File = 'File',
   Link = 'PrismicLinkType',
   Image = 'PrismicImageType',
+  ImageFixed = 'PrismicImageFixedType',
+  ImageFluid = 'PrismicImageFluidType',
   ImageThumbnail = 'PrismicImageThumbnailType',
   ImageThumbnails = 'PrismicImageThumbnailsType',
+  ImageDimensions = 'PrismicImageDimensionsType',
+  ImageInterface = 'PrismicImageInterface',
   Embed = 'PrismicEmbedType',
   GeoPoint = 'PrismicGeoPointType',
   StructuredText = 'PrismicStructuredTextType',
@@ -350,6 +355,7 @@ export type BrowserPluginOptions = GatsbyPluginOptions &
     | 'lang'
     | 'typePathsFilenamePrefix'
     | 'prismicToolbar'
+    | 'typenamePrefix'
   >
 
 export interface PluginOptions extends GatsbyPluginOptions {
@@ -367,4 +373,5 @@ export interface PluginOptions extends GatsbyPluginOptions {
   prismicToolbar?: boolean | 'legacy'
   imageImgixParams?: ImgixUrlParams
   imagePlaceholderImgixParams?: ImgixUrlParams
+  typenamePrefix?: string
 }

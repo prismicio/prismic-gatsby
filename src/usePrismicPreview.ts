@@ -27,6 +27,7 @@ export type UsePrismicPreviewOptions = Pick<
   | 'fetchLinks'
   | 'lang'
   | 'typePathsFilenamePrefix'
+  | 'typenamePrefix'
 > & {
   pathResolver?: PluginOptions['linkResolver']
   schemasDigest?: string
@@ -101,6 +102,7 @@ export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
     lang: string
     typePathsFilenamePrefix: string
     schemasDigest: string
+    typenamePrefix: string
   } = useMemo(() => {
     if (!isBrowser) return options
 

@@ -54,6 +54,7 @@ const normalizeField = async (
     normalizeLinkField,
     normalizeImageField,
     normalizeSlicesField,
+    pluginOptions: { typenamePrefix },
   } = env
 
   const type = getTypeForPath([...path, apiId], typePaths)
@@ -128,6 +129,7 @@ const normalizeField = async (
             internal: {
               type: buildSchemaTypeName(
                 `${doc.type} ${apiId} ${slice.slice_type}`,
+                typenamePrefix,
               ),
               contentDigest: createContentDigest(slice),
             },
@@ -200,7 +202,7 @@ export const documentToNodes = async (
   env: DocumentsToNodesEnvironment,
 ) => {
   const { createNode, createContentDigest, createNodeId, pluginOptions } = env
-  const { linkResolver } = pluginOptions
+  const { linkResolver, typenamePrefix } = pluginOptions
 
   let linkResolverForDoc: LinkResolver | undefined = undefined
   if (linkResolver) linkResolverForDoc = linkResolver({ node: doc })
@@ -232,7 +234,7 @@ export const documentToNodes = async (
     alternate_languages: normalizedAlernativeLanguages,
     url: docUrl,
     internal: {
-      type: buildSchemaTypeName(doc.type),
+      type: buildSchemaTypeName(doc.type, typenamePrefix),
       contentDigest: createContentDigest(doc),
     },
     _previewable: doc.id,
