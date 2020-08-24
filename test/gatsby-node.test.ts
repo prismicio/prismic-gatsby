@@ -65,6 +65,15 @@ describe('sourceNodes', () => {
     expect(mockGatsbyContext.actions.createTypes).toMatchSnapshot()
   })
 
+  test('creates types with prefix, if provided', async () => {
+    await sourceNodes(mockGatsbyContext, {
+      ...pluginOptions,
+      typenamePrefix: 'Prefix',
+    })
+
+    expect(mockGatsbyContext.actions.createTypes).toMatchSnapshot()
+  })
+
   test('creates nodes', async () => {
     await sourceNodes(mockGatsbyContext, pluginOptions)
 
