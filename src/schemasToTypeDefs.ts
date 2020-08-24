@@ -106,7 +106,7 @@ const fieldToType = (
     }
 
     case FieldType.Image: {
-      const type = GraphQLType.Image
+      const type = buildSchemaTypeName(GraphQLType.Image, typenamePrefix)
       enqueueTypePath([...path, apiId], type)
 
       const thumbnails = (field as ImageFieldSchema)?.config?.thumbnails
@@ -114,7 +114,7 @@ const fieldToType = (
         for (const thumbnail of thumbnails)
           enqueueTypePath(
             [...path, apiId, 'thumbnails', thumbnail.name],
-            GraphQLType.ImageThumbnail,
+            buildSchemaTypeName(GraphQLType.ImageThumbnail, typenamePrefix),
           )
 
       return type
@@ -361,7 +361,7 @@ const schemaToTypeDefs = (
   )
 
   // Create the main schema type.
-  const schemaTypeName = buildSchemaTypeName(apiId)
+  const schemaTypeName = buildSchemaTypeName(apiId, typenamePrefix)
   const schemaFieldTypes = {
     _previewable: {
       type: 'ID!',
@@ -439,6 +439,7 @@ const schemaToTypeDefs = (
  */
 const buildImageThumbnailsType = (
   typePaths: TypePath[],
+  typenamePrefix: string | undefined,
   gatsbySchema: NodePluginSchema,
 ) => {
   const keys = typePaths
@@ -447,7 +448,7 @@ const buildImageThumbnailsType = (
 
   if (keys.length < 1)
     return gatsbySchema.buildScalarType({
-      name: GraphQLType.ImageThumbnails,
+      name: buildSchemaTypeName(GraphQLType.ImageThumbnails, typenamePrefix),
       serialize: () => null,
     })
 
@@ -505,7 +506,9 @@ export const schemasToTypeDefs = (
   )
 
   // Type for all image thumbnail fields.
-  enqueueTypeDef(buildImageThumbnailsType(typePaths, gatsbySchema))
+  enqueueTypeDef(
+    buildImageThumbnailsType(typePaths, typenamePrefix, gatsbySchema),
+  )
 
   return { typeDefs, typePaths }
 }

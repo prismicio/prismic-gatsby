@@ -9,6 +9,7 @@ import {
 } from 'gatsby-plugin-imgix/dist/node'
 
 import { GraphQLType } from './types'
+import { buildSchemaTypeName } from 'utils'
 
 interface PartialPrismicImageType {
   url?: string
@@ -20,6 +21,7 @@ interface PartialPrismicImageType {
 
 type BuildPrismicImageTypesArgs = {
   schema: NodePluginSchema
+  typenamePrefix: string | undefined
   cache: GatsbyCache
   defaultImgixParams?: ImgixUrlParams
   defaultPlaceholderImgixParams?: ImgixUrlParams
@@ -27,6 +29,7 @@ type BuildPrismicImageTypesArgs = {
 
 export const buildPrismicImageTypes = ({
   schema,
+  typenamePrefix,
   cache,
   defaultImgixParams,
   defaultPlaceholderImgixParams,
@@ -36,19 +39,18 @@ export const buildPrismicImageTypes = ({
   const resolveHeight = (obj: PartialPrismicImageType) => obj.dimensions?.height
 
   const PrismicImageFixedType = createImgixFixedType({
-    name: GraphQLType.ImageFixed,
+    name: buildSchemaTypeName(GraphQLType.ImageFixed, typenamePrefix),
     cache,
   })
 
   const PrismicImageFluidType = createImgixFluidType({
-    name: GraphQLType.ImageFluid,
+    name: buildSchemaTypeName(GraphQLType.ImageFluid, typenamePrefix),
     cache,
   })
 
   const PrismicImageType = schema.buildObjectType({
-    name: GraphQLType.Image,
+    name: buildSchemaTypeName(GraphQLType.Image, typenamePrefix),
     description: 'An image field with optional constrained thumbnails.',
-    interfaces: [GraphQLType.ImageInterface],
     fields: {
       alt: GraphQLType.String,
       copyright: GraphQLType.String,
@@ -79,14 +81,16 @@ export const buildPrismicImageTypes = ({
         type: GraphQLType.File,
         extensions: { link: {} },
       },
-      thumbnails: GraphQLType.ImageThumbnails,
+      thumbnails: buildSchemaTypeName(
+        GraphQLType.ImageThumbnails,
+        typenamePrefix,
+      ),
     },
   })
 
   const PrismicImageThumbnailType = schema.buildObjectType({
-    name: GraphQLType.ImageThumbnail,
+    name: buildSchemaTypeName(GraphQLType.ImageThumbnail, typenamePrefix),
     description: 'An image thumbnail with constraints.',
-    interfaces: [GraphQLType.ImageInterface],
     fields: {
       alt: GraphQLType.String,
       copyright: GraphQLType.String,
@@ -375,34 +379,6 @@ export const buildTypes = ({ schema }: BuildTypesArgs) => {
     },
   })
 
-  const PrismicImageInterface = schema.buildInterfaceType({
-    name: 'PrismicImageInterface',
-    fields: {
-      alt: { type: 'String', description: "The image's alternative text." },
-      copyright: { type: 'String', description: "The image's copyright text." },
-      dimensions: {
-        type: 'PrismicImageDimensionsType',
-        description: "The image's dimensions.",
-      },
-      url: { type: 'String', description: "The image's URL on Prismic's CDN." },
-      localFile: {
-        type: 'File',
-        description:
-          'The locally downloaded image if `shouldNormalizeImage` returns true.',
-      },
-      fixed: {
-        type: 'PrismicImageFixedType',
-        description:
-          "`gatsby-image` fixed image data using Prismic's CDN via Imgix.",
-      },
-      fluid: {
-        type: 'PrismicImageFluidType',
-        description:
-          "`gatsby-image` fluid image data using Prismic's CDN via Imgix.",
-      },
-    },
-  })
-
   const PrismicDocumentInterface = schema.buildInterfaceType({
     name: 'PrismicDocument',
     fields: {
@@ -465,7 +441,6 @@ export const buildTypes = ({ schema }: BuildTypesArgs) => {
     PrismicLinkTypes,
     PrismicLinkType,
     PrismicSliceInterface,
-    PrismicImageInterface,
     PrismicDocumentInterface,
   ]
 }
