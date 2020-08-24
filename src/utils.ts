@@ -124,8 +124,13 @@ export const isEmptyObj = (obj: object) => {
  *
  * @returns Type name for the schema.
  */
-export const buildSchemaTypeName = (apiId: string, typenamePrefix: string) =>
-  pascalCase(`Prismic ${typenamePrefix} ${apiId}`, { transform: pascalCaseTransformMerge })
+export const buildSchemaTypeName = (
+  apiId: string,
+  typenamePrefix: string = '',
+) =>
+  pascalCase(`Prismic ${typenamePrefix} ${apiId}`, {
+    transform: pascalCaseTransformMerge,
+  })
 
 /**
  * Determines whether the current context is the browser.
