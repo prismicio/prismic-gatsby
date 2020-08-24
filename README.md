@@ -20,6 +20,7 @@ repositories.
   - [Image processing](#Image-processing)
 - [Previews](#Previews)
 - [Releases](#Releases)
+- [Source from multiple repositories](#Source-from-multiple-repositories)
 - [Limitations](#Limitations)
   - [GraphQL-valid field names](#GraphQL-valid-field-names)
 - [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
@@ -159,6 +160,15 @@ plugins: [
         blur: 15,
         q: 50,
       },
+
+      // If your site is using multiple instances of `gatsby-source-prismic` to
+      // pull data in from more than one Prismic repository, provide a unique
+      // typename prefix for each instance. Doing so will prevent document
+      // types with conflicting typenames.
+      // For example, if you have a custom type named "Page" and you add a
+      // prefix of "MyRepo", the full typename will become "MyRepoPage".
+      // The default value is no prefix.
+      typenamePrefix: 'MyRepo',
 
       // Set the prefix for the filename where type paths for your schemas are
       // stored. The filename will include the MD5 hash of your schemas after
@@ -707,6 +717,47 @@ explained in the [preview guide](./docs/previews-guide.md). Using a `releaseID`
 is a way to view at once another version of your website, but under the hood it
 works the same way as the default build. So you can preview a draft of one
 document of your release just like you would do with the master version.
+
+## Source from multiple repositories
+
+You can source content from multiple Prismic repositories by including the
+plugin more than once in your `gatsby-config.js` file. Each instance of the
+plugin can run independent from each-other.
+
+Because multiple repositories may use the same name for custom types, such as
+"Page" or "Blog Post," providing the `typenamePrefix` option is highly
+recommended in this situation.
+
+```javascript
+// In your gatsby-config.js
+plugins: [
+  {
+    resolve: 'gatsby-source-prismic',
+    options: {
+      repositoryName: 'my-first-repo',
+      typenamePrefix: 'FirstRepo',
+      // ...
+    },
+  },
+  {
+    resolve: 'gatsby-source-prismic',
+    options: {
+      repositoryName: 'my-second-repo',
+      typenamePrefix: 'SecondRepo',
+      // ...
+    },
+  },
+]
+```
+
+Now if both repositories contain a custom type name "Page", they will be
+namespaced as such:
+
+- `my-first-repo` will use `PrismicFirstRepoPage`
+- `my-second-repo` will use `PrismicSecondRepoPage`
+
+All other settings, such as `linkResolver` and `imageImgixParams` can be set
+specifically for each repository.
 
 ## Limitations
 
