@@ -29,7 +29,6 @@ const mockGatsbyContext = {
 
 const pluginOptions = {
   repositoryName: 'repoName',
-  typenamePrefix: '',
   schemas: { page: mockSchema },
   plugins: [],
 }
@@ -57,7 +56,7 @@ describe('usePrismicPreview', () => {
 
   test('updates state while fetching preview', async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
-      usePrismicPreview({ repositoryName: pluginOptions.repositoryName, typenamePrefix: pluginOptions.typenamePrefix }),
+      usePrismicPreview({ repositoryName: pluginOptions.repositoryName }),
     )
 
     expect(result.current).toMatchObject({ isLoading: true, isPreview: true })
@@ -70,7 +69,7 @@ describe('usePrismicPreview', () => {
     window.history.pushState({}, '', '/preview')
 
     const { result } = renderHook(() =>
-      usePrismicPreview({ repositoryName: pluginOptions.repositoryName, typenamePrefix: pluginOptions.typenamePrefix }),
+      usePrismicPreview({ repositoryName: pluginOptions.repositoryName }),
     )
 
     expect(result.current).toMatchObject({ isLoading: false, isPreview: false })
@@ -78,7 +77,7 @@ describe('usePrismicPreview', () => {
 
   test('throws if unknown repository', () => {
     const { result } = renderHook(() =>
-      usePrismicPreview({ repositoryName: 'unknown', typenamePrefix: pluginOptions.typenamePrefix }),
+      usePrismicPreview({ repositoryName: 'unknown' }),
     )
 
     expect(result.error.message).toMatch(/could not find/i)
