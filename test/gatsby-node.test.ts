@@ -56,6 +56,9 @@ describe('sourceNodes', () => {
         kind: 'UNION',
         config,
       })),
+      buildScalarType: jest
+        .fn()
+        .mockImplementation((config) => ({ kind: 'SCALAR', config })),
     },
     createNodeId: jest.fn().mockReturnValue('createNodeId'),
     createContentDigest: jest.fn().mockReturnValue('createContentDigest'),

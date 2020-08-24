@@ -60,7 +60,7 @@ const normalizeField = async (
   const type = getTypeForPath([...path, apiId], typePaths)
 
   switch (type) {
-    case GraphQLType.Image: {
+    case buildSchemaTypeName(GraphQLType.Image, typenamePrefix): {
       const baseObj: ImageField = pick(field as ImageField, IMAGE_FIELD_KEYS)
       const thumbsObj = omit(field as ImageField, IMAGE_FIELD_KEYS) as {
         [key: string]: ImageField

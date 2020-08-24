@@ -443,7 +443,11 @@ const buildImageThumbnailsType = (
   gatsbySchema: NodePluginSchema,
 ) => {
   const keys = typePaths
-    .filter((typePath) => typePath.type === GraphQLType.ImageThumbnail)
+    .filter(
+      (typePath) =>
+        typePath.type ===
+        buildSchemaTypeName(GraphQLType.ImageThumbnail, typenamePrefix),
+    )
     .map((typePath) => typePath.path[typePath.path.length - 1])
 
   if (keys.length < 1)
@@ -453,12 +457,12 @@ const buildImageThumbnailsType = (
     })
 
   const fieldTypes = keys.reduce((acc, key) => {
-    acc[key] = GraphQLType.ImageThumbnail
+    acc[key] = buildSchemaTypeName(GraphQLType.ImageThumbnail, typenamePrefix)
     return acc
-  }, {} as { [key: string]: GraphQLType.ImageThumbnail })
+  }, {} as { [key: string]: string })
 
   return gatsbySchema.buildObjectType({
-    name: GraphQLType.ImageThumbnails,
+    name: buildSchemaTypeName(GraphQLType.ImageThumbnails, typenamePrefix),
     fields: fieldTypes,
   })
 }

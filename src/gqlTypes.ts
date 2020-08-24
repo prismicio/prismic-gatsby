@@ -9,7 +9,7 @@ import {
 } from 'gatsby-plugin-imgix/dist/node'
 
 import { GraphQLType } from './types'
-import { buildSchemaTypeName } from 'utils'
+import { buildSchemaTypeName } from './utils'
 
 interface PartialPrismicImageType {
   url?: string

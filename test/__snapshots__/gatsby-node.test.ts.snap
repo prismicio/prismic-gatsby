@@ -523,9 +523,6 @@ exports[`sourceNodes creates types 1`] = `
                 "type": "String",
               },
             },
-            "interfaces": Array [
-              "PrismicImageInterface",
-            ],
             "name": "PrismicImageType",
           },
           "kind": "OBJECT",
@@ -599,9 +596,6 @@ exports[`sourceNodes creates types 1`] = `
                 "type": "String",
               },
             },
-            "interfaces": Array [
-              "PrismicImageInterface",
-            ],
             "name": "PrismicImageThumbnailType",
           },
           "kind": "OBJECT",
@@ -872,42 +866,6 @@ exports[`sourceNodes creates types 1`] = `
               },
             },
             "name": "PrismicSliceInterface",
-          },
-          "kind": "INTERFACE",
-        },
-        Object {
-          "config": Object {
-            "fields": Object {
-              "alt": Object {
-                "description": "The image's alternative text.",
-                "type": "String",
-              },
-              "copyright": Object {
-                "description": "The image's copyright text.",
-                "type": "String",
-              },
-              "dimensions": Object {
-                "description": "The image's dimensions.",
-                "type": "PrismicImageDimensionsType",
-              },
-              "fixed": Object {
-                "description": "\`gatsby-image\` fixed image data using Prismic's CDN via Imgix.",
-                "type": "PrismicImageFixedType",
-              },
-              "fluid": Object {
-                "description": "\`gatsby-image\` fluid image data using Prismic's CDN via Imgix.",
-                "type": "PrismicImageFluidType",
-              },
-              "localFile": Object {
-                "description": "The locally downloaded image if \`shouldNormalizeImage\` returns true.",
-                "type": "File",
-              },
-              "url": Object {
-                "description": "The image's URL on Prismic's CDN.",
-                "type": "String",
-              },
-            },
-            "name": "PrismicImageInterface",
           },
           "kind": "INTERFACE",
         },
@@ -1079,7 +1037,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
           "config": Object {
             "fields": Object {
               "caption": "PrismicStructuredTextType",
-              "image": "PrismicImageType",
+              "image": "PrismicPrefixImageType",
               "orientation": "Boolean",
             },
             "name": "PrismicPrefixPageBodyImagesItemType",
@@ -1228,9 +1186,9 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
         Object {
           "config": Object {
             "fields": Object {
-              "Mobile": "PrismicImageThumbnailType",
+              "Mobile": "PrismicPrefixImageThumbnailType",
             },
-            "name": "PrismicImageThumbnailsType",
+            "name": "PrismicPrefixImageThumbnailsType",
           },
           "kind": "OBJECT",
         },
@@ -1238,8 +1196,8 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
     ],
     Array [
       Array [
-        "PrismicImageFixedType",
-        "PrismicImageFluidType",
+        "PrismicPrefixImageFixedType",
+        "PrismicPrefixImageFluidType",
       ],
     ],
     Array [
@@ -1270,7 +1228,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "PrismicImageFixedType",
+                "type": "PrismicPrefixImageFixedType",
               },
               "fluid": Object {
                 "args": Object {
@@ -1294,7 +1252,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "PrismicImageFluidType",
+                "type": "PrismicPrefixImageFluidType",
               },
               "localFile": Object {
                 "extensions": Object {
@@ -1302,7 +1260,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
                 },
                 "type": "File",
               },
-              "thumbnails": "PrismicImageThumbnailsType",
+              "thumbnails": "PrismicPrefixImageThumbnailsType",
               "url": Object {
                 "args": Object {
                   "imgixParams": Object {
@@ -1314,10 +1272,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
                 "type": "String",
               },
             },
-            "interfaces": Array [
-              "PrismicImageInterface",
-            ],
-            "name": "PrismicImageType",
+            "name": "PrismicPrefixImageType",
           },
           "kind": "OBJECT",
         },
@@ -1347,7 +1302,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "PrismicImageFixedType",
+                "type": "PrismicPrefixImageFixedType",
               },
               "fluid": Object {
                 "args": Object {
@@ -1371,7 +1326,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
                   },
                 },
                 "resolve": [Function],
-                "type": "PrismicImageFluidType",
+                "type": "PrismicPrefixImageFluidType",
               },
               "localFile": Object {
                 "extensions": Object {
@@ -1390,10 +1345,7 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
                 "type": "String",
               },
             },
-            "interfaces": Array [
-              "PrismicImageInterface",
-            ],
-            "name": "PrismicImageThumbnailType",
+            "name": "PrismicPrefixImageThumbnailType",
           },
           "kind": "OBJECT",
         },
@@ -1663,42 +1615,6 @@ exports[`sourceNodes creates types with prefix, if provided 1`] = `
               },
             },
             "name": "PrismicSliceInterface",
-          },
-          "kind": "INTERFACE",
-        },
-        Object {
-          "config": Object {
-            "fields": Object {
-              "alt": Object {
-                "description": "The image's alternative text.",
-                "type": "String",
-              },
-              "copyright": Object {
-                "description": "The image's copyright text.",
-                "type": "String",
-              },
-              "dimensions": Object {
-                "description": "The image's dimensions.",
-                "type": "PrismicImageDimensionsType",
-              },
-              "fixed": Object {
-                "description": "\`gatsby-image\` fixed image data using Prismic's CDN via Imgix.",
-                "type": "PrismicImageFixedType",
-              },
-              "fluid": Object {
-                "description": "\`gatsby-image\` fluid image data using Prismic's CDN via Imgix.",
-                "type": "PrismicImageFluidType",
-              },
-              "localFile": Object {
-                "description": "The locally downloaded image if \`shouldNormalizeImage\` returns true.",
-                "type": "File",
-              },
-              "url": Object {
-                "description": "The image's URL on Prismic's CDN.",
-                "type": "String",
-              },
-            },
-            "name": "PrismicImageInterface",
           },
           "kind": "INTERFACE",
         },
