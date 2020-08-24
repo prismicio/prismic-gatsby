@@ -36,13 +36,12 @@ export const buildPrismicImageTypes = ({
   const resolveHeight = (obj: PartialPrismicImageType) => obj.dimensions?.height
 
   const PrismicImageFixedType = createImgixFixedType({
-    // name: pascalCase(`Prismic ${typenamePrefix} ImageFixedType`, { transform: pascalCaseTransformMerge }),
     name: GraphQLType.ImageFixed,
     cache,
   })
 
   const PrismicImageFluidType = createImgixFluidType({
-    name: GraphQLType.ImageFixed,
+    name: GraphQLType.ImageFluid,
     cache,
   })
 
