@@ -13,6 +13,6 @@
       ]
   },
   "domain": "qwerty",
-  "apiUrl": "http://qwerty.porismic.io/api",
+  "apiUrl": "http://qwerty.prismic.io/api",
   "secret": null
 }
