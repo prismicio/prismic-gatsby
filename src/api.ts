@@ -8,7 +8,8 @@ import PrismicResolvedApi, {
   QueryOptions,
 } from 'prismic-javascript/d.ts/ResolvedApi'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
-import { PluginOptions } from './types'
+import { PluginOptions, WebhookDocument } from './types'
+import ApiSearchResponse from 'prismic-javascript/d.ts/ApiSearchResponse'
 
 export const createClient = async (
   repositoryName: string,
@@ -75,4 +76,45 @@ export const fetchAllDocuments = async (
   if (lang) queryOptions.lang = lang
 
   return await pagedGet(client, queryOptions, 1, API_PAGE_SIZE, [], reporter)
+}
+
+export async function fetchDocumentsByIds(
+  pluginOptions: PluginOptions,
+  gatsbyContext: SourceNodesArgs,
+  documents: WebhookDocument[]
+): Promise<PrismicDocument[]> {
+  const {
+    repositoryName,
+    releaseID,
+    accessToken,
+    fetchLinks,
+    lang,
+  } = pluginOptions
+
+  const { reporter } = gatsbyContext
+
+  const client = await createClient(repositoryName, accessToken);
+
+  const queryOptions: QueryOptions = {}
+  
+  if (releaseID) {
+    const ref = client.refs.find((r) => r.id === releaseID)
+    if (ref) {
+      queryOptions.ref = ref.ref
+    } else {
+      reporter.warn(
+        msg(`A release with ID "${releaseID}" was not found. Defaulting to the master ref instead.`),
+      )
+    }
+  }
+  
+  if (fetchLinks) queryOptions.fetchLinks = fetchLinks
+  
+  if (lang) queryOptions.lang = lang
+
+  const documentIds = documents.map(doc => doc.id)
+
+  const response: ApiSearchResponse = await client.getByIDs(documentIds, queryOptions)
+  
+  return response.results;
 }
