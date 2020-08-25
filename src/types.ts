@@ -395,24 +395,25 @@ export interface PrismicWebhook extends WebhookBase {
   masks: Operations<WebhookMask>;
   tags: Operations<WebhookTag>;
 
-  documents: WebhookDocumentOperations;
+  documents: Operations<WebhookDocument>
   experiments?: Operations<WebhookExperiment>;
 }
 
 export interface WebhookDocument {
   id: string;
 }
-
+/* We currently don't use update for docs.
 export interface WebhookDocumentOperations {
   addition?: WebhookDocument[];
   deletion?: WebhookDocument[];
 }
+*/
 
 export interface WebhookRelease {
   id: string;
   ref: string;
   label: string;
-  documents: WebhookDocumentOperations;
+  documents: Operations<WebhookDocument>;
 }
 
 export interface WebhookMask {
