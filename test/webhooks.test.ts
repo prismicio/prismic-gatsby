@@ -1,9 +1,16 @@
 import { SourceNodesArgs } from 'gatsby'
 import mockSchema from './__fixtures__/schema.json'
 import { validateSecret, isPrismicUrl, isPrismicWebhook, handleWebhook } from '../src/webhook'
-import { PluginOptions, Schema } from '../src/types'
-import { testTrigger , mainApiAddition, releaseAddition } from './__fixtures__/webhooks'
 import { schemasToTypeDefs } from '../src/schemasToTypeDefs'
+
+import { PluginOptions, Schema } from '../src/types'
+import {
+  testTrigger ,
+  mainApiAddition,
+  releaseAddition,
+  mainApiDeletion,
+  releaseDeletion,
+} from './__fixtures__/webhooks'
 
 
 describe("validadteSecret", () => {
@@ -209,6 +216,50 @@ describe("handleWebhook", () => {
 
     expect(gatsbyContext.actions.createNode).not.toBeCalled()
   })
+
+  it("should call deleteNode when passed a webhook for main api deletion", async () => {
+    
+    const pluginOptions: PluginOptions = {
+      repositoryName: 'repositoryName',
+      plugins: [],
+      schemas: { page: mockSchema as Schema },
+    }
+
+    const gatsbyContext = createGatsbyContext();
+
+    const { typePaths } = schemasToTypeDefs(
+      pluginOptions.schemas,
+      gatsbyContext,
+    )
+
+    await handleWebhook(pluginOptions, gatsbyContext, typePaths, mainApiDeletion)
+
+    expect(gatsbyContext.actions.deleteNode).toBeCalled()
+    
+  })
+
+  it("should call deleteNode node when passed a webhook for a release deletion and when running in development", async () => {
+
+    process.env.NODE_ENV = "development";
+
+    const pluginOptions: PluginOptions = {
+      repositoryName: 'repositoryName',
+      plugins: [],
+      schemas: { page: mockSchema as Schema },
+      releaseID: "XyfxIPl3p7YAQ7Mg"
+    }
+
+    const gatsbyContext = createGatsbyContext();
+
+    const { typePaths } = schemasToTypeDefs(
+      pluginOptions.schemas,
+      gatsbyContext,
+    )
+
+    await handleWebhook(pluginOptions, gatsbyContext, typePaths, releaseDeletion)
+
+    expect(gatsbyContext.actions.deleteNode).toBeCalled()
+  })
 })
 
 
@@ -219,6 +270,7 @@ function createGatsbyContext() {
     actions: {
       createTypes: jest.fn(),
       createNode: jest.fn(),
+      deleteNode: jest.fn(),
     },
     // @ts-expect-error - partial implementation
     store: {
@@ -254,6 +306,9 @@ function createGatsbyContext() {
     cache: {
       get: jest.fn(),
     },
+    // @ts-expect-error - partial implementation
+    getNode: (id) => ({ id }),
+    getNodes: () => [],
   }
 
   return mockGatsbyContext
