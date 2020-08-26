@@ -107,8 +107,8 @@ describe("isPrismicWebhook", () => {
 describe("handleWebhook", () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    if (process.env.GATSBY_ENV) {
-      delete process.env.GATSBY_ENV;
+    if (process.env.NODE_ENV) {
+      delete process.env.NODE_ENV;
     }
   })
 
@@ -131,7 +131,7 @@ describe("handleWebhook", () => {
 
   it("should not call createNode when passed a webhook for a release addition and the the releaseID is unconfigured", async () => {
 
-    process.env.GATSBY_ENV = 'development';
+    process.env.NODE_ENV = 'development';
 
     const pluginOptions = {
       repositoryName: 'repositoryName',
@@ -151,7 +151,7 @@ describe("handleWebhook", () => {
 
   it("should not call createNode when passed a webhook for a release addition and the releaseID does not match the configured id", async () => {
 
-    process.env.GATSBY_ENV = 'development';
+    process.env.NODE_ENV = 'development';
 
     const pluginOptions: PluginOptions = {
       repositoryName: 'repositoryName',
@@ -172,7 +172,7 @@ describe("handleWebhook", () => {
 
   it("should call createNode when passed a webhook for a release addition and the releaseID match", async () => {
 
-    process.env.GATSBY_ENV = "development";
+    process.env.NODE_ENV = "development";
 
     const pluginOptions: PluginOptions = {
       repositoryName: 'repositoryName',

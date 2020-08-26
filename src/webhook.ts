@@ -61,7 +61,7 @@ export async function handleWebhook(pluginOptions: PluginOptions, gatsbyContext:
   /* const releaseRemovals = (prismicWebhook.releases.deletion || []).map(doc => doc.id)
   const mainApiRemovals = (prismicWebhook.documents.deletion || []).map(doc => doc.id) */
 
-  const buildRelease = (releaseID && process.env.GATSBY_ENV === 'development')
+  const buildRelease = (releaseID && process.env.NODE_ENV === 'development')
  
   const documentsToAdd = buildRelease ? [...releaseAdditions, ...mainApiAdditions] : mainApiAdditions
 
