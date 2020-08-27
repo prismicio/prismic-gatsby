@@ -111,8 +111,6 @@ export async function handleWebhookDeletions(pluginOptions: PluginOptions, gatsb
   const { reporter, actions, getNode, createNodeId } = gatsbyContext
   const { deleteNode } = actions
 
-  reporter.info(msg("removing documents"))
-
   // confirm documents have been removed
   const docsThatStillExist = await fetchDocumentsByIds(pluginOptions, gatsbyContext, documents)
 
@@ -122,14 +120,18 @@ export async function handleWebhookDeletions(pluginOptions: PluginOptions, gatsb
 
   const toRemove = documents.filter(doc => !notToRemove.includes(doc.id))
 
-  const count = toRemove.map(({ id }) => createNodeId(id))
-  .map(getNode)
-  .reduce((acc: number, node) => {
-    deleteNode({ node })
-    return acc + 1;
-  }, 0)
+  if(toRemove.length > 0) {
+    reporter.info(msg(`removing ${toRemove.length} ${toRemove.length > 1 ? "documents" : "document"}`))
+    
+    const count = toRemove.map(({ id }) => createNodeId(id))
+    .map(getNode)
+    .reduce((acc: number, node) => {
+      deleteNode({ node })
+      return acc + 1;
+    }, 0)
 
-  reporter.info(msg(`removed ${count} ${count > 1 ? "documents" : "document"}`))
+    reporter.info(msg(`removed ${count} ${count > 1 ? "documents" : "document"}`))
+  }
 
   if(docsToUpdate.length > 0) {
     await handleWebhookUpdates(pluginOptions, gatsbyContext, typePaths, docsToUpdate)
