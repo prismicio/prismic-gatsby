@@ -122,7 +122,7 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     gatsbyContext,
   )
 
-  if(!webhookBody) {
+  if(!webhookBody || JSON.stringify(webhookBody) === "{}") {
     /** Initial build or rebuild everything */
     createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
     await buildAll(pluginOptions, gatsbyContext, typePaths)
