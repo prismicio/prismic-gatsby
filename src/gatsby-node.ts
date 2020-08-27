@@ -134,8 +134,11 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     // touch nodes to prevent garbage collection
     getNodes().forEach(node => touchNode({ nodeId: node.id}))
 
+    createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
+
     const prismicWebhook = webhookBody as PrismicWebhook;
     await handleWebhook(pluginOptions, gatsbyContext, typePaths, prismicWebhook)
+
   }
 }
 
