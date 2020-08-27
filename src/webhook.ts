@@ -131,5 +131,7 @@ export async function handleWebhookDeletions(pluginOptions: PluginOptions, gatsb
 
   reporter.info(msg(`removed ${count} ${count > 1 ? "documents" : "document"}`))
 
-  await handleWebhookUpdates(pluginOptions, gatsbyContext, typePaths, docsToUpdate)
+  if(docsToUpdate.length > 0) {
+    await handleWebhookUpdates(pluginOptions, gatsbyContext, typePaths, docsToUpdate)
+  }
 }
