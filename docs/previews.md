@@ -58,6 +58,10 @@ The `withPreview` HOC automatically merges preview data with Gatsby's static
 data in the `data` page prop. By using `withPreview`, your page components do
 not need to be written in a special way to take advantage of Prismic Previews.
 
+In order to preview changes for both unpublished and published documents, the
+`prismicId` property must be included in the root of the GraphQL query. Querys
+without the `prismicId` property will only work for unpublished documents.
+
 To use `withPreview`, wrap the `export default` with `withPreview` like the
 following:
 
@@ -82,6 +86,7 @@ export default withPreview(PageTemplate)
 export const query = graphql`
   query PageTemplate($uid: String!) {
     prismicPage(uid: { eq: $uid }) {
+      prismicId
       data {
         title {
           text

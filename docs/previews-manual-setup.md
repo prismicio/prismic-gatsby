@@ -344,6 +344,10 @@ For this example, let's assume we navigated to a page generated using a template
 at `src/templates/page.js`. If your site uses a static page or a different
 template, these changes will go there instead.
 
+In order to preview changes for both unpublished and published documents, the
+property `prismicId` must be included in the root of the GraphQL query. Querys
+without the `prismicId` property will only work for unpublished documents.
+
 ```javascript
 // src/templates/page.js
 import React from 'react'
@@ -368,6 +372,7 @@ export const PageTemplate = ({ data }) => {
 export const query = graphql`
   query($id: String!) {
     prismicPage(id: { eq: $id }) {
+      prismicId
       data {
         title
         body {
