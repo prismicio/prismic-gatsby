@@ -65,7 +65,7 @@ export async function handleWebhook(pluginOptions: PluginOptions, gatsbyContext:
   ] : mainApiDocuments
 
 
-  reporter.info(`checking ${documentsToCheck.length} ${documentsToCheck.length > 1 ? "documents" : "document"}`)
+  reporter.info(msg(`checking ${documentsToCheck.length} ${documentsToCheck.length > 1 ? "documents" : "document"}`))
 
   const documentsToUpdate: PrismicDocument[] = documentsToCheck.length ? await fetchDocumentsByIds(pluginOptions, gatsbyContext, documentsToCheck) : []
 
