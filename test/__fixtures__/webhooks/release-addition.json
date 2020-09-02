@@ -6,20 +6,16 @@
                 "id": "XyfxIPl3p7YAQ7Mg",
                 "ref": "XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8",
                 "label": "rel-1",
-                "documents": {
-                    "addition": [
-                        {
-                            "id": "XDF-DhEAACAA5b4F"
-                        }
-                    ]
-                }
+                "documents": [
+                    "XDF-DhEAACAA5b4F"
+                ]
             }
         ]
     },
     "masks": {},
     "tags": {},
     "experiments": {},
-    "documents": {},
+    "documents": [],
     "domain": "qwerty",
     "apiUrl": "http://qwerty.wroom.io/api",
     "secret": null

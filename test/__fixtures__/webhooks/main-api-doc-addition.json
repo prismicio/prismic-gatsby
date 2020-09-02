@@ -5,13 +5,9 @@
   "masks": {},
   "tags": {},
   "experiments": {},
-  "documents": {
-      "addition": [
-          {
-              "id": "XDF-DhEAACAA5b4F"
-          }
-      ]
-  },
+  "documents": [
+      "XDF-DhEAACAA5b4F"
+  ],
   "domain": "qwerty",
   "apiUrl": "http://qwerty.prismic.io/api",
   "secret": null

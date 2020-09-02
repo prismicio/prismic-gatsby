@@ -8,7 +8,7 @@ import PrismicResolvedApi, {
   QueryOptions,
 } from 'prismic-javascript/d.ts/ResolvedApi'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
-import { PluginOptions, WebhookDocument } from './types'
+import { PluginOptions } from './types'
 import ApiSearchResponse from 'prismic-javascript/d.ts/ApiSearchResponse'
 
 export function toPrismicUrl(nameOrUrl: string) {
@@ -90,7 +90,7 @@ export const fetchAllDocuments = async (
 export async function fetchDocumentsByIds(
   pluginOptions: PluginOptions,
   gatsbyContext: SourceNodesArgs,
-  documents: WebhookDocument[]
+  documents: string[]
 ): Promise<PrismicDocument[]> {
   const {
     repositoryName,
@@ -121,9 +121,7 @@ export async function fetchDocumentsByIds(
   
   if (lang) queryOptions.lang = lang
 
-  const documentIds = documents.map(doc => doc.id)
-
-  const response: ApiSearchResponse = await client.getByIDs(documentIds, queryOptions)
+  const response: ApiSearchResponse = await client.getByIDs(documents, queryOptions)
   
   return response.results;
 }

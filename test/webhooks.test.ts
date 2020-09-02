@@ -136,7 +136,7 @@ describe("handleWebhook", () => {
     expect(gatsbyContext.actions.createNode).toBeCalled()
   })
 
-  it("should not call createNode when passed a webhook for a release addition and the the releaseID is unconfigured", async () => {
+  it("should not call createNode when passed a webhook for a release addition and the the releaseID is not configured", async () => {
 
     process.env.NODE_ENV = 'development';
 
@@ -288,7 +288,8 @@ function createGatsbyContext() {
         throw err ?? msg
       }),
       verbose: jest.fn(),
-      info: jest.fn()
+      info: jest.fn(),
+      // warn: jest.fn()
     },
     // @ts-expect-error - partial implementation
     schema: {

@@ -1,5 +1,7 @@
 import { SourceNodesArgs } from 'gatsby'
-import { WebhookBase, PluginOptions, PrismicWebhook, TypePath, WebhookDocument } from 'types';
+import { WebhookBase, PluginOptions, PrismicWebhook, TypePath } from 'types';
+import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
+
 import { fetchDocumentsByIds } from './api'
 import { documentsToNodes } from './documentsToNodes'
 import { createEnvironment } from './environment.node'
@@ -41,99 +43,73 @@ export async function handleWebhook(pluginOptions: PluginOptions, gatsbyContext:
 
   // eventually we could handle changes to mask and custom types here :)
 
-  const mainApiAdditions = webhook.documents.addition || []
+  const mainApiDocuments = webhook.documents || []
 
-  const releaseAdditions = [
+  const releaseDocuments = [
     ...webhook.releases.update || [],
     ...webhook.releases.addition || [],
-  ].reduce((acc, release) => {
-    if(release.id !== releaseID) return acc;
-
-    return [
-      ...acc,
-      ...release.documents.addition || [],
-      // ...release.document.update || [], // not part of document spec at the moment
-    ]
-
-  }, [] as WebhookDocument[])
-
-
-  const buildRelease = (releaseID && process.env.NODE_ENV === 'development')
- 
-  const documentsToAdd = buildRelease ? [...releaseAdditions, ...mainApiAdditions] : mainApiAdditions
-
-  const mainApiRemovals = webhook.documents.deletion || []
-
-  const releaseRemovals = [
     ...webhook.releases.deletion || [],
-    ...webhook.releases.update || [],
   ].reduce((acc, release) => {
-
     if(release.id !== releaseID) return acc;
-    
+
     return [
       ...acc,
-      ...release.documents.deletion || []
+      ...release.documents || [],
     ]
 
-  }, [] as WebhookDocument[])
+  }, [] as string[])
 
-  const documentsToRemove = buildRelease ? [ ...releaseRemovals, ...mainApiRemovals] : mainApiRemovals;
+  const documentsToCheck: string[] = (releaseID && process.env.NODE_ENV === 'development') ? [
+    ...releaseDocuments,
+    ...mainApiDocuments
+  ] : mainApiDocuments
+
+
+  reporter.info(`checking ${documentsToCheck.length} ${documentsToCheck.length > 1 ? "documents" : "document"}`)
+
+  const documentsToUpdate: PrismicDocument[] = documentsToCheck.length ? await fetchDocumentsByIds(pluginOptions, gatsbyContext, documentsToCheck) : []
+
+  const documentsToUpdateIds = documentsToUpdate.map(doc => doc.id)
+
+  const documentsToRemove = documentsToCheck.filter(id => documentsToUpdateIds.includes(id) === false)
 
   if(documentsToRemove.length) {
-    await handleWebhookDeletions(pluginOptions, gatsbyContext, typePaths, documentsToRemove)
+    await handleWebhookDeletions(gatsbyContext, documentsToRemove)
   }
 
-  if(documentsToAdd.length) {
-    await handleWebhookUpdates(pluginOptions, gatsbyContext, typePaths, documentsToAdd);
+  if(documentsToUpdate.length) {
+    await handleWebhookUpdates(pluginOptions, gatsbyContext, typePaths, documentsToUpdate);
   }
   
   reporter.info(msg("Processed webhook"))
 }
 
-export async function handleWebhookUpdates(pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typePaths: TypePath[], documents: WebhookDocument[]) {
+export async function handleWebhookUpdates(pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typePaths: TypePath[], documents: PrismicDocument[]) {
 
   const { reporter } = gatsbyContext
 
-  reporter.info(msg(`Updating ${documents.length} documents`))
-  
-  const newDocs = await fetchDocumentsByIds(pluginOptions, gatsbyContext, documents)
-  
+  reporter.info(msg(`Updating ${documents.length} ${documents.length > 1 ? "documents" : "document"}`))
+    
   const env = createEnvironment(pluginOptions, gatsbyContext, typePaths)
 
-  const processedDocuments = await documentsToNodes(newDocs, env)
+  const processedDocuments = await documentsToNodes(documents, env)
 
-  reporter.info(msg(`Updated ${processedDocuments.length} documents`))
+  reporter.info(msg(`Updated ${processedDocuments.length} ${processedDocuments.length > 1 ? "documents" : "document"} `))
 }
 
-export async function handleWebhookDeletions(pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typePaths: TypePath[], documents: WebhookDocument[]) {
+export async function handleWebhookDeletions(gatsbyContext: SourceNodesArgs, documents: string[]) {
 
   const { reporter, actions, getNode, createNodeId } = gatsbyContext
   const { deleteNode } = actions
-
-  // confirm documents have been removed
-  const docsThatStillExist = await fetchDocumentsByIds(pluginOptions, gatsbyContext, documents)
-
-  const notToRemove = docsThatStillExist.map((doc) => doc.id)
-
-  const docsToUpdate: WebhookDocument[] = notToRemove.map(id => ({ id }))
-
-  const toRemove = documents.filter(doc => !notToRemove.includes(doc.id))
-
-  if(toRemove.length > 0) {
-    reporter.info(msg(`removing ${toRemove.length} ${toRemove.length > 1 ? "documents" : "document"}`))
+  
+  reporter.info(msg(`removing ${documents.length} ${documents.length > 1 ? "documents" : "document"}`))
     
-    const count = toRemove.map(({ id }) => createNodeId(id))
-    .map(getNode)
-    .reduce((acc: number, node) => {
-      deleteNode({ node })
-      return acc + 1;
-    }, 0)
+  const count = documents.map(id => createNodeId(id))
+  .map(getNode)
+  .reduce((acc: number, node) => {
+    deleteNode({ node })
+    return acc + 1;
+  }, 0)
 
-    reporter.info(msg(`removed ${count} ${count > 1 ? "documents" : "document"}`))
-  }
-
-  if(docsToUpdate.length > 0) {
-    await handleWebhookUpdates(pluginOptions, gatsbyContext, typePaths, docsToUpdate)
-  }
+  reporter.info(msg(`removed ${count} ${count > 1 ? "documents" : "document"}`))
 }

@@ -1,26 +1,13 @@
 {
   "type": "api-update",
   "masterRef": "Xyr6Y_l3p70AsZNN",
-  "releases": {
-      "update": [
-          {
-              "id": "XyrILPl3p70AsQ-9",
-              "ref": "XyrVpPl3p7oBsUsA~Xyr6Y_l3p70AsZNN",
-              "label": "foo",
-              "documents": {}
-          }
-      ]
-  },
+  "releases": {},
   "masks": {},
   "tags": {},
   "experiments": {},
-  "documents": {
-      "deletion": [
-          {
-              "id": "XyrIGfl3p7oAsQ9k"
-          }
-      ]
-  },
+  "documents": [
+    "XyrIGfl3p7oAsQ9k"
+  ],
   "domain": "qwerty",
   "apiUrl": "http://qwerty.wroom.test/api",
   "secret": null
