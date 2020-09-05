@@ -2,7 +2,7 @@
   "include": ["src", "types"],
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["dom", "esnext"],
+    "lib": ["esnext"],
     "importHelpers": true,
     "sourceMap": true,
     "rootDir": "./src",
@@ -16,7 +16,6 @@
     "paths": {
       "*": ["src/*", "node_modules/*"]
     },
-    "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true
   }
