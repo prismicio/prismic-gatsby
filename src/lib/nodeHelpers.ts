@@ -2,7 +2,7 @@ import * as gatsby from 'gatsby'
 
 import { pascalCase } from './pascalCase'
 
-interface Dependencies {
+interface CreateNodeHelpersDependencies {
   typePrefix: string
   createNodeId: gatsby.SourceNodesArgs['createNodeId']
   createContentDigest: gatsby.SourceNodesArgs['createContentDigest']
@@ -21,7 +21,7 @@ export const createNodeHelpers = ({
   typePrefix,
   createNodeId,
   createContentDigest,
-}: Dependencies): NodeHelpers => {
+}: CreateNodeHelpersDependencies): NodeHelpers => {
   const generateTypeName = (...parts: string[]): string =>
     pascalCase(typePrefix, ...parts)
 
@@ -37,8 +37,5 @@ export const createNodeHelpers = ({
     },
   })
 
-  return {
-    generateTypeName,
-    createNodeFactory,
-  }
+  return { generateTypeName, createNodeFactory }
 }
