@@ -121,10 +121,10 @@ export async function fetchDocumentsByIds(
   
   if (lang) queryOptions.lang = lang
 
-  // getByIds has a limit of 100 
   const chunks = chunk(documents, 100).map(docs => client.getByIDs(docs, queryOptions))
 
-  const responses = await Promise.all(chunks)
+  const responses: ApiSearchResponse[] = await Promise.all(chunks)
 
   return responses.flatMap(doc => doc.results)
+
 }
