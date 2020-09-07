@@ -1,7 +1,6 @@
 import * as gatsby from 'gatsby'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as Rr from 'fp-ts/Reader'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
 import * as A from 'fp-ts/Array'
@@ -48,20 +47,18 @@ const buildUnionType = (
 
 const registerType = <A extends gatsby.GatsbyGraphQLType>(
   type: A,
-): RTE.ReaderTaskEither<Dependencies, never, A> =>
+): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.map((deps) => deps.gatsbyCreateType(type)),
-    RTE.map(() => type),
   )
 
 const registerTypes = <A extends gatsby.GatsbyGraphQLType[]>(
   types: A,
-): RTE.ReaderTaskEither<Dependencies, never, A> =>
+): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.map((deps) => deps.gatsbyCreateType(types)),
-    RTE.map(() => types),
   )
 
 const getTypeName = (type: gatsby.GatsbyGraphQLType): string => type.config.name
@@ -99,10 +96,10 @@ const partitionDataFields = R.partitionWithIndex((i) => i !== 'uid')
 // TODO: Replace with a generic `buildNamedInferredNodeType`
 const buildEmbedType = (
   schema: PrismicFieldSchema,
-): Rr.Reader<Dependencies, gatsby.GatsbyGraphQLObjectType> =>
+): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
-    Rr.ask<Dependencies>(),
-    Rr.map((deps) =>
+    RTE.ask<Dependencies>(),
+    RTE.map((deps) =>
       deps.gatsbyBuildObjectType({
         name: deps.globalNodeHelpers.generateTypeName(schema.type),
         interfaces: ['Node'],
@@ -236,7 +233,7 @@ const registerSchemaType = <TSource, TContext>(
       return pipe(
         schema,
         buildEmbedType,
-        Rr.chain(registerType),
+        RTE.chainFirst(registerType),
         RTE.map(getTypeName),
       )
     }
@@ -254,7 +251,7 @@ const registerSchemaType = <TSource, TContext>(
     case 'Group': {
       return pipe(
         buildGroupType(path, schema),
-        RTE.chain(registerType),
+        RTE.chainFirst(registerType),
         RTE.map(getTypeName),
         RTE.map(listTypeName),
       )
@@ -266,7 +263,7 @@ const registerSchemaType = <TSource, TContext>(
         RTE.chain((deps) =>
           pipe(
             buildSliceTypes(path, schema),
-            RTE.chain(registerTypes),
+            RTE.chainFirst(registerTypes),
             RTE.map(A.map(getTypeName)),
             RTE.chain((types) =>
               buildUnionType(
@@ -283,15 +280,13 @@ const registerSchemaType = <TSource, TContext>(
 
     default:
       return pipe(
-        buildInferredNodeType(path),
-        RTE.chain(registerType),
-        RTE.chainFirst(() =>
-          reportInfo(
-            `An unknown field type "${schema.type}" was found at ${drawPath(
-              path,
-            )}. A generic inferred node type will be created. If the underlying type is not an object, manually override the type using Gatsby's createSchemaCustomization API in your gatsby-node.js.`,
-          ),
+        reportInfo(
+          `An unknown field type "${schema.type}" was found at ${drawPath(
+            path,
+          )}. A generic inferred node type will be created. If the underlying type is not an object, manually override the type using Gatsby's createSchemaCustomization API in your gatsby-node.js.`,
         ),
+        RTE.chain(() => buildInferredNodeType(path)),
+        RTE.chainFirst(registerType),
         RTE.map(getTypeName),
       )
   }
