@@ -307,6 +307,7 @@ const toFieldConfig = <TSource, TContext>(
                 types,
               }),
             ),
+            RTE.chainFirst(registerType),
             RTE.map(getTypeName),
             RTE.map(listTypeName),
           ),
@@ -392,11 +393,15 @@ export const registerAllDocumentTypes = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chain((deps) =>
-      pipe(types, A.map(getTypeName), (types) =>
-        buildUnionType({
-          name: deps.nodeHelpers.generateTypeName('AllDocumentTypes'),
-          types,
-        }),
+      pipe(
+        types,
+        A.map(getTypeName),
+        (types) =>
+          buildUnionType({
+            name: deps.nodeHelpers.generateTypeName('AllDocumentTypes'),
+            types,
+          }),
+        RTE.chainFirst(registerType),
       ),
     ),
   )
