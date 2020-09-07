@@ -1,6 +1,6 @@
 import { getApi } from 'prismic-javascript'
 
-import { msg } from './utils'
+import { msg, chunk } from './utils'
 import { API_PAGE_SIZE } from './constants'
 
 import { SourceNodesArgs, Reporter } from 'gatsby'
@@ -121,7 +121,10 @@ export async function fetchDocumentsByIds(
   
   if (lang) queryOptions.lang = lang
 
-  const response: ApiSearchResponse = await client.getByIDs(documents, queryOptions)
-  
-  return response.results;
+  // getByIds has a limit of 100 
+  const chunks = chunk(documents, 100).map(docs => client.getByIDs(docs, queryOptions))
+
+  const responses = await Promise.all(chunks)
+
+  return responses.flatMap(doc => doc.results)
 }
