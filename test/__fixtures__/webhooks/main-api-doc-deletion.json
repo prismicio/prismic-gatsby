@@ -1,0 +1,14 @@
+{
+  "type": "api-update",
+  "masterRef": "Xyr6Y_l3p70AsZNN",
+  "releases": {},
+  "masks": {},
+  "tags": {},
+  "experiments": {},
+  "documents": [
+    "XyrIGfl3p7oAsQ9k"
+  ],
+  "domain": "qwerty",
+  "apiUrl": "http://qwerty.wroom.test/api",
+  "secret": null
+}

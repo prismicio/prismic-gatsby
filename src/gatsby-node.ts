@@ -10,45 +10,22 @@ import { createEnvironment } from './environment.node'
 import { types, buildPrismicImageTypes } from './gqlTypes'
 import { msg } from './utils'
 
-import { GatsbyNode, SourceNodesArgs } from 'gatsby'
-import { PluginOptions } from './types'
+import { GatsbyNode, SourceNodesArgs, GatsbyGraphQLType } from 'gatsby'
+import { PluginOptions, TypePath, PrismicWebhook } from './types'
+import { isPrismicWebhook, validateSecret, handleWebhook } from './webhook'
 
-export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
-  gatsbyContext: SourceNodesArgs,
-  pluginOptions: PluginOptions,
-) => {
-  const { actions, reporter, store, schema, cache } = gatsbyContext
-  const { createTypes } = actions
-  const { program } = store.getState()
-
-  const createTypesActivity = reporter.activityTimer(msg('create types'))
-  const fetchDocumentsActivity = reporter.activityTimer(msg('fetch documents'))
-  const createNodesActivity = reporter.activityTimer(msg('create nodes'))
-  const writeTypePathsActivity = reporter.activityTimer(
-    msg('write out type paths'),
-  )
-
-  /**
-   * Validate plugin options. Set default options where necessary. If any
-   * plugin options are invalid, stop immediately.
-   */
-  try {
-    pluginOptions = validatePluginOptions(pluginOptions)
-  } catch (error) {
-    reporter.error(msg('invalid plugin options'))
-    reporter.panic(error)
-  }
-
+const createPrismicTypes = (pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typeDefs: GatsbyGraphQLType[]) => {
   /**
    * Create types derived from Prismic custom type schemas.
    */
+  const { actions, reporter, schema, cache } = gatsbyContext
+  const { createTypes } = actions
+  
+  const createTypesActivity = reporter.activityTimer(msg('create types'))
+
   createTypesActivity.start()
   reporter.verbose(msg('starting to create types'))
 
-  const { typeDefs, typePaths } = schemasToTypeDefs(
-    pluginOptions.schemas,
-    gatsbyContext,
-  )
   const [imgixImageTypes, imageTypes] = buildPrismicImageTypes({
     schema,
     cache,
@@ -61,6 +38,14 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   createTypes(types)
 
   createTypesActivity.end()
+}
+
+const buildAll = async (pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typePaths: TypePath[]) => {
+
+  const { reporter  } = gatsbyContext
+
+  const fetchDocumentsActivity = reporter.activityTimer(msg('fetch documents'))
+  const createNodesActivity = reporter.activityTimer(msg('create nodes'))
 
   /**
    * Fetch documents from Prismic.
@@ -84,11 +69,19 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   await documentsToNodes(documents, env)
 
   createNodesActivity.end()
+}
 
+const writeTypePaths = (pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typePaths: TypePath[], program: any) => {
   /**
    * Write type paths to public for use in Prismic previews.
    */
+  const { reporter } = gatsbyContext
+
+  const writeTypePathsActivity = reporter.activityTimer(msg('write out type paths'))
+
   writeTypePathsActivity.start()
+
+
   reporter.verbose(msg('starting to write out type paths'))
 
   const schemasDigest = md5(JSON.stringify(pluginOptions.schemas))
@@ -104,6 +97,49 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   fs.writeFileSync(typePathsFilename, JSON.stringify(typePaths))
 
   writeTypePathsActivity.end()
+}
+
+export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
+  gatsbyContext: SourceNodesArgs,
+  pluginOptions: PluginOptions,
+) => {
+  const { reporter, store, webhookBody, getNodes, actions: { touchNode } } = gatsbyContext
+  const { program } = store.getState()
+
+  /**
+   * Validate plugin options. Set default options where necessary. If any
+   * plugin options are invalid, stop immediately.
+   */
+  try {
+    pluginOptions = validatePluginOptions(pluginOptions)
+  } catch (error) {
+    reporter.error(msg('invalid plugin options'))
+    reporter.panic(error)
+  }
+
+  const { typeDefs, typePaths } = schemasToTypeDefs(
+    pluginOptions.schemas,
+    gatsbyContext,
+  )
+
+  if(!webhookBody || JSON.stringify(webhookBody) === "{}") {
+    /** Initial build or rebuild everything */
+    createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
+    await buildAll(pluginOptions, gatsbyContext, typePaths)
+    writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
+
+  } else if(isPrismicWebhook(webhookBody) && validateSecret(pluginOptions, webhookBody)) {
+    /** Respond to the webhook here */
+    
+    // touch nodes to prevent garbage collection
+    getNodes().forEach(node => touchNode({ nodeId: node.id}))
+
+    createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
+
+    const prismicWebhook = webhookBody as PrismicWebhook;
+    await handleWebhook(pluginOptions, gatsbyContext, typePaths, prismicWebhook)
+
+  }
 }
 
 export const onPreExtractQueries: NonNullable<
