@@ -97,6 +97,15 @@ plugins: [
         // Your list of links
       ],
 
+      // Specify which fields to retrieve and what content to retrieve from Linked 
+      // Documents / Content Relationships. This replaces fetchLinks.
+      // See: https://prismic.io/docs/rest-api/query-the-api/graphquery
+      graphQuery: `{
+        blog {
+          ...blogFields
+        }
+      }`
+
       // Set an HTML serializer function used to process formatted content.
       // Fields with rich text formatting use this function to generate the
       // correct HTML.
