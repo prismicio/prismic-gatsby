@@ -52,6 +52,7 @@ export const fetchAllDocuments = async (
     releaseID,
     accessToken,
     fetchLinks,
+    graphQuery,
     lang,
   } = pluginOptions
   const { reporter } = gatsbyContext
@@ -72,6 +73,7 @@ export const fetchAllDocuments = async (
     }
   }
   if (fetchLinks) queryOptions.fetchLinks = fetchLinks
+  if (graphQuery) queryOptions.graphQuery = graphQuery
   if (lang) queryOptions.lang = lang
 
   return await pagedGet(client, queryOptions, 1, API_PAGE_SIZE, [], reporter)

@@ -346,6 +346,7 @@ export type BrowserPluginOptions = GatsbyPluginOptions &
     | 'repositoryName'
     | 'accessToken'
     | 'fetchLinks'
+    | 'graphQuery'
     | 'schemas'
     | 'lang'
     | 'typePathsFilenamePrefix'
@@ -359,6 +360,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   linkResolver?: PluginLinkResolver
   htmlSerializer?: PluginHTMLSerializer
   fetchLinks?: string[]
+  graphQuery?: string
   schemas: Schemas
   lang?: string
   shouldDownloadImage?: ShouldDownloadImage

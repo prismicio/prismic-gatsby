@@ -10,6 +10,7 @@ const baseSchema = {
   linkResolver: struct.defaulted(struct.func(), () => () => () => {}),
   htmlSerializer: struct.defaulted(struct.func(), () => () => () => {}),
   fetchLinks: struct.defaulted(struct.array(struct.string()), []),
+  graphQuery: struct.defaulted(struct.string(), '*'),
   lang: struct.defaulted(struct.string(), '*'),
   typePathsFilenamePrefix: struct.defaulted(
     struct.string(),

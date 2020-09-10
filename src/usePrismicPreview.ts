@@ -25,6 +25,7 @@ export type UsePrismicPreviewOptions = Pick<
   | 'linkResolver'
   | 'htmlSerializer'
   | 'fetchLinks'
+  | 'graphQuery'
   | 'lang'
   | 'typePathsFilenamePrefix'
 > & {
@@ -151,6 +152,9 @@ export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
     const queryOptions: QueryOptions = {}
     if (hydratedOptions.fetchLinks)
       queryOptions.fetchLinks = hydratedOptions.fetchLinks
+
+    if (hydratedOptions.graphQuery)
+      queryOptions.graphQuery = hydratedOptions.graphQuery
 
     // Query Prismic's API for the document.
     const client = await createClient(

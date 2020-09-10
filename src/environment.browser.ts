@@ -50,7 +50,7 @@ const loadLinkFieldDocument = async (
     return
 
   const { hasNodeById } = context as DocumentsToNodesEnvironmentBrowserContext
-  const { repositoryName, accessToken, fetchLinks } = pluginOptions
+  const { repositoryName, accessToken, fetchLinks, graphQuery } = pluginOptions
 
   const linkedDocId = createNodeId(`${field.type} ${field.id}`)
 
@@ -70,6 +70,7 @@ const loadLinkFieldDocument = async (
 
   const queryOptions: QueryOptions = {}
   if (fetchLinks) queryOptions.fetchLinks = fetchLinks
+  if (graphQuery) queryOptions.graphQuery = graphQuery
 
   // Query Prismic's API for the document.
   const client = await createClient(repositoryName, accessToken)
