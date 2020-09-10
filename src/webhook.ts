@@ -59,7 +59,7 @@ export async function handleWebhook(pluginOptions: PluginOptions, gatsbyContext:
 
   }, [] as string[])
 
-  const documentsToCheck: string[] = (releaseID && process.env.NODE_ENV === 'development') ? [
+  const documentsToCheck: string[] = (releaseID) ? [
     ...releaseDocuments,
     ...mainApiDocuments
   ] : mainApiDocuments
