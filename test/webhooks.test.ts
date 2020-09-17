@@ -198,25 +198,6 @@ describe("handleWebhook", () => {
     expect(gatsbyContext.actions.createNode).toBeCalled()
   })
 
-  it("should not call createNode when passed a webhook for a release addition and GATSBY_ENV is not 'development", async () => {
-    
-    const pluginOptions: PluginOptions = {
-      repositoryName: 'repositoryName',
-      plugins: [],
-      schemas: { page: mockSchema as Schema },
-      releaseID: "XyfxIPl3p7YAQ7Mg"
-    }
-
-    const gatsbyContext = createGatsbyContext();
-    const { typePaths } = schemasToTypeDefs(
-      pluginOptions.schemas,
-      gatsbyContext,
-    )
-    await handleWebhook(pluginOptions, gatsbyContext, typePaths, releaseAddition)
-
-    expect(gatsbyContext.actions.createNode).not.toBeCalled()
-  })
-
   it("should call deleteNode when passed a webhook for main api deletion", async () => {
     
     const pluginOptions: PluginOptions = {
@@ -238,9 +219,7 @@ describe("handleWebhook", () => {
     
   })
 
-  it("should call deleteNode node when passed a webhook for a release deletion and when running in development", async () => {
-
-    process.env.NODE_ENV = "development";
+  it("should call deleteNode node when passed a webhook for a release deletion and release-id is in config", async () => {
 
     const pluginOptions: PluginOptions = {
       repositoryName: 'repositoryName',
