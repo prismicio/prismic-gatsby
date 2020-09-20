@@ -11,9 +11,9 @@ import {
   PrismicClientQueryOptions,
   PrismicDocument,
   ResolveType,
-} from './types'
-import { DEFAULT_PRISMIC_API_ENDPOINT, QUERY_PAGE_SIZE } from './constants'
-import { sprintf } from './lib/sprintf'
+} from '../types'
+import { DEFAULT_PRISMIC_API_ENDPOINT, QUERY_PAGE_SIZE } from '../constants'
+import { sprintf } from './sprintf'
 
 const buildApiEndpoint = (repositoryName: string): string =>
   sprintf(DEFAULT_PRISMIC_API_ENDPOINT, repositoryName)

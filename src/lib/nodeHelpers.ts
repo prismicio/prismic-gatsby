@@ -10,6 +10,7 @@ interface CreateNodeHelpersDependencies {
 
 export interface IdentifiableRecord {
   id: string
+  type: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any
 }

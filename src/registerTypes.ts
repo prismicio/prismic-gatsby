@@ -12,71 +12,18 @@ import {
   PrismicFieldSchema,
   PrismicSliceSchema,
 } from './types'
-import { NON_DATA_FIELDS, REPORTER_TEMPLATE } from './constants'
+import { NON_DATA_FIELDS } from './constants'
 import { listTypeName } from './lib/listTypeName'
 import { dotPath } from './lib/dotPath'
 import { getTypeName } from './lib/getTypeName'
 import { sequenceSRTE } from './lib/sequenceSRTE'
-import { sprintf } from 'lib/sprintf'
-
-const reportInfo = (
-  text: string,
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.map((deps) =>
-      pipe(
-        sprintf(REPORTER_TEMPLATE, deps.pluginOptions.repositoryName, text),
-        deps.gatsbyReportInfo,
-      ),
-    ),
-  )
-
-const buildObjectType = <TSource, TContext>(
-  config: gqlc.ComposeObjectTypeConfig<TSource, TContext>,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.map((deps) => deps.gatsbyBuildObjectType(config)),
-  )
-
-const buildUnionType = <TSource, TContext>(
-  config: gqlc.ComposeUnionTypeConfig<TSource, TContext>,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLUnionType> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.map((deps) => deps.gatsbyBuildUnionType(config)),
-  )
-
-const registerType = <A extends gatsby.GatsbyGraphQLType>(
-  type: A,
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.map((deps) => deps.gatsbyCreateTypes(type)),
-  )
-
-const registerTypes = <A extends gatsby.GatsbyGraphQLType[]>(
-  types: A,
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.map((deps) => deps.gatsbyCreateTypes(types)),
-  )
-
-const buildNamedInferredNodeType = (
-  name: string,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.map((deps) =>
-      deps.gatsbyBuildObjectType({
-        name,
-        interfaces: ['Node'],
-        extensions: { infer: true },
-      }),
-    ),
-  )
+import { reportInfo } from './lib/reportInfo'
+import { buildObjectType } from './lib/buildObjectType'
+import { buildUnionType } from './lib/buildUnionType'
+import { registerType } from './lib/registerType'
+import { registerTypes } from './lib/registerTypes'
+import { buildInferredNodeType } from './lib/buildInferredNodeType'
+import { buildNamedInferredNodeType } from './lib/buildNamedInferredNodeType'
 
 const buildSchemaRecordType = (
   path: string[],
@@ -145,22 +92,6 @@ const buildSliceTypes = (
     ),
     sequenceSRTE,
     RTE.map(R.collect((_, type) => type)),
-  )
-
-const buildInferredNodeType = (
-  path: string[],
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      pipe(
-        buildObjectType({
-          name: deps.nodeHelpers.generateTypeName(...path),
-          interfaces: ['Node'],
-          extensions: { infer: true },
-        }),
-      ),
-    ),
   )
 
 const toFieldConfig = <TSource, TContext>(
@@ -353,7 +284,7 @@ const collectFields = (
     S.fold(S.getObjectSemigroup<Record<string, PrismicFieldSchema>>())({}),
   )
 
-export const registerCustomType = <TSource, TContext>(
+const registerCustomType = <TSource, TContext>(
   name: string,
   schema: PrismicSchema,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>

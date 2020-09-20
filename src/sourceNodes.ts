@@ -3,8 +3,8 @@ import { pipe, flow } from 'fp-ts/function'
 
 import { Dependencies } from './types'
 import { registerAllDocumentTypes, registerCustomTypes } from './registerTypes'
-import { queryAllDocuments } from './client'
-import { createNodes } from './createNode'
+import { queryAllDocuments } from './lib/client'
+import { createNodes } from './lib/createNodes'
 
 export const sourceNodes: RTE.ReaderTaskEither<
   Dependencies,
