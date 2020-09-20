@@ -8,13 +8,17 @@ interface CreateNodeHelpersDependencies {
   createContentDigest: gatsby.SourceNodesArgs['createContentDigest']
 }
 
-type IdentifablePartialNode = Partial<gatsby.Node> & Pick<gatsby.Node, 'id'>
+export interface IdentifiableRecord {
+  id: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any
+}
 
 export interface NodeHelpers {
   generateTypeName: (...parts: string[]) => string
   createNodeFactory: (
     ...nameParts: string[]
-  ) => (node: IdentifablePartialNode) => gatsby.NodeInput
+  ) => (node: IdentifiableRecord) => gatsby.NodeInput
 }
 
 export const createNodeHelpers = ({
@@ -26,14 +30,13 @@ export const createNodeHelpers = ({
     pascalCase(typePrefix, ...parts)
 
   const createNodeFactory = (...nameParts: string[]) => (
-    node: IdentifablePartialNode,
+    node: IdentifiableRecord,
   ): gatsby.NodeInput => ({
     ...node,
     id: createNodeId(node.id),
     internal: {
       type: generateTypeName(...nameParts),
       contentDigest: createContentDigest(node),
-      ...node.internal,
     },
   })
 

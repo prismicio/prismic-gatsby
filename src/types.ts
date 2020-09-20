@@ -1,20 +1,39 @@
+import * as gatsby from 'gatsby'
 import * as D from 'io-ts/Decoder'
+import Prismic from 'prismic-javascript'
+import { QueryOptions } from 'prismic-javascript/types/ResolvedApi'
 
 import {
-  PrismicFieldTypeC,
-  PluginOptionsC,
-  PrismicSchemaC,
-  PrismicTabSchemaC,
-  PrismicSliceSchemaC,
+  PrismicFieldTypeD,
+  PluginOptionsD,
+  PrismicSchemaD,
+  PrismicTabSchemaD,
+  PrismicSliceSchemaD,
 } from './decoders'
+import { NodeHelpers } from './lib/nodeHelpers'
+
+export { Document as PrismicDocument } from 'prismic-javascript/types/documents'
+
+export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 
 export type UnknownRecord = Record<string, unknown>
 
-export type PluginOptions = D.TypeOf<typeof PluginOptionsC>
-export type PrismicFieldType = D.TypeOf<typeof PrismicFieldTypeC>
-export type PrismicSchema = D.TypeOf<typeof PrismicSchemaC>
-export type PrismicTabSchema = D.TypeOf<typeof PrismicTabSchemaC>
-export type PrismicSliceSchema = D.TypeOf<typeof PrismicSliceSchemaC>
+export interface Dependencies {
+  gatsbyCreateTypes: gatsby.Actions['createTypes']
+  gatsbyCreateNode: gatsby.Actions['createNode']
+  gatsbyBuildObjectType: gatsby.NodePluginSchema['buildObjectType']
+  gatsbyBuildUnionType: gatsby.NodePluginSchema['buildUnionType']
+  gatsbyReportInfo: gatsby.Reporter['info']
+  globalNodeHelpers: NodeHelpers
+  nodeHelpers: NodeHelpers
+  pluginOptions: PluginOptions
+}
+
+export type PluginOptions = D.TypeOf<typeof PluginOptionsD>
+export type PrismicFieldType = D.TypeOf<typeof PrismicFieldTypeD>
+export type PrismicSchema = D.TypeOf<typeof PrismicSchemaD>
+export type PrismicTabSchema = D.TypeOf<typeof PrismicTabSchemaD>
+export type PrismicSliceSchema = D.TypeOf<typeof PrismicSliceSchemaD>
 // The recursive type in `config.fields` requires the type to be defined in the
 // type system rather than derived from io-ts.
 export type PrismicFieldSchema =
@@ -41,3 +60,6 @@ export type PrismicFieldSchema =
         choices: Record<string, PrismicSliceSchema>
       }
     }
+
+export type PrismicClient = ResolveType<ReturnType<typeof Prismic.getApi>>
+export type PrismicClientQueryOptions = QueryOptions

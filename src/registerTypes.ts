@@ -6,29 +6,30 @@ import * as S from 'fp-ts/Semigroup'
 import * as A from 'fp-ts/Array'
 import { pipe, flow } from 'fp-ts/function'
 
-import { NodeHelpers } from './lib/nodeHelpers'
+import {
+  Dependencies,
+  PrismicSchema,
+  PrismicFieldSchema,
+  PrismicSliceSchema,
+} from './types'
+import { NON_DATA_FIELDS, REPORTER_TEMPLATE } from './constants'
 import { listTypeName } from './lib/listTypeName'
 import { dotPath } from './lib/dotPath'
 import { getTypeName } from './lib/getTypeName'
 import { sequenceSRTE } from './lib/sequenceSRTE'
-import { NON_DATA_FIELDS } from './constants'
-import { PrismicSchema, PrismicFieldSchema, PrismicSliceSchema } from './types'
-
-interface Dependencies {
-  gatsbyCreateType: gatsby.Actions['createTypes']
-  gatsbyBuildObjectType: gatsby.NodePluginSchema['buildObjectType']
-  gatsbyBuildUnionType: gatsby.NodePluginSchema['buildUnionType']
-  gatsbyReportInfo: gatsby.Reporter['info']
-  globalNodeHelpers: NodeHelpers
-  nodeHelpers: NodeHelpers
-}
+import { sprintf } from 'lib/sprintf'
 
 const reportInfo = (
   text: string,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.map((deps) => deps.gatsbyReportInfo(text)),
+    RTE.map((deps) =>
+      pipe(
+        sprintf(REPORTER_TEMPLATE, deps.pluginOptions.repositoryName, text),
+        deps.gatsbyReportInfo,
+      ),
+    ),
   )
 
 const buildObjectType = <TSource, TContext>(
@@ -52,7 +53,7 @@ const registerType = <A extends gatsby.GatsbyGraphQLType>(
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.map((deps) => deps.gatsbyCreateType(type)),
+    RTE.map((deps) => deps.gatsbyCreateTypes(type)),
   )
 
 const registerTypes = <A extends gatsby.GatsbyGraphQLType[]>(
@@ -60,7 +61,7 @@ const registerTypes = <A extends gatsby.GatsbyGraphQLType[]>(
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.map((deps) => deps.gatsbyCreateType(types)),
+    RTE.map((deps) => deps.gatsbyCreateTypes(types)),
   )
 
 const buildNamedInferredNodeType = (
@@ -383,6 +384,23 @@ export const registerCustomType = <TSource, TContext>(
           }),
         ),
         RTE.chainFirst(registerType),
+      ),
+    ),
+  )
+
+export const registerCustomTypes = (): RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gatsby.GatsbyGraphQLObjectType[]
+> =>
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.chain((deps) =>
+      pipe(
+        deps.pluginOptions.schemas,
+        R.mapWithIndex(registerCustomType),
+        sequenceSRTE,
+        RTE.map(R.collect((_, value) => value)),
       ),
     ),
   )
