@@ -7,13 +7,10 @@ import { IdentifiableRecord } from './nodeHelpers'
 export const createNode = (
   record: IdentifiableRecord,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.map((deps) =>
-      pipe(
-        record,
-        deps.nodeHelpers.createNodeFactory(record.type),
-        deps.gatsbyCreateNode,
-      ),
+  RTE.asks((deps) =>
+    pipe(
+      record,
+      deps.nodeHelpers.createNodeFactory(record.type),
+      deps.createNode,
     ),
   )

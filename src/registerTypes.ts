@@ -252,7 +252,7 @@ const toFieldConfig = <TSource, TContext>(
         reportInfo(
           `An unknown field type "${schema.type}" was found at ${dotPath(
             path,
-          )}. A generic inferred node type will be created. If the underlying type is not an object, manually override the type using Gatsby's createSchemaCustomization API in your gatsby-node.js.`,
+          )}. A generic inferred node type will be created. If the underlying type is not an object, manually override the type using Gatsby's createSchemaCustomization API in your site's gatsby-node.js.`,
         ),
         RTE.chain(() => buildInferredNodeType(path)),
         RTE.chainFirst(registerType),

@@ -4,7 +4,6 @@ import Prismic from 'prismic-javascript'
 import { QueryOptions } from 'prismic-javascript/types/ResolvedApi'
 
 import {
-  PrismicFieldTypeD,
   PluginOptionsD,
   PrismicSchemaD,
   PrismicTabSchemaD,
@@ -19,18 +18,17 @@ export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 export type UnknownRecord = Record<string, unknown>
 
 export interface Dependencies {
-  gatsbyCreateTypes: gatsby.Actions['createTypes']
-  gatsbyCreateNode: gatsby.Actions['createNode']
-  gatsbyBuildObjectType: gatsby.NodePluginSchema['buildObjectType']
-  gatsbyBuildUnionType: gatsby.NodePluginSchema['buildUnionType']
-  gatsbyReportInfo: gatsby.Reporter['info']
+  createTypes: gatsby.Actions['createTypes']
+  createNode: gatsby.Actions['createNode']
+  buildObjectType: gatsby.NodePluginSchema['buildObjectType']
+  buildUnionType: gatsby.NodePluginSchema['buildUnionType']
+  reportInfo: gatsby.Reporter['info']
   globalNodeHelpers: NodeHelpers
   nodeHelpers: NodeHelpers
   pluginOptions: PluginOptions
 }
 
 export type PluginOptions = D.TypeOf<typeof PluginOptionsD>
-export type PrismicFieldType = D.TypeOf<typeof PrismicFieldTypeD>
 export type PrismicSchema = D.TypeOf<typeof PrismicSchemaD>
 export type PrismicTabSchema = D.TypeOf<typeof PrismicTabSchemaD>
 export type PrismicSliceSchema = D.TypeOf<typeof PrismicSliceSchemaD>
@@ -38,12 +36,24 @@ export type PrismicSliceSchema = D.TypeOf<typeof PrismicSliceSchemaD>
 // type system rather than derived from io-ts.
 export type PrismicFieldSchema =
   | {
-      type: Exclude<PrismicFieldType, 'Group' | 'Slices'>
-      config: Partial<{
-        label: string
-        placeholder: string
-        fields: Record<string, PrismicFieldSchema>
-      }>
+      type:
+        | 'Boolean'
+        | 'Color'
+        | 'Date'
+        | 'Embed'
+        | 'GeoPoint'
+        | 'Image'
+        | 'Link'
+        | 'Number'
+        | 'Select'
+        | 'StructuredText'
+        | 'Text'
+        | 'Timestamp'
+        | 'UID'
+      config: {
+        label?: string
+        placeholder?: string
+      }
     }
   | {
       type: 'Group'

@@ -11,12 +11,10 @@ export const buildInferredNodeType = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chain((deps) =>
-      pipe(
-        buildObjectType({
-          name: deps.nodeHelpers.generateTypeName(...path),
-          interfaces: ['Node'],
-          extensions: { infer: true },
-        }),
-      ),
+      buildObjectType({
+        name: deps.nodeHelpers.generateTypeName(...path),
+        interfaces: ['Node'],
+        extensions: { infer: true },
+      }),
     ),
   )

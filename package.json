@@ -12,7 +12,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "start": "false && yarn clean && microbundle watch src/gatsby-node.ts -o dist -f cjs",
-    "build": "false && yarn clean && microbundle build src/gatsby-node.ts -o dist -f cjs",
+    "build": "yarn clean && microbundle build src/gatsby-node.ts -o dist -f cjs",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",

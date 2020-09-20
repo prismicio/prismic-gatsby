@@ -4,39 +4,46 @@ import * as E from 'fp-ts/Either'
 import { pipe } from 'fp-ts/function'
 import * as D from 'io-ts/Decoder'
 
+import { PluginOptions, UnknownRecord } from './types'
+import { GLOBAL_TYPE_PREFIX } from './constants'
+import { PluginOptionsD } from './decoders'
 import { sourceNodes as sourceNodesProgram } from './sourceNodes'
 import { createNodeHelpers } from './lib/nodeHelpers'
-import { GLOBAL_TYPE_PREFIX } from './constants'
-import { PluginOptionsD } from 'decoders'
 
-export const sourceNodes: NonNullable<
-  gatsby.GatsbyNode['sourceNodes']
-> = async (
+const buildDependencies = (
   gatsbyContext: gatsby.SourceNodesArgs,
-  unvalidatedPluginOptions: Record<string, unknown>,
+  pluginOptions: PluginOptions,
+) => ({
+  pluginOptions,
+  createNode: gatsbyContext.actions.createNode,
+  createTypes: gatsbyContext.actions.createTypes,
+  reportInfo: gatsbyContext.reporter.info,
+  buildUnionType: gatsbyContext.schema.buildUnionType,
+  buildObjectType: gatsbyContext.schema.buildObjectType,
+  globalNodeHelpers: createNodeHelpers({
+    typePrefix: GLOBAL_TYPE_PREFIX,
+    createNodeId: gatsbyContext.createNodeId,
+    createContentDigest: gatsbyContext.createContentDigest,
+  }),
+  nodeHelpers: createNodeHelpers({
+    typePrefix: `${GLOBAL_TYPE_PREFIX} ${pluginOptions.typePrefix}`,
+    createNodeId: gatsbyContext.createNodeId,
+    createContentDigest: gatsbyContext.createContentDigest,
+  }),
+})
+
+export const sourceNodes: NonNullable<gatsby.GatsbyNode['sourceNodes']> = (
+  gatsbyContext: gatsby.SourceNodesArgs,
+  pluginOptions: UnknownRecord,
 ) =>
   pipe(
-    PluginOptionsD.decode(unvalidatedPluginOptions),
+    PluginOptionsD.decode(pluginOptions),
     E.fold(
       (error) => gatsbyContext.reporter.panic(new Error(D.draw(error))),
       (pluginOptions) =>
-        RTE.run(sourceNodesProgram, {
-          pluginOptions,
-          globalNodeHelpers: createNodeHelpers({
-            typePrefix: GLOBAL_TYPE_PREFIX,
-            createNodeId: gatsbyContext.createNodeId,
-            createContentDigest: gatsbyContext.createContentDigest,
-          }),
-          nodeHelpers: createNodeHelpers({
-            typePrefix: `${GLOBAL_TYPE_PREFIX} ${pluginOptions.typePrefix}`,
-            createNodeId: gatsbyContext.createNodeId,
-            createContentDigest: gatsbyContext.createContentDigest,
-          }),
-          gatsbyCreateNode: gatsbyContext.actions.createNode,
-          gatsbyCreateTypes: gatsbyContext.actions.createTypes,
-          gatsbyReportInfo: gatsbyContext.reporter.info,
-          gatsbyBuildUnionType: gatsbyContext.schema.buildUnionType,
-          gatsbyBuildObjectType: gatsbyContext.schema.buildObjectType,
-        }),
+        RTE.run(
+          sourceNodesProgram,
+          buildDependencies(gatsbyContext, pluginOptions),
+        ),
     ),
   )

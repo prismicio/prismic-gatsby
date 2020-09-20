@@ -10,26 +10,6 @@ import {
 import { UnknownRecord, PrismicFieldSchema } from './types'
 import * as d from './lib/decoders'
 
-export const PrismicFieldTypeD = D.union(
-  D.literal('Boolean'),
-  D.literal('Color'),
-  D.literal('Date'),
-  D.literal('Embed'),
-  D.literal('Float'),
-  D.literal('GeoPoint'),
-  D.literal('Group'),
-  D.literal('Image'),
-  D.literal('Link'),
-  D.literal('Number'),
-  D.literal('Select'),
-  D.literal('Slice'),
-  D.literal('Slices'),
-  D.literal('StructuredText'),
-  D.literal('Text'),
-  D.literal('Timestamp'),
-  D.literal('UID'),
-)
-
 export const PrismicSliceSchemaD = D.lazy('PrismicSliceSchemaC', () =>
   pipe(
     D.type({
@@ -44,16 +24,60 @@ export const PrismicFieldSchemaD: D.Decoder<
   unknown,
   PrismicFieldSchema
 > = D.lazy('PrismicFieldSchema', () =>
-  D.type({
-    type: PrismicFieldTypeD,
-    config: D.partial({
-      label: D.string,
-      placeholder: D.string,
-      fields: D.record(PrismicFieldSchemaD),
-      labels: D.record(D.array(D.string)),
-      choices: D.record(PrismicSliceSchemaD),
+  pipe(
+    D.type({
+      type: D.union(
+        D.literal('Boolean'),
+        D.literal('Color'),
+        D.literal('Date'),
+        D.literal('Embed'),
+        D.literal('GeoPoint'),
+        D.literal('Image'),
+        D.literal('Link'),
+        D.literal('Number'),
+        D.literal('Select'),
+        D.literal('StructuredText'),
+        D.literal('Text'),
+        D.literal('Timestamp'),
+        D.literal('UID'),
+      ),
+      config: D.partial({
+        label: D.string,
+        placeholder: D.string,
+      }),
     }),
-  }),
+    D.intersect(
+      D.type({
+        type: D.literal('Group'),
+        config: pipe(
+          D.type({
+            fields: D.record(PrismicFieldSchemaD),
+          }),
+          D.intersect(
+            D.partial({
+              label: D.string,
+              placeholder: D.string,
+            }),
+          ),
+        ),
+      }),
+    ),
+    D.intersect(
+      D.type({
+        type: D.literal('Slices'),
+        config: pipe(
+          D.type({
+            choices: D.record(PrismicSliceSchemaD),
+          }),
+          D.intersect(
+            D.partial({
+              labels: D.record(D.array(D.string)),
+            }),
+          ),
+        ),
+      }),
+    ),
+  ),
 )
 
 export const PrismicTabSchemaD = D.record(PrismicFieldSchemaD)

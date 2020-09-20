@@ -13,7 +13,7 @@ export const reportInfo = (
     RTE.map((deps) =>
       pipe(
         sprintf(REPORTER_TEMPLATE, deps.pluginOptions.repositoryName, text),
-        deps.gatsbyReportInfo,
+        deps.reportInfo,
       ),
     ),
   )

@@ -12,9 +12,6 @@ export const sourceNodes: RTE.ReaderTaskEither<
   void
 > = pipe(
   RTE.ask<Dependencies>(),
-  // RTE.bind('pluginOptions', (deps) =>
-  //   RTE.fromEither(PluginOptionsD.decode(deps.unvalidatedPluginOptions)),
-  // ),
   RTE.chainFirst(
     flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes)),
   ),
