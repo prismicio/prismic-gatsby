@@ -26,7 +26,9 @@ const buildDependencies = (
     createContentDigest: gatsbyContext.createContentDigest,
   }),
   nodeHelpers: createNodeHelpers({
-    typePrefix: `${GLOBAL_TYPE_PREFIX} ${pluginOptions.typePrefix}`,
+    typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
+      .filter(Boolean)
+      .join(' '),
     createNodeId: gatsbyContext.createNodeId,
     createContentDigest: gatsbyContext.createContentDigest,
   }),

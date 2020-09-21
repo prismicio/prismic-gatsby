@@ -24,7 +24,7 @@ export const PrismicFieldSchemaD: D.Decoder<
   unknown,
   PrismicFieldSchema
 > = D.lazy('PrismicFieldSchema', () =>
-  pipe(
+  D.union(
     D.type({
       type: D.union(
         D.literal('Boolean'),
@@ -46,37 +46,33 @@ export const PrismicFieldSchemaD: D.Decoder<
         placeholder: D.string,
       }),
     }),
-    D.intersect(
-      D.type({
-        type: D.literal('Group'),
-        config: pipe(
-          D.type({
-            fields: D.record(PrismicFieldSchemaD),
+    D.type({
+      type: D.literal('Group'),
+      config: pipe(
+        D.type({
+          fields: D.record(PrismicFieldSchemaD),
+        }),
+        D.intersect(
+          D.partial({
+            label: D.string,
+            placeholder: D.string,
           }),
-          D.intersect(
-            D.partial({
-              label: D.string,
-              placeholder: D.string,
-            }),
-          ),
         ),
-      }),
-    ),
-    D.intersect(
-      D.type({
-        type: D.literal('Slices'),
-        config: pipe(
-          D.type({
-            choices: D.record(PrismicSliceSchemaD),
+      ),
+    }),
+    D.type({
+      type: D.literal('Slices'),
+      config: pipe(
+        D.type({
+          choices: D.record(PrismicSliceSchemaD),
+        }),
+        D.intersect(
+          D.partial({
+            labels: D.record(D.array(D.string)),
           }),
-          D.intersect(
-            D.partial({
-              labels: D.record(D.array(D.string)),
-            }),
-          ),
         ),
-      }),
-    ),
+      ),
+    }),
   ),
 )
 

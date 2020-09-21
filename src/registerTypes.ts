@@ -4,7 +4,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
 import * as A from 'fp-ts/Array'
-import { pipe, flow } from 'fp-ts/function'
+import { pipe, flow, identity } from 'fp-ts/function'
 
 import {
   Dependencies,
@@ -52,13 +52,29 @@ const buildSliceChoiceType = (
     RTE.ask<Dependencies>(),
     RTE.chain((deps) =>
       pipe(
-        {
-          primary: buildSchemaRecordType(
-            A.snoc(path, 'PrimaryType'),
-            schema['non-repeat'],
-          ),
-          items: buildSchemaRecordType(A.snoc(path, 'ItemType'), schema.repeat),
-        },
+        {} as Record<
+          string,
+          RTE.ReaderTaskEither<
+            Dependencies,
+            never,
+            gatsby.GatsbyGraphQLObjectType
+          >
+        >,
+        R.isEmpty(schema['non-repeat'])
+          ? identity
+          : R.insertAt(
+              'primary',
+              buildSchemaRecordType(
+                A.snoc(path, 'PrimaryType'),
+                schema['non-repeat'],
+              ),
+            ),
+        R.isEmpty(schema.repeat)
+          ? identity
+          : R.insertAt(
+              'items',
+              buildSchemaRecordType(A.snoc(path, 'ItemType'), schema.repeat),
+            ),
         sequenceSRTE,
         RTE.chainFirst(
           flow(
@@ -271,7 +287,9 @@ const buildSchemaRecordConfigMap = <TSource, TContext>(
 > =>
   pipe(
     record,
-    R.map((schema) => toFieldConfig<TSource, TContext>(path, schema)),
+    R.mapWithIndex((name, schema) =>
+      toFieldConfig<TSource, TContext>(A.snoc(path, name), schema),
+    ),
     sequenceSRTE,
   )
 
@@ -310,8 +328,29 @@ const registerCustomType = <TSource, TContext>(
         RTE.chain((fields) =>
           buildObjectType<TSource, TContext>({
             name: deps.nodeHelpers.generateTypeName(name),
-            fields: { ...fields.left, data: fields.data },
+            fields: {
+              ...fields.left,
+              data: fields.data,
+              dataRaw: 'JSON!',
+              dataString: 'String!',
+              first_publication_date: {
+                type: 'Date!',
+                extensions: { dateformat: {} },
+              },
+              href: 'String!',
+              lang: 'String!',
+              last_publication_date: {
+                type: 'Date!',
+                extensions: { dateformat: {} },
+              },
+              prismicId: 'ID!',
+              tags: '[String!]!',
+              type: 'String!',
+              url: 'String!',
+              _previewable: 'ID!',
+            },
             interfaces: ['Node'],
+            extensions: { infer: false },
           }),
         ),
         RTE.chainFirst(registerType),
