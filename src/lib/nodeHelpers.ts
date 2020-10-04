@@ -8,7 +8,7 @@ interface CreateNodeHelpersParams {
   typePrefix: string
   /**
    * Prefix for field names. Used as a namespace for fields that conflict with
-   * Gatsby's reserved field names (`id` and `internal`).
+   * Gatsby's reserved field names.
    * */
   fieldPrefix?: string
   /** Gatsby's `createNodeId` helper. */
@@ -43,11 +43,12 @@ export interface NodeHelpers {
    * @return Namespaced type name.
    */
   createTypeName: (...parts: string[]) => string
+
   /**
    * Creates a namespaced field name in camel case. Nodes created using a
    * `createNodeFactory` function will automatically have namespaced fields
    * using this function ONLY if the name conflicts with Gatsby's reserved
-   * fields (`id` and `internal`).
+   * fields.
    *
    * @param parts Parts of the field name. If more than one string is provided,
    * they will be concatenated in camel case.
@@ -55,6 +56,7 @@ export interface NodeHelpers {
    * @return Namespaced field name.
    */
   createFieldName: (...parts: string[]) => string
+
   /**
    * Creates a deterministic node ID based on the `typePrefix` option provided
    * to `createNodeHelpers` and the provided `parts` argument. Providing the
@@ -66,6 +68,7 @@ export interface NodeHelpers {
    * @return Node ID based on the provided `parts`.
    */
   createNodeId: (...parts: string[]) => string
+
   /**
    * Creates a function that will convert an identifiable record (one that has
    * an `id` and `type` field) to a valid input for Gatsby's `createNode`
@@ -108,12 +111,15 @@ export const createNodeHelpers = ({
   ): gatsby.NodeInput => ({
     ...node,
     id: createNodeId(node.id),
-    [createFieldName('id')]: node.id,
     internal: {
       type: createTypeName(...nameParts),
       contentDigest: gatsbyCreateContentDigest(node),
     },
+    [createFieldName('id')]: node.id,
     [createFieldName('internal')]: node.internal,
+    [createFieldName('fields')]: node.fields,
+    [createFieldName('parent')]: node.parent,
+    [createFieldName('children')]: node.children,
   })
 
   return {

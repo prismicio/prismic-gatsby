@@ -5,9 +5,9 @@ import { pipe, constVoid } from 'fp-ts/function'
 
 import { Dependencies } from './types'
 import { buildEnumType } from './lib/buildEnumType'
-import { registerType } from './lib/registerType'
+import { registerTypes } from './lib/registerTypes'
 
-const createLinkTypes = (): RTE.ReaderTaskEither<
+const buildLinkTypesUnionType = (): RTE.ReaderTaskEither<
   Dependencies,
   never,
   gatsby.GatsbyGraphQLEnumType
@@ -20,7 +20,6 @@ const createLinkTypes = (): RTE.ReaderTaskEither<
         values: { Any: {}, Document: {}, Media: {}, Web: {} },
       }),
     ),
-    RTE.chainFirst(registerType),
   )
 
 export const createBaseTypes = (): RTE.ReaderTaskEither<
@@ -29,7 +28,8 @@ export const createBaseTypes = (): RTE.ReaderTaskEither<
   void
 > =>
   pipe(
-    [createLinkTypes()],
+    [buildLinkTypesUnionType()],
     A.sequence(RTE.readerTaskEither),
+    RTE.chain(registerTypes),
     RTE.map(constVoid),
   )
