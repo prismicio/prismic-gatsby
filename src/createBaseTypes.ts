@@ -6,11 +6,12 @@ import { pipe, constVoid } from 'fp-ts/function'
 import { Dependencies } from './types'
 import { buildEnumType } from './lib/buildEnumType'
 import { registerTypes } from './lib/registerTypes'
+import { buildObjectType } from './lib/buildObjectType'
 
 const buildLinkTypesUnionType = (): RTE.ReaderTaskEither<
   Dependencies,
   never,
-  gatsby.GatsbyGraphQLEnumType
+  gatsby.GatsbyGraphQLType
 > =>
   pipe(
     RTE.ask<Dependencies>(),
@@ -22,13 +23,28 @@ const buildLinkTypesUnionType = (): RTE.ReaderTaskEither<
     ),
   )
 
+const buildImageDimensionsType = (): RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gatsby.GatsbyGraphQLType
+> =>
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.chain((deps) =>
+      buildObjectType({
+        name: deps.globalNodeHelpers.createTypeName('ImageDimensionsType'),
+        fields: { width: 'Int!', height: 'Int!' },
+      }),
+    ),
+  )
+
 export const createBaseTypes = (): RTE.ReaderTaskEither<
   Dependencies,
   never,
   void
 > =>
   pipe(
-    [buildLinkTypesUnionType()],
+    [buildLinkTypesUnionType(), buildImageDimensionsType()],
     A.sequence(RTE.readerTaskEither),
     RTE.chain(registerTypes),
     RTE.map(constVoid),

@@ -21,6 +21,7 @@ const buildDependencies = (
   buildUnionType: gatsbyContext.schema.buildUnionType,
   buildObjectType: gatsbyContext.schema.buildObjectType,
   buildEnumType: gatsbyContext.schema.buildEnumType,
+  cache: gatsbyContext.cache,
   globalNodeHelpers: createNodeHelpers({
     typePrefix: GLOBAL_TYPE_PREFIX,
     createNodeId: gatsbyContext.createNodeId,

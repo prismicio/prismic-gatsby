@@ -32,6 +32,7 @@
   "dependencies": {
     "camel-case": "^4.1.1",
     "fp-ts": "^2.8.2",
+    "gatsby-plugin-imgix": "^0.8.2",
     "io-ts": "^2.2.10",
     "io-ts-types": "^0.5.10",
     "pascal-case": "^3.1.1",

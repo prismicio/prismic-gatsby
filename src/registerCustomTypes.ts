@@ -6,6 +6,7 @@ import * as S from 'fp-ts/Semigroup'
 import * as A from 'fp-ts/Array'
 import { pipe, flow, identity } from 'fp-ts/function'
 import * as PrismicDOM from 'prismic-dom'
+import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
 
 import {
   Dependencies,
@@ -16,6 +17,7 @@ import {
   PrismicAPIStructuredTextField,
   PrismicAPIDocumentNode,
   PrismicAPISliceField,
+  PrismicAPIImageField,
 } from './types'
 import { NON_DATA_FIELDS } from './constants'
 import { listTypeName } from './lib/listTypeName'
@@ -220,9 +222,78 @@ const toFieldConfig = <TSource, TContext>(
       )
     }
 
-    // TODO
-    // case 'Image': {
-    // }
+    // TODO: Support thumbnails in a `thumnails` field. `scope.imageFields` has
+    // already been setup to be shared between both PrismicImageType and
+    // PrismicImageThumbnailType.
+    case 'Image': {
+      return pipe(
+        RTE.ask<Dependencies>(),
+        RTE.chain((deps) =>
+          pipe(
+            RTE.right({
+              resolveUrl: (source: PrismicAPIImageField) => source.url,
+              resolveWidth: (source: PrismicAPIImageField) =>
+                source.dimensions.width,
+              resolveHeight: (source: PrismicAPIImageField) =>
+                source.dimensions.height,
+              fixedType: gatsbyImgix.createImgixFixedType({
+                name: deps.nodeHelpers.createTypeName('ImageFixedType'),
+                cache: deps.cache,
+              }),
+              fluidType: gatsbyImgix.createImgixFluidType({
+                name: deps.nodeHelpers.createTypeName('ImageFluidType'),
+                cache: deps.cache,
+              }),
+            }),
+            RTE.bind('imageFields', (scope) =>
+              RTE.of({
+                alt: 'String',
+                copyright: 'String',
+                dimensions: deps.globalNodeHelpers.createTypeName(
+                  'ImageDimensionsType',
+                ),
+                url: gatsbyImgix.createImgixUrlSchemaFieldConfig({
+                  resolveUrl: scope.resolveUrl,
+                  defaultImgixParams: deps.pluginOptions.imageImgixParams,
+                }),
+                fixed: gatsbyImgix.createImgixFixedSchemaFieldConfig({
+                  type: scope.fixedType,
+                  resolveUrl: scope.resolveUrl,
+                  resolveWidth: scope.resolveWidth,
+                  resolveHeight: scope.resolveHeight,
+                  cache: deps.cache,
+                  defaultImgixParams: deps.pluginOptions.imageImgixParams,
+                  defaultPlaceholderImgixParams:
+                    deps.pluginOptions.imagePlaceholderImgixParams,
+                }),
+                fluid: gatsbyImgix.createImgixFluidSchemaFieldConfig({
+                  type: scope.fluidType,
+                  resolveUrl: scope.resolveUrl,
+                  resolveWidth: scope.resolveWidth,
+                  resolveHeight: scope.resolveHeight,
+                  cache: deps.cache,
+                  defaultImgixParams: deps.pluginOptions.imageImgixParams,
+                  defaultPlaceholderImgixParams:
+                    deps.pluginOptions.imagePlaceholderImgixParams,
+                }),
+                localFile: {
+                  type: 'File',
+                  extensions: { link: {} },
+                },
+              }),
+            ),
+            RTE.chain((scope) =>
+              buildObjectType({
+                name: deps.nodeHelpers.createTypeName('ImageType'),
+                fields: scope.imageFields,
+              }),
+            ),
+            RTE.chainFirst(registerType),
+            RTE.map(getTypeName),
+          ),
+        ),
+      )
+    }
 
     case 'Link': {
       return pipe(
@@ -307,6 +378,9 @@ const toFieldConfig = <TSource, TContext>(
     default:
       return pipe(
         reportInfo(
+          // @ts-expect-error - `schema.type` cannot be known here since this
+          // block would only be reached if an unsupported field type was
+          // introduced.
           `An unknown field type "${schema.type}" was found at ${dotPath(
             path,
           )}. A generic inferred node type will be created. If the underlying type is not an object, manually override the type using Gatsby's createSchemaCustomization API in your site's gatsby-node.js.`,

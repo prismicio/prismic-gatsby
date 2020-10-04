@@ -216,6 +216,16 @@ exports[`sourceNodes creates types 1`] = `
           },
           "kind": "ENUM",
         },
+        Object {
+          "config": Object {
+            "fields": Object {
+              "height": "Int!",
+              "width": "Int!",
+            },
+            "name": "PrismicImageDimensionsType",
+          },
+          "kind": "OBJECT",
+        },
       ],
     ],
     Array [
@@ -320,20 +330,6 @@ exports[`sourceNodes creates types 1`] = `
       },
     ],
     Array [
-      Object {
-        "config": Object {
-          "extensions": Object {
-            "infer": true,
-          },
-          "interfaces": Array [
-            "Node",
-          ],
-          "name": "PrismicPrefixPageBodyImagesItemTypeImage",
-        },
-        "kind": "OBJECT",
-      },
-    ],
-    Array [
       Array [
         Object {
           "config": Object {
@@ -350,6 +346,80 @@ exports[`sourceNodes creates types 1`] = `
           "kind": "OBJECT",
         },
       ],
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "alt": "String",
+            "copyright": "String",
+            "dimensions": "PrismicImageDimensionsType",
+            "fixed": Object {
+              "args": Object {
+                "height": Object {
+                  "type": "Int",
+                },
+                "imgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "placeholderImgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "width": Object {
+                  "defaultValue": 400,
+                  "type": "Int",
+                },
+              },
+              "resolve": [Function],
+              "type": "PrismicPrefixImageFixedType",
+            },
+            "fluid": Object {
+              "args": Object {
+                "imgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "maxHeight": Object {
+                  "type": "Int",
+                },
+                "maxWidth": Object {
+                  "defaultValue": 800,
+                  "type": "Int",
+                },
+                "placeholderImgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "srcSetBreakpoints": Object {
+                  "type": "[Int]",
+                },
+              },
+              "resolve": [Function],
+              "type": "PrismicPrefixImageFluidType",
+            },
+            "localFile": Object {
+              "extensions": Object {
+                "link": Object {},
+              },
+              "type": "File",
+            },
+            "url": Object {
+              "args": Object {
+                "imgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+              },
+              "resolve": [Function],
+              "type": "String",
+            },
+          },
+          "name": "PrismicPrefixImageType",
+        },
+        "kind": "OBJECT",
+      },
     ],
     Array [
       Array [
@@ -385,7 +455,7 @@ exports[`sourceNodes creates types 1`] = `
           "config": Object {
             "fields": Object {
               "caption": "PrismicStructuredTextType",
-              "image": "PrismicPrefixPageBodyImagesItemTypeImage",
+              "image": "PrismicPrefixImageType",
               "orientation": "Boolean",
             },
             "name": "PrismicPrefixPageBodyImagesItemType",

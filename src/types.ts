@@ -24,6 +24,7 @@ export interface Dependencies {
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']
   buildUnionType: gatsby.NodePluginSchema['buildUnionType']
   buildEnumType: gatsby.NodePluginSchema['buildEnumType']
+  cache: gatsby.GatsbyCache
   reportInfo: gatsby.Reporter['info']
   globalNodeHelpers: NodeHelpers
   nodeHelpers: NodeHelpers
@@ -88,6 +89,14 @@ export type PrismicAPILinkField = {
   lang?: string
   slug?: string
   uid?: string
+}
+
+export type PrismicAPIImageField = {
+  dimensions: { width: number; height: number }
+  alt: string | null
+  copyright: string | null
+  url: string
+  [key: string]: unknown
 }
 
 export type PrismicAPIStructuredTextField = {
