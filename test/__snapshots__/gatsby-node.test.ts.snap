@@ -81,6 +81,11 @@ exports[`sourceNodes creates nodes 1`] = `
         "lang": "en-us",
         "last_publication_date": "2020-02-08T23:26:37+0000",
         "linked_documents": Array [],
+        "prismicChildren": undefined,
+        "prismicFields": undefined,
+        "prismicId": "XDF-DhEAACAA5b4F",
+        "prismicInternal": undefined,
+        "prismicParent": undefined,
         "slugs": Array [
           "home",
         ],
@@ -167,6 +172,11 @@ exports[`sourceNodes creates nodes 1`] = `
         "lang": "en-us",
         "last_publication_date": "2020-02-08T23:26:37+0000",
         "linked_documents": Array [],
+        "prismicChildren": undefined,
+        "prismicFields": undefined,
+        "prismicId": "XDF-DhEAACAA5b4F",
+        "prismicInternal": undefined,
+        "prismicParent": undefined,
         "slugs": Array [
           "home",
         ],
@@ -193,12 +203,37 @@ exports[`sourceNodes creates types 1`] = `
 [MockFunction] {
   "calls": Array [
     Array [
+      Array [
+        Object {
+          "config": Object {
+            "name": "PrismicLinkTypes",
+            "values": Object {
+              "Any": Object {},
+              "Document": Object {},
+              "Media": Object {},
+              "Web": Object {},
+            },
+          },
+          "kind": "ENUM",
+        },
+      ],
+    ],
+    Array [
       Object {
         "config": Object {
           "fields": Object {
-            "html": "String",
-            "raw": "JSON",
-            "text": "String",
+            "html": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
+            "text": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
           },
           "name": "PrismicStructuredTextType",
         },
@@ -213,20 +248,27 @@ exports[`sourceNodes creates types 1`] = `
               "extensions": Object {
                 "link": Object {},
               },
+              "resolve": [Function],
               "type": "PrismicPrefixAllDocumentTypes",
             },
             "id": "ID",
             "isBroken": "Boolean",
             "lang": "String",
             "link_type": "PrismicLinkTypes",
-            "raw": "JSON",
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
             "size": "Int",
             "slug": "String",
             "tags": "[String]",
             "target": "String",
             "type": "String",
             "uid": "String",
-            "url": "String",
+            "url": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
           },
           "name": "PrismicPrefixLinkType",
         },
@@ -237,9 +279,18 @@ exports[`sourceNodes creates types 1`] = `
       Object {
         "config": Object {
           "fields": Object {
-            "html": "String",
-            "raw": "JSON",
-            "text": "String",
+            "html": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
+            "text": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
           },
           "name": "PrismicStructuredTextType",
         },
@@ -250,9 +301,18 @@ exports[`sourceNodes creates types 1`] = `
       Object {
         "config": Object {
           "fields": Object {
-            "html": "String",
-            "raw": "JSON",
-            "text": "String",
+            "html": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
+            "text": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
           },
           "name": "PrismicStructuredTextType",
         },
@@ -310,6 +370,8 @@ exports[`sourceNodes creates types 1`] = `
           "config": Object {
             "fields": Object {
               "primary": "PrismicPrefixPageMainNewsPostPrimaryType",
+              "slice_label": "String",
+              "slice_type": "String!",
             },
             "name": "PrismicPrefixPageMainNewsPost",
           },
@@ -336,6 +398,7 @@ exports[`sourceNodes creates types 1`] = `
       Object {
         "config": Object {
           "name": "PrismicPrefixPageMainSlicesType",
+          "resolveType": [Function],
           "types": Array [
             "PrismicPrefixPageMainNewsPost",
           ],
@@ -348,7 +411,9 @@ exports[`sourceNodes creates types 1`] = `
         Object {
           "config": Object {
             "fields": Object {
-              "items": "PrismicPrefixPageBodyImagesItemType",
+              "items": "[PrismicPrefixPageBodyImagesItemType]",
+              "slice_label": "String",
+              "slice_type": "String!",
             },
             "name": "PrismicPrefixPageBodyImages",
           },
@@ -358,6 +423,8 @@ exports[`sourceNodes creates types 1`] = `
           "config": Object {
             "fields": Object {
               "primary": "PrismicPrefixPageBodyTextPrimaryType",
+              "slice_label": "String",
+              "slice_type": "String!",
             },
             "name": "PrismicPrefixPageBodyText",
           },
@@ -369,6 +436,7 @@ exports[`sourceNodes creates types 1`] = `
       Object {
         "config": Object {
           "name": "PrismicPrefixPageBodySlicesType",
+          "resolveType": [Function],
           "types": Array [
             "PrismicPrefixPageBodyImages",
             "PrismicPrefixPageBodyText",
@@ -381,8 +449,8 @@ exports[`sourceNodes creates types 1`] = `
       Object {
         "config": Object {
           "fields": Object {
-            "body": "PrismicPrefixPageBodySlicesType[PrismicPrefixPageBodySlicesType]",
-            "main": "PrismicPrefixPageMainSlicesType[PrismicPrefixPageMainSlicesType]",
+            "body": "[PrismicPrefixPageBodySlicesType]",
+            "main": "[PrismicPrefixPageMainSlicesType]",
             "meta_description": "String",
             "meta_title": "String",
             "parent": "PrismicPrefixLinkType",
@@ -400,10 +468,15 @@ exports[`sourceNodes creates types 1`] = `
             "infer": false,
           },
           "fields": Object {
-            "_previewable": "ID!",
+            "_previewable": Object {
+              "resolve": [Function],
+              "type": "ID!",
+            },
             "data": "PrismicPrefixPageDataType",
-            "dataRaw": "JSON!",
-            "dataString": "String!",
+            "dataRaw": Object {
+              "resolve": [Function],
+              "type": "JSON!",
+            },
             "first_publication_date": Object {
               "extensions": Object {
                 "dateformat": Object {},
@@ -422,7 +495,10 @@ exports[`sourceNodes creates types 1`] = `
             "tags": "[String!]!",
             "type": "String!",
             "uid": "String",
-            "url": "String!",
+            "url": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
           },
           "interfaces": Array [
             "Node",
@@ -445,6 +521,10 @@ exports[`sourceNodes creates types 1`] = `
     ],
   ],
   "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
     Object {
       "type": "return",
       "value": undefined,

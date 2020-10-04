@@ -13,6 +13,7 @@ const gatsbyContext = {
   schema: {
     buildUnionType: jest.fn((config) => ({ kind: 'UNION', config })),
     buildObjectType: jest.fn((config) => ({ kind: 'OBJECT', config })),
+    buildEnumType: jest.fn((config) => ({ kind: 'ENUM', config })),
   },
   createNodeId: jest.fn().mockReturnValue('createNodeId'),
   createContentDigest: jest.fn().mockReturnValue('createContentDigest'),
