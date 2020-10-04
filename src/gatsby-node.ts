@@ -30,6 +30,7 @@ const buildDependencies = (
     typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
       .filter(Boolean)
       .join(' '),
+    fieldPrefix: GLOBAL_TYPE_PREFIX,
     createNodeId: gatsbyContext.createNodeId,
     createContentDigest: gatsbyContext.createContentDigest,
   }),

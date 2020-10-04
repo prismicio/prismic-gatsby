@@ -15,6 +15,7 @@ import {
   PrismicAPILinkField,
   PrismicAPIStructuredTextField,
   PrismicAPIDocumentNode,
+  PrismicAPISliceField,
 } from './types'
 import { NON_DATA_FIELDS } from './constants'
 import { listTypeName } from './lib/listTypeName'
@@ -40,7 +41,7 @@ const buildSchemaRecordType = (
         buildSchemaRecordConfigMap(path, record),
         RTE.chain((fields) =>
           buildObjectType({
-            name: deps.nodeHelpers.generateTypeName(...path),
+            name: deps.nodeHelpers.createTypeName(...path),
             fields,
           }),
         ),
@@ -57,7 +58,7 @@ const buildSliceChoiceType = (
     RTE.chain((deps) =>
       pipe(
         {} as Record<
-          string,
+          'primary' | 'items',
           RTE.ReaderTaskEither<
             Dependencies,
             never,
@@ -86,11 +87,21 @@ const buildSliceChoiceType = (
             registerTypes,
           ),
         ),
-        RTE.map(R.map(getTypeName)),
+        RTE.map(
+          R.mapWithIndex((field, type) =>
+            field === 'items'
+              ? pipe(type, getTypeName, listTypeName)
+              : getTypeName(type),
+          ),
+        ),
         RTE.chain((fields) =>
           buildObjectType({
-            name: deps.nodeHelpers.generateTypeName(...path),
-            fields,
+            name: deps.nodeHelpers.createTypeName(...path),
+            fields: {
+              ...fields,
+              slice_type: 'String!',
+              slice_label: 'String',
+            },
           }),
         ),
       ),
@@ -149,9 +160,7 @@ const toFieldConfig = <TSource, TContext>(
         RTE.chain((deps) =>
           pipe(
             buildObjectType({
-              name: deps.globalNodeHelpers.generateTypeName(
-                'StructuredTextType',
-              ),
+              name: deps.globalNodeHelpers.createTypeName('StructuredTextType'),
               fields: {
                 text: {
                   type: 'String',
@@ -183,7 +192,7 @@ const toFieldConfig = <TSource, TContext>(
         RTE.chain((deps) =>
           pipe(
             buildObjectType({
-              name: deps.globalNodeHelpers.generateTypeName('GeoPointType'),
+              name: deps.globalNodeHelpers.createTypeName('GeoPointType'),
               fields: {
                 longitude: 'Float',
                 latitude: 'Float',
@@ -202,7 +211,7 @@ const toFieldConfig = <TSource, TContext>(
         RTE.chain((deps) =>
           pipe(
             buildNamedInferredNodeType(
-              deps.globalNodeHelpers.generateTypeName('EmbedType'),
+              deps.globalNodeHelpers.createTypeName('EmbedType'),
             ),
             RTE.chainFirst(registerType),
             RTE.map(getTypeName),
@@ -221,9 +230,9 @@ const toFieldConfig = <TSource, TContext>(
         RTE.chain((deps) =>
           pipe(
             buildObjectType({
-              name: deps.nodeHelpers.generateTypeName('LinkType'),
+              name: deps.nodeHelpers.createTypeName('LinkType'),
               fields: {
-                link_type: deps.globalNodeHelpers.generateTypeName('LinkTypes'),
+                link_type: deps.globalNodeHelpers.createTypeName('LinkTypes'),
                 isBroken: 'Boolean',
                 url: {
                   type: 'String',
@@ -242,7 +251,7 @@ const toFieldConfig = <TSource, TContext>(
                 slug: 'String',
                 uid: 'String',
                 document: {
-                  type: deps.nodeHelpers.generateTypeName('AllDocumentTypes'),
+                  type: deps.nodeHelpers.createTypeName('AllDocumentTypes'),
                   resolve: (source: PrismicAPILinkField) =>
                     source.link_type === 'Document' &&
                     source.type &&
@@ -281,8 +290,10 @@ const toFieldConfig = <TSource, TContext>(
             RTE.map(A.map(getTypeName)),
             RTE.chain((types) =>
               buildUnionType({
-                name: deps.nodeHelpers.generateTypeName(...path, 'SlicesType'),
+                name: deps.nodeHelpers.createTypeName(...path, 'SlicesType'),
                 types,
+                resolveType: (source: PrismicAPISliceField) =>
+                  deps.nodeHelpers.createTypeName(...path, source.slice_type),
               }),
             ),
             RTE.chainFirst(registerType),
@@ -347,7 +358,7 @@ const registerCustomType = (
         RTE.bind('data', (fields) =>
           pipe(
             buildObjectType({
-              name: deps.nodeHelpers.generateTypeName(name, 'DataType'),
+              name: deps.nodeHelpers.createTypeName(name, 'DataType'),
               fields: fields.right,
             }),
             RTE.chainFirst(registerType),
@@ -356,12 +367,12 @@ const registerCustomType = (
         ),
         RTE.chain((fields) =>
           buildObjectType({
-            name: deps.nodeHelpers.generateTypeName(name),
+            name: deps.nodeHelpers.createTypeName(name),
             fields: {
               ...fields.left,
               // Need to type cast the property name so TypeScript can
               // statically analize the object keys.
-              [deps.nodeHelpers.generateFieldName('id') as 'id']: 'ID!',
+              [deps.nodeHelpers.createFieldName('id') as 'id']: 'ID!',
               data: fields.data,
               dataRaw: { type: 'JSON!', resolve: identity },
               first_publication_date: {
@@ -384,7 +395,7 @@ const registerCustomType = (
               _previewable: {
                 type: 'ID!',
                 resolve: (source: PrismicAPIDocumentNode) =>
-                  source[deps.nodeHelpers.generateFieldName('id')],
+                  source[deps.nodeHelpers.createFieldName('id')],
               },
             },
             interfaces: ['Node'],

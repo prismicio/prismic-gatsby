@@ -16,7 +16,7 @@ const createLinkTypes = (): RTE.ReaderTaskEither<
     RTE.ask<Dependencies>(),
     RTE.chain((deps) =>
       buildEnumType({
-        name: deps.globalNodeHelpers.generateTypeName('LinkTypes'),
+        name: deps.globalNodeHelpers.createTypeName('LinkTypes'),
         values: { Any: {}, Document: {}, Media: {}, Web: {} },
       }),
     ),

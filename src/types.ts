@@ -1,7 +1,8 @@
 import * as gatsby from 'gatsby'
 import * as D from 'io-ts/Decoder'
 import Prismic from 'prismic-javascript'
-import { QueryOptions } from 'prismic-javascript/types/ResolvedApi'
+import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/documents'
+import { QueryOptions as _PrismicClientQueryOptions } from 'prismic-javascript/types/ResolvedApi'
 
 import {
   PluginOptionsD,
@@ -73,7 +74,7 @@ export type PrismicFieldSchema =
     }
 
 export type PrismicClient = ResolveType<ReturnType<typeof Prismic.getApi>>
-export type PrismicClientQueryOptions = QueryOptions
+export type PrismicClientQueryOptions = _PrismicClientQueryOptions
 
 export type PrismicAPILinkField = {
   link_type: 'Any' | 'Document' | 'Media' | 'Web'
@@ -95,26 +96,7 @@ export type PrismicAPIStructuredTextField = {
   spans: { [key: string]: unknown }
 }[]
 
-type PrismicAPILinkedDocument = {
-  id: string
-  tags: string[]
-  type: string
-  slug: string
-  lang: string
-}
-
-export interface PrismicAPIDocument {
-  id: string
-  uid: string | null
-  type: string
-  href: string
-  tags: string[]
-  first_publication_date: string
-  last_publication_date: string
-  slugs: string[]
-  linked_documents: PrismicAPILinkedDocument[]
-  lang: string
-  alternate_languages: PrismicAPILinkedDocument[]
+export interface PrismicAPIDocument extends _PrismicAPIDocument {
   data: UnknownRecord
 }
 
@@ -122,4 +104,11 @@ export interface PrismicAPIDocumentNode
   extends PrismicAPIDocument,
     gatsby.Node {
   prismicId: string
+}
+
+export type PrismicAPISliceField = {
+  slice_type: string
+  slice_label: string
+  items: UnknownRecord[]
+  primary: UnknownRecord
 }

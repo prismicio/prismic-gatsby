@@ -19,7 +19,7 @@ export const registerAllDocumentTypes = (
         A.map(getTypeName),
         (types) =>
           buildUnionType({
-            name: deps.nodeHelpers.generateTypeName('AllDocumentTypes'),
+            name: deps.nodeHelpers.createTypeName('AllDocumentTypes'),
             types,
           }),
         RTE.chainFirst(registerType),
