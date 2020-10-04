@@ -4,6 +4,13 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 
 import { Dependencies } from '../types'
 
+/**
+ * Builds a GraphQL enum type using the environment's `buildEnumType` function.
+ *
+ * @param config Configuration for the enum type.
+ *
+ * @return Return value of the environment's `buildEnumType` function.
+ */
 export const buildEnumType = (
   config: gqlc.ComposeEnumTypeConfig,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLEnumType> =>

@@ -66,6 +66,22 @@ const aggregateQuery = (
     ),
   )
 
+/**
+ * Creates a Prismic API client using the environment's configuration. The
+ * following fields from the environment's `pluginOptions` are used:
+ *
+ * - `pluginOptions.apiEndpoint`: Endpoint used to query the Prismic API.
+ *
+ * - `pluginOptions.repositoryName`: The Prismic repository's name. If
+ *   `pluginOptions.apiEndpoint` is not provided, the repository name is used
+ *   to construct the default Prismic API V2 endpoint.
+ *
+ * - `pluginOptions.accessToken`: The Prismic repository's access token. If the
+ *   repository's security settings require an access token, this must be
+ *   provided.
+ *
+ * @returns A Prismic API client.
+ */
 export const createClient = (): RTE.ReaderTaskEither<
   Dependencies,
   never,
@@ -83,6 +99,23 @@ export const createClient = (): RTE.ReaderTaskEither<
     RTE.chain((client) => RTE.rightTask(client)),
   )
 
+/**
+ * Queries all documents from a Prismic repository using the environment's
+ * configuration. The following fields from the environment's `pluginOptions`
+ * are used, in addition to those used in `createClient`:
+ *
+ * - `pluginOptions.releaseID`: Prismic Release ID from which to fetch
+ *   documents. If not provided, the master ref is used.
+ *
+ * - `pluginOptions.fetchLinks`: List of document link fields to fetch.
+ *
+ * - `pluginOptions.lang`: Language of documents to fetch. If not provided, all
+ *   languages are fetched.
+ *
+ * @see gatsby-source-prismic/lib/createClient.ts
+ *
+ * @returns List of Prismic documents.
+ */
 export const queryAllDocuments = (): RTE.ReaderTaskEither<
   Dependencies,
   never,

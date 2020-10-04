@@ -4,6 +4,14 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 
 import { Dependencies } from '../types'
 
+/**
+ * Builds a GraphQL union type using the environment's `buildUnionType`
+ * function.
+ *
+ * @param config Configuration for the union type.
+ *
+ * @return Return value of the environment's `buildUnionType` function.
+ */
 export const buildUnionType = <TSource, TContext>(
   config: gqlc.ComposeUnionTypeConfig<TSource, TContext>,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLUnionType> =>
