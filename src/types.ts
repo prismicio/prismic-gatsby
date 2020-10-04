@@ -22,6 +22,7 @@ export interface Dependencies {
   createNode: gatsby.Actions['createNode']
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']
   buildUnionType: gatsby.NodePluginSchema['buildUnionType']
+  buildEnumType: gatsby.NodePluginSchema['buildEnumType']
   reportInfo: gatsby.Reporter['info']
   globalNodeHelpers: NodeHelpers
   nodeHelpers: NodeHelpers
@@ -73,3 +74,52 @@ export type PrismicFieldSchema =
 
 export type PrismicClient = ResolveType<ReturnType<typeof Prismic.getApi>>
 export type PrismicClientQueryOptions = QueryOptions
+
+export type PrismicAPILinkField = {
+  link_type: 'Any' | 'Document' | 'Media' | 'Web'
+  isBroken: boolean
+  url?: string
+  target?: string
+  size?: number
+  id?: string
+  type?: string
+  tags?: string[]
+  lang?: string
+  slug?: string
+  uid?: string
+}
+
+export type PrismicAPIStructuredTextField = {
+  type: string
+  text: string
+  spans: { [key: string]: unknown }
+}[]
+
+type PrismicAPILinkedDocument = {
+  id: string
+  tags: string[]
+  type: string
+  slug: string
+  lang: string
+}
+
+export interface PrismicAPIDocument {
+  id: string
+  uid: string | null
+  type: string
+  href: string
+  tags: string[]
+  first_publication_date: string
+  last_publication_date: string
+  slugs: string[]
+  linked_documents: PrismicAPILinkedDocument[]
+  lang: string
+  alternate_languages: PrismicAPILinkedDocument[]
+  data: UnknownRecord
+}
+
+export interface PrismicAPIDocumentNode
+  extends PrismicAPIDocument,
+    gatsby.Node {
+  prismicId: string
+}

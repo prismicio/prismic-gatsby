@@ -2,9 +2,11 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe, flow } from 'fp-ts/function'
 
 import { Dependencies } from './types'
-import { registerAllDocumentTypes, registerCustomTypes } from './registerTypes'
+import { registerCustomTypes } from './registerCustomTypes'
 import { queryAllDocuments } from './lib/client'
 import { createNodes } from './lib/createNodes'
+import { registerAllDocumentTypes } from './lib/registerAllDocumentTypes'
+import { createBaseTypes } from './createBaseTypes'
 
 export const sourceNodes: RTE.ReaderTaskEither<
   Dependencies,
@@ -12,6 +14,7 @@ export const sourceNodes: RTE.ReaderTaskEither<
   void
 > = pipe(
   RTE.ask<Dependencies>(),
+  RTE.chainFirst(createBaseTypes),
   RTE.chainFirst(
     flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes)),
   ),

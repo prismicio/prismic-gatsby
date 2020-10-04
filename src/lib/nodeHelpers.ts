@@ -1,6 +1,7 @@
 import * as gatsby from 'gatsby'
 
 import { pascalCase } from './pascalCase'
+import { camelCase } from './camelCase'
 
 interface CreateNodeHelpersDependencies {
   typePrefix: string
@@ -17,6 +18,8 @@ export interface IdentifiableRecord {
 
 export interface NodeHelpers {
   generateTypeName: (...parts: string[]) => string
+  generateFieldName: (...parts: string[]) => string
+  createNodeId: (...parts: string[]) => string
   createNodeFactory: (
     ...nameParts: string[]
   ) => (node: IdentifiableRecord) => gatsby.NodeInput
@@ -24,22 +27,37 @@ export interface NodeHelpers {
 
 export const createNodeHelpers = ({
   typePrefix,
-  createNodeId,
-  createContentDigest,
+  createNodeId: gatsbyCreateNodeId,
+  createContentDigest: gatsbyCreateContentDigest,
 }: CreateNodeHelpersDependencies): NodeHelpers => {
   const generateTypeName = (...parts: string[]): string =>
     pascalCase(typePrefix, ...parts)
+
+  const generateFieldName = (...parts: string[]): string =>
+    camelCase(typePrefix, ...parts)
+
+  const createNodeId = (...parts: string[]): string =>
+    gatsbyCreateNodeId(
+      [typePrefix, ...parts].filter((p) => p != null).join(' '),
+    )
 
   const createNodeFactory = (...nameParts: string[]) => (
     node: IdentifiableRecord,
   ): gatsby.NodeInput => ({
     ...node,
     id: createNodeId(node.id),
+    [generateFieldName('id')]: node.id,
     internal: {
       type: generateTypeName(...nameParts),
-      contentDigest: createContentDigest(node),
+      contentDigest: gatsbyCreateContentDigest(node),
     },
+    [generateFieldName('id')]: node.internal,
   })
 
-  return { generateTypeName, createNodeFactory }
+  return {
+    generateTypeName,
+    generateFieldName,
+    createNodeId,
+    createNodeFactory,
+  }
 }

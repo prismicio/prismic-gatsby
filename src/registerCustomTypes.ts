@@ -5,12 +5,16 @@ import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
 import * as A from 'fp-ts/Array'
 import { pipe, flow, identity } from 'fp-ts/function'
+import * as PrismicDOM from 'prismic-dom'
 
 import {
   Dependencies,
   PrismicSchema,
   PrismicFieldSchema,
   PrismicSliceSchema,
+  PrismicAPILinkField,
+  PrismicAPIStructuredTextField,
+  PrismicAPIDocumentNode,
 } from './types'
 import { NON_DATA_FIELDS } from './constants'
 import { listTypeName } from './lib/listTypeName'
@@ -149,9 +153,21 @@ const toFieldConfig = <TSource, TContext>(
                 'StructuredTextType',
               ),
               fields: {
-                text: 'String',
-                html: 'String',
-                raw: 'JSON',
+                text: {
+                  type: 'String',
+                  resolve: (source: PrismicAPIStructuredTextField) =>
+                    PrismicDOM.RichText.asText(source),
+                },
+                html: {
+                  type: 'String',
+                  resolve: (source: PrismicAPIStructuredTextField) =>
+                    PrismicDOM.RichText.asHtml(
+                      source,
+                      deps.pluginOptions.linkResolver?.(),
+                      deps.pluginOptions.htmlSerializer?.(),
+                    ),
+                },
+                raw: { type: 'JSON', resolve: identity },
               },
             }),
             RTE.chainFirst(registerType),
@@ -209,7 +225,14 @@ const toFieldConfig = <TSource, TContext>(
               fields: {
                 link_type: deps.globalNodeHelpers.generateTypeName('LinkTypes'),
                 isBroken: 'Boolean',
-                url: 'String',
+                url: {
+                  type: 'String',
+                  resolve: (source: PrismicAPILinkField) =>
+                    PrismicDOM.Link.url(
+                      source,
+                      deps.pluginOptions.linkResolver?.(),
+                    ),
+                },
                 target: 'String',
                 size: 'Int',
                 id: 'ID',
@@ -220,9 +243,16 @@ const toFieldConfig = <TSource, TContext>(
                 uid: 'String',
                 document: {
                   type: deps.nodeHelpers.generateTypeName('AllDocumentTypes'),
+                  resolve: (source: PrismicAPILinkField) =>
+                    source.link_type === 'Document' &&
+                    source.type &&
+                    source.id &&
+                    !source.isBroken
+                      ? deps.nodeHelpers.createNodeId(source.id)
+                      : undefined,
                   extensions: { link: {} },
                 },
-                raw: 'JSON',
+                raw: { type: 'JSON', resolve: identity },
               },
             }),
             RTE.chainFirst(registerType),
@@ -302,7 +332,7 @@ const collectFields = (
     S.fold(S.getObjectSemigroup<Record<string, PrismicFieldSchema>>())({}),
   )
 
-const registerCustomType = <TSource, TContext>(
+const registerCustomType = (
   name: string,
   schema: PrismicSchema,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
@@ -312,8 +342,7 @@ const registerCustomType = <TSource, TContext>(
       pipe(
         schema,
         collectFields,
-        (record) =>
-          buildSchemaRecordConfigMap<TSource, TContext>([name], record),
+        (record) => buildSchemaRecordConfigMap([name], record),
         RTE.map(R.partitionWithIndex((i) => !NON_DATA_FIELDS.includes(i))),
         RTE.bind('data', (fields) =>
           pipe(
@@ -326,13 +355,15 @@ const registerCustomType = <TSource, TContext>(
           ),
         ),
         RTE.chain((fields) =>
-          buildObjectType<TSource, TContext>({
+          buildObjectType({
             name: deps.nodeHelpers.generateTypeName(name),
             fields: {
               ...fields.left,
+              // Need to type cast the property name so TypeScript can
+              // statically analize the object keys.
+              [deps.nodeHelpers.generateFieldName('id') as 'id']: 'ID!',
               data: fields.data,
-              dataRaw: 'JSON!',
-              dataString: 'String!',
+              dataRaw: { type: 'JSON!', resolve: identity },
               first_publication_date: {
                 type: 'Date!',
                 extensions: { dateformat: {} },
@@ -343,11 +374,18 @@ const registerCustomType = <TSource, TContext>(
                 type: 'Date!',
                 extensions: { dateformat: {} },
               },
-              prismicId: 'ID!',
               tags: '[String!]!',
               type: 'String!',
-              url: 'String!',
-              _previewable: 'ID!',
+              url: {
+                type: 'String',
+                resolve: (source: PrismicAPIDocumentNode) =>
+                  deps.pluginOptions.linkResolver?.()?.(source),
+              },
+              _previewable: {
+                type: 'ID!',
+                resolve: (source: PrismicAPIDocumentNode) =>
+                  source[deps.nodeHelpers.generateFieldName('id')],
+              },
             },
             interfaces: ['Node'],
             extensions: { infer: false },
@@ -371,25 +409,6 @@ export const registerCustomTypes = (): RTE.ReaderTaskEither<
         R.mapWithIndex(registerCustomType),
         sequenceSRTE,
         RTE.map(R.collect((_, value) => value)),
-      ),
-    ),
-  )
-
-export const registerAllDocumentTypes = (
-  types: gatsby.GatsbyGraphQLObjectType[],
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLUnionType> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      pipe(
-        types,
-        A.map(getTypeName),
-        (types) =>
-          buildUnionType({
-            name: deps.nodeHelpers.generateTypeName('AllDocumentTypes'),
-            types,
-          }),
-        RTE.chainFirst(registerType),
       ),
     ),
   )

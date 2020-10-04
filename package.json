@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "start": "false && yarn clean && microbundle watch src/gatsby-node.ts -o dist -f cjs",
+    "start": "yarn clean && microbundle watch src/gatsby-node.ts -o dist -f cjs",
     "build": "yarn clean && microbundle build src/gatsby-node.ts -o dist -f cjs",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
@@ -30,16 +30,19 @@
     "prismic"
   ],
   "dependencies": {
+    "camel-case": "^4.1.1",
     "fp-ts": "^2.8.2",
     "io-ts": "^2.2.10",
     "io-ts-types": "^0.5.10",
     "pascal-case": "^3.1.1",
+    "prismic-dom": "^2.2.4",
     "prismic-javascript": "^3.0.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.2",
     "@types/jest": "^26.0.13",
+    "@types/prismic-dom": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "eslint": "^7.8.1",

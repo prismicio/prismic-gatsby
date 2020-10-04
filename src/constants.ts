@@ -21,4 +21,4 @@ export const DEFAULT_FETCH_LINKS = [] as string[]
 
 export const QUERY_PAGE_SIZE = 100
 
-export const REPORTER_TEMPLATE = `gatsby-source-prismic (%s) - %s`
+export const REPORTER_TEMPLATE = `gatsby-source-prismic(%s) - %s`

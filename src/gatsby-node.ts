@@ -20,6 +20,7 @@ const buildDependencies = (
   reportInfo: gatsbyContext.reporter.info,
   buildUnionType: gatsbyContext.schema.buildUnionType,
   buildObjectType: gatsbyContext.schema.buildObjectType,
+  buildEnumType: gatsbyContext.schema.buildEnumType,
   globalNodeHelpers: createNodeHelpers({
     typePrefix: GLOBAL_TYPE_PREFIX,
     createNodeId: gatsbyContext.createNodeId,

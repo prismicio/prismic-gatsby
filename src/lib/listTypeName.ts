@@ -1,2 +1,1 @@
-export const listTypeName = (typeName: string): string =>
-  typeName + `[${typeName}]`
+export const listTypeName = (typeName: string): string => `[${typeName}]`
