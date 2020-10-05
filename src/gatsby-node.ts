@@ -105,7 +105,6 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
 ) => {
   const { reporter, store, webhookBody, getNodes, actions: { touchNode } } = gatsbyContext
   const { program } = store.getState()
-
   /**
    * Validate plugin options. Set default options where necessary. If any
    * plugin options are invalid, stop immediately.
@@ -122,13 +121,8 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     gatsbyContext,
   )
 
-  if(!webhookBody || JSON.stringify(webhookBody) === "{}") {
-    /** Initial build or rebuild everything */
-    createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
-    await buildAll(pluginOptions, gatsbyContext, typePaths)
-    writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
-
-  } else if(isPrismicWebhook(webhookBody) && validateSecret(pluginOptions, webhookBody)) {
+ 
+  if(isPrismicWebhook(webhookBody) && validateSecret(pluginOptions, webhookBody)) {
     /** Respond to the webhook here */
     
     // touch nodes to prevent garbage collection
@@ -139,6 +133,11 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     const prismicWebhook = webhookBody as PrismicWebhook;
     await handleWebhook(pluginOptions, gatsbyContext, typePaths, prismicWebhook)
 
+  } else {
+    /** Initial build or rebuild everything */
+    createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
+    await buildAll(pluginOptions, gatsbyContext, typePaths)
+    writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
   }
 }
 
