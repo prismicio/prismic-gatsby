@@ -1,7 +1,7 @@
 import fs from 'fs'
-import { SourceNodesArgs, ParentSpanPluginArgs } from 'gatsby'
+import { SourceNodesArgs, ParentSpanPluginArgs, CreateSchemaCustomizationArgs } from 'gatsby'
 
-import { sourceNodes, onPreExtractQueries } from '../src/gatsby-node'
+import { sourceNodes, onPreExtractQueries, createSchemaCustomization } from '../src/gatsby-node'
 
 import mockSchema from './__fixtures__/schema.json'
 
@@ -60,9 +60,12 @@ describe('sourceNodes', () => {
   }
 
   test('creates types', async () => {
-    await sourceNodes(mockGatsbyContext, pluginOptions)
 
-    expect(mockGatsbyContext.actions.createTypes).toMatchSnapshot()
+    const mockCreateSchemaCustomizationArgs = mockGatsbyContext as unknown as CreateSchemaCustomizationArgs
+ 
+    await createSchemaCustomization(mockCreateSchemaCustomizationArgs, pluginOptions)
+
+    expect(mockCreateSchemaCustomizationArgs.actions.createTypes).toMatchSnapshot()
   })
 
   test('creates nodes', async () => {
