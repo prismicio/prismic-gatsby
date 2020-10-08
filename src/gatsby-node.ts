@@ -121,8 +121,14 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     gatsbyContext,
   )
 
- 
-  if(isPrismicWebhook(webhookBody) && validateSecret(pluginOptions, webhookBody)) {
+  
+  if(!webhookBody || JSON.stringify(webhookBody) === "{}") {
+    /** Initial build or rebuild everything */
+    createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
+    await buildAll(pluginOptions, gatsbyContext, typePaths)
+    writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
+
+  } else if(isPrismicWebhook(webhookBody) && validateSecret(pluginOptions, webhookBody)) {
     /** Respond to the webhook here */
     
     // touch nodes to prevent garbage collection
@@ -134,10 +140,11 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     await handleWebhook(pluginOptions, gatsbyContext, typePaths, prismicWebhook)
 
   } else {
-    /** Initial build or rebuild everything */
-    createPrismicTypes(pluginOptions, gatsbyContext, typeDefs)
-    await buildAll(pluginOptions, gatsbyContext, typePaths)
-    writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
+    /**
+     * Webhook destined for another plugin,
+     * touch nodes to prevent garbage collection
+    */
+    getNodes().forEach(node => touchNode({ nodeId: node.id}))
   }
 }
 
