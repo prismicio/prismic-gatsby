@@ -1,19 +1,13 @@
 import * as gatsby from 'gatsby'
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as E from 'fp-ts/Either'
-import { pipe } from 'fp-ts/function'
-import * as D from 'io-ts/Decoder'
 
-import { PluginOptions, UnknownRecord } from './types'
-import { GLOBAL_TYPE_PREFIX } from './constants'
-import { PluginOptionsD } from './decoders'
-import { sourceNodes as sourceNodesProgram } from './sourceNodes'
-import { createNodeHelpers } from './lib/nodeHelpers'
+import { Dependencies, PluginOptions } from 'shared/types'
+import { GLOBAL_TYPE_PREFIX } from 'shared/constants'
+import { createNodeHelpers } from 'shared/lib/nodeHelpers'
 
-const buildDependencies = (
+export const buildDependencies = (
   gatsbyContext: gatsby.SourceNodesArgs,
   pluginOptions: PluginOptions,
-) => ({
+): Dependencies => ({
   pluginOptions,
   createNode: gatsbyContext.actions.createNode,
   createTypes: gatsbyContext.actions.createTypes,
@@ -36,19 +30,3 @@ const buildDependencies = (
     createContentDigest: gatsbyContext.createContentDigest,
   }),
 })
-
-export const sourceNodes: NonNullable<gatsby.GatsbyNode['sourceNodes']> = (
-  gatsbyContext: gatsby.SourceNodesArgs,
-  pluginOptions: UnknownRecord,
-) =>
-  pipe(
-    PluginOptionsD.decode(pluginOptions),
-    E.fold(
-      (error) => gatsbyContext.reporter.panic(new Error(D.draw(error))),
-      (pluginOptions) =>
-        RTE.run(
-          sourceNodesProgram,
-          buildDependencies(gatsbyContext, pluginOptions),
-        ),
-    ),
-  )

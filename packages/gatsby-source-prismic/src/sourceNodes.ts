@@ -1,12 +1,12 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe, flow } from 'fp-ts/function'
 
-import { Dependencies } from './types'
-import { registerCustomTypes } from './registerCustomTypes'
-import { queryAllDocuments } from './lib/client'
-import { createNodes } from './lib/createNodes'
-import { registerAllDocumentTypes } from './lib/registerAllDocumentTypes'
-import { createBaseTypes } from './createBaseTypes'
+import { Dependencies } from 'shared/types'
+import { registerCustomTypes } from 'shared/registerCustomTypes'
+import { queryAllDocuments } from 'shared/lib/client'
+import { createNodes } from 'shared/lib/createNodes'
+import { registerAllDocumentTypes } from 'shared/lib/registerAllDocumentTypes'
+import { createBaseTypes } from 'shared/createBaseTypes'
 
 export const sourceNodes: RTE.ReaderTaskEither<
   Dependencies,

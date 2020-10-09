@@ -1,6 +1,13 @@
 export const GLOBAL_TYPE_PREFIX = 'Prismic'
 
-export const NON_DATA_FIELDS = ['uid']
+export const PRISMIC_API_NON_DATA_FIELDS = ['uid']
+
+export const PRISMIC_API_IMAGE_FIELDS = [
+  'alt',
+  'copyright',
+  'dimensions',
+  'url',
+]
 
 export const DEFAULT_IMGIX_PARAMS = {
   auto: 'compress,format',
@@ -22,3 +29,5 @@ export const DEFAULT_FETCH_LINKS = [] as string[]
 export const QUERY_PAGE_SIZE = 100
 
 export const REPORTER_TEMPLATE = `gatsby-source-prismic(%s) - %s`
+
+export const BROWSER_CREATE_NODE_ID_TEMPLATE = `gatsby-plugin-prismic-preview %s`

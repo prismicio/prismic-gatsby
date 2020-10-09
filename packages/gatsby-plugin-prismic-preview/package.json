@@ -1,0 +1,39 @@
+{
+  "name": "gatsby-plugin-prismic-preview",
+  "version": "3.2.1",
+  "description": "Gatsby plugin for integrating Prismic preview support",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src",
+    "gatsby-node.js"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "start": "yarn clean && microbundle watch src/gatsby-browser.ts -o dist -f modern",
+    "build": "yarn clean && microbundle build src/gatsby-browser.ts -o dist -f modern",
+    "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
+    "test": "jest",
+    "prepare": "yarn build",
+    "release": "standard-version"
+  },
+  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angeloashmore/gatsby-source-prismic.git"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "prismic"
+  ],
+  "peerDependencies": {
+    "gatsby": ">=2.3"
+  },
+  "dependencies": {
+    "md5": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/md5": "^2.2.0"
+  }
+}

@@ -1,49 +1,9 @@
 {
-  "name": "gatsby-source-prismic",
-  "version": "3.2.1",
-  "description": "Gatsby source plugin for building websites using prismic.io as a data source",
-  "license": "MIT",
-  "files": [
-    "dist",
-    "src",
-    "gatsby-node.js",
-    "fragments.js"
-  ],
-  "scripts": {
-    "clean": "rimraf ./dist",
-    "start": "yarn clean && microbundle watch src/gatsby-node.ts -o dist -f cjs",
-    "build": "yarn clean && microbundle build src/gatsby-node.ts -o dist -f cjs",
-    "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
-    "test": "jest",
-    "prepare": "yarn build",
-    "release": "standard-version"
-  },
-  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/angeloashmore/gatsby-source-prismic.git"
-  },
-  "keywords": [
-    "gatsby",
-    "gatsby-plugin",
-    "gatsby-source-plugin",
-    "prismic"
-  ],
-  "dependencies": {
-    "camel-case": "^4.1.1",
-    "fp-ts": "^2.8.2",
-    "gatsby-plugin-imgix": "^0.8.2",
-    "io-ts": "^2.2.10",
-    "io-ts-types": "^0.5.10",
-    "pascal-case": "^3.1.1",
-    "prismic-dom": "^2.2.4",
-    "prismic-javascript": "^3.0.2"
-  },
+  "private": true,
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.2",
     "@types/jest": "^26.0.13",
-    "@types/prismic-dom": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "eslint": "^7.8.1",
@@ -58,8 +18,14 @@
     "tslib": "^2.0.1",
     "typescript": "^4.0.2"
   },
-  "peerDependencies": {
-    "gatsby": ">=2.3"
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/husky",
+      "**/husky/**"
+    ]
   },
   "prettier": {
     "semi": false,

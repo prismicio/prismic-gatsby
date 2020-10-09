@@ -19,7 +19,7 @@ import {
   PrismicAPISliceField,
   PrismicAPIImageField,
 } from './types'
-import { NON_DATA_FIELDS } from './constants'
+import { PRISMIC_API_NON_DATA_FIELDS } from './constants'
 import { listTypeName } from './lib/listTypeName'
 import { dotPath } from './lib/dotPath'
 import { getTypeName } from './lib/getTypeName'
@@ -428,7 +428,9 @@ const registerCustomType = (
         schema,
         collectFields,
         (record) => buildSchemaRecordConfigMap([name], record),
-        RTE.map(R.partitionWithIndex((i) => !NON_DATA_FIELDS.includes(i))),
+        RTE.map(
+          R.partitionWithIndex((i) => !PRISMIC_API_NON_DATA_FIELDS.includes(i)),
+        ),
         RTE.bind('data', (fields) =>
           pipe(
             buildObjectType({
@@ -446,6 +448,8 @@ const registerCustomType = (
               ...fields.left,
               // Need to type cast the property name so TypeScript can
               // statically analize the object keys.
+              // TODO: May be fixable with TypeScript 4.1's Template Literal
+              // Types.
               [deps.nodeHelpers.createFieldName('id') as 'id']: 'ID!',
               data: fields.data,
               dataRaw: { type: 'JSON!', resolve: identity },
