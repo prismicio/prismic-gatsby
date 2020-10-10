@@ -10,8 +10,8 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "start": "yarn clean && microbundle watch src/gatsby-browser.ts -o dist -f modern",
-    "build": "yarn clean && microbundle build src/gatsby-browser.ts -o dist -f modern",
+    "start": "yarn clean && microbundle watch src/index.ts -o dist -f modern --jsx React.createElement",
+    "build": "yarn clean && microbundle build src/index.ts -o dist -f modern --jsx React.createElement",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",
