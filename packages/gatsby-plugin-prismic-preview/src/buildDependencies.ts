@@ -10,7 +10,10 @@ import { Dependencies, PluginOptions } from 'shared/types'
 import { createNodeHelpers } from 'shared/lib/nodeHelpers'
 import { sprintf } from 'shared/lib/sprintf'
 
-import { PrismicContextAction, PrismicContextActionType } from './context'
+import {
+  PrismicContextAction,
+  PrismicContextActionType,
+} from './usePrismicContext'
 
 const createCache = (): gatsby.GatsbyCache => {
   const map = new Map()

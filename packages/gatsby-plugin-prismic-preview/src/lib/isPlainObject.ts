@@ -6,7 +6,7 @@ import { UnknownRecord } from 'shared/types'
  *
  * @param  value
  */
-const getTag = <T>(value: T): string => toString.call(value)
+const getTag = <T>(value: T): string => Object.prototype.toString.call(value)
 
 /**
  * Returns true if given value is an instance of Map or Set.
