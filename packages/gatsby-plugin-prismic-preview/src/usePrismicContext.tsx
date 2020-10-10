@@ -8,20 +8,21 @@ import { pipe } from 'fp-ts/function'
 import * as D from 'io-ts/Decoder'
 
 import { PluginOptions } from 'shared/types'
+import { PluginOptionsD } from 'shared/decoders'
 
 import { castArray } from './lib/castArray'
-import { PluginOptionsD } from 'shared/decoders'
 
 export enum PrismicContextActionType {
   CreateNode = 'CreateNode',
   CreateType = 'CreateType',
   SetAccessToken = 'SetAccessToken',
+  CreateRootNodeRelationship = 'CreateRootNodeRelationship',
 }
 
 export type PrismicContextAction =
   | {
       type: PrismicContextActionType.CreateNode
-      payload: gatsby.NodeInput
+      payload: gatsby.NodeInput & { prismicId?: string }
     }
   | {
       type: PrismicContextActionType.CreateType
@@ -29,16 +30,18 @@ export type PrismicContextAction =
     }
   | {
       type: PrismicContextActionType.SetAccessToken
-      payload: {
-        repositoryName: string
-        accessToken: string
-      }
+      payload: { repositoryName: string; accessToken: string }
+    }
+  | {
+      type: PrismicContextActionType.CreateRootNodeRelationship
+      payload: { path: string; node: gatsby.NodeInput }
     }
 
-interface PrismicContextState {
+export interface PrismicContextState {
   pluginOptionsMap: Record<string, PluginOptions>
   nodes: Record<string, gatsby.NodeInput>
   types: Record<string, gatsby.GatsbyGraphQLType>
+  rootNodeMap: Record<string, string>
 }
 
 const createInitialState = (
@@ -61,9 +64,15 @@ const createInitialState = (
     E.bindTo('pluginOptionsMap'),
     E.bind('nodes', () => E.right({})),
     E.bind('types', () => E.right({})),
+    E.bind('rootNodeMap', () => E.right({})),
     E.getOrElse((error) => {
       E.throwError(error)
-      return { pluginOptionsMap: {}, nodes: {}, types: {} }
+      return {
+        pluginOptionsMap: {},
+        nodes: {},
+        types: {},
+        rootNodeMap: {},
+      }
     }),
   )
 
@@ -77,7 +86,7 @@ const reducer = (
         ...state,
         nodes: {
           ...state.nodes,
-          [action.payload.id]: action.payload,
+          [action.payload.prismicId ?? action.payload.id]: action.payload,
         },
       }
     }
@@ -101,6 +110,16 @@ const reducer = (
             ...state.pluginOptionsMap[action.payload.repositoryName],
             accessToken: action.payload.accessToken,
           },
+        },
+      }
+    }
+
+    case PrismicContextActionType.CreateRootNodeRelationship: {
+      return {
+        ...state,
+        rootNodeMap: {
+          ...state.rootNodeMap,
+          [action.payload.path]: action.payload.node.id,
         },
       }
     }

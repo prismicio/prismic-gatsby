@@ -19,7 +19,10 @@ import {
   PrismicAPISliceField,
   PrismicAPIImageField,
 } from './types'
-import { PRISMIC_API_NON_DATA_FIELDS } from './constants'
+import {
+  PREVIEWABLE_NODE_ID_FIELD,
+  PRISMIC_API_NON_DATA_FIELDS,
+} from './constants'
 import { listTypeName } from './lib/listTypeName'
 import { dotPath } from './lib/dotPath'
 import { getTypeName } from './lib/getTypeName'
@@ -470,7 +473,7 @@ const registerCustomType = (
                 resolve: (source: PrismicAPIDocumentNode) =>
                   deps.pluginOptions.linkResolver?.()?.(source),
               },
-              _previewable: {
+              [PREVIEWABLE_NODE_ID_FIELD]: {
                 type: 'ID!',
                 resolve: (source: PrismicAPIDocumentNode) =>
                   source[deps.nodeHelpers.createFieldName('id')],

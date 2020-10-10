@@ -30,4 +30,11 @@ export const QUERY_PAGE_SIZE = 100
 
 export const REPORTER_TEMPLATE = `gatsby-source-prismic(%s) - %s`
 
+export const ANONYMOUS_REPORTER_TEMPLATE = `gatsby-source-prismic - %s`
+
 export const BROWSER_CREATE_NODE_ID_TEMPLATE = `gatsby-plugin-prismic-preview %s`
+
+// Root node field used to compare static data with preview data. If values are
+// equal, the preview node can be treated as an updated version of the static
+// node.
+export const PREVIEWABLE_NODE_ID_FIELD = '_previewable'

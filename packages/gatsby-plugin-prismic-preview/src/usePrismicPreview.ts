@@ -11,9 +11,14 @@ import { createClient, queryById } from 'shared/lib/client'
 import { registerAllDocumentTypes } from 'shared/lib/registerAllDocumentTypes'
 import { createNode } from 'shared/lib/createNode'
 
-import { usePrismicContext } from './context'
-import { buildDependencies } from './buildDependencies'
 import { getURLSearchParam } from './lib/getURLSearchParam'
+
+import {
+  PrismicContextAction,
+  PrismicContextActionType,
+  usePrismicContext,
+} from './usePrismicContext'
+import { buildDependencies } from './buildDependencies'
 
 enum ActionType {
   IsPreview = 'IsPreview',
@@ -68,40 +73,38 @@ const reducer = (state: State, action: Action): State => {
 
 interface PrismicPreviewProgramDependencies {
   dispatch: (action: Action) => void
+  contextDispatch: (action: PrismicContextAction) => void
 }
 
 const isPreview = (): RTE.ReaderTaskEither<
   PrismicPreviewProgramDependencies,
   never,
   void
-> =>
-  pipe(
-    RTE.ask<PrismicPreviewProgramDependencies>(),
-    RTE.map((deps) => deps.dispatch({ type: ActionType.IsPreview })),
-  )
+> => RTE.asks((deps) => deps.dispatch({ type: ActionType.IsPreview }))
 
 const isNotPreview = (): RTE.ReaderTaskEither<
   PrismicPreviewProgramDependencies,
   never,
   void
-> =>
-  pipe(
-    RTE.ask<PrismicPreviewProgramDependencies>(),
-    RTE.map((deps) => deps.dispatch({ type: ActionType.IsNotPreview })),
-  )
+> => RTE.asks((deps) => deps.dispatch({ type: ActionType.IsNotPreview }))
 
 const documentLoaded = (
   path: string,
   node: gatsby.NodeInput,
 ): RTE.ReaderTaskEither<PrismicPreviewProgramDependencies, never, void> =>
-  pipe(
-    RTE.ask<PrismicPreviewProgramDependencies>(),
-    RTE.map((deps) =>
-      deps.dispatch({
-        type: ActionType.DocumentLoaded,
-        payload: { path, node },
-      }),
-    ),
+  RTE.asks((deps) =>
+    deps.dispatch({ type: ActionType.DocumentLoaded, payload: { path, node } }),
+  )
+
+const createRootNodeRelationship = (
+  path: string,
+  node: gatsby.NodeInput,
+): RTE.ReaderTaskEither<PrismicPreviewProgramDependencies, never, void> =>
+  RTE.asks((deps) =>
+    deps.contextDispatch({
+      type: PrismicContextActionType.CreateRootNodeRelationship,
+      payload: { path, node },
+    }),
   )
 
 const prismicPreviewProgram = pipe(
@@ -147,6 +150,9 @@ const prismicPreviewProgram = pipe(
       ),
     ),
   ),
+  RTE.chainFirstW((scope) =>
+    createRootNodeRelationship(scope.path, scope.node),
+  ),
   (rte) =>
     RTE.bracket(
       rte,
@@ -155,24 +161,29 @@ const prismicPreviewProgram = pipe(
     ),
 )
 
-export const usePrismicPreview = (repositoryName: string): State => {
+export type UsePrismicPreviewConfig = {
+  repositoryName: string
+}
+
+export const usePrismicPreview = (config: UsePrismicPreviewConfig): State => {
   const [state, dispatch] = React.useReducer(reducer, initialState)
   const [contextState, contextDispatch] = usePrismicContext()
 
   React.useEffect(() => {
-    const pluginOptions = contextState.pluginOptionsMap[repositoryName]
+    const pluginOptions = contextState.pluginOptionsMap[config.repositoryName]
     if (!pluginOptions)
       throw Error(
-        `usePrismicPreview was configured to use a repository with the name "${repositoryName}" but was not registered in the top-level PrismicProvider component. Please check your repository name and/or PrismicProvider props.`,
+        `usePrismicPreview was configured to use a repository with the name "${config.repositoryName}" but was not registered in the top-level PrismicProvider component. Please check your repository name and/or PrismicProvider props.`,
       )
 
     const dependencies = {
       ...buildDependencies(contextDispatch, pluginOptions),
       dispatch,
+      contextDispatch,
     }
 
     RTE.run(prismicPreviewProgram, dependencies)
-  }, [])
+  }, [contextDispatch, contextState.pluginOptionsMap, config.repositoryName])
 
   return state
 }
