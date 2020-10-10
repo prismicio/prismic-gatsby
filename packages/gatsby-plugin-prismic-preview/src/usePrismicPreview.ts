@@ -6,14 +6,14 @@ import { Document as PrismicAPIDocument } from 'prismic-javascript/types/documen
 
 import { Dependencies } from 'shared/types'
 import { registerCustomTypes } from 'shared/registerCustomTypes'
+import { createBaseTypes } from 'shared/createBaseTypes'
 import { createClient, queryById } from 'shared/lib/client'
 import { registerAllDocumentTypes } from 'shared/lib/registerAllDocumentTypes'
-import { createBaseTypes } from 'shared/createBaseTypes'
+import { createNode } from 'shared/lib/createNode'
 
 import { usePrismicContext } from './context'
 import { buildDependencies } from './buildDependencies'
 import { getURLSearchParam } from './lib/getURLSearchParam'
-import { createNode } from 'shared/lib/createNode'
 
 enum ActionType {
   IsPreview = 'IsPreview',
@@ -32,15 +32,15 @@ type Action =
 interface State {
   isPreview?: boolean
   isLoading: boolean
-  // TODO: This will need to be a proxy once that system is written.
-  previewData?: gatsby.Node
   path?: string
+  // TODO: This will need to be a proxy once that system is written.
+  node?: gatsby.NodeInput
 }
 
 const initialState = {
   isPreview: undefined,
   isLoading: false,
-  previewData: undefined,
+  node: undefined,
   path: undefined,
 }
 
@@ -55,7 +55,13 @@ const reducer = (state: State, action: Action): State => {
     }
 
     case ActionType.DocumentLoaded: {
-      return { ...state, isPreview: true, isLoading: false }
+      return {
+        ...state,
+        isPreview: true,
+        isLoading: false,
+        path: action.payload.path,
+        node: action.payload.node,
+      }
     }
   }
 }
@@ -104,7 +110,6 @@ const prismicPreviewProgram = pipe(
   RTE.chainFirstW(
     flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes)),
   ),
-  RTE.bindW('client', createClient),
   RTE.bindW('documentId', () =>
     pipe(
       getURLSearchParam('documentId'),
@@ -118,6 +123,7 @@ const prismicPreviewProgram = pipe(
     ),
   ),
   RTE.chainFirstW(isPreview),
+  RTE.bindW('client', createClient),
   RTE.bindW('document', (scope) =>
     pipe(
       queryById(scope.client, scope.documentId, {
