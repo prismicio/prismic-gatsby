@@ -1,5 +1,5 @@
-import * as gatsby from 'gatsby'
 import * as React from 'react'
+import * as gatsby from 'gatsby'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
