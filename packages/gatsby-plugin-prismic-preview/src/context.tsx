@@ -15,7 +15,7 @@ import { PluginOptionsD } from 'shared/decoders'
 export enum PrismicContextActionType {
   CreateNode = 'CreateNode',
   CreateType = 'CreateType',
-  UpdateAccessToken = 'UpdateAccessToken',
+  SetAccessToken = 'SetAccessToken',
 }
 
 export type PrismicContextAction =
@@ -28,7 +28,7 @@ export type PrismicContextAction =
       payload: gatsby.GatsbyGraphQLType
     }
   | {
-      type: PrismicContextActionType.UpdateAccessToken
+      type: PrismicContextActionType.SetAccessToken
       payload: {
         repositoryName: string
         accessToken: string
@@ -92,7 +92,7 @@ const reducer = (
       }
     }
 
-    case PrismicContextActionType.UpdateAccessToken: {
+    case PrismicContextActionType.SetAccessToken: {
       return {
         ...state,
         pluginOptionsMap: {
