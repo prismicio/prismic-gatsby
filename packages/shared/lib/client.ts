@@ -20,13 +20,8 @@ const buildApiEndpoint = (repositoryName: string): string =>
 
 const getApi = (
   ...args: Parameters<typeof Prismic.getApi>
-): T.Task<PrismicClient> => () => Prismic.getApi(...args)
-
-const query = (
-  client: PrismicClient,
-  queryOptions: PrismicClientQueryOptions,
-): T.Task<ResolveType<ReturnType<PrismicClient['query']>>> => () =>
-  client.query([], queryOptions)
+): T.Task<PrismicClient> => (): ReturnType<typeof Prismic.getApi> =>
+  Prismic.getApi(...args)
 
 const getRef = (
   client: PrismicClient,
@@ -47,6 +42,21 @@ const getRef = (
       ),
     ),
   )
+
+const query = (
+  client: PrismicClient,
+  queryOptions: PrismicClientQueryOptions,
+): T.Task<ResolveType<ReturnType<PrismicClient['query']>>> => (): ReturnType<
+  typeof client.query
+> => client.query([], queryOptions)
+
+export const queryById = (
+  client: PrismicClient,
+  id: string,
+  queryOptions: PrismicClientQueryOptions,
+): T.Task<ResolveType<ReturnType<PrismicClient['getByID']>>> => (): ReturnType<
+  typeof client.getByID
+> => client.getByID(id, queryOptions)
 
 const aggregateQuery = (
   client: PrismicClient,

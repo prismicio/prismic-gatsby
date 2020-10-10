@@ -109,8 +109,8 @@ const reducer = (
 
 const PrismicContext = React.createContext([
   createInitialState(),
-  (a: PrismicContextAction) => {
-    void a
+  (action: PrismicContextAction): void => {
+    void action
   },
 ] as const)
 
