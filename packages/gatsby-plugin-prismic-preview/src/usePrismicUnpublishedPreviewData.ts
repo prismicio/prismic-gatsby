@@ -6,13 +6,13 @@ import { UnknownRecord } from 'shared/types'
 import { usePrismicContext } from './usePrismicContext'
 import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 
-type UsePrismicUnpublishedPreviewDataReturnType<
+export type UsePrismicUnpublishedPreviewDataReturnType<
   TStaticData extends UnknownRecord
 > =
   | { data: TStaticData; isPreview: true; type: string }
   | { data: TStaticData; isPreview: false; type: undefined }
 
-type UsePrismicUnpublishedPreviewData = {
+export type UsePrismicUnpublishedPreviewDataConfig = {
   pagePath: string
 }
 
@@ -20,7 +20,7 @@ export const usePrismicUnpublishedPreviewData = <
   TStaticData extends UnknownRecord
 >(
   staticData: TStaticData,
-  config: UsePrismicUnpublishedPreviewData,
+  config: UsePrismicUnpublishedPreviewDataConfig,
 ): UsePrismicUnpublishedPreviewDataReturnType<TStaticData> => {
   const [state] = usePrismicContext()
   const previewData = state.nodes[
@@ -39,8 +39,4 @@ export const usePrismicUnpublishedPreviewData = <
         : { data, type: undefined, isPreview },
     [data, isPreview, previewData],
   )
-}
-
-export interface WithUnpublishedPreviewProps {
-  isPreview: boolean
 }

@@ -34,7 +34,7 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
   return nodeOrLeaf
 }
 
-type UsePrismicPreviewDataConfig =
+export type UsePrismicPreviewDataConfig =
   | { mergeStrategy: 'traverseAndReplace' }
   | { mergeStrategy: 'rootReplaceOrInsert'; previewData: gatsby.NodeInput }
 
