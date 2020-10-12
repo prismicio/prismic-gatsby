@@ -1,14 +1,14 @@
 import * as gatsby from 'gatsby'
 import * as gqlc from 'graphql-compose'
 import md5 from 'md5'
-
 import {
   GLOBAL_TYPE_PREFIX,
   BROWSER_CREATE_NODE_ID_TEMPLATE,
-} from 'shared/constants'
-import { Dependencies, PluginOptions } from 'shared/types'
-import { createNodeHelpers } from 'shared/lib/nodeHelpers'
-import { sprintf } from 'shared/lib/sprintf'
+  createNodeHelpers,
+  sprintf,
+  Dependencies,
+  PluginOptions,
+} from 'gatsby-prismic-core'
 
 import {
   PrismicContextAction,

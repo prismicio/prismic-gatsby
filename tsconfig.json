@@ -1,12 +1,10 @@
 {
-  "include": ["src", "types"],
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
     "lib": ["esnext"],
     "importHelpers": true,
     "sourceMap": true,
-    "rootDir": "./",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

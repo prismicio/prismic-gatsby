@@ -1,12 +1,14 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe, flow } from 'fp-ts/function'
+import { pipe, flow, constVoid } from 'fp-ts/function'
 
-import { Dependencies } from 'shared/types'
-import { registerCustomTypes } from 'shared/registerCustomTypes'
-import { queryAllDocuments } from 'shared/lib/client'
-import { createNodes } from 'shared/lib/createNodes'
-import { registerAllDocumentTypes } from 'shared/lib/registerAllDocumentTypes'
-import { createBaseTypes } from 'shared/createBaseTypes'
+import {
+  Dependencies,
+  registerCustomTypes,
+  queryAllDocuments,
+  createNodes,
+  registerAllDocumentTypes,
+  createBaseTypes,
+} from 'gatsby-prismic-core'
 
 export const sourceNodes: RTE.ReaderTaskEither<
   Dependencies,
@@ -19,4 +21,5 @@ export const sourceNodes: RTE.ReaderTaskEither<
     flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes)),
   ),
   RTE.chain(flow(queryAllDocuments, RTE.chain(createNodes))),
+  RTE.map(constVoid),
 )

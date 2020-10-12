@@ -3,13 +3,15 @@ import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe, flow } from 'fp-ts/function'
 import { Document as PrismicAPIDocument } from 'prismic-javascript/types/documents'
-
-import { Dependencies } from 'shared/types'
-import { registerCustomTypes } from 'shared/registerCustomTypes'
-import { createBaseTypes } from 'shared/createBaseTypes'
-import { createClient, queryById } from 'shared/lib/client'
-import { registerAllDocumentTypes } from 'shared/lib/registerAllDocumentTypes'
-import { createNode } from 'shared/lib/createNode'
+import {
+  Dependencies,
+  registerCustomTypes,
+  createBaseTypes,
+  createClient,
+  queryById,
+  registerAllDocumentTypes,
+  createNode,
+} from 'gatsby-prismic-core'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
 

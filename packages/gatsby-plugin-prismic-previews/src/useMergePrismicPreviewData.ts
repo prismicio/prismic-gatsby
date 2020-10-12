@@ -3,10 +3,11 @@ import * as gatsby from 'gatsby'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-
-import { PREVIEWABLE_NODE_ID_FIELD } from 'shared/constants'
-import { UnknownRecord } from 'shared/types'
-import { camelCase } from 'shared/lib/camelCase'
+import {
+  PREVIEWABLE_NODE_ID_FIELD,
+  UnknownRecord,
+  camelCase,
+} from 'gatsby-prismic-core'
 
 import { isPlainObject } from './lib/isPlainObject'
 

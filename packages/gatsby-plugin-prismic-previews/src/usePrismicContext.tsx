@@ -6,9 +6,7 @@ import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
 import { pipe } from 'fp-ts/function'
 import * as D from 'io-ts/Decoder'
-
-import { PluginOptions } from 'shared/types'
-import { PluginOptionsD } from 'shared/decoders'
+import { PluginOptions, PluginOptionsD } from 'gatsby-prismic-core'
 
 import { castArray } from './lib/castArray'
 

@@ -1,4 +1,4 @@
-import { UnknownRecord } from 'shared/types'
+import { UnknownRecord } from 'gatsby-prismic-core'
 
 /**
  * Get the string tag of a value.

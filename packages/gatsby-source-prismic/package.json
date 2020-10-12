@@ -11,8 +11,8 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "start": "yarn clean && microbundle watch src/gatsby-node.ts -o dist -f cjs",
-    "build": "yarn clean && microbundle build src/gatsby-node.ts -o dist -f cjs",
+    "start": "yarn clean && microbundle watch src/gatsby-node.ts -o dist -f cjs --compress=false",
+    "build": "yarn clean && microbundle build src/gatsby-node.ts -o dist -f cjs --compress=false",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",
@@ -30,17 +30,9 @@
     "prismic"
   ],
   "dependencies": {
-    "camel-case": "^4.1.1",
     "fp-ts": "^2.8.2",
-    "gatsby-plugin-imgix": "^0.8.2",
-    "io-ts": "^2.2.10",
-    "io-ts-types": "^0.5.10",
-    "pascal-case": "^3.1.1",
-    "prismic-dom": "^2.2.4",
-    "prismic-javascript": "^3.0.2"
-  },
-  "devDependencies": {
-    "@types/prismic-dom": "^2.1.1"
+    "gatsby-prismic-core": "0.0.0",
+    "io-ts": "^2.2.10"
   },
   "peerDependencies": {
     "gatsby": ">=2.3"
