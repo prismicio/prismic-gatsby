@@ -14,7 +14,7 @@ export const createClient = async (
   repositoryName: string,
   accessToken?: string,
 ) =>
-  await getApi(`https://${repositoryName}.prismic.io/api/v2`, { accessToken })
+  await getApi(`https://${repositoryName}.cdn.prismic.io/api/v2`, { accessToken })
 
 const pagedGet = async (
   client: PrismicResolvedApi,
