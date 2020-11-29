@@ -96,7 +96,7 @@ export const query = graphql`
 
 The `withPreviewResolver` HOC allows you to easily create a preview resolver
 page. When an editor clicks the Preview button in Prismic, the browser is
-redirected to the preview resolver page desginated in your Prismic repository
+redirected to the preview resolver page designated in your Prismic repository
 settings. This page then determines the previewed document's URL and redirects
 to that page while storing the preview data.
 
