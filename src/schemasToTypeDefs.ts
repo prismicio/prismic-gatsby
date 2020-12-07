@@ -1,6 +1,10 @@
 import { msg, mapObjVals, isEmptyObj, buildSchemaTypeName } from './utils'
 
-import { GatsbyGraphQLType, NodePluginSchema, CreateSchemaCustomizationArgs } from 'gatsby'
+import {
+  GatsbyGraphQLType,
+  NodePluginSchema,
+  CreateSchemaCustomizationArgs,
+} from 'gatsby'
 import {
   BaseFieldSchema,
   FieldSchema,

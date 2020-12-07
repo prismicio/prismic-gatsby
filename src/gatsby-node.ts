@@ -10,29 +10,37 @@ import { createEnvironment } from './environment.node'
 import { types, buildPrismicImageTypes } from './gqlTypes'
 import { msg } from './utils'
 
-import { GatsbyNode, SourceNodesArgs, GatsbyGraphQLType, CreateSchemaCustomizationArgs } from 'gatsby'
+import {
+  GatsbyNode,
+  SourceNodesArgs,
+  GatsbyGraphQLType,
+  CreateSchemaCustomizationArgs,
+} from 'gatsby'
 import { PluginOptions, TypePath, PrismicWebhook } from './types'
 import { isPrismicWebhook, validateSecret, handleWebhook } from './webhook'
 
-
-export const createSchemaCustomization: NonNullable<GatsbyNode['createSchemaCustomization']> = async (
+export const createSchemaCustomization: NonNullable<
+  GatsbyNode['createSchemaCustomization']
+> = async (
   args: CreateSchemaCustomizationArgs,
-  pluginOptions: PluginOptions
+  pluginOptions: PluginOptions,
 ) => {
-
-  const { typeDefs } = schemasToTypeDefs(pluginOptions.schemas, args );
+  const { typeDefs } = schemasToTypeDefs(pluginOptions.schemas, args)
 
   createPrismicTypes(pluginOptions, args, typeDefs)
+}
 
-};
-
-const createPrismicTypes = (pluginOptions: PluginOptions, gatsbyContext: CreateSchemaCustomizationArgs, typeDefs: GatsbyGraphQLType[]) => {
+const createPrismicTypes = (
+  pluginOptions: PluginOptions,
+  gatsbyContext: CreateSchemaCustomizationArgs,
+  typeDefs: GatsbyGraphQLType[],
+) => {
   /**
    * Create types derived from Prismic custom type schemas.
    */
   const { actions, reporter, schema, cache } = gatsbyContext
   const { createTypes } = actions
-  
+
   const createTypesActivity = reporter.activityTimer(msg('create types'))
 
   createTypesActivity.start()
@@ -52,9 +60,12 @@ const createPrismicTypes = (pluginOptions: PluginOptions, gatsbyContext: CreateS
   createTypesActivity.end()
 }
 
-const buildAll = async (pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typePaths: TypePath[]) => {
-
-  const { reporter  } = gatsbyContext
+const buildAll = async (
+  pluginOptions: PluginOptions,
+  gatsbyContext: SourceNodesArgs,
+  typePaths: TypePath[],
+) => {
+  const { reporter } = gatsbyContext
 
   const fetchDocumentsActivity = reporter.activityTimer(msg('fetch documents'))
   const createNodesActivity = reporter.activityTimer(msg('create nodes'))
@@ -83,16 +94,22 @@ const buildAll = async (pluginOptions: PluginOptions, gatsbyContext: SourceNodes
   createNodesActivity.end()
 }
 
-const writeTypePaths = (pluginOptions: PluginOptions, gatsbyContext: SourceNodesArgs, typePaths: TypePath[], program: any) => {
+const writeTypePaths = (
+  pluginOptions: PluginOptions,
+  gatsbyContext: SourceNodesArgs,
+  typePaths: TypePath[],
+  program: any,
+) => {
   /**
    * Write type paths to public for use in Prismic previews.
    */
   const { reporter } = gatsbyContext
 
-  const writeTypePathsActivity = reporter.activityTimer(msg('write out type paths'))
+  const writeTypePathsActivity = reporter.activityTimer(
+    msg('write out type paths'),
+  )
 
   writeTypePathsActivity.start()
-
 
   reporter.verbose(msg('starting to write out type paths'))
 
@@ -115,8 +132,14 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   gatsbyContext: SourceNodesArgs,
   pluginOptions: PluginOptions,
 ) => {
-  const { reporter, store, webhookBody, getNodes, actions: { touchNode } } = gatsbyContext
-  const { program } = store.getState();
+  const {
+    reporter,
+    store,
+    webhookBody,
+    getNodes,
+    actions: { touchNode },
+  } = gatsbyContext
+  const { program } = store.getState()
 
   /**
    * Validate plugin options. Set default options where necessary. If any
@@ -131,31 +154,30 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
 
   const { typePaths } = schemasToTypeDefs(
     pluginOptions.schemas,
-    gatsbyContext as unknown as CreateSchemaCustomizationArgs,
-  ) 
+    (gatsbyContext as unknown) as CreateSchemaCustomizationArgs,
+  )
 
-
-  if(!webhookBody || JSON.stringify(webhookBody) === "{}") {
+  if (!webhookBody || JSON.stringify(webhookBody) === '{}') {
     /** Initial build or rebuild everything */
     await buildAll(pluginOptions, gatsbyContext, typePaths)
     writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
-
-
-  } else if(isPrismicWebhook(webhookBody) && validateSecret(pluginOptions, webhookBody)) {
+  } else if (
+    isPrismicWebhook(webhookBody) &&
+    validateSecret(pluginOptions, webhookBody)
+  ) {
     /** Respond to the webhook here */
-    
+
     // touch nodes to prevent garbage collection
-    getNodes().forEach(node => touchNode({ nodeId: node.id}))
+    getNodes().forEach((node) => touchNode({ nodeId: node.id }))
 
-    const prismicWebhook = webhookBody as PrismicWebhook;
+    const prismicWebhook = webhookBody as PrismicWebhook
     await handleWebhook(pluginOptions, gatsbyContext, typePaths, prismicWebhook)
-
   } else {
     /**
      * Webhook destined for another plugin,
      * touch nodes to prevent garbage collection
-    */
-    getNodes().forEach(node => touchNode({ nodeId: node.id}))
+     */
+    getNodes().forEach((node) => touchNode({ nodeId: node.id }))
   }
 }
 

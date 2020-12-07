@@ -138,20 +138,18 @@ export const getComponentDisplayName = (
   WrappedComponent: React.ComponentType<any>,
 ) => WrappedComponent.displayName || WrappedComponent.name || 'Component'
 
-
-
-/** 
- * Separates an array in to an array of arrays 
+/**
+ * Separates an array in to an array of arrays
  * @param arr The array to chunk
  * @param size the maximum size for each of the resulting arrays
-*/
+ */
 export function chunk<T>(arr: T[], size: number): Array<T[]> {
   const chunks = []
 
   let i = 0
-  
-  while(i < arr.length) {
-    const a = arr.slice(i, i += size)
+
+  while (i < arr.length) {
+    const a = arr.slice(i, (i += size))
     chunks.push(a)
   }
 

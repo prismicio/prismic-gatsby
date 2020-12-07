@@ -370,56 +370,57 @@ export interface PluginOptions extends GatsbyPluginOptions {
   webhookSecret?: string
 }
 
-
 export interface WebhookBase {
-  type: 'api-update' | 'test-trigger';
-  domain: string;
-  apiUrl: string;
-  "secret": string | null;
+  type: 'api-update' | 'test-trigger'
+  domain: string
+  apiUrl: string
+  secret: string | null
 }
 
 export interface TestWebhook extends WebhookBase {
-  type: 'test-trigger';
+  type: 'test-trigger'
 }
 
 interface Operations<T> {
-  update?: T[];
-  addition?: T[];
-  deletion?: T[];
+  update?: T[]
+  addition?: T[]
+  deletion?: T[]
 }
 
 export interface PrismicWebhook extends WebhookBase {
-  type: 'api-update';
-  masterRef?: string;
-  releases: Operations<WebhookRelease>;
-  masks: Operations<WebhookMask>;
-  tags: Operations<WebhookTag>;
-  documents: string[];
-  experiments?: Operations<WebhookExperiment>;
+  type: 'api-update'
+  masterRef?: string
+  releases: Operations<WebhookRelease>
+  masks: Operations<WebhookMask>
+  tags: Operations<WebhookTag>
+  documents: string[]
+  experiments?: Operations<WebhookExperiment>
 }
 
 export interface WebhookRelease {
-  id: string;
-  ref: string;
-  label: string;
-  documents: string[];
+  id: string
+  ref: string
+  label: string
+  documents: string[]
 }
 
 export interface WebhookMask {
-  id: string;
-  label: string;
+  id: string
+  label: string
 }
 
-export interface WebhookTag { id: string; }
+export interface WebhookTag {
+  id: string
+}
 
 // Legacy fields
 interface WebhookExperimentVariation {
-  id: string;
-  ref: string;
-  label: string;
+  id: string
+  ref: string
+  label: string
 }
 interface WebhookExperiment {
-  id: string;
-  name: string;
+  id: string
+  name: string
   variations: WebhookExperimentVariation[]
 }
