@@ -21,6 +21,7 @@ import {
   usePrismicContext,
 } from './usePrismicContext'
 import { buildDependencies } from './buildDependencies'
+import { proxyNode } from './proxyNode'
 
 enum ActionType {
   IsPreview = 'IsPreview',
@@ -155,6 +156,7 @@ const prismicPreviewProgram = pipe(
   RTE.chainFirstW((scope) =>
     createRootNodeRelationship(scope.path, scope.node),
   ),
+  RTE.bindW('proxyNode', (scope) => proxyNode(scope.node)),
   (rte) =>
     RTE.bracket(
       rte,
@@ -180,12 +182,20 @@ export const usePrismicPreview = (config: UsePrismicPreviewConfig): State => {
 
     const dependencies = {
       ...buildDependencies(contextDispatch, pluginOptions),
+      types: contextState.types,
+      nodes: contextState.nodes,
       dispatch,
       contextDispatch,
     }
 
     RTE.run(prismicPreviewProgram, dependencies)
-  }, [contextDispatch, contextState.pluginOptionsMap, config.repositoryName])
+  }, [
+    contextDispatch,
+    contextState.pluginOptionsMap,
+    contextState.types,
+    contextState.nodes,
+    config.repositoryName,
+  ])
 
   return state
 }
