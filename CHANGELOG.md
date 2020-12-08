@@ -9,11 +9,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * support for Gatsby Cloud ([#255](https://github.com/angeloashmore/gatsby-source-prismic/issues/255)) ([2badd85](https://github.com/angeloashmore/gatsby-source-prismic/commit/2badd85936511c21d61761da2d9b1daece40af94))
 
-
-### Bug Fixes
-
-* Preview docs, unpublished code example ([494eee7](https://github.com/angeloashmore/gatsby-source-prismic/commit/494eee7812bf237ad89214e2852788a698895af0))
-
 ### [3.2.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.2.0...v3.2.1) (2020-07-26)
 
 
