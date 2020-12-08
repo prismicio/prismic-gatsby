@@ -46,6 +46,7 @@ const PluginOptions = struct.object({
     struct.optional(struct.func()),
     () => () => false,
   ),
+  webhookSecret: struct.optional(struct.string()),
 })
 
 const BrowserPluginOptions = struct.object({

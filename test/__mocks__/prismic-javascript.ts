@@ -14,4 +14,12 @@ export const getApi = () => ({
     version: '83cd855',
     license: 'All Rights Reserved',
   }),
+  getByIDs: (ids: string[]) => ({
+    results: ids.map(() => mockDocument)
+  }),
+  refs: [
+    { id: "XyfxIPl3p7YAQ7Mg" }
+  ]
 })
+
+

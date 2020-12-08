@@ -1,6 +1,10 @@
 import { msg, mapObjVals, isEmptyObj, buildSchemaTypeName } from './utils'
 
-import { SourceNodesArgs, GatsbyGraphQLType, NodePluginSchema } from 'gatsby'
+import {
+  GatsbyGraphQLType,
+  NodePluginSchema,
+  CreateSchemaCustomizationArgs,
+} from 'gatsby'
 import {
   BaseFieldSchema,
   FieldSchema,
@@ -35,7 +39,7 @@ type EnqueueTypePath = (path: string[], type: GraphQLType | string) => void
 interface SchemasToTypeDefsContext {
   customTypeApiId: string
   sliceZoneId?: string
-  gatsbyContext: SourceNodesArgs
+  gatsbyContext: CreateSchemaCustomizationArgs
   enqueueTypeDef: EnqueueTypeDef
   enqueueTypePath: EnqueueTypePath
 }
@@ -408,7 +412,7 @@ const buildImageThumbnailsType = (
  */
 export const schemasToTypeDefs = (
   schemas: Schemas,
-  gatsbyContext: SourceNodesArgs,
+  gatsbyContext: CreateSchemaCustomizationArgs,
 ) => {
   const { schema: gatsbySchema } = gatsbyContext
 
