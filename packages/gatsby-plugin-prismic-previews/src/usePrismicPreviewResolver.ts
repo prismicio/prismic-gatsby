@@ -1,39 +1,102 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
+import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
-import { Dependencies } from 'gatsby-prismic-core'
+import Prismic from 'prismic-javascript'
+import { Document as PrismicAPIDocument } from 'prismic-javascript/types/documents'
+import { createClient, Dependencies, queryById } from 'gatsby-prismic-core'
 
-import { usePrismicPreview, UsePrismicPreviewConfig } from './usePrismicPreview'
+import { getURLSearchParam } from './lib/getURLSearchParam'
+import { buildDependencies } from './buildDependencies'
+import {
+  PrismicContextAction,
+  PrismicContextActionType,
+  usePrismicContext,
+} from './usePrismicContext'
 
-export type UsePrismicPreviewResolverConfig = UsePrismicPreviewConfig
+interface PrismicPreviewProgramDependencies {
+  contextDispatch: (action: PrismicContextAction) => void
+}
 
-// TODO: write a program that does the below TODO
+const createRootNodeRelationship = (
+  path: string,
+  nodeId: string,
+): RTE.ReaderTaskEither<PrismicPreviewProgramDependencies, never, void> =>
+  RTE.asks((deps) =>
+    deps.contextDispatch({
+      type: PrismicContextActionType.CreateRootNodeRelationship,
+      payload: { path, nodeId },
+    }),
+  )
+
 const prismicPreviewResolverProgram = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.right({}),
+  RTE.ask<PrismicPreviewProgramDependencies & Dependencies>(),
   RTE.bindW('previewRef', () =>
     pipe(
       getURLSearchParam('token'),
       RTE.fromOption(() => Error('token URL parameter not present')),
     ),
   ),
+  RTE.chainFirst((scope) =>
+    RTE.of(cookie.set(Prismic.previewCookie, scope.previewRef)),
+  ),
+  RTE.bindW('documentId', () =>
+    pipe(
+      getURLSearchParam('documentId'),
+      RTE.fromOption(() => Error('documentId URL parameter not present')),
+    ),
+  ),
+  RTE.bindW('client', createClient),
+  RTE.bindW('document', (scope) =>
+    pipe(
+      queryById(scope.client, scope.documentId, {
+        fetchLinks: scope.pluginOptions.fetchLinks,
+        lang: scope.pluginOptions.lang,
+      }),
+      (t) => RTE.fromTask<Dependencies, Error, PrismicAPIDocument>(t),
+    ),
+  ),
+  RTE.bindW('path', (scope) =>
+    pipe(
+      scope.pluginOptions.linkResolver?.()?.(scope.document),
+      RTE.fromPredicate(
+        (path) => path != null,
+        () =>
+          Error(
+            'linkResolver did not resolve to a path for the previewed document',
+          ),
+      ),
+    ),
+  ),
+  RTE.chainFirstW((scope) =>
+    createRootNodeRelationship(scope.path, scope.document.id),
+  ),
+  // TODO: Replace this map with something more side-effect-y
+  RTE.map((scope) => gatsby.navigate(scope.path)),
 )
+
+export type UsePrismicPreviewResolverConfig = {
+  repositoryName: string
+}
 
 export const usePrismicPreviewResolver = (
   config: UsePrismicPreviewResolverConfig,
-): ReturnType<typeof usePrismicPreview> => {
-  // TODO: Get token and set as cookie
-  // In usePrismicPreview, use that cookie as the token and fetch everything.
-  // This ensures the cookie will exist there throughout page refreshes, which
-  // the Prismic toolbar will do any time a document is edited.
-
-  const preview = usePrismicPreview(config)
+): void => {
+  const [contextState, contextDispatch] = usePrismicContext()
 
   React.useEffect(() => {
-    if (preview.isPreview && preview.path && preview.node)
-      gatsby.navigate(preview.path)
-  }, [preview.path, preview.node, preview.isPreview])
+    const pluginOptions = contextState.pluginOptionsMap[config.repositoryName]
+    if (!pluginOptions)
+      throw Error(
+        `usePrismicPreviewResolver was configured to use a repository with the name "${config.repositoryName}" but was not registered in the top-level PrismicProvider component. Please check your repository name and/or PrismicProvider props.`,
+      )
 
-  return preview
+    const dependencies = {
+      ...buildDependencies(contextDispatch, pluginOptions),
+      contextDispatch,
+    }
+
+    RTE.run(prismicPreviewResolverProgram, dependencies)
+  }, [config.repositoryName, contextState.pluginOptionsMap, contextDispatch])
 }

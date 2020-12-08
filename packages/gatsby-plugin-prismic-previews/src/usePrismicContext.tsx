@@ -32,7 +32,7 @@ export type PrismicContextAction =
     }
   | {
       type: PrismicContextActionType.CreateRootNodeRelationship
-      payload: { path: string; node: gatsby.NodeInput }
+      payload: { path: string; nodeId: string }
     }
 
 export interface PrismicContextState {
@@ -117,7 +117,7 @@ const reducer = (
         ...state,
         rootNodeMap: {
           ...state.rootNodeMap,
-          [action.payload.path]: action.payload.node.id,
+          [action.payload.path]: action.payload.nodeId,
         },
       }
     }

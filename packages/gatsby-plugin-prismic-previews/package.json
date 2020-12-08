@@ -35,6 +35,7 @@
     "react": ">=16.13"
   },
   "dependencies": {
+    "es-cookie": "^1.3.2",
     "fp-ts": "^2.8.2",
     "gatsby-prismic-core": "0.0.0",
     "io-ts": "^2.2.10",

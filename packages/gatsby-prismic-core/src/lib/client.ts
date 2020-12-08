@@ -14,6 +14,7 @@ import {
 } from '../types'
 import { DEFAULT_PRISMIC_API_ENDPOINT, QUERY_PAGE_SIZE } from '../constants'
 import { sprintf } from './sprintf'
+import { getCookieSafely } from './getCookieSafely'
 
 const buildApiEndpoint = (repositoryName: string): string =>
   sprintf(DEFAULT_PRISMIC_API_ENDPOINT, repositoryName)
@@ -30,15 +31,20 @@ const getRef = (
     RTE.ask<Dependencies>(),
     RTE.map((deps) =>
       pipe(
-        O.fromNullable(deps.pluginOptions.releaseID),
-        O.chain((releaseId) =>
+        O.fromNullable(getCookieSafely(Prismic.previewCookie)),
+        O.getOrElse(() =>
           pipe(
-            client.refs,
-            A.findFirst((ref) => ref.id === releaseId),
+            O.fromNullable(deps.pluginOptions.releaseID),
+            O.chain((releaseId) =>
+              pipe(
+                client.refs,
+                A.findFirst((ref) => ref.id === releaseId),
+              ),
+            ),
+            O.getOrElse(() => client.masterRef),
+            (ref) => ref.ref,
           ),
         ),
-        O.getOrElse(() => client.masterRef),
-        (ref) => ref.ref,
       ),
     ),
   )

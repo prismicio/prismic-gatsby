@@ -22,20 +22,20 @@ export const usePrismicUnpublishedPreviewData = <
   config: UsePrismicUnpublishedPreviewDataConfig,
 ): UsePrismicUnpublishedPreviewDataReturnType<TStaticData> => {
   const [state] = usePrismicContext()
-  const previewData = state.nodes[
+  const node = state.nodes[
     state.rootNodeMap[config.pagePath]
-  ] as gatsby.NodeInput & { type: string }
+  ] as gatsby.NodeInput & { prismicId: string; type: string }
 
   const { data, isPreview } = useMergePrismicPreviewData(staticData, {
     mergeStrategy: 'rootReplaceOrInsert',
-    previewData,
+    nodePrismicId: node.prismicId,
   })
 
   return React.useMemo(
     () =>
       isPreview
-        ? { data, type: previewData.type, isPreview }
+        ? { data, type: node.type, isPreview }
         : { data, type: undefined, isPreview },
-    [data, isPreview, previewData],
+    [data, isPreview, node],
   )
 }

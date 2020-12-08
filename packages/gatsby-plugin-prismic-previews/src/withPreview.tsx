@@ -14,7 +14,9 @@ export const withPreview = <TProps extends gatsby.PageProps<UnknownRecord>>(
   WrappedComponent: React.ComponentType<TProps>,
 ): React.ComponentType<TProps & WithPreviewProps> => {
   const WithPreview = (props: TProps): React.ReactElement => {
-    const { data, isPreview } = useMergePrismicPreviewData(props.data)
+    const { data, isPreview } = useMergePrismicPreviewData(props.data, {
+      mergeStrategy: 'traverseAndReplace',
+    })
 
     return <WrappedComponent {...props} data={data} isPreview={isPreview} />
   }

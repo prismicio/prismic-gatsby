@@ -35,12 +35,22 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
   return nodeOrLeaf
 }
 
+/**
+ * Inserts a root-level node in a static data object with a given
+ * node. If a node with the same type already exists at the root-level, the existing node is replaced with the given node. This is useful when you know the static data object does not include
+ * the given node, such as nodes that have not been publsihed.
+ *
+ * @param staticData Static data object into which the node will be inserted.
+ * @param node Node to insert into the static data object.
+ *
+ * @returns `staticData` with `node` inserted at the root level.
+ */
 const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  previewData: gatsby.NodeInput,
+  node: gatsby.NodeInput,
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
-    previewData,
+    node,
     O.fromNullable,
     O.map((previewData) => ({
       ...staticData,
@@ -52,6 +62,21 @@ const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
     ),
   )
 
+/**
+ * Takes a static data object and a list of nodes and replaces any instances of
+ * those nodes in the static data with the updated version. The replacement is
+ * done recursively to ensure nested nodes are replaced.
+ *
+ * Nodes are considered matches if they have identical
+ * `PREVIEWABLE_NODE_ID_FIELD` fields (see constant value in
+ * `src/constants.ts`).
+ *
+ * @param staticData Static data object in which nodes will be replaced.
+ * @param nodes List of nodes that replace in `staticData`.
+ *
+ * @returns `staticData` with any matching nodes replaced with nodes in
+ * `nodes`.
+ */
 const traverseAndReplace = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
   nodes: Record<string, gatsby.NodeInput>,
@@ -70,7 +95,7 @@ const traverseAndReplace = <TStaticData extends UnknownRecord>(
 
 export type UsePrismicPreviewDataConfig =
   | { mergeStrategy: 'traverseAndReplace' }
-  | { mergeStrategy: 'rootReplaceOrInsert'; previewData: gatsby.NodeInput }
+  | { mergeStrategy: 'rootReplaceOrInsert'; nodePrismicId: string }
 
 export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
@@ -81,7 +106,10 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   return React.useMemo(() => {
     switch (config.mergeStrategy) {
       case 'rootReplaceOrInsert': {
-        return rootReplaceOrInsert(staticData, config.previewData)
+        return rootReplaceOrInsert(
+          staticData,
+          state.nodes[config.nodePrismicId],
+        )
       }
 
       case 'traverseAndReplace': {
@@ -92,7 +120,7 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
     staticData,
     config.mergeStrategy,
     state.nodes,
-    // @ts-expect-error - config.pagePath only exists if mergeStrategy is "rootReplaceOrInsert"
-    config.previewData,
+    // @ts-expect-error - config.nodePrismicId only exists if mergeStrategy is "rootReplaceOrInsert"
+    config.nodePrismicId,
   ])
 }

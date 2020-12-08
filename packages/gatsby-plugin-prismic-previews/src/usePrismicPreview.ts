@@ -11,6 +11,8 @@ import {
   queryById,
   registerAllDocumentTypes,
   createNode,
+  queryAllDocuments,
+  createNodes,
 } from 'gatsby-prismic-core'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
@@ -27,6 +29,7 @@ enum ActionType {
   IsPreview = 'IsPreview',
   IsNotPreview = 'IsNotPreview',
   DocumentLoaded = 'DocumentLoaded',
+  IsReady = 'IsReady',
 }
 
 type Action =
@@ -36,6 +39,8 @@ type Action =
       type: ActionType.DocumentLoaded
       payload: { path: string; node: gatsby.NodeInput }
     }
+  | { type: ActionType.IsReady }
+  | { type: ActionType.Errored }
 
 interface State {
   isPreview?: boolean
@@ -116,6 +121,7 @@ const prismicPreviewProgram = pipe(
   RTE.chainFirstW(
     flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes)),
   ),
+  RTE.chainFirstW(flow(queryAllDocuments, RTE.chain(createNodes))),
   RTE.bindW('documentId', () =>
     pipe(
       getURLSearchParam('documentId'),
