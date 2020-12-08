@@ -35,6 +35,39 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
   return nodeOrLeaf
 }
 
+const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
+  staticData: TStaticData,
+  previewData: gatsby.NodeInput,
+): { data: TStaticData; isPreview: boolean } =>
+  pipe(
+    previewData,
+    O.fromNullable,
+    O.map((previewData) => ({
+      ...staticData,
+      [camelCase(previewData.internal.type)]: previewData,
+    })),
+    O.fold(
+      () => ({ data: staticData, isPreview: false as boolean }),
+      (data) => ({ data, isPreview: true }),
+    ),
+  )
+
+const traverseAndReplace = <TStaticData extends UnknownRecord>(
+  staticData: TStaticData,
+  nodes: Record<string, gatsby.NodeInput>,
+): { data: TStaticData; isPreview: boolean } =>
+  pipe(
+    nodes,
+    O.fromPredicate(R.isEmpty),
+    O.map(
+      () => R.map(findAndReplacePreviewables(nodes))(staticData) as TStaticData,
+    ),
+    O.fold(
+      () => ({ data: staticData, isPreview: false as boolean }),
+      (data) => ({ data, isPreview: true }),
+    ),
+  )
+
 export type UsePrismicPreviewDataConfig =
   | { mergeStrategy: 'traverseAndReplace' }
   | { mergeStrategy: 'rootReplaceOrInsert'; previewData: gatsby.NodeInput }
@@ -48,35 +81,11 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   return React.useMemo(() => {
     switch (config.mergeStrategy) {
       case 'rootReplaceOrInsert': {
-        return pipe(
-          config.previewData,
-          O.fromNullable,
-          O.map((previewData) => ({
-            ...staticData,
-            [camelCase(previewData.internal.type)]: previewData,
-          })),
-          O.fold(
-            () => ({ data: staticData, isPreview: false as boolean }),
-            (data) => ({ data, isPreview: true }),
-          ),
-        )
+        return rootReplaceOrInsert(staticData, config.previewData)
       }
 
       case 'traverseAndReplace': {
-        return pipe(
-          state.nodes,
-          O.fromPredicate(R.isEmpty),
-          O.map(
-            () =>
-              R.map(findAndReplacePreviewables(state.nodes))(
-                staticData,
-              ) as TStaticData,
-          ),
-          O.fold(
-            () => ({ data: staticData, isPreview: false as boolean }),
-            (data) => ({ data, isPreview: true }),
-          ),
-        )
+        return traverseAndReplace(staticData, state.nodes)
       }
     }
   }, [
