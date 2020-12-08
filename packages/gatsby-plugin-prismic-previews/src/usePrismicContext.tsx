@@ -15,6 +15,7 @@ export enum PrismicContextActionType {
   CreateType = 'CreateType',
   SetAccessToken = 'SetAccessToken',
   CreateRootNodeRelationship = 'CreateRootNodeRelationship',
+  IsBootstrapped = 'IsBootstrapped',
 }
 
 export type PrismicContextAction =
@@ -34,35 +35,47 @@ export type PrismicContextAction =
       type: PrismicContextActionType.CreateRootNodeRelationship
       payload: { path: string; nodeId: string }
     }
+  | {
+      type: PrismicContextActionType.IsBootstrapped
+      payload: { repositoryName: string }
+    }
 
 export interface PrismicContextState {
   pluginOptionsMap: Record<string, PluginOptions>
   nodes: Record<string, gatsby.NodeInput>
   types: Record<string, gatsby.GatsbyGraphQLType>
   rootNodeMap: Record<string, string>
+  isBootstrappedMap: Record<string, boolean>
 }
 
 const createInitialState = (
   pluginOptionsList: PluginOptions[] = [],
 ): PrismicContextState =>
   pipe(
-    pluginOptionsList,
-    A.map(PluginOptionsD.decode),
-    A.sequence(E.either),
-    E.mapLeft((error) => new Error(D.draw(error))),
-    E.map((pluginOptionsList) =>
-      R.fromFoldableMap(
-        S.getLastSemigroup<PluginOptions>(),
-        A.array,
-      )(pluginOptionsList, (pluginOptions) => [
-        pluginOptions.repositoryName,
-        pluginOptions,
-      ]),
+    E.right({
+      nodes: {},
+      types: {},
+      rootNodeMap: {},
+      isBootstrappedMap: {},
+    }),
+    E.bind('pluginOptionsMap', () =>
+      pipe(
+        pluginOptionsList,
+        A.map(PluginOptionsD.decode),
+        A.sequence(E.either),
+        E.mapLeft((error) => new Error(D.draw(error))),
+        E.map((pluginOptionsList) =>
+          R.fromFoldableMap(
+            S.getLastSemigroup<PluginOptions>(),
+            A.array,
+          )(pluginOptionsList, (pluginOptions) => [
+            pluginOptions.repositoryName,
+            pluginOptions,
+          ]),
+        ),
+        E.map((x) => x),
+      ),
     ),
-    E.bindTo('pluginOptionsMap'),
-    E.bind('nodes', () => E.right({})),
-    E.bind('types', () => E.right({})),
-    E.bind('rootNodeMap', () => E.right({})),
     E.getOrElse((error) => {
       E.throwError(error)
       return {
@@ -70,7 +83,8 @@ const createInitialState = (
         nodes: {},
         types: {},
         rootNodeMap: {},
-      }
+        isBootstrappedMap: {},
+      } as PrismicContextState
     }),
   )
 
@@ -118,6 +132,16 @@ const reducer = (
         rootNodeMap: {
           ...state.rootNodeMap,
           [action.payload.path]: action.payload.nodeId,
+        },
+      }
+    }
+
+    case PrismicContextActionType.IsBootstrapped: {
+      return {
+        ...state,
+        isBootstrappedMap: {
+          ...state.isBootstrappedMap,
+          [action.payload.repositoryName]: true,
         },
       }
     }

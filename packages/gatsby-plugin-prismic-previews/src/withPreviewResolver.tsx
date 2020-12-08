@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
+import { PrismicDocument } from 'gatsby-prismic-core'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 
@@ -9,9 +10,9 @@ import {
 } from './usePrismicPreviewResolver'
 
 export interface WithPreviewResolverProps {
-  isPreview?: boolean
-  isLoading: boolean
+  previewIsLoading: boolean
   previewPath?: string
+  previewDocument?: PrismicDocument
 }
 
 type WithPreviewResolverConfig = UsePrismicPreviewResolverConfig
@@ -21,14 +22,14 @@ export const withPreviewResolver = <TProps extends gatsby.PageProps>(
   config: WithPreviewResolverConfig,
 ): React.ComponentType<TProps> => {
   const WithPreviewResolver = (props: TProps): React.ReactElement => {
-    const { isLoading, isPreview, path } = usePrismicPreviewResolver(config)
+    const { isLoading, path, document } = usePrismicPreviewResolver(config)
 
     return (
       <WrappedComponent
         {...props}
-        isPreview={isPreview}
-        isLoading={isLoading}
+        previewIsLoading={isLoading}
         previewPath={path}
+        previewDocument={document}
       />
     )
   }

@@ -4,8 +4,12 @@ import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
-import { Document as PrismicAPIDocument } from 'prismic-javascript/types/documents'
-import { createClient, Dependencies, queryById } from 'gatsby-prismic-core'
+import {
+  createClient,
+  Dependencies,
+  PrismicDocument,
+  queryById,
+} from 'gatsby-prismic-core'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { buildDependencies } from './buildDependencies'
@@ -15,9 +19,56 @@ import {
   usePrismicContext,
 } from './usePrismicContext'
 
+enum ActionType {
+  DocumentLoaded = 'DocumentLoaded',
+}
+
+type Action = {
+  type: ActionType.DocumentLoaded
+  payload: { path: string; document: PrismicDocument }
+}
+
+interface State {
+  isLoading: boolean
+  document?: PrismicDocument
+  path?: string
+}
+
+const initialState = {
+  isLoading: false,
+  document: undefined,
+  path: undefined,
+}
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case ActionType.DocumentLoaded: {
+      return {
+        ...state,
+        isLoading: false,
+        document: action.payload.document,
+        path: action.payload.path,
+      }
+    }
+  }
+}
+
 interface PrismicPreviewProgramDependencies {
+  shouldAutoRedirect: boolean
+  dispatch: (action: Action) => void
   contextDispatch: (action: PrismicContextAction) => void
 }
+
+const documentLoaded = (
+  path: string,
+  document: PrismicDocument,
+): RTE.ReaderTaskEither<PrismicPreviewProgramDependencies, never, void> =>
+  RTE.asks((deps) =>
+    deps.dispatch({
+      type: ActionType.DocumentLoaded,
+      payload: { path, document },
+    }),
+  )
 
 const createRootNodeRelationship = (
   path: string,
@@ -54,7 +105,7 @@ const prismicPreviewResolverProgram = pipe(
         fetchLinks: scope.pluginOptions.fetchLinks,
         lang: scope.pluginOptions.lang,
       }),
-      (t) => RTE.fromTask<Dependencies, Error, PrismicAPIDocument>(t),
+      RTE.fromTask,
     ),
   ),
   RTE.bindW('path', (scope) =>
@@ -72,17 +123,22 @@ const prismicPreviewResolverProgram = pipe(
   RTE.chainFirstW((scope) =>
     createRootNodeRelationship(scope.path, scope.document.id),
   ),
+  RTE.chainFirstW((scope) => documentLoaded(scope.path, scope.document)),
   // TODO: Replace this map with something more side-effect-y
-  RTE.map((scope) => gatsby.navigate(scope.path)),
+  RTE.map((scope) => {
+    if (scope.shouldAutoRedirect) gatsby.navigate(scope.path)
+  }),
 )
 
 export type UsePrismicPreviewResolverConfig = {
   repositoryName: string
+  shouldAutoRedirect?: boolean
 }
 
 export const usePrismicPreviewResolver = (
   config: UsePrismicPreviewResolverConfig,
-): void => {
+): State => {
+  const [state, dispatch] = React.useReducer(reducer, initialState)
   const [contextState, contextDispatch] = usePrismicContext()
 
   React.useEffect(() => {
@@ -94,9 +150,18 @@ export const usePrismicPreviewResolver = (
 
     const dependencies = {
       ...buildDependencies(contextDispatch, pluginOptions),
+      shouldAutoRedirect: config.shouldAutoRedirect ?? true,
+      dispatch,
       contextDispatch,
     }
 
     RTE.run(prismicPreviewResolverProgram, dependencies)
-  }, [config.repositoryName, contextState.pluginOptionsMap, contextDispatch])
+  }, [
+    contextDispatch,
+    contextState.pluginOptionsMap,
+    config.repositoryName,
+    config.shouldAutoRedirect,
+  ])
+
+  return state
 }

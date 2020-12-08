@@ -25,7 +25,7 @@ export const withUnpublishedPreview = <
   WrappedComponent: React.ComponentType<TProps>,
   config: WithUnpublishedPreviewConfig,
 ): React.ComponentType<TProps> => {
-  const WithPreview = (props: TProps): React.ReactElement => {
+  const WithUnpublishedPreview = (props: TProps): React.ReactElement => {
     const preview = usePrismicUnpublishedPreviewData(props.data, {
       pagePath: props.path,
     })
@@ -51,9 +51,9 @@ export const withUnpublishedPreview = <
 
     return <WrappedComponent {...props} isPreview={false} />
   }
-  WithPreview.displayName = `withUnpublishedPreview(${getComponentDisplayName(
+  WithUnpublishedPreview.displayName = `withUnpublishedPreview(${getComponentDisplayName(
     WrappedComponent,
   )})`
 
-  return WithPreview
+  return WithUnpublishedPreview
 }
