@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.3.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.0...v3.3.1) (2020-12-10)
+
+
+### Bug Fixes
+
+* restore document link ([#298](https://github.com/angeloashmore/gatsby-source-prismic/issues/298)) ([4d94c3b](https://github.com/angeloashmore/gatsby-source-prismic/commit/4d94c3b02a9cbe5365ad9ee4292231d6578bc574))
+
 ## [3.3.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.2.1...v3.3.0) (2020-12-08)
 
 
