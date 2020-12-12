@@ -55,7 +55,7 @@ const sourceNodesOnBoot: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
  * defined in the environment's plugin options, nodes are updated and deleted
  * depending on the webhook's contents.
  *
- * All nodes, regardless of the webhook source or contents, are touched to
+ * All nodes, regardless of the webhook' source or contents, are touched to
  * prevent garbage collection.
  */
 const sourceNodesOnWebhook: RTE.ReaderTaskEither<
