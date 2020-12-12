@@ -73,7 +73,6 @@ const createInitialState = (
             pluginOptions,
           ]),
         ),
-        E.map((x) => x),
       ),
     ),
     E.getOrElse((error) => {

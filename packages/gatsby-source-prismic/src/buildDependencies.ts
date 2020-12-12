@@ -12,12 +12,17 @@ export const buildDependencies = (
   pluginOptions: PluginOptions,
 ): Dependencies => ({
   pluginOptions,
+  webhookBody: gatsbyContext.webhookBody,
   createNode: gatsbyContext.actions.createNode,
   createTypes: gatsbyContext.actions.createTypes,
+  touchNode: gatsbyContext.actions.touchNode,
+  deleteNode: gatsbyContext.actions.deleteNode,
   reportInfo: gatsbyContext.reporter.info,
   buildUnionType: gatsbyContext.schema.buildUnionType,
   buildObjectType: gatsbyContext.schema.buildObjectType,
   buildEnumType: gatsbyContext.schema.buildEnumType,
+  getNode: gatsbyContext.getNode,
+  getNodes: gatsbyContext.getNodes,
   cache: gatsbyContext.cache,
   globalNodeHelpers: createNodeHelpers({
     typePrefix: GLOBAL_TYPE_PREFIX,

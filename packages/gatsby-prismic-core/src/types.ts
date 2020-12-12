@@ -24,11 +24,16 @@ export interface Dependencies {
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']
   buildUnionType: gatsby.NodePluginSchema['buildUnionType']
   buildEnumType: gatsby.NodePluginSchema['buildEnumType']
+  getNode: gatsby.SourceNodesArgs['getNode']
+  getNodes: gatsby.SourceNodesArgs['getNodes']
+  touchNode: gatsby.Actions['touchNode']
+  deleteNode: gatsby.Actions['deleteNode']
   cache: gatsby.GatsbyCache
   reportInfo: gatsby.Reporter['info']
   globalNodeHelpers: NodeHelpers
   nodeHelpers: NodeHelpers
   pluginOptions: PluginOptions
+  webhookBody?: unknown
 }
 
 export type PluginOptions = D.TypeOf<typeof PluginOptionsD>

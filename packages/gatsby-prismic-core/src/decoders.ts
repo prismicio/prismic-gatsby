@@ -105,6 +105,7 @@ export const PluginOptionsD = pipe(
       prismicToolbar: D.union(D.boolean, D.literal('legacy')),
       shouldDownloadImage: d.func,
       typePrefix: D.string,
+      webhookSecret: D.string,
     }),
   ),
 )

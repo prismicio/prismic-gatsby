@@ -1,0 +1,13 @@
+import * as gatsby from 'gatsby'
+import * as RTE from 'fp-ts/ReaderTaskEither'
+import { Dependencies } from 'gatsby-prismic-core'
+
+/**
+ * Returns a node using the environment's `getNode` function.
+ *
+ * @param nodeId ID of the node to return.
+ */
+export const getNode = (
+  nodeId: string,
+): RTE.ReaderTaskEither<Dependencies, never, gatsby.Node> =>
+  RTE.asks((deps) => deps.getNode(nodeId))
