@@ -5,12 +5,12 @@ import { Dependencies } from '../types'
 import { REPORTER_TEMPLATE } from '../constants'
 import { sprintf } from './sprintf'
 
-export const reportInfo = (
+export const reportWarning = (
   text: string,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   RTE.asks((deps) =>
     pipe(
       sprintf(REPORTER_TEMPLATE, deps.pluginOptions.repositoryName, text),
-      deps.reportInfo,
+      deps.reportWarning,
     ),
   )

@@ -6,7 +6,7 @@ import {
   createBaseTypes,
   registerCustomTypes,
   registerAllDocumentTypes,
-  reportInfo,
+  reportWarning,
 } from 'gatsby-prismic-core'
 
 import { sourceNodesForAllDocuments } from './lib/sourceNodesForAllDocuments'
@@ -15,9 +15,9 @@ import { touchAllNodes } from './lib/touchAllNodes'
 import { isPrismicWebhookBodyApiUpdate } from './lib/isPrismicWebhookBodyApiUpdate'
 import { isPrismicWebhookBodyTestTrigger } from './lib/isPrismicWebhookBodyTestTrigger'
 import { isPrismicWebhookBodyForRepository } from './lib/isPrismicWebhookBodyForRepository'
-import { PrismicWebhookBody } from './types'
 import { onApiUpdateWebhook } from './onApiUpdateWebhook'
 import { onTestTriggerWebhook } from './onTestTriggerWebhook'
+import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
 
 /**
  * To be executed in the `sourceNodes` stage.
@@ -74,37 +74,39 @@ const sourceNodesOnWebhook: RTE.ReaderTaskEither<
       O.fromPredicate(
         isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
       ),
-      O.fold(() => RTE.of(void 0), onPrismicWebhook),
+      O.fold(
+        () => RTE.of(void 0),
+        () => onPrismicWebhook,
+      ),
     ),
   ),
   RTE.chain(touchAllNodes),
 )
 
-const onPrismicWebhook = (
-  webhookBody: PrismicWebhookBody,
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      pipe(
-        webhookBody,
+const onPrismicWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
+  RTE.ask<Dependencies>(),
+  RTE.chain((deps) =>
+    pipe(
+      deps.webhookBody,
+      O.fromPredicate(
+        isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
+      ),
+      O.chain(
         O.fromPredicate(isValidWebhookSecret(deps.pluginOptions.webhookSecret)),
-        O.fold(
-          () =>
-            reportInfo(
-              'A webhook was received, but the webhook secret did not match the webhook secret provided in the plugin options. If this is unexpected, verify that the `webhookSecret` plugin option matches the webhook secret in your Prismic repository.',
-            ),
-          (webhookBody) => {
-            if (isPrismicWebhookBodyApiUpdate(webhookBody))
-              return onApiUpdateWebhook(webhookBody)
+      ),
+      O.fold(
+        () => reportWarning(WEBHOOK_SECRET_MISMATCH_MSG),
+        (webhookBody) => {
+          if (isPrismicWebhookBodyApiUpdate(webhookBody))
+            return onApiUpdateWebhook(webhookBody)
 
-            if (isPrismicWebhookBodyTestTrigger(webhookBody))
-              return onTestTriggerWebhook
+          if (isPrismicWebhookBodyTestTrigger(webhookBody))
+            return onTestTriggerWebhook
 
-            // This webhook is unsupported or does not pertain to this plugin.
-            return RTE.of(void 0)
-          },
-        ),
+          // This webhook is unsupported or does not pertain to this plugin.
+          return RTE.of(void 0)
+        },
       ),
     ),
-  )
+  ),
+)

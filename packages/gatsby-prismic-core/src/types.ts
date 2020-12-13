@@ -30,6 +30,7 @@ export interface Dependencies {
   deleteNode: gatsby.Actions['deleteNode']
   cache: gatsby.GatsbyCache
   reportInfo: gatsby.Reporter['info']
+  reportWarning: gatsby.Reporter['warn']
   globalNodeHelpers: NodeHelpers
   nodeHelpers: NodeHelpers
   pluginOptions: PluginOptions
