@@ -1,8 +1,8 @@
 export type PrismicWebhookBody =
-  | PrismicWebhookBodyApiRelease
+  | PrismicWebhookBodyApiUpdate
   | PrismicWebhookBodyTestTrigger
 
-enum PrismicWebhookType {
+export enum PrismicWebhookType {
   APIUpdate = 'api-update',
   TestTrigger = 'test-trigger',
 }
@@ -14,7 +14,7 @@ interface PrismicWebhookBodyBase {
   secret: string | null
 }
 
-export interface PrismicWebhookBodyApiRelease extends PrismicWebhookBodyBase {
+export interface PrismicWebhookBodyApiUpdate extends PrismicWebhookBodyBase {
   type: PrismicWebhookType.APIUpdate
   masterRef?: string
   releases: PrismicWebhookOperations<PrismicWebhookRelease>
@@ -28,6 +28,12 @@ export interface PrismicWebhookBodyTestTrigger extends PrismicWebhookBodyBase {
   type: PrismicWebhookType.TestTrigger
 }
 
+interface PrismicWebhookOperations<T> {
+  update?: T[]
+  addition?: T[]
+  deletion?: T[]
+}
+
 interface PrismicWebhookMask {
   id: string
   label: string
@@ -37,17 +43,11 @@ interface PrismicWebhookTag {
   id: string
 }
 
-interface PrismicWebhookRelease {
+export interface PrismicWebhookRelease {
   id: string
   ref: string
   label: string
   documents: string[]
-}
-
-interface PrismicWebhookOperations<T> {
-  update?: T[]
-  addition?: T[]
-  deletion?: T[]
 }
 
 /**
