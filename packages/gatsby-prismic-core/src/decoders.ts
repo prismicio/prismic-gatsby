@@ -94,6 +94,10 @@ export const PluginOptionsD = pipe(
       D.UnknownRecord,
       d.withFallback(DEFAULT_PLACEHOLDER_IMGIX_PARAMS as UnknownRecord),
     ),
+    plugins: pipe(
+      D.array(D.UnknownRecord),
+      d.withFallback([] as UnknownRecord[]),
+    ),
   }),
   D.intersect(
     D.partial({
