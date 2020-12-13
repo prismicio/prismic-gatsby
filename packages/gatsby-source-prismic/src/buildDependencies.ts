@@ -8,7 +8,7 @@ import {
 } from 'gatsby-prismic-core'
 
 export const buildDependencies = (
-  gatsbyContext: gatsby.SourceNodesArgs,
+  gatsbyContext: gatsby.SourceNodesArgs | gatsby.CreateSchemaCustomizationArgs,
   pluginOptions: PluginOptions,
 ): Dependencies => ({
   pluginOptions,

@@ -7,6 +7,7 @@ import * as D from 'io-ts/Decoder'
 import { PluginOptionsD } from 'gatsby-prismic-core'
 
 import { sourceNodes as sourceNodesProgram } from './sourceNodes'
+import { createSchemaCustomization as createSchemaCustomizationProgram } from './createSchemaCustomization'
 import { buildDependencies } from './buildDependencies'
 
 export const sourceNodes: NonNullable<gatsby.GatsbyNode['sourceNodes']> = (
@@ -20,6 +21,24 @@ export const sourceNodes: NonNullable<gatsby.GatsbyNode['sourceNodes']> = (
       (pluginOptions) =>
         RTE.run(
           sourceNodesProgram,
+          buildDependencies(gatsbyContext, pluginOptions),
+        ),
+    ),
+  )
+
+export const createSchemaCustomization: NonNullable<
+  gatsby.GatsbyNode['createSchemaCustomization']
+> = (
+  gatsbyContext: gatsby.CreateSchemaCustomizationArgs,
+  pluginOptions: gatsby.PluginOptions,
+) =>
+  pipe(
+    PluginOptionsD.decode(pluginOptions),
+    E.fold(
+      (error) => gatsbyContext.reporter.panic(new Error(D.draw(error))),
+      (pluginOptions) =>
+        RTE.run(
+          createSchemaCustomizationProgram,
           buildDependencies(gatsbyContext, pluginOptions),
         ),
     ),

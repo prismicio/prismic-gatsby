@@ -1,13 +1,7 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as O from 'fp-ts/Option'
-import { pipe, flow } from 'fp-ts/function'
-import {
-  Dependencies,
-  createBaseTypes,
-  registerCustomTypes,
-  registerAllDocumentTypes,
-  reportWarning,
-} from 'gatsby-prismic-core'
+import { pipe } from 'fp-ts/function'
+import { Dependencies, reportWarning } from 'gatsby-prismic-core'
 
 import { sourceNodesForAllDocuments } from './lib/sourceNodesForAllDocuments'
 import { isValidWebhookSecret } from './lib/isValidWebhookSecret'
@@ -31,25 +25,9 @@ export const sourceNodes: RTE.ReaderTaskEither<
   RTE.chain((deps) =>
     pipe(
       O.fromNullable(deps.webhookBody),
-      O.fold(
-        () => sourceNodesOnBoot,
-        () => sourceNodesOnWebhook,
-      ),
+      O.fold(sourceNodesForAllDocuments, () => onWebhook),
     ),
   ),
-)
-
-/**
- * To be executed in the `sourceNodes` stage on initial start-up.
- *
- * All GraphQL types are registered and all documents for the environment's
- * Prismic repository are sourced.
- */
-const sourceNodesOnBoot: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.chain(createBaseTypes),
-  RTE.chain(flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes))),
-  RTE.chain(sourceNodesForAllDocuments),
 )
 
 /**
@@ -62,11 +40,7 @@ const sourceNodesOnBoot: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
  * All nodes, regardless of the webhook' source or contents, are touched to
  * prevent garbage collection.
  */
-const sourceNodesOnWebhook: RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  void
-> = pipe(
+const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
   RTE.ask<Dependencies>(),
   RTE.chain((deps) =>
     pipe(

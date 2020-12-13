@@ -1,4 +1,4 @@
-import { sourceNodes } from '../src/gatsby-node'
+import { sourceNodes, createSchemaCustomization } from '../src/gatsby-node'
 import schemaFixture from './__fixtures__/schema.json'
 
 const gatsbyContext = {
@@ -28,15 +28,17 @@ const pluginOptions = {
 }
 
 describe('sourceNodes', () => {
-  test('creates types', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(gatsbyContext, pluginOptions)
-    expect(gatsbyContext.actions.createTypes).toMatchSnapshot()
-  })
-
   test('creates nodes', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(gatsbyContext, pluginOptions)
     expect(gatsbyContext.actions.createNode).toMatchSnapshot()
+  })
+})
+
+describe('createSchemaCustomization', () => {
+  test('creates types', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+    expect(gatsbyContext.actions.createTypes).toMatchSnapshot()
   })
 })
