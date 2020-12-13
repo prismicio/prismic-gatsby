@@ -18,7 +18,7 @@
     "eslint": "^7.8.1",
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.6",
-    "gatsby": "^2.24.53",
+    "gatsby": "^2.28.2",
     "husky": "^4.2.5",
     "jest": "^26.4.2",
     "microbundle": "^0.12.3",
