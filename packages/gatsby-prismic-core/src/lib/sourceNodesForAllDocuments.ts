@@ -1,10 +1,10 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { constVoid, pipe } from 'fp-ts/function'
-import {
-  createNodes,
-  Dependencies,
-  queryAllDocuments,
-} from 'gatsby-prismic-core'
+import { pipe, constVoid } from 'fp-ts/function'
+
+import { Dependencies } from '../types'
+
+import { createNodes } from './createNodes'
+import { queryAllDocuments } from './queryAllDocuments'
 
 /**
  * Queries all documents from the environment's Prismic repository and creates

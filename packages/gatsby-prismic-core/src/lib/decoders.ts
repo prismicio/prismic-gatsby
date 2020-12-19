@@ -19,6 +19,9 @@ export const withFallback = <A>(a: A) => <I>(
   ),
 })
 
+/**
+ * Decoder for any function.
+ */
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const func: D.Decoder<unknown, Function> = {
   decode: (u) =>

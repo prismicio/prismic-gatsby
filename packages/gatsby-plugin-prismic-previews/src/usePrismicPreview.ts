@@ -6,9 +6,8 @@ import {
   Dependencies,
   registerCustomTypes,
   createBaseTypes,
-  registerAllDocumentTypes,
-  queryAllDocuments,
-  createNodes,
+  registerAllDocumentTypesType,
+  sourceNodesForAllDocuments,
   getCookieSafely,
 } from 'gatsby-prismic-core'
 
@@ -90,9 +89,9 @@ const prismicPreviewProgram: RTE.ReaderTaskEither<
   RTE.chainFirstW(RTE.fromPredicate((deps) => !deps.isBootstrapped, constVoid)),
   RTE.chainFirstW(createBaseTypes),
   RTE.chainFirstW(
-    flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes)),
+    flow(registerCustomTypes, RTE.chain(registerAllDocumentTypesType)),
   ),
-  RTE.chainFirstW(flow(queryAllDocuments, RTE.chain(createNodes))),
+  RTE.chainFirstW(() => sourceNodesForAllDocuments()),
   RTE.chainFirstW(declareBootstrapped),
   RTE.chainFirstW(declareLoaded),
   RTE.map(constVoid),
@@ -114,7 +113,7 @@ export const usePrismicPreview = (config: UsePrismicPreviewConfig): State => {
       )
 
     const dependencies = {
-      ...buildDependencies(contextDispatch, pluginOptions),
+      ...buildDependencies(contextState, contextDispatch, pluginOptions),
       isBootstrapped:
         contextState.isBootstrappedMap[pluginOptions.repositoryName],
       dispatch,
@@ -122,12 +121,7 @@ export const usePrismicPreview = (config: UsePrismicPreviewConfig): State => {
     }
 
     RTE.run(prismicPreviewProgram, dependencies)
-  }, [
-    contextDispatch,
-    contextState.pluginOptionsMap,
-    contextState.isBootstrappedMap,
-    config.repositoryName,
-  ])
+  }, [contextState, contextDispatch, config.repositoryName])
 
   return state
 }

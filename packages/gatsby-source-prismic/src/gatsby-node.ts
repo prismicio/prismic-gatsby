@@ -3,12 +3,11 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as E from 'fp-ts/Either'
 import { pipe } from 'fp-ts/function'
 import * as D from 'io-ts/Decoder'
-
 import { PluginOptionsD } from 'gatsby-prismic-core'
 
-import { sourceNodes as sourceNodesProgram } from './sourceNodes'
-import { createSchemaCustomization as createSchemaCustomizationProgram } from './createSchemaCustomization'
 import { buildDependencies } from './buildDependencies'
+import { sourceNodes as sourceNodesProgram } from './gatsby-node-sourceNodes'
+import { createSchemaCustomization as createSchemaCustomizationProgram } from './gatsby-node-createSchemaCustomization'
 
 export const sourceNodes: NonNullable<gatsby.GatsbyNode['sourceNodes']> = (
   gatsbyContext: gatsby.SourceNodesArgs,

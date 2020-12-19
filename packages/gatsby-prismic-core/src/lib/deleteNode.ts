@@ -1,6 +1,7 @@
 import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { Dependencies } from 'gatsby-prismic-core'
+
+import { Dependencies } from '../types'
 
 /**
  * Deletes a node using the environment's `deleteNode` function.

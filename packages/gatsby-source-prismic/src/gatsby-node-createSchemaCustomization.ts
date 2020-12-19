@@ -4,7 +4,7 @@ import {
   Dependencies,
   createBaseTypes,
   registerCustomTypes,
-  registerAllDocumentTypes,
+  registerAllDocumentTypesType,
 } from 'gatsby-prismic-core'
 
 /**
@@ -17,6 +17,6 @@ export const createSchemaCustomization: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<Dependencies>(),
   RTE.chain(createBaseTypes),
-  RTE.chain(flow(registerCustomTypes, RTE.chain(registerAllDocumentTypes))),
+  RTE.chain(flow(registerCustomTypes, RTE.chain(registerAllDocumentTypesType))),
   RTE.map(constVoid),
 )

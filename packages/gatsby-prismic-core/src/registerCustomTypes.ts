@@ -107,6 +107,7 @@ const buildSliceChoiceType = (
               slice_type: 'String!',
               slice_label: 'String',
             },
+            extensions: { infer: false },
           }),
         ),
       ),
@@ -279,6 +280,9 @@ const toFieldConfig = <TSource, TContext>(
                   defaultPlaceholderImgixParams:
                     deps.pluginOptions.imagePlaceholderImgixParams,
                 }),
+                // TODO: Create resolver that downloads the file, creates a
+                // node, and returns the ID. This can be handled using
+                // gatsby-source-filesystem's helper functions.
                 localFile: {
                   type: 'File',
                   extensions: { link: {} },

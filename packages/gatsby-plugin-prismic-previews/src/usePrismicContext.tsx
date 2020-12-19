@@ -13,6 +13,7 @@ import { castArray } from './lib/castArray'
 export enum PrismicContextActionType {
   CreateNode = 'CreateNode',
   CreateType = 'CreateType',
+  DeleteNode = 'DeleteNode',
   SetAccessToken = 'SetAccessToken',
   CreateRootNodeRelationship = 'CreateRootNodeRelationship',
   IsBootstrapped = 'IsBootstrapped',
@@ -26,6 +27,10 @@ export type PrismicContextAction =
   | {
       type: PrismicContextActionType.CreateType
       payload: gatsby.GatsbyGraphQLType
+    }
+  | {
+      type: PrismicContextActionType.DeleteNode
+      payload: gatsby.Node
     }
   | {
       type: PrismicContextActionType.SetAccessToken
@@ -109,6 +114,19 @@ const reducer = (
           ...state.types,
           [action.payload.config.name]: action.payload,
         },
+      }
+    }
+
+    case PrismicContextActionType.DeleteNode: {
+      const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        [action.payload.id]: _deletedNode,
+        ...remainingNodes
+      } = state.nodes
+
+      return {
+        ...state,
+        nodes: remainingNodes,
       }
     }
 

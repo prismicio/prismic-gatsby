@@ -1,7 +1,8 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as A from 'fp-ts/Array'
 import { pipe, constVoid } from 'fp-ts/function'
-import { Dependencies } from 'gatsby-prismic-core'
+
+import { Dependencies } from '../types'
 
 import { getNodes } from './getNodes'
 import { deleteNodes } from './deleteNodes'

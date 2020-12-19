@@ -149,7 +149,7 @@ export const usePrismicPreviewResolver = (
       )
 
     const dependencies = {
-      ...buildDependencies(contextDispatch, pluginOptions),
+      ...buildDependencies(contextState, contextDispatch, pluginOptions),
       shouldAutoRedirect: config.shouldAutoRedirect ?? true,
       dispatch,
       contextDispatch,
@@ -158,7 +158,7 @@ export const usePrismicPreviewResolver = (
     RTE.run(prismicPreviewResolverProgram, dependencies)
   }, [
     contextDispatch,
-    contextState.pluginOptionsMap,
+    contextState,
     config.repositoryName,
     config.shouldAutoRedirect,
   ])

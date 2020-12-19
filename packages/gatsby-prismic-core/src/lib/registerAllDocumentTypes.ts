@@ -8,7 +8,15 @@ import { getTypeName } from './getTypeName'
 import { buildUnionType } from './buildUnionType'
 import { registerType } from './registerType'
 
-export const registerAllDocumentTypes = (
+/**
+ * Registers the `AllDocumentTypes` GraphQL union type containing all provided
+ * document types.
+ *
+ * @param types List of document types to include in the created union type.
+ *
+ * @returns The registered `AllDocumentTypes` type.
+ */
+export const registerAllDocumentTypesType = (
   types: gatsby.GatsbyGraphQLObjectType[],
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLUnionType> =>
   pipe(

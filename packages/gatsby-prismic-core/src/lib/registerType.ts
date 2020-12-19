@@ -3,7 +3,12 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 
 import { Dependencies } from '../types'
 
+/**
+ * Registers a type using the environment's `createTypes` function.
+ *
+ * @param type GraphQL type to create.
+ */
 export const registerType = <A extends gatsby.GatsbyGraphQLType>(
-  types: A,
+  type: A,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  RTE.asks((deps) => deps.createTypes(types))
+  RTE.asks((deps) => deps.createTypes(type))

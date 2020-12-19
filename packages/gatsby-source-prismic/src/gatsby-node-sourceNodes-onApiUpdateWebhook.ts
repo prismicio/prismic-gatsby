@@ -6,10 +6,10 @@ import {
   Dependencies,
   queryDocumentsByIds,
   createNodes,
+  deleteNodesForDocumentIds,
 } from 'gatsby-prismic-core'
 
 import { PrismicWebhookBodyApiUpdate } from './types'
-import { deleteNodesForDocumentIds } from './lib/deleteNodesForDocumentIds'
 
 export const onApiUpdateWebhook = (
   webhookBody: PrismicWebhookBodyApiUpdate,

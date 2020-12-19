@@ -1,5 +1,6 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { Dependencies } from 'gatsby-prismic-core'
+
+import { Dependencies } from '../types'
 
 /**
  * Touches a node using the environment's `touchNode` function.

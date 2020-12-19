@@ -13,6 +13,7 @@ import {
 import {
   PrismicContextAction,
   PrismicContextActionType,
+  PrismicContextState,
 } from './usePrismicContext'
 
 const createCache = (): gatsby.GatsbyCache => {
@@ -36,6 +37,7 @@ const createContentDigest = (input: unknown): string =>
   md5(JSON.stringify(input))
 
 export const buildDependencies = (
+  state: PrismicContextState,
   dispatch: (action: PrismicContextAction) => void,
   pluginOptions: PluginOptions,
 ): Dependencies => ({
@@ -50,7 +52,16 @@ export const buildDependencies = (
       type: PrismicContextActionType.CreateType,
       payload: type,
     }),
+  getNode: (id: string) => state.nodes[id] as gatsby.Node,
+  getNodes: () => Object.values(state.nodes) as gatsby.Node[],
+  touchNode: () => void 0,
+  deleteNode: ({ node }: { node: gatsby.Node }): void =>
+    dispatch({
+      type: PrismicContextActionType.DeleteNode,
+      payload: node,
+    }),
   reportInfo: console.log,
+  reportWarning: console.warn,
   buildUnionType: (
     config: gqlc.ComposeUnionTypeConfig<unknown, unknown>,
   ): gatsby.GatsbyGraphQLUnionType => ({
