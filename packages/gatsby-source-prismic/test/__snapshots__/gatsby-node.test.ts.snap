@@ -239,6 +239,9 @@ exports[`createSchemaCustomization creates types 1`] = `
       Array [
         Object {
           "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
             "fields": Object {
               "primary": "PrismicPrefixPageMainNewsPostPrimaryType",
               "slice_label": "String",
@@ -281,6 +284,9 @@ exports[`createSchemaCustomization creates types 1`] = `
       Array [
         Object {
           "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
             "fields": Object {
               "items": "[PrismicPrefixPageBodyImagesItemType]",
               "slice_label": "String",
@@ -292,6 +298,9 @@ exports[`createSchemaCustomization creates types 1`] = `
         },
         Object {
           "config": Object {
+            "extensions": Object {
+              "infer": false,
+            },
             "fields": Object {
               "primary": "PrismicPrefixPageBodyTextPrimaryType",
               "slice_label": "String",
