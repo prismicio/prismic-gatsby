@@ -7,6 +7,7 @@ import {
   queryDocumentsByIds,
   createNodes,
   deleteNodesForDocumentIds,
+  reportInfo,
 } from 'gatsby-prismic-core'
 
 import { PrismicWebhookBodyApiUpdate } from './types'
@@ -15,7 +16,10 @@ export const onApiUpdateWebhook = (
   webhookBody: PrismicWebhookBodyApiUpdate,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(
-    RTE.right({}),
+    RTE.ask<Dependencies>(),
+    RTE.chainFirst(() =>
+      reportInfo('Received API update webhook. Processing changes.'),
+    ),
     RTE.bind('documentIds', () =>
       extractApiUpdateWebhookBodyDocumentIds(webhookBody),
     ),
