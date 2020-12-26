@@ -1,6 +1,7 @@
 import * as gatsby from 'gatsby'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as O from 'fp-ts/Option'
 import { pipe, identity } from 'fp-ts/function'
 
 import { Dependencies } from 'gatsby-prismic-core'
@@ -109,24 +110,28 @@ const getGetHandler = <T extends object>(
 > =>
   pipe(
     RTE.ask<Dependencies & ProxyNodeDependencies>(),
-    RTE.map((deps) => (target, prop: string | number, receiver) => {
-      if (isGatsbyNodeInput(target)) {
-        const type = deps.types[target.internal.type]
-        const fields = getFieldsRecord(type)
-        if (!fields) return Reflect.get(target, prop, receiver)
+    RTE.map((deps) => (target, prop: string | number, receiver) =>
+      pipe(
+        target,
+        O.fromPredicate(isGatsbyNodeInput),
+        O.map((target) => {
+          const type = deps.types[target.internal.type]
+          const fields = getFieldsRecord(type)
+          if (!fields) return Reflect.get(target, prop, receiver)
 
-        const fieldType = fields[prop]
-        const resolver =
-          isPlainObject(fieldType) && fieldType.resolve
-            ? (fieldType.resolve as (source: typeof target) => unknown)
-            : (source: typeof target) => source[prop]
-        const resolvedValue = resolver(target)
+          const fieldType = fields[prop]
+          const resolver =
+            isPlainObject(fieldType) && fieldType.resolve
+              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (fieldType.resolve as (source: typeof target) => any)
+              : (source: typeof target) => source[prop]
+          const resolvedValue = resolver(target)
 
-        return new Proxy(resolvedValue, { get: getGetHandler(fieldType) })
-      }
-
-      return Reflect.get(target, prop, receiver)
-    }),
+          return new Proxy(resolvedValue, { get: getGetHandler(fieldType) })
+        }),
+        O.getOrElse(() => Reflect.get(target, prop, receiver)),
+      ),
+    ),
   )
 
 export const proxyNode = (
