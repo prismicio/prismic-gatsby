@@ -1,6 +1,6 @@
 import * as gatsby from 'gatsby'
 import * as React from 'react'
-import { UnknownRecord } from 'gatsby-prismic-core'
+import { UnknownRecord } from 'gatsby-source-prismic/dist/types'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 

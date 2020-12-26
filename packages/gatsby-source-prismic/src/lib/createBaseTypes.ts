@@ -3,10 +3,10 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as A from 'fp-ts/Array'
 import { pipe, constVoid } from 'fp-ts/function'
 
-import { Dependencies } from './types'
-import { buildEnumType } from './lib/buildEnumType'
-import { registerTypes } from './lib/registerTypes'
-import { buildObjectType } from './lib/buildObjectType'
+import { Dependencies } from '../types'
+import { buildEnumType } from './buildEnumType'
+import { registerTypes } from './registerTypes'
+import { buildObjectType } from './buildObjectType'
 
 const buildLinkTypesUnionType = (): RTE.ReaderTaskEither<
   Dependencies,

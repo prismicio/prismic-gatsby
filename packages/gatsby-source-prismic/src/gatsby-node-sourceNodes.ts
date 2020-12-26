@@ -1,12 +1,6 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-import {
-  Dependencies,
-  reportWarning,
-  sourceNodesForAllDocuments,
-  touchAllNodes,
-} from 'gatsby-prismic-core'
 
 import { isValidWebhookSecret } from './lib/isValidWebhookSecret'
 import { isPrismicWebhookBodyApiUpdate } from './lib/isPrismicWebhookBodyApiUpdate'
@@ -15,7 +9,10 @@ import { isPrismicWebhookBodyForRepository } from './lib/isPrismicWebhookBodyFor
 import { onApiUpdateWebhook } from './gatsby-node-sourceNodes-onApiUpdateWebhook'
 import { onTestTriggerWebhook } from './gatsby-node-sourceNodes-onTestTriggerWebhook'
 import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
-import { PrismicWebhookBody } from './types'
+import { Dependencies, PrismicWebhookBody } from './types'
+import { sourceNodesForAllDocuments } from './lib/sourceNodesForAllDocuments'
+import { touchAllNodes } from './lib/touchAllNodes'
+import { reportWarning } from './lib/reportWarning'
 
 /**
  * To be executed in the `sourceNodes` stage.

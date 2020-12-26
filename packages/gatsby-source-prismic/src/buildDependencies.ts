@@ -1,11 +1,8 @@
 import * as gatsby from 'gatsby'
 
-import {
-  GLOBAL_TYPE_PREFIX,
-  Dependencies,
-  PluginOptions,
-  createNodeHelpers,
-} from 'gatsby-prismic-core'
+import { GLOBAL_TYPE_PREFIX } from './constants'
+import { Dependencies, PluginOptions } from './types'
+import { createNodeHelpers } from './lib/nodeHelpers'
 
 export const buildDependencies = (
   gatsbyContext: gatsby.SourceNodesArgs | gatsby.CreateSchemaCustomizationArgs,

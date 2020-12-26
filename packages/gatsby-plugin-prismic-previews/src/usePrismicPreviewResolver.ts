@@ -4,12 +4,9 @@ import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
-import {
-  createClient,
-  Dependencies,
-  PrismicDocument,
-  queryById,
-} from 'gatsby-prismic-core'
+import { Dependencies, PrismicDocument } from 'gatsby-source-prismic/dist/types'
+import { createClient } from 'gatsby-source-prismic/dist/lib/createClient'
+import { queryById } from 'gatsby-source-prismic/dist/lib/queryById'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { buildDependencies } from './buildDependencies'

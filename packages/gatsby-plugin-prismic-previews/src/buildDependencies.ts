@@ -4,11 +4,10 @@ import md5 from 'md5'
 import {
   GLOBAL_TYPE_PREFIX,
   BROWSER_CREATE_NODE_ID_TEMPLATE,
-  createNodeHelpers,
-  sprintf,
-  Dependencies,
-  PluginOptions,
-} from 'gatsby-prismic-core'
+} from 'gatsby-source-prismic/dist/constants'
+import { createNodeHelpers } from 'gatsby-source-prismic/dist/lib/nodeHelpers'
+import { sprintf } from 'gatsby-source-prismic/dist/lib/sprintf'
+import { Dependencies, PluginOptions } from 'gatsby-source-prismic/dist/types'
 
 import {
   PrismicContextAction,

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import { PrismicDocument } from 'gatsby-prismic-core'
+import { PrismicDocument } from 'gatsby-source-prismic/dist/types'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 

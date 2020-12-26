@@ -1,11 +1,10 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe, flow, constVoid } from 'fp-ts/function'
-import {
-  Dependencies,
-  createBaseTypes,
-  registerCustomTypes,
-  registerAllDocumentTypesType,
-} from 'gatsby-prismic-core'
+
+import { Dependencies } from './types'
+import { createBaseTypes } from './lib/createBaseTypes'
+import { registerCustomTypes } from './lib/registerCustomTypes'
+import { registerAllDocumentTypesType } from './lib/registerAllDocumentTypesType'
 
 /**
  * To be executed in the `createSchemaCustomization` stage.

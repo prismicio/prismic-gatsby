@@ -3,18 +3,16 @@
   "version": "3.2.1",
   "description": "Gatsby plugin for integrating Prismic previews support",
   "license": "MIT",
-  "main": "dist/gatsby-plugin-prismic-preview.js",
-  "module": "dist/gatsby-plugin-prismic-preview.modern.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "src",
-    "gatsby-node.js"
+    "src"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
     "start": "yarn clean && microbundle watch src/index.ts -f modern,cjs --compress=false --jsx React.createElement",
-    "build": "yarn clean && microbundle build src/index.ts -f modern,cjs --compress=false --jsx React.createElement",
+    "build": "yarn clean && tsc",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",
@@ -32,12 +30,12 @@
   ],
   "peerDependencies": {
     "gatsby": ">=2.3",
+    "gatsby-source-prismic": ">=4",
     "react": ">=16.13"
   },
   "dependencies": {
     "es-cookie": "^1.3.2",
     "fp-ts": "^2.8.2",
-    "gatsby-prismic-core": "0.0.0",
     "io-ts": "^2.2.10",
     "md5": "^2.3.0"
   },

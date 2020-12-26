@@ -3,8 +3,7 @@ import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as O from 'fp-ts/Option'
 import { pipe, identity } from 'fp-ts/function'
-
-import { Dependencies } from 'gatsby-prismic-core'
+import { Dependencies } from 'gatsby-source-prismic/dist/types'
 
 import { PrismicContextState } from './usePrismicContext'
 import { isGatsbyNodeInput } from './lib/isGatsbyNode'

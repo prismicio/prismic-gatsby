@@ -2,14 +2,12 @@ import * as React from 'react'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe, flow, constVoid } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
-import {
-  Dependencies,
-  registerCustomTypes,
-  createBaseTypes,
-  registerAllDocumentTypesType,
-  sourceNodesForAllDocuments,
-  getCookieSafely,
-} from 'gatsby-prismic-core'
+import { Dependencies } from 'gatsby-source-prismic/dist/types'
+import { registerCustomTypes } from 'gatsby-source-prismic/dist/lib/registerCustomTypes'
+import { createBaseTypes } from 'gatsby-source-prismic/dist/lib/createBaseTypes'
+import { registerAllDocumentTypesType } from 'gatsby-source-prismic/dist/lib/registerAllDocumentTypesType'
+import { sourceNodesForAllDocuments } from 'gatsby-source-prismic/dist/lib/sourceNodesForAllDocuments'
+import { getCookieSafely } from 'gatsby-source-prismic/dist/lib/getCookieSafely'
 
 import {
   PrismicContextAction,

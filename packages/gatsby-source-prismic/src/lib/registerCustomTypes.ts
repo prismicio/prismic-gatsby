@@ -6,7 +6,7 @@ import * as S from 'fp-ts/Semigroup'
 import * as A from 'fp-ts/Array'
 import { pipe, flow, identity } from 'fp-ts/function'
 import * as PrismicDOM from 'prismic-dom'
-import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
+// import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
 
 import {
   Dependencies,
@@ -17,23 +17,23 @@ import {
   PrismicAPIStructuredTextField,
   PrismicAPIDocumentNode,
   PrismicAPISliceField,
-  PrismicAPIImageField,
-} from './types'
+  // PrismicAPIImageField,
+} from '../types'
 import {
   PREVIEWABLE_NODE_ID_FIELD,
   PRISMIC_API_NON_DATA_FIELDS,
-} from './constants'
-import { listTypeName } from './lib/listTypeName'
-import { dotPath } from './lib/dotPath'
-import { getTypeName } from './lib/getTypeName'
-import { sequenceSRTE } from './lib/sequenceSRTE'
-import { reportInfo } from './lib/reportInfo'
-import { buildObjectType } from './lib/buildObjectType'
-import { buildUnionType } from './lib/buildUnionType'
-import { registerType } from './lib/registerType'
-import { registerTypes } from './lib/registerTypes'
-import { buildInferredNodeType } from './lib/buildInferredNodeType'
-import { buildNamedInferredNodeType } from './lib/buildNamedInferredNodeType'
+} from '../constants'
+import { listTypeName } from './listTypeName'
+import { dotPath } from './dotPath'
+import { getTypeName } from './getTypeName'
+import { sequenceSRTE } from './sequenceSRTE'
+import { reportInfo } from './reportInfo'
+import { buildObjectType } from './buildObjectType'
+import { buildUnionType } from './buildUnionType'
+import { registerType } from './registerType'
+import { registerTypes } from './registerTypes'
+import { buildInferredNodeType } from './buildInferredNodeType'
+import { buildNamedInferredNodeType } from './buildNamedInferredNodeType'
 
 const buildSchemaRecordType = (
   path: string[],
@@ -226,81 +226,81 @@ const toFieldConfig = <TSource, TContext>(
       )
     }
 
-    // TODO: Support thumbnails in a `thumnails` field. `scope.imageFields` has
-    // already been setup to be shared between both PrismicImageType and
-    // PrismicImageThumbnailType.
-    case 'Image': {
-      return pipe(
-        RTE.ask<Dependencies>(),
-        RTE.chain((deps) =>
-          pipe(
-            RTE.right({
-              resolveUrl: (source: PrismicAPIImageField) => source.url,
-              resolveWidth: (source: PrismicAPIImageField) =>
-                source.dimensions.width,
-              resolveHeight: (source: PrismicAPIImageField) =>
-                source.dimensions.height,
-              fixedType: gatsbyImgix.createImgixFixedType({
-                name: deps.nodeHelpers.createTypeName('ImageFixedType'),
-                cache: deps.cache,
-              }),
-              fluidType: gatsbyImgix.createImgixFluidType({
-                name: deps.nodeHelpers.createTypeName('ImageFluidType'),
-                cache: deps.cache,
-              }),
-            }),
-            RTE.bind('imageFields', (scope) =>
-              RTE.of({
-                alt: 'String',
-                copyright: 'String',
-                dimensions: deps.globalNodeHelpers.createTypeName(
-                  'ImageDimensionsType',
-                ),
-                url: gatsbyImgix.createImgixUrlSchemaFieldConfig({
-                  resolveUrl: scope.resolveUrl,
-                  defaultImgixParams: deps.pluginOptions.imageImgixParams,
-                }),
-                fixed: gatsbyImgix.createImgixFixedSchemaFieldConfig({
-                  type: scope.fixedType,
-                  resolveUrl: scope.resolveUrl,
-                  resolveWidth: scope.resolveWidth,
-                  resolveHeight: scope.resolveHeight,
-                  cache: deps.cache,
-                  defaultImgixParams: deps.pluginOptions.imageImgixParams,
-                  defaultPlaceholderImgixParams:
-                    deps.pluginOptions.imagePlaceholderImgixParams,
-                }),
-                fluid: gatsbyImgix.createImgixFluidSchemaFieldConfig({
-                  type: scope.fluidType,
-                  resolveUrl: scope.resolveUrl,
-                  resolveWidth: scope.resolveWidth,
-                  resolveHeight: scope.resolveHeight,
-                  cache: deps.cache,
-                  defaultImgixParams: deps.pluginOptions.imageImgixParams,
-                  defaultPlaceholderImgixParams:
-                    deps.pluginOptions.imagePlaceholderImgixParams,
-                }),
-                // TODO: Create resolver that downloads the file, creates a
-                // node, and returns the ID. This can be handled using
-                // gatsby-source-filesystem's helper functions.
-                localFile: {
-                  type: 'File',
-                  extensions: { link: {} },
-                },
-              }),
-            ),
-            RTE.chain((scope) =>
-              buildObjectType({
-                name: deps.nodeHelpers.createTypeName('ImageType'),
-                fields: scope.imageFields,
-              }),
-            ),
-            RTE.chainFirst(registerType),
-            RTE.map(getTypeName),
-          ),
-        ),
-      )
-    }
+    // // TODO: Support thumbnails in a `thumnails` field. `scope.imageFields` has
+    // // already been setup to be shared between both PrismicImageType and
+    // // PrismicImageThumbnailType.
+    // case 'Image': {
+    //   return pipe(
+    //     RTE.ask<Dependencies>(),
+    //     RTE.chain((deps) =>
+    //       pipe(
+    //         RTE.right({
+    //           resolveUrl: (source: PrismicAPIImageField) => source.url,
+    //           resolveWidth: (source: PrismicAPIImageField) =>
+    //             source.dimensions.width,
+    //           resolveHeight: (source: PrismicAPIImageField) =>
+    //             source.dimensions.height,
+    //           fixedType: gatsbyImgix.createImgixFixedType({
+    //             name: deps.nodeHelpers.createTypeName('ImageFixedType'),
+    //             cache: deps.cache,
+    //           }),
+    //           fluidType: gatsbyImgix.createImgixFluidType({
+    //             name: deps.nodeHelpers.createTypeName('ImageFluidType'),
+    //             cache: deps.cache,
+    //           }),
+    //         }),
+    //         RTE.bind('imageFields', (scope) =>
+    //           RTE.of({
+    //             alt: 'String',
+    //             copyright: 'String',
+    //             dimensions: deps.globalNodeHelpers.createTypeName(
+    //               'ImageDimensionsType',
+    //             ),
+    //             url: gatsbyImgix.createImgixUrlSchemaFieldConfig({
+    //               resolveUrl: scope.resolveUrl,
+    //               defaultImgixParams: deps.pluginOptions.imageImgixParams,
+    //             }),
+    //             fixed: gatsbyImgix.createImgixFixedSchemaFieldConfig({
+    //               type: scope.fixedType,
+    //               resolveUrl: scope.resolveUrl,
+    //               resolveWidth: scope.resolveWidth,
+    //               resolveHeight: scope.resolveHeight,
+    //               cache: deps.cache,
+    //               defaultImgixParams: deps.pluginOptions.imageImgixParams,
+    //               defaultPlaceholderImgixParams:
+    //                 deps.pluginOptions.imagePlaceholderImgixParams,
+    //             }),
+    //             fluid: gatsbyImgix.createImgixFluidSchemaFieldConfig({
+    //               type: scope.fluidType,
+    //               resolveUrl: scope.resolveUrl,
+    //               resolveWidth: scope.resolveWidth,
+    //               resolveHeight: scope.resolveHeight,
+    //               cache: deps.cache,
+    //               defaultImgixParams: deps.pluginOptions.imageImgixParams,
+    //               defaultPlaceholderImgixParams:
+    //                 deps.pluginOptions.imagePlaceholderImgixParams,
+    //             }),
+    //             // TODO: Create resolver that downloads the file, creates a
+    //             // node, and returns the ID. This can be handled using
+    //             // gatsby-source-filesystem's helper functions.
+    //             localFile: {
+    //               type: 'File',
+    //               extensions: { link: {} },
+    //             },
+    //           }),
+    //         ),
+    //         RTE.chain((scope) =>
+    //           buildObjectType({
+    //             name: deps.nodeHelpers.createTypeName('ImageType'),
+    //             fields: scope.imageFields,
+    //           }),
+    //         ),
+    //         RTE.chainFirst(registerType),
+    //         RTE.map(getTypeName),
+    //       ),
+    //     ),
+    //   )
+    // }
 
     case 'Link': {
       return pipe(
@@ -385,9 +385,9 @@ const toFieldConfig = <TSource, TContext>(
     default:
       return pipe(
         reportInfo(
-          // @ts-expect-error - `schema.type` cannot be known here since this
-          // block would only be reached if an unsupported field type was
-          // introduced.
+          // // @ts-expect-error - `schema.type` cannot be known here since this
+          // // block would only be reached if an unsupported field type was
+          // // introduced.
           `An unknown field type "${schema.type}" was found at ${dotPath(
             path,
           )}. A generic inferred node type will be created. If the underlying type is not an object, manually override the type using Gatsby's createSchemaCustomization API in your site's gatsby-node.js.`,

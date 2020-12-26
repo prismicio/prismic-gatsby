@@ -1,8 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "test"],
   "compilerOptions": {
-    "rootDir": ".",
-    "resolveJsonModule": true
-  }
+    "rootDir": "src",
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "declaration": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

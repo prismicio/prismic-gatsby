@@ -1,1 +1,1 @@
-module.exports = require('./dist/gatsby-source-prismic')
+module.exports = require('./dist/gatsby-node')

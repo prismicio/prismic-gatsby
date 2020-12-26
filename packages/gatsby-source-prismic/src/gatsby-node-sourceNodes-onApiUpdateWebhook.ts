@@ -2,15 +2,12 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as A from 'fp-ts/Array'
 import * as Eq from 'fp-ts/Eq'
 import { pipe, constVoid } from 'fp-ts/function'
-import {
-  Dependencies,
-  queryDocumentsByIds,
-  createNodes,
-  deleteNodesForDocumentIds,
-  reportInfo,
-} from 'gatsby-prismic-core'
 
-import { PrismicWebhookBodyApiUpdate } from './types'
+import { Dependencies, PrismicWebhookBodyApiUpdate } from './types'
+import { reportInfo } from './lib/reportInfo'
+import { queryDocumentsByIds } from './lib/queryDocumentsByIds'
+import { deleteNodesForDocumentIds } from './lib/deleteNodesForDocumentIds'
+import { createNodes } from './lib/createNodes'
 
 export const onApiUpdateWebhook = (
   webhookBody: PrismicWebhookBodyApiUpdate,
