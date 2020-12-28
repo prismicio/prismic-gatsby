@@ -1,6 +1,7 @@
 {
   "name": "gatsby-source-prismic",
   "version": "3.2.1",
+  "private": true,
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "license": "MIT",
   "files": [
