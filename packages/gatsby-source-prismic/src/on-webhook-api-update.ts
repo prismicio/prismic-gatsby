@@ -32,7 +32,7 @@ export const onWebhookApiUpdate = (
     ),
     RTE.bind('documentIdsToDelete', (scope) =>
       pipe(
-        webhookBody.documents,
+        scope.documentIds,
         A.difference(Eq.eqString)(scope.documentIdsToUpdate),
         (ids) => RTE.of(ids),
       ),

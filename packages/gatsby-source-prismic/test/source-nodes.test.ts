@@ -98,6 +98,16 @@ describe('webhook api-update', () => {
     webhookBody: webhooks.apiUpdateDocDeletion,
   }
 
+  const apiUpdateReleaseDocAdditionCtx = {
+    ...gatsbyContext,
+    webhookBody: webhooks.apiUpdateReleaseDocAddition,
+  }
+
+  const apiUpdateReleaseDocDeletionCtx = {
+    ...gatsbyContext,
+    webhookBody: webhooks.apiUpdateReleaseDocDeletion,
+  }
+
   test('reports received message', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateDocAdditionCtx, pluginOptions)
@@ -122,6 +132,40 @@ describe('webhook api-update', () => {
 
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateDocDeletionCtx, pluginOptions)
+
+    expect(gatsbyContext.actions.deleteNode).toHaveBeenCalledWith(
+      expect.objectContaining({ node: nodes[0] }),
+    )
+  })
+
+  test('release doc addition creates/updates node if plugin options release ID matches', async () => {
+    const options = { ...pluginOptions }
+    options.releaseID =
+      webhooks.apiUpdateReleaseDocAddition.releases.update?.[0]?.id
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await sourceNodes(apiUpdateReleaseDocAdditionCtx, options)
+
+    expect(gatsbyContext.actions.createNode).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prismicId:
+          webhooks.apiUpdateReleaseDocAddition.releases.update?.[0]
+            ?.documents[0],
+      }),
+    )
+  })
+
+  test('release doc deletion deletes node if plugin options release ID matches', async () => {
+    const options = { ...pluginOptions }
+    options.releaseID =
+      webhooks.apiUpdateReleaseDocDeletion.releases.update?.[0]?.id
+
+    setDeletedDocumentIds([
+      webhooks.apiUpdateReleaseDocDeletion.releases.update?.[0]?.documents?.[0],
+    ])
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await sourceNodes(apiUpdateReleaseDocDeletionCtx, options)
 
     expect(gatsbyContext.actions.deleteNode).toHaveBeenCalledWith(
       expect.objectContaining({ node: nodes[0] }),

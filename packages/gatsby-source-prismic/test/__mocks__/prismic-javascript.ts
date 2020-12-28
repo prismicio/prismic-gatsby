@@ -1,11 +1,11 @@
 import { nodes } from '../__fixtures__/gatsbyContext'
 import mockDocument from '../__fixtures__/document.json'
 
-let deletedDocumentIds = [] as string[]
+let deletedDocumentIds = [] as (string | undefined)[]
 
 // Call this function in individual tests to ensure certain documents are not
 // returned by the mocked API.
-export const setDeletedDocumentIds = (ids: string[]): void =>
+export const setDeletedDocumentIds = (ids: (string | undefined)[]): void =>
   void (deletedDocumentIds = ids)
 
 // Reset the deleted documents state.
