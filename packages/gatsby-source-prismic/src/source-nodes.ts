@@ -1,6 +1,5 @@
 import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as O from 'fp-ts/Option'
 import * as E from 'fp-ts/Either'
 import { constVoid, pipe } from 'fp-ts/function'
 
@@ -33,13 +32,15 @@ const sourceNodesProgram: RTE.ReaderTaskEither<
   void
 > = pipe(
   RTE.ask<Dependencies>(),
-  RTE.chain((deps) =>
-    pipe(
-      deps.webhookBody,
-      O.fromPredicate(
-        (webhookBody) => webhookBody && JSON.stringify(webhookBody) !== '{}',
-      ),
-      O.fold(sourceNodesForAllDocuments, () => onWebhook),
+  RTE.chainW(
+    RTE.fromPredicate(
+      (deps) =>
+        Boolean(deps.webhookBody && JSON.stringify(deps.webhookBody) !== '{}'),
+      constVoid,
     ),
+  ),
+  RTE.fold(
+    () => sourceNodesForAllDocuments,
+    () => onWebhook,
   ),
 )

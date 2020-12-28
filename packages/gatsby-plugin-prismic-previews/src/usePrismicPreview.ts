@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe, flow, constVoid } from 'fp-ts/function'
+import { pipe, constVoid } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
 import { Dependencies } from 'gatsby-source-prismic/dist/types'
 import { registerCustomTypes } from 'gatsby-source-prismic/dist/lib/registerCustomTypes'
@@ -17,11 +17,12 @@ import {
 import { buildDependencies } from './buildDependencies'
 
 enum ActionType {
+  IsLoading = 'IsLoading',
   IsLoaded = 'IsLoaded',
 }
 
 type Action = {
-  type: ActionType.IsLoaded
+  type: ActionType
 }
 
 interface State {
@@ -34,6 +35,13 @@ const initialState = {
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
+    case ActionType.IsLoading: {
+      return {
+        ...state,
+        isLoading: true,
+      }
+    }
+
     case ActionType.IsLoaded: {
       return {
         ...state,
@@ -48,6 +56,17 @@ interface PrismicPreviewProgramDependencies {
   dispatch: (action: Action) => void
   contextDispatch: (action: PrismicContextAction) => void
 }
+
+const declareLoading = (): RTE.ReaderTaskEither<
+  PrismicPreviewProgramDependencies & Dependencies,
+  never,
+  void
+> =>
+  RTE.asks((deps) =>
+    deps.dispatch({
+      type: ActionType.IsLoading,
+    }),
+  )
 
 const declareLoaded = (): RTE.ReaderTaskEither<
   PrismicPreviewProgramDependencies & Dependencies,
@@ -78,20 +97,36 @@ const prismicPreviewProgram: RTE.ReaderTaskEither<
   void
 > = pipe(
   RTE.ask<PrismicPreviewProgramDependencies & Dependencies>(),
-  RTE.chainFirstW(
+
+  // Only continue if this is a preview session, which is determined by the
+  // presence of the Prismic preview cookie.
+  RTE.chainW(
     RTE.fromPredicate(
       () => Boolean(getCookieSafely(Prismic.previewCookie)),
       constVoid,
     ),
   ),
-  RTE.chainFirstW(RTE.fromPredicate((deps) => !deps.isBootstrapped, constVoid)),
-  RTE.chainFirstW(createBaseTypes),
-  RTE.chainFirstW(
-    flow(registerCustomTypes, RTE.chain(registerAllDocumentTypesType)),
-  ),
-  RTE.chainFirstW(() => sourceNodesForAllDocuments()),
-  RTE.chainFirstW(declareBootstrapped),
-  RTE.chainFirstW(declareLoaded),
+
+  // Only bootstrap once.
+  RTE.chainW(RTE.fromPredicate((deps) => !deps.isBootstrapped, constVoid)),
+
+  // Begin loading state.
+  RTE.chainW(declareLoading),
+
+  // Same process as gatsby-node's createSchemaCustomization.
+  // @see gatsby-source-prismic/src/create-schema-customization.ts
+  RTE.chainW(createBaseTypes),
+  RTE.bindW('types', registerCustomTypes),
+  RTE.chainW((scope) => registerAllDocumentTypesType(scope.types)),
+
+  // Same process as gatsby-node's sourceNodes.
+  // @see gatsby-source-prismic/src/source-nodes.ts
+  RTE.chainW(sourceNodesForAllDocuments),
+
+  // End loading state.
+  RTE.chainW(declareBootstrapped),
+  RTE.chainW(declareLoaded),
+
   RTE.map(constVoid),
 )
 
@@ -105,10 +140,11 @@ export const usePrismicPreview = (config: UsePrismicPreviewConfig): State => {
 
   React.useEffect(() => {
     const pluginOptions = contextState.pluginOptionsMap[config.repositoryName]
-    if (!pluginOptions)
+    if (!pluginOptions) {
       throw Error(
         `usePrismicPreview was configured to use a repository with the name "${config.repositoryName}" but was not registered in the top-level PrismicProvider component. Please check your repository name and/or PrismicProvider props.`,
       )
+    }
 
     const dependencies = {
       ...buildDependencies(contextState, contextDispatch, pluginOptions),

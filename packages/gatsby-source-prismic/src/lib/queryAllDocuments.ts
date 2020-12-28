@@ -56,15 +56,14 @@ const aggregateQuery = (
  *
  * @returns List of Prismic documents.
  */
-export const queryAllDocuments = (): RTE.ReaderTaskEither<
+export const queryAllDocuments: RTE.ReaderTaskEither<
   Dependencies,
   never,
   PrismicAPIDocument[]
-> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.bindW('client', createClient),
-    RTE.bind('queryOptions', (scope) => buildQueryOptions(scope.client)),
-    RTE.map((scope) => aggregateQuery(scope.client, scope.queryOptions)),
-    RTE.chain((docs) => RTE.fromTask(docs)),
-  )
+> = pipe(
+  RTE.ask<Dependencies>(),
+  RTE.bindW('client', createClient),
+  RTE.bind('queryOptions', (scope) => buildQueryOptions(scope.client)),
+  RTE.map((scope) => aggregateQuery(scope.client, scope.queryOptions)),
+  RTE.chain((docs) => RTE.fromTask(docs)),
+)

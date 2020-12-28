@@ -24,6 +24,7 @@ const createCache = (): gatsby.GatsbyCache => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     set: (key: string, value: any): Promise<any> => {
       map.set(key, value)
+
       return Promise.resolve(value)
     },
   }

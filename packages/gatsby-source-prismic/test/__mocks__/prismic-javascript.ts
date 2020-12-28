@@ -17,6 +17,6 @@ export default {
           license: 'All Rights Reserved',
         }),
       refs: [],
-      masterRef: { ref: 'masterRef' },
+      masterRef: { ref: 'master' },
     }),
 }

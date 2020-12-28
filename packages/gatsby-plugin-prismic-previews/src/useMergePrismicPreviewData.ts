@@ -18,25 +18,29 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
     const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
       | string
       | undefined
-    if (!previewableValue) return nodeOrLeaf
+    if (!previewableValue) {
+      return nodeOrLeaf
+    }
 
     return nodes[previewableValue] ?? nodeOrLeaf
   }
 
   // Iterate all elements in the node to find the previewable value.
-  if (Array.isArray(nodeOrLeaf))
+  if (Array.isArray(nodeOrLeaf)) {
     return nodeOrLeaf.map((subnode) =>
       findAndReplacePreviewables(nodes)(subnode),
     )
+  }
 
   // If the node is not an object or array, it cannot be a previewable value.
   return nodeOrLeaf
 }
 
 /**
- * Inserts a root-level node in a static data object with a given
- * node. If a node with the same type already exists at the root-level, the existing node is replaced with the given node. This is useful when you know the static data object does not include
- * the given node, such as nodes that have not been publsihed.
+ * Inserts a root-level node in a static data object. If a node with the same
+ * type already exists at the root-level, the existing node is replaced with the
+ * given node. This is useful when you know the static data object does not
+ * include the given node, such as nodes that have not been publsihed.
  *
  * @param staticData Static data object into which the node will be inserted.
  * @param node Node to insert into the static data object.
@@ -61,9 +65,9 @@ const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
   )
 
 /**
- * Takes a static data object and a list of nodes and replaces any instances of
- * those nodes in the static data with the updated version. The replacement is
- * done recursively to ensure nested nodes are replaced.
+ * Takes a static data object and a record of nodes and replaces any instances
+ * of those nodes in the static data with the updated version. The replacement
+ * is done recursively to ensure nested nodes are replaced.
  *
  * Nodes are considered matches if they have identical
  * `PREVIEWABLE_NODE_ID_FIELD` fields (see constant value in
@@ -81,7 +85,7 @@ const traverseAndReplace = <TStaticData extends UnknownRecord>(
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
     nodes,
-    O.fromPredicate(R.isEmpty),
+    O.fromPredicate((nodes) => !R.isEmpty(nodes)),
     O.map(
       () => R.map(findAndReplacePreviewables(nodes))(staticData) as TStaticData,
     ),

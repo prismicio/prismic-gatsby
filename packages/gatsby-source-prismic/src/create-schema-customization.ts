@@ -1,7 +1,7 @@
 import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as E from 'fp-ts/Either'
-import { pipe, flow, constVoid } from 'fp-ts/function'
+import { pipe, constVoid } from 'fp-ts/function'
 
 import { Dependencies, PluginOptions } from './types'
 import { createBaseTypes } from './lib/createBaseTypes'
@@ -26,13 +26,14 @@ export const createSchemaCustomization: NonNullable<
 /**
  * To be executed in the `createSchemaCustomization` stage.
  */
-export const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
+const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   Dependencies,
   never,
   void
 > = pipe(
   RTE.ask<Dependencies>(),
   RTE.chain(createBaseTypes),
-  RTE.chain(flow(registerCustomTypes, RTE.chain(registerAllDocumentTypesType))),
+  RTE.bind('types', registerCustomTypes),
+  RTE.chain((scope) => registerAllDocumentTypesType(scope.types)),
   RTE.map(constVoid),
 )

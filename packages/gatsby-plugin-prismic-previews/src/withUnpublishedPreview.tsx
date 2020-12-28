@@ -30,7 +30,7 @@ export const withUnpublishedPreview = <
 
     if (preview.isPreview) {
       const TemplateComp = config.templateMap[preview.type]
-      if (TemplateComp)
+      if (TemplateComp) {
         return (
           <TemplateComp
             {...props}
@@ -38,13 +38,14 @@ export const withUnpublishedPreview = <
             isPreview={preview.isPreview}
           />
         )
-      else
+      } else {
         console.warn(
           sprintf(
             ANONYMOUS_REPORTER_TEMPLATE,
             `An unpublished preview was detected, but a template component could not be found for a custom type of "${preview.type}". Check that the templateMap option in withUnpublishedPreview includes a component for "${preview.type}". withUnpublishedPreview will yield to the wrapped component.`,
           ),
         )
+      }
     }
 
     return <WrappedComponent {...props} isPreview={false} />

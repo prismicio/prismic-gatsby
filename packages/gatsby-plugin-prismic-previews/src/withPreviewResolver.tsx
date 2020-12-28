@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import { PrismicDocument } from 'gatsby-source-prismic/dist/types'
+import { PrismicAPIDocument } from 'gatsby-source-prismic/dist/types'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 
@@ -12,7 +12,7 @@ import {
 export interface WithPreviewResolverProps {
   previewIsLoading: boolean
   previewPath?: string
-  previewDocument?: PrismicDocument
+  previewDocument?: PrismicAPIDocument
 }
 
 type WithPreviewResolverConfig = UsePrismicPreviewResolverConfig

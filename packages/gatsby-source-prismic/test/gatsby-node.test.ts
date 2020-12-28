@@ -29,16 +29,22 @@ const pluginOptions = {
 
 describe('sourceNodes', () => {
   test('creates nodes', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(gatsbyContext, pluginOptions)
+    await sourceNodes(
+      // @ts-expect-error - Partial gatsbyContext provided
+      gatsbyContext,
+      pluginOptions,
+    )
     expect(gatsbyContext.actions.createNode).toMatchSnapshot()
   })
 })
 
 describe('createSchemaCustomization', () => {
   test('creates types', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
+    await createSchemaCustomization(
+      // @ts-expect-error - Partial gatsbyContext provided
+      gatsbyContext,
+      pluginOptions,
+    )
     expect(gatsbyContext.actions.createTypes).toMatchSnapshot()
   })
 })

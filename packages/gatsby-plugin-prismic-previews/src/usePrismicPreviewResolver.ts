@@ -4,11 +4,16 @@ import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
-import { Dependencies, PrismicDocument } from 'gatsby-source-prismic/dist/types'
+import {
+  Dependencies,
+  PrismicAPIDocument,
+} from 'gatsby-source-prismic/dist/types'
 import { createClient } from 'gatsby-source-prismic/dist/lib/createClient'
 import { queryById } from 'gatsby-source-prismic/dist/lib/queryById'
+import { buildQueryOptions } from 'gatsby-source-prismic/dist/lib/buildQueryOptions'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
+import { notNullable } from './lib/notNullable'
 import { buildDependencies } from './buildDependencies'
 import {
   PrismicContextAction,
@@ -22,12 +27,12 @@ enum ActionType {
 
 type Action = {
   type: ActionType.DocumentLoaded
-  payload: { path: string; document: PrismicDocument }
+  payload: { path: string; document: PrismicAPIDocument }
 }
 
 interface State {
   isLoading: boolean
-  document?: PrismicDocument
+  document?: PrismicAPIDocument
   path?: string
 }
 
@@ -58,7 +63,7 @@ interface PrismicPreviewProgramDependencies {
 
 const documentLoaded = (
   path: string,
-  document: PrismicDocument,
+  document: PrismicAPIDocument,
 ): RTE.ReaderTaskEither<PrismicPreviewProgramDependencies, never, void> =>
   RTE.asks((deps) =>
     deps.dispatch({
@@ -86,34 +91,30 @@ const prismicPreviewResolverProgram = pipe(
       RTE.fromOption(() => Error('token URL parameter not present')),
     ),
   ),
-  RTE.chainFirst((scope) =>
-    RTE.of(cookie.set(Prismic.previewCookie, scope.previewRef)),
-  ),
   RTE.bindW('documentId', () =>
     pipe(
       getURLSearchParam('documentId'),
       RTE.fromOption(() => Error('documentId URL parameter not present')),
     ),
   ),
+  RTE.chainFirst((scope) =>
+    RTE.of(cookie.set(Prismic.previewCookie, scope.previewRef)),
+  ),
   RTE.bindW('client', createClient),
+  RTE.bindW('queryOptions', (scope) => buildQueryOptions(scope.client)),
   RTE.bindW('document', (scope) =>
     pipe(
-      queryById(scope.client, scope.documentId, {
-        fetchLinks: scope.pluginOptions.fetchLinks,
-        lang: scope.pluginOptions.lang,
-      }),
+      queryById(scope.client, scope.documentId, scope.queryOptions),
       RTE.fromTask,
     ),
   ),
   RTE.bindW('path', (scope) =>
     pipe(
-      scope.pluginOptions.linkResolver?.()?.(scope.document),
-      RTE.fromPredicate(
-        (path) => path != null,
-        () =>
-          Error(
-            'linkResolver did not resolve to a path for the previewed document',
-          ),
+      scope.pluginOptions.linkResolver?.(scope.document),
+      RTE.fromPredicate(notNullable, () =>
+        Error(
+          'linkResolver did not resolve to a path for the previewed document',
+        ),
       ),
     ),
   ),
@@ -123,7 +124,9 @@ const prismicPreviewResolverProgram = pipe(
   RTE.chainFirstW((scope) => documentLoaded(scope.path, scope.document)),
   // TODO: Replace this map with something more side-effect-y
   RTE.map((scope) => {
-    if (scope.shouldAutoRedirect) gatsby.navigate(scope.path)
+    if (scope.shouldAutoRedirect) {
+      gatsby.navigate(scope.path)
+    }
   }),
 )
 
@@ -140,10 +143,11 @@ export const usePrismicPreviewResolver = (
 
   React.useEffect(() => {
     const pluginOptions = contextState.pluginOptionsMap[config.repositoryName]
-    if (!pluginOptions)
+    if (!pluginOptions) {
       throw Error(
         `usePrismicPreviewResolver was configured to use a repository with the name "${config.repositoryName}" but was not registered in the top-level PrismicProvider component. Please check your repository name and/or PrismicProvider props.`,
       )
+    }
 
     const dependencies = {
       ...buildDependencies(contextState, contextDispatch, pluginOptions),
