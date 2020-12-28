@@ -1,20 +1,20 @@
 import * as gatsby from 'gatsby'
-import * as D from 'io-ts/Decoder'
+import * as gqlc from 'graphql-compose'
+import * as gatsbyImgix from 'gatsby-plugin-imgix'
+import * as PrismicDOM from 'prismic-dom'
+import * as RTE from 'fp-ts/ReaderTaskEither'
 import Prismic from 'prismic-javascript'
 import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/documents'
 import { QueryOptions as _PrismicClientQueryOptions } from 'prismic-javascript/types/ResolvedApi'
 
-import { PluginOptionsD } from './lib/PluginOptionsD'
-import { PrismicSchemaD } from './lib/PrismicSchemaD'
-import { PrismicTabSchemaD } from './lib/PrismicTabSchemaD'
-import { PrismicSliceSchemaD } from './lib/PrismicSliceSchemaD'
 import { NodeHelpers } from './lib/nodeHelpers'
-
-export { Document as PrismicDocument } from 'prismic-javascript/types/documents'
 
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 
-export type UnknownRecord = Record<string, unknown>
+export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
+  K,
+  unknown
+>
 
 export interface Dependencies {
   createTypes: gatsby.Actions['createTypes']
@@ -33,50 +33,116 @@ export interface Dependencies {
   nodeHelpers: NodeHelpers
   pluginOptions: PluginOptions
   webhookBody?: unknown
+  fieldConfigCreators: Record<
+    Exclude<PrismicFieldType, 'Slice'> | 'Unknown',
+    FieldConfigCreator
+  >
 }
 
-export type PluginOptions = D.TypeOf<typeof PluginOptionsD>
-export type PrismicSchema = D.TypeOf<typeof PrismicSchemaD>
-export type PrismicTabSchema = D.TypeOf<typeof PrismicTabSchemaD>
-export type PrismicSliceSchema = D.TypeOf<typeof PrismicSliceSchemaD>
-// The recursive type in `config.fields` requires the type to be defined in the
-// type system rather than derived from io-ts.
-export type PrismicFieldSchema =
-  | {
-      type:
-        | 'Boolean'
-        | 'Color'
-        | 'Date'
-        | 'Embed'
-        | 'GeoPoint'
-        | 'Image'
-        | 'Link'
-        | 'Number'
-        | 'Select'
-        | 'StructuredText'
-        | 'Text'
-        | 'Timestamp'
-        | 'UID'
-      config: {
-        label?: string
-        placeholder?: string
-      }
-    }
-  | {
-      type: 'Group'
-      config: {
-        label?: string
-        placeholder?: string
-        fields: Record<string, PrismicFieldSchema>
-      }
-    }
-  | {
-      type: 'Slices'
-      config: {
-        labels?: Record<string, string[]>
-        choices: Record<string, PrismicSliceSchema>
-      }
-    }
+export type FieldConfigCreator<
+  TSchema extends PrismicSchemaField = PrismicSchemaField
+> = (
+  path: string[],
+  schema: TSchema,
+) => RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gqlc.ComposeFieldConfig<unknown, unknown>
+>
+
+export interface PluginOptions extends gatsby.PluginOptions {
+  repositoryName: string
+  accessToken?: string
+  apiEndpoint?: string
+  releaseID?: string
+  graphQuery?: string
+  fetchLinks?: string[]
+  lang: string
+  linkResolver?: (doc: PrismicAPIDocument) => string
+  htmlSerializer?: typeof PrismicDOM.HTMLSerializer
+  schemas: Record<string, PrismicSchema>
+  imageImgixParams: gatsbyImgix.ImgixUrlParams
+  imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
+  shouldDownloadImage?: (args: ShouldDownloadImageArgs) => boolean
+  typePrefix?: string
+  webhookSecret?: string
+  plugins: []
+}
+
+type ShouldDownloadImageArgs = {
+  node: PrismicAPIDocument
+  key: string
+  value: string
+}
+
+export interface PrismicAPIDocument<
+  TData extends UnknownRecord<string> = UnknownRecord<string>
+> extends _PrismicAPIDocument {
+  data: TData
+}
+
+export interface PrismicSchema {
+  [tabName: string]: PrismicSchemaTab
+}
+
+interface PrismicSchemaTab {
+  [fieldName: string]: PrismicSchemaField
+}
+
+export type PrismicSchemaField =
+  | PrismicSchemaStandardField
+  | PrismicSchemaGroupField
+  | PrismicSchemaSlicesField
+
+export enum PrismicFieldType {
+  Boolean = 'Boolean',
+  Color = 'Color',
+  Date = 'Date',
+  Embed = 'Embed',
+  GeoPoint = 'GeoPoint',
+  Image = 'Image',
+  Link = 'Link',
+  Number = 'Number',
+  Select = 'Select',
+  StructuredText = 'StructuredText',
+  Text = 'Text',
+  Timestamp = 'Timestamp',
+  UID = 'UID',
+  Group = 'Group',
+  Slice = 'Slice',
+  Slices = 'Slices',
+}
+
+interface PrismicSchemaStandardField {
+  type: Exclude<PrismicFieldType, 'Group' | 'Slice' | 'Slices'>
+  config: {
+    label?: string
+    placeholder?: string
+  }
+}
+
+export interface PrismicSchemaGroupField {
+  type: PrismicFieldType.Group
+  config: {
+    label?: string
+    placeholder?: string
+    fields: Record<string, PrismicSchemaStandardField>
+  }
+}
+
+export interface PrismicSchemaSlicesField {
+  type: PrismicFieldType.Slices
+  config: {
+    labels?: Record<string, string[]>
+    choices: Record<string, PrismiaSchemaSlice>
+  }
+}
+
+export interface PrismiaSchemaSlice {
+  type: PrismicFieldType.Slice
+  'non-repeat': Record<string, PrismicSchemaStandardField>
+  repeat: Record<string, PrismicSchemaStandardField>
+}
 
 export type PrismicClient = ResolveType<ReturnType<typeof Prismic.getApi>>
 export type PrismicClientQueryOptions = _PrismicClientQueryOptions
@@ -108,10 +174,6 @@ export type PrismicAPIStructuredTextField = {
   text: string
   spans: { [key: string]: unknown }
 }[]
-
-export interface PrismicAPIDocument extends _PrismicAPIDocument {
-  data: UnknownRecord
-}
 
 export interface PrismicAPIDocumentNode
   extends PrismicAPIDocument,

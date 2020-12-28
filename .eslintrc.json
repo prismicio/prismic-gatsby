@@ -1,4 +1,8 @@
 {
+  "env": {
+    "es6": true,
+    "node": true
+  },
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint", "react", "react-hooks"],
   "extends": [
@@ -7,13 +11,12 @@
     "plugin:react-hooks/recommended"
   ],
   "rules": {
-    "@typescript-eslint/member-delimiter-style": [
+    "curly": "error",
+    "prefer-const": "error",
+    "newline-before-return": "error",
+    "@typescript-eslint/no-unused-vars": [
       "error",
-      {
-        "multiline": {
-          "delimiter": "none"
-        }
-      }
+      { "argsIgnorePattern": "^_" }
     ]
   }
 }

@@ -2,37 +2,17 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
 
-import { isValidWebhookSecret } from './lib/isValidWebhookSecret'
 import { isPrismicWebhookBodyApiUpdate } from './lib/isPrismicWebhookBodyApiUpdate'
-import { isPrismicWebhookBodyTestTrigger } from './lib/isPrismicWebhookBodyTestTrigger'
 import { isPrismicWebhookBodyForRepository } from './lib/isPrismicWebhookBodyForRepository'
-import { onApiUpdateWebhook } from './gatsby-node-sourceNodes-onApiUpdateWebhook'
-import { onTestTriggerWebhook } from './gatsby-node-sourceNodes-onTestTriggerWebhook'
-import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
-import { Dependencies, PrismicWebhookBody } from './types'
-import { sourceNodesForAllDocuments } from './lib/sourceNodesForAllDocuments'
-import { touchAllNodes } from './lib/touchAllNodes'
+import { isPrismicWebhookBodyTestTrigger } from './lib/isPrismicWebhookBodyTestTrigger'
+import { isValidWebhookSecret } from './lib/isValidWebhookSecret'
 import { reportWarning } from './lib/reportWarning'
+import { touchAllNodes } from './lib/touchAllNodes'
 
-/**
- * To be executed in the `sourceNodes` stage.
- */
-export const sourceNodes: RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  void
-> = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.chain((deps) =>
-    pipe(
-      deps.webhookBody,
-      O.fromPredicate(
-        (webhookBody) => webhookBody && JSON.stringify(webhookBody) !== '{}',
-      ),
-      O.fold(sourceNodesForAllDocuments, () => onWebhook),
-    ),
-  ),
-)
+import { Dependencies, PrismicWebhookBody } from './types'
+import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
+import { onWebhookApiUpdate } from './on-webhook-api-update'
+import { onWebhookTestTrigger } from './on-webhook-test-trigger'
 
 /**
  * To be executed in the `sourceNodes` stage when a webhook is received.
@@ -44,7 +24,7 @@ export const sourceNodes: RTE.ReaderTaskEither<
  * All nodes, regardless of the webhook' source or contents, are touched to
  * prevent garbage collection.
  */
-const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
+export const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
   RTE.ask<Dependencies>(),
   RTE.chain((deps) =>
     pipe(
@@ -52,10 +32,7 @@ const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
       O.fromPredicate(
         isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
       ),
-      O.fold(
-        () => RTE.of(void 0),
-        (webhookBody) => onPrismicWebhook(webhookBody),
-      ),
+      O.fold(() => RTE.of(void 0), onPrismicWebhook),
     ),
   ),
   RTE.chain(touchAllNodes),
@@ -73,11 +50,13 @@ const onPrismicWebhook = (
         O.fold(
           () => reportWarning(WEBHOOK_SECRET_MISMATCH_MSG),
           (webhookBody) => {
-            if (isPrismicWebhookBodyApiUpdate(webhookBody))
-              return onApiUpdateWebhook(webhookBody)
+            if (isPrismicWebhookBodyApiUpdate(webhookBody)) {
+              return onWebhookApiUpdate(webhookBody)
+            }
 
-            if (isPrismicWebhookBodyTestTrigger(webhookBody))
-              return onTestTriggerWebhook
+            if (isPrismicWebhookBodyTestTrigger(webhookBody)) {
+              return onWebhookTestTrigger
+            }
 
             // This webhook is unsupported or does not pertain to this plugin.
             return RTE.of(void 0)

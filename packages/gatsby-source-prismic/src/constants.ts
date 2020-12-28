@@ -44,3 +44,6 @@ export const WEBHOOK_SECRET_MISMATCH_MSG =
 
 export const WEBHOOK_TEST_TRIGGER_SUCCESS_MSG =
   'Success! Received a test trigger webhook.'
+
+export const MISSING_SCHEMAS_MSG =
+  'JSON schemas for the following custom types are missing: %s'

@@ -6,13 +6,13 @@ import {
   Dependencies,
   PrismicClient,
   PrismicClientQueryOptions,
-  PrismicDocument,
+  PrismicAPIDocument,
   ResolveType,
 } from '../types'
 import { QUERY_PAGE_SIZE } from '../constants'
 
-import { getRef } from './getRef'
 import { createClient } from './createClient'
+import { buildQueryOptions } from './buildQueryOptions'
 
 const query = (
   client: PrismicClient,
@@ -25,15 +25,15 @@ const aggregateQuery = (
   client: PrismicClient,
   queryOptions: PrismicClientQueryOptions,
   page = 1,
-  docs: PrismicDocument[] = [],
-): T.Task<PrismicDocument[]> =>
+  docs: PrismicAPIDocument[] = [],
+): T.Task<PrismicAPIDocument[]> =>
   pipe(
     query(client, { ...queryOptions, page, pageSize: QUERY_PAGE_SIZE }),
     T.bind('aggregateResults', (response) =>
       T.of([...docs, ...response.results]),
     ),
     T.chain((scope) =>
-      page * QUERY_PAGE_SIZE < scope.total_results_size
+      page < scope.total_pages
         ? aggregateQuery(client, queryOptions, page + 1, scope.aggregateResults)
         : T.of(scope.aggregateResults),
     ),
@@ -54,31 +54,17 @@ const aggregateQuery = (
  *
  * @see gatsby-source-prismic/lib/createClient.ts
  *
- * @param ref Optional ref used to query all documents (e.g. a ref of a
- * preview). If `ref` is not provided, the ref provided in the
- * environment's plugin options will be used. If the environment's plugin
- * options does not have a ref, the master ref is used.
- *
  * @returns List of Prismic documents.
  */
-export const queryAllDocuments = (
-  ref?: string,
-): RTE.ReaderTaskEither<Dependencies, never, PrismicDocument[]> =>
+export const queryAllDocuments = (): RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  PrismicAPIDocument[]
+> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      pipe(
-        RTE.right({}),
-        RTE.bind('client', createClient),
-        RTE.bind('ref', ({ client }) => (ref ? RTE.of(ref) : getRef(client))),
-        RTE.map(({ client, ref }) =>
-          aggregateQuery(client, {
-            ref,
-            fetchLinks: deps.pluginOptions.fetchLinks,
-            lang: deps.pluginOptions.lang,
-          }),
-        ),
-        RTE.chain((docs) => RTE.fromTask(docs)),
-      ),
-    ),
+    RTE.bindW('client', createClient),
+    RTE.bind('queryOptions', (scope) => buildQueryOptions(scope.client)),
+    RTE.map((scope) => aggregateQuery(scope.client, scope.queryOptions)),
+    RTE.chain((docs) => RTE.fromTask(docs)),
   )

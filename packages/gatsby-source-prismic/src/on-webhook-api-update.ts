@@ -9,7 +9,7 @@ import { queryDocumentsByIds } from './lib/queryDocumentsByIds'
 import { deleteNodesForDocumentIds } from './lib/deleteNodesForDocumentIds'
 import { createNodes } from './lib/createNodes'
 
-export const onApiUpdateWebhook = (
+export const onWebhookApiUpdate = (
   webhookBody: PrismicWebhookBodyApiUpdate,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(

@@ -34,12 +34,12 @@ const getApi = (
  * @returns A Prismic API client.
  */
 export const createClient = (): RTE.ReaderTaskEither<
-  Dependencies,
+  Pick<Dependencies, 'pluginOptions'>,
   never,
   PrismicClient
 > =>
   pipe(
-    RTE.ask<Dependencies>(),
+    RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
     RTE.chain((deps) =>
       pipe(
         O.fromNullable(deps.pluginOptions.apiEndpoint),
