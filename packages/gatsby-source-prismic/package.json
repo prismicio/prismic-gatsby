@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "3.2.1",
   "private": true,
+  "version": "4.0.0",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "license": "MIT",
   "files": [
@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "start": "yarn clean && microbundle watch src/gatsby-node.ts -o dist -f cjs --compress=false",
     "build": "yarn clean && tsc",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
@@ -31,11 +30,10 @@
     "prismic"
   ],
   "dependencies": {
-    "camel-case": "^4.1.1",
-    "fp-ts": "^2.8.2",
+    "camel-case": "^4.1.2",
+    "fp-ts": "^2.9.1",
     "gatsby-plugin-imgix": "^0.8.2",
-    "io-ts": "^2.2.10",
-    "pascal-case": "^3.1.1",
+    "pascal-case": "^3.1.2",
     "prismic-dom": "^2.2.4",
     "prismic-javascript": "^3.0.2"
   },
