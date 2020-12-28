@@ -1,0 +1,6 @@
+{
+  "type": "test-trigger",
+  "domain": "qwerty",
+  "apiUrl": "http://qwerty.wroom.test/api",
+  "secret": "secret"
+}

@@ -1,0 +1,20 @@
+{
+  "type": "api-update",
+  "releases": {
+    "update": [
+      {
+        "id": "XyfxIPl3p7YAQ7Mg",
+        "ref": "XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8",
+        "label": "rel-1",
+        "documents": ["1"]
+      }
+    ]
+  },
+  "masks": {},
+  "tags": {},
+  "experiments": {},
+  "documents": [],
+  "domain": "qwerty",
+  "apiUrl": "http://qwerty.wroom.io/api",
+  "secret": "secret"
+}

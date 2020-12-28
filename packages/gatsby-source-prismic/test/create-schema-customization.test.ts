@@ -1,5 +1,6 @@
 import { createSchemaCustomization } from '../src/gatsby-node'
-import { gatsbyContext, pluginOptions } from './__fixtures__/gatsby'
+import { gatsbyContext } from './__fixtures__/gatsbyContext'
+import { pluginOptions } from './__fixtures__/pluginOptions'
 
 beforeEach(() => {
   jest.clearAllMocks()
