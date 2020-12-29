@@ -2,10 +2,13 @@ import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as I from 'fp-ts/Identity'
 import { pipe } from 'fp-ts/function'
+import { IdentifiableRecord } from 'gatsby-node-helpers'
 
 import { Dependencies } from '../types'
 
-import { IdentifiableRecord } from './nodeHelpers'
+export interface IdentifiableRecordWithType extends IdentifiableRecord {
+  type: string
+}
 
 /**
  * Creates a node using the environment's `createNode` function. The provided
@@ -16,7 +19,7 @@ import { IdentifiableRecord } from './nodeHelpers'
  * node.
  */
 export const createNode = (
-  record: IdentifiableRecord,
+  record: IdentifiableRecordWithType,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.NodeInput> =>
   RTE.asks((deps) =>
     pipe(

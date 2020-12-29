@@ -6,8 +6,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import Prismic from 'prismic-javascript'
 import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/documents'
 import { QueryOptions as _PrismicClientQueryOptions } from 'prismic-javascript/types/ResolvedApi'
-
-import { NodeHelpers } from './lib/nodeHelpers'
+import { NodeHelpers } from 'gatsby-node-helpers'
 
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 

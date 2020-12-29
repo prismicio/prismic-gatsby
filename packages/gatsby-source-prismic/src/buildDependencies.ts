@@ -1,6 +1,5 @@
 import * as gatsby from 'gatsby'
-
-import { createNodeHelpers } from './lib/nodeHelpers'
+import { createNodeHelpers } from 'gatsby-node-helpers'
 
 import { GLOBAL_TYPE_PREFIX } from './constants'
 import { Dependencies, PluginOptions } from './types'

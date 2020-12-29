@@ -6990,6 +6990,14 @@ gatsby-link@^2.8.0:
     "@types/reach__router" "^1.3.6"
     prop-types "^15.7.2"
 
+gatsby-node-helpers@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/gatsby-node-helpers/-/gatsby-node-helpers-1.0.2.tgz#bedd2a88f8779e7d6c490fe5a3f9a9f7d6114860"
+  integrity sha512-MVM9QCpWqxn6RLsex/lcugXqzyfSnfd9aQQJd9Izs1O61ch52uiC4mEW8ZG6VlE5x6BPg6+5odhHuW3yV2fh2A==
+  dependencies:
+    camel-case "^4.1.2"
+    pascal-case "^3.1.2"
+
 gatsby-page-utils@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/gatsby-page-utils/-/gatsby-page-utils-0.6.1.tgz#dc067c0bbc095021cc8b15fb77cca9162bd529e3"
