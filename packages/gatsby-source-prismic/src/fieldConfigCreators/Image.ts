@@ -16,6 +16,7 @@ const resolveUrl = (source: PrismicAPIImageField) => source.url
 const resolveWidth = (source: PrismicAPIImageField) => source.dimensions.width
 const resolveHeight = (source: PrismicAPIImageField) => source.dimensions.height
 
+// TODO: Support thumbnails
 export const createImageFieldConfig: FieldConfigCreator = () =>
   pipe(
     RTE.ask<Dependencies>(),

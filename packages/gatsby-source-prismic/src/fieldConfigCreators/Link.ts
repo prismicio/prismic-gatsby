@@ -8,6 +8,8 @@ import { getTypeName } from '../lib/getTypeName'
 
 import { Dependencies, FieldConfigCreator, PrismicAPILinkField } from '../types'
 
+// TODO: Create union type for `document` field that only includes allowed
+// custom types.
 export const createLinkFieldConfig: FieldConfigCreator = () =>
   pipe(
     RTE.ask<Dependencies>(),
