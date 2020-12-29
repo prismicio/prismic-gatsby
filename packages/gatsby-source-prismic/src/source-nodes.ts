@@ -20,7 +20,9 @@ export const sourceNodes: NonNullable<
       sourceNodesProgram,
       buildDependencies(gatsbyContext, pluginOptions),
     ),
-    E.fold(E.throwError, constVoid),
+    E.fold((e) => {
+      throw e
+    }, constVoid),
   )
 
 /**
