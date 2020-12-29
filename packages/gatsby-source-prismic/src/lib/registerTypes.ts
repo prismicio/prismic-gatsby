@@ -1,14 +1,15 @@
-import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as A from 'fp-ts/Array'
+import { flow } from 'fp-ts/function'
 
-import { Dependencies } from '../types'
+import { registerType } from './registerType'
 
 /**
- * Registers one or more types using the environment's `createTypes` function.
+ * Registers one or more types.
  *
- * @param types GraphQL types to create.
+ * @see gatsby-source-prismic/lib/registerType.ts
  */
-export const registerTypes = <A extends gatsby.GatsbyGraphQLType>(
-  types: A[],
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  RTE.asks((deps) => deps.createTypes(types))
+export const registerTypes = flow(
+  A.map(registerType),
+  A.sequence(RTE.readerTaskEither),
+)
