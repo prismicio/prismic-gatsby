@@ -1,33 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createSchemaCustomization creates types 1`] = `
+exports[`creates types 1`] = `
 [MockFunction] {
   "calls": Array [
     Array [
-      Array [
-        Object {
-          "config": Object {
-            "name": "PrismicLinkTypes",
-            "values": Object {
-              "Any": Object {},
-              "Document": Object {},
-              "Media": Object {},
-              "Web": Object {},
-            },
+      Object {
+        "config": Object {
+          "name": "PrismicLinkTypes",
+          "values": Object {
+            "Any": Object {},
+            "Document": Object {},
+            "Media": Object {},
+            "Web": Object {},
           },
-          "kind": "ENUM",
         },
-        Object {
-          "config": Object {
-            "fields": Object {
-              "height": "Int!",
-              "width": "Int!",
-            },
-            "name": "PrismicImageDimensionsType",
+        "kind": "ENUM",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "height": "Int!",
+            "width": "Int!",
           },
-          "kind": "OBJECT",
+          "name": "PrismicImageDimensionsType",
         },
-      ],
+        "kind": "OBJECT",
+      },
     ],
     Array [
       Object {
@@ -131,22 +131,20 @@ exports[`createSchemaCustomization creates types 1`] = `
       },
     ],
     Array [
-      Array [
-        Object {
-          "config": Object {
-            "fields": Object {
-              "published_on": Object {
-                "extensions": Object {
-                  "dateformat": Object {},
-                },
-                "type": "Date",
+      Object {
+        "config": Object {
+          "fields": Object {
+            "published_on": Object {
+              "extensions": Object {
+                "dateformat": Object {},
               },
+              "type": "Date",
             },
-            "name": "PrismicPrefixPageMainNewsPostPrimaryType",
           },
-          "kind": "OBJECT",
+          "name": "PrismicPrefixPageMainNewsPostPrimaryType",
         },
-      ],
+        "kind": "OBJECT",
+      },
     ],
     Array [
       Object {
@@ -223,50 +221,44 @@ exports[`createSchemaCustomization creates types 1`] = `
       },
     ],
     Array [
-      Array [
-        Object {
-          "config": Object {
-            "fields": Object {
-              "text": "PrismicStructuredTextType",
-            },
-            "name": "PrismicPrefixPageBodyTextPrimaryType",
+      Object {
+        "config": Object {
+          "fields": Object {
+            "text": "PrismicStructuredTextType",
           },
-          "kind": "OBJECT",
+          "name": "PrismicPrefixPageBodyTextPrimaryType",
         },
-      ],
+        "kind": "OBJECT",
+      },
     ],
     Array [
-      Array [
-        Object {
-          "config": Object {
-            "extensions": Object {
-              "infer": false,
-            },
-            "fields": Object {
-              "primary": "PrismicPrefixPageMainNewsPostPrimaryType",
-              "slice_label": "String",
-              "slice_type": "String!",
-            },
-            "name": "PrismicPrefixPageMainNewsPost",
+      Object {
+        "config": Object {
+          "extensions": Object {
+            "infer": false,
           },
-          "kind": "OBJECT",
+          "fields": Object {
+            "primary": "PrismicPrefixPageMainNewsPostPrimaryType",
+            "slice_label": "String",
+            "slice_type": "String!",
+          },
+          "name": "PrismicPrefixPageMainNewsPost",
         },
-      ],
+        "kind": "OBJECT",
+      },
     ],
     Array [
-      Array [
-        Object {
-          "config": Object {
-            "fields": Object {
-              "caption": "PrismicStructuredTextType",
-              "image": "PrismicPrefixImageType",
-              "orientation": "Boolean",
-            },
-            "name": "PrismicPrefixPageBodyImagesItemType",
+      Object {
+        "config": Object {
+          "fields": Object {
+            "caption": "PrismicStructuredTextType",
+            "image": "PrismicPrefixImageType",
+            "orientation": "Boolean",
           },
-          "kind": "OBJECT",
+          "name": "PrismicPrefixPageBodyImagesItemType",
         },
-      ],
+        "kind": "OBJECT",
+      },
     ],
     Array [
       Object {
@@ -281,36 +273,36 @@ exports[`createSchemaCustomization creates types 1`] = `
       },
     ],
     Array [
-      Array [
-        Object {
-          "config": Object {
-            "extensions": Object {
-              "infer": false,
-            },
-            "fields": Object {
-              "items": "[PrismicPrefixPageBodyImagesItemType]",
-              "slice_label": "String",
-              "slice_type": "String!",
-            },
-            "name": "PrismicPrefixPageBodyImages",
+      Object {
+        "config": Object {
+          "extensions": Object {
+            "infer": false,
           },
-          "kind": "OBJECT",
-        },
-        Object {
-          "config": Object {
-            "extensions": Object {
-              "infer": false,
-            },
-            "fields": Object {
-              "primary": "PrismicPrefixPageBodyTextPrimaryType",
-              "slice_label": "String",
-              "slice_type": "String!",
-            },
-            "name": "PrismicPrefixPageBodyText",
+          "fields": Object {
+            "items": "[PrismicPrefixPageBodyImagesItemType]",
+            "slice_label": "String",
+            "slice_type": "String!",
           },
-          "kind": "OBJECT",
+          "name": "PrismicPrefixPageBodyImages",
         },
-      ],
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "extensions": Object {
+            "infer": false,
+          },
+          "fields": Object {
+            "primary": "PrismicPrefixPageBodyTextPrimaryType",
+            "slice_label": "String",
+            "slice_type": "String!",
+          },
+          "name": "PrismicPrefixPageBodyText",
+        },
+        "kind": "OBJECT",
+      },
     ],
     Array [
       Object {
@@ -401,6 +393,14 @@ exports[`createSchemaCustomization creates types 1`] = `
     ],
   ],
   "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
     Object {
       "type": "return",
       "value": undefined,
