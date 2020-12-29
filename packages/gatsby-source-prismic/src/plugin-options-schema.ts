@@ -11,6 +11,7 @@ import {
   DEFAULT_LANG,
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
   MISSING_SCHEMAS_MSG,
+  MISSING_SCHEMA_MSG,
 } from './constants'
 import { Dependencies, PluginOptions } from './types'
 import { createClient } from './lib/createClient'
@@ -31,7 +32,7 @@ export const pluginOptionsSchema: NonNullable<
     lang: Joi.string().default(DEFAULT_LANG),
     linkResolver: Joi.function(),
     htmlSerializer: Joi.function(),
-    schemas: Joi.object(),
+    schemas: Joi.object().required(),
     imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
     imagePlaceholderImgixParams: Joi.object().default(
       DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
@@ -43,40 +44,49 @@ export const pluginOptionsSchema: NonNullable<
     .oxor('fetchLinks', 'graphQuery')
     .external(async (pluginOptions: PluginOptions) =>
       pipe(
-        await RTE.run(externalValidationProgram, { pluginOptions }),
-        E.fold(E.throwError, constVoid),
+        await RTE.run(externalValidationProgram(Joi), { pluginOptions }),
+        E.fold((e) => {
+          throw e
+        }, constVoid),
       ),
     )
 
   return schema
 }
 
-const externalValidationProgram: RTE.ReaderTaskEither<
+const externalValidationProgram = (
+  Joi: gatsby.PluginOptionsSchemaArgs['Joi'],
+): RTE.ReaderTaskEither<
   Pick<Dependencies, 'pluginOptions'>,
-  Error,
+  InstanceType<gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']>,
   void
-> = pipe(
-  RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
-  RTE.bind('client', createClient),
-  RTE.bind('schemaTypes', (scope) =>
-    pipe(scope.pluginOptions.schemas, R.keys, (types) => RTE.of(types)),
-  ),
-  RTE.bind('missingSchemas', (scope) =>
-    pipe(
-      scope.client.types,
-      R.keys,
-      A.difference(Eq.eqString)(scope.schemaTypes),
-      (missingSchemas) => RTE.of(missingSchemas),
+> =>
+  pipe(
+    RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
+    RTE.bind('client', createClient),
+    RTE.bind('schemaTypes', (scope) =>
+      pipe(scope.pluginOptions.schemas, R.keys, (types) => RTE.of(types)),
     ),
-  ),
-  RTE.chainW(
-    RTE.fromPredicate(
-      (scope) => A.isNonEmpty(scope.missingSchemas),
-      (scope) =>
-        new Error(
-          sprintf(MISSING_SCHEMAS_MSG, scope.missingSchemas.join(', ')),
-        ),
+    RTE.bind('missingSchemas', (scope) =>
+      pipe(
+        scope.client.types,
+        R.keys,
+        A.difference(Eq.eqString)(scope.schemaTypes),
+        (missingSchemas) => RTE.of(missingSchemas),
+      ),
     ),
-  ),
-  RTE.map(constVoid),
-)
+    RTE.chainW(
+      RTE.fromPredicate(
+        (scope) => A.isEmpty(scope.missingSchemas),
+        (scope) =>
+          new Joi.ValidationError(
+            MISSING_SCHEMAS_MSG,
+            scope.missingSchemas.map((missingSchema) => ({
+              message: sprintf(MISSING_SCHEMA_MSG, missingSchema),
+            })),
+            scope.schemaTypes,
+          ),
+      ),
+    ),
+    RTE.map(constVoid),
+  )

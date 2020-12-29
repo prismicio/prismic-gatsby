@@ -46,4 +46,6 @@ export const WEBHOOK_TEST_TRIGGER_SUCCESS_MSG =
   'Success! Received a test trigger webhook.'
 
 export const MISSING_SCHEMAS_MSG =
-  'JSON schemas for the following custom types are missing: %s'
+  'JSON schemas for all custom types are required'
+
+export const MISSING_SCHEMA_MSG = 'JSON schema for "%s" is missing'

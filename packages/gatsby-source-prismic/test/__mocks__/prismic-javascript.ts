@@ -32,6 +32,7 @@ export default {
               id,
             })),
         }),
+      types: { page: 'Page' },
       refs: [],
       masterRef: { ref: 'master' },
     }),
