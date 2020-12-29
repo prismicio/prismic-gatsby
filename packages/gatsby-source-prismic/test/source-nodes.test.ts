@@ -21,10 +21,14 @@ test('creates nodes', async () => {
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
-  expect(gatsbyContext.actions.createNode).toMatchSnapshot()
+  nodes.forEach((node) =>
+    expect(gatsbyContext.actions.createNode).toHaveBeenCalledWith(
+      expect.objectContaining({ prismicId: node.prismicId }),
+    ),
+  )
 })
 
-describe('webhook behavior', () => {
+describe('webhook - any', () => {
   const unknownCtx = {
     ...gatsbyContext,
     webhookBody: webhooks.unknown,
@@ -77,7 +81,7 @@ describe('webhook behavior', () => {
   })
 })
 
-describe('webhook test-trigger', () => {
+describe('webhook - test-trigger', () => {
   test('reports success message', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(testTriggerCtx, pluginOptions)
@@ -87,7 +91,7 @@ describe('webhook test-trigger', () => {
   })
 })
 
-describe('webhook api-update', () => {
+describe('webhook - api-update', () => {
   const apiUpdateDocAdditionCtx = {
     ...gatsbyContext,
     webhookBody: webhooks.apiUpdateDocAddition,
@@ -155,6 +159,13 @@ describe('webhook api-update', () => {
     )
   })
 
+  test('release doc addition does nothing if plugin options release ID does not match', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await sourceNodes(apiUpdateReleaseDocAdditionCtx, pluginOptions)
+
+    expect(gatsbyContext.actions.createNode).not.toHaveBeenCalled()
+  })
+
   test('release doc deletion deletes node if plugin options release ID matches', async () => {
     const options = { ...pluginOptions }
     options.releaseID =
@@ -170,5 +181,12 @@ describe('webhook api-update', () => {
     expect(gatsbyContext.actions.deleteNode).toHaveBeenCalledWith(
       expect.objectContaining({ node: nodes[0] }),
     )
+  })
+
+  test('release doc deletion does nothing if plugin options release ID does not match', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await sourceNodes(apiUpdateReleaseDocDeletionCtx, pluginOptions)
+
+    expect(gatsbyContext.actions.deleteNode).not.toHaveBeenCalled()
   })
 })
