@@ -15,9 +15,7 @@ export const gatsbyContext = {
   },
   reporter: {
     info: jest.fn(),
-    // .mockImplementation((args) => console.log(args)),
     warn: jest.fn(),
-    // .mockImplementation((args) => console.warn(args)),
   },
   schema: {
     buildUnionType: jest.fn((config) => ({ kind: 'UNION', config })),
