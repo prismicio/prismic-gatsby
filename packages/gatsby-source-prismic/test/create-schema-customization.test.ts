@@ -1,7 +1,16 @@
+import { createNodeHelpers } from 'gatsby-node-helpers'
+
 import { createSchemaCustomization } from '../src/gatsby-node'
 import { gatsbyContext } from './__fixtures__/gatsbyContext'
 import { pluginOptions } from './__fixtures__/pluginOptions'
-import pageNode from './__fixtures__/pageNode.json'
+import documentFixture from './__fixtures__/document.json'
+
+const nodeHelpers = createNodeHelpers({
+  typePrefix: `Prismic ${pluginOptions.typePrefix}`,
+  fieldPrefix: 'Prismic',
+  createNodeId: gatsbyContext.createNodeId,
+  createContentDigest: gatsbyContext.createContentDigest,
+})
 
 const findCreateTypesCall = (
   name: string,
@@ -51,49 +60,55 @@ describe('shared local types', () => {
   })
 })
 
-test('document base fields', async () => {
-  // @ts-expect-error - Partial gatsbyContext provided
-  await createSchemaCustomization(gatsbyContext, pluginOptions)
+describe('document', () => {
+  test('includes base fields', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-  const pageCall = findCreateTypesCall('PrismicPrefixPage')
+    const pageCall = findCreateTypesCall('PrismicPrefixPage')
 
-  expect(pageCall).not.toBeUndefined()
-  expect(pageCall).toMatchObject({
-    kind: 'OBJECT',
-    config: {
-      name: 'PrismicPrefixPage',
-      fields: {
-        uid: 'String',
-        prismicId: 'ID!',
-        data: 'PrismicPrefixPageDataType',
-        dataRaw: { type: 'JSON!' },
-        first_publication_date: {
-          type: 'Date!',
-          extensions: { dateformat: {} },
+    expect(pageCall).not.toBeUndefined()
+    expect(pageCall).toMatchObject({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixPage',
+        fields: {
+          uid: 'String',
+          prismicId: 'ID!',
+          data: 'PrismicPrefixPageDataType',
+          dataRaw: { type: 'JSON!' },
+          first_publication_date: {
+            type: 'Date!',
+            extensions: { dateformat: {} },
+          },
+          href: 'String!',
+          lang: 'String!',
+          last_publication_date: {
+            type: 'Date!',
+            extensions: { dateformat: {} },
+          },
+          tags: '[String!]!',
+          type: 'String!',
+          url: { type: 'String' },
+          _previewable: { type: 'ID!' },
         },
-        href: 'String!',
-        lang: 'String!',
-        last_publication_date: {
-          type: 'Date!',
-          extensions: { dateformat: {} },
-        },
-        tags: '[String!]!',
-        type: 'String!',
-        url: { type: 'String' },
-        _previewable: { type: 'ID!' },
+        interfaces: ['Node'],
+        extensions: { infer: false },
       },
-      interfaces: ['Node'],
-      extensions: { infer: false },
-    },
+    })
   })
-})
 
-test('_previewable field resolves to Prismic ID', async () => {
-  // @ts-expect-error - Partial gatsbyContext provided
-  await createSchemaCustomization(gatsbyContext, pluginOptions)
+  test('_previewable field resolves to Prismic ID', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-  const pageCall = findCreateTypesCall('PrismicPrefixPage')
-  const previewableResolver = pageCall.config.fields._previewable.resolve
+    const pageCall = findCreateTypesCall('PrismicPrefixPage')
+    const previewableResolver = pageCall.config.fields._previewable.resolve
 
-  expect(previewableResolver(pageNode)).toBe(pageNode.prismicId)
+    const node = nodeHelpers.createNodeFactory(documentFixture.type)(
+      documentFixture,
+    )
+
+    expect(previewableResolver(node)).toBe(node.prismicId)
+  })
 })
