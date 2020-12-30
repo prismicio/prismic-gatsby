@@ -6,6 +6,10 @@ import * as R from 'fp-ts/Record'
 import * as Eq from 'fp-ts/Eq'
 import { constVoid, pipe } from 'fp-ts/function'
 
+import { createClient } from './lib/createClient'
+import { sprintf } from './lib/sprintf'
+import { throwError } from './lib/throwError'
+
 import {
   DEFAULT_IMGIX_PARAMS,
   DEFAULT_LANG,
@@ -13,9 +17,7 @@ import {
   MISSING_SCHEMAS_MSG,
   MISSING_SCHEMA_MSG,
 } from './constants'
-import { Dependencies, PluginOptions } from './types'
-import { createClient } from './lib/createClient'
-import { sprintf } from './lib/sprintf'
+import { Dependencies, JoiValidationError, PluginOptions } from './types'
 
 export const pluginOptionsSchema: NonNullable<
   gatsby.GatsbyNode['pluginOptionsSchema']
@@ -45,9 +47,7 @@ export const pluginOptionsSchema: NonNullable<
     .external(async (pluginOptions: PluginOptions) =>
       pipe(
         await RTE.run(externalValidationProgram(Joi), { pluginOptions }),
-        E.fold((e) => {
-          throw e
-        }, constVoid),
+        E.fold(throwError, constVoid),
       ),
     )
 
@@ -58,7 +58,7 @@ const externalValidationProgram = (
   Joi: gatsby.PluginOptionsSchemaArgs['Joi'],
 ): RTE.ReaderTaskEither<
   Pick<Dependencies, 'pluginOptions'>,
-  InstanceType<gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']>,
+  JoiValidationError,
   void
 > =>
   pipe(

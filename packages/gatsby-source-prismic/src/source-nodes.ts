@@ -4,6 +4,7 @@ import * as E from 'fp-ts/Either'
 import { constVoid, pipe } from 'fp-ts/function'
 
 import { sourceNodesForAllDocuments } from './lib/sourceNodesForAllDocuments'
+import { throwError } from './lib/throwError'
 
 import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
@@ -20,9 +21,7 @@ export const sourceNodes: NonNullable<
       sourceNodesProgram,
       buildDependencies(gatsbyContext, pluginOptions),
     ),
-    E.fold((e) => {
-      throw e
-    }, constVoid),
+    E.fold(throwError, constVoid),
   )
 
 /**

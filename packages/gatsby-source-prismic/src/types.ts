@@ -15,6 +15,10 @@ export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
   unknown
 >
 
+export type JoiValidationError = InstanceType<
+  gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
+>
+
 export interface Dependencies {
   createTypes: gatsby.Actions['createTypes']
   createNode: gatsby.Actions['createNode']

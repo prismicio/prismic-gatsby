@@ -3,10 +3,12 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as E from 'fp-ts/Either'
 import { pipe, constVoid } from 'fp-ts/function'
 
-import { Dependencies, PluginOptions } from './types'
 import { createBaseTypes } from './lib/createBaseTypes'
 import { registerCustomTypes } from './lib/registerCustomTypes'
 import { registerAllDocumentTypesType } from './lib/registerAllDocumentTypesType'
+import { throwError } from './lib/throwError'
+
+import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
 
 export const createSchemaCustomization: NonNullable<
@@ -20,9 +22,7 @@ export const createSchemaCustomization: NonNullable<
       createSchemaCustomizationProgram,
       buildDependencies(gatsbyContext, pluginOptions),
     ),
-    E.fold((e) => {
-      throw e
-    }, constVoid),
+    E.fold(throwError, constVoid),
   )
 
 /**
