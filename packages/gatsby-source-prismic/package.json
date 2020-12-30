@@ -11,8 +11,8 @@
     "fragments.js"
   ],
   "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "yarn clean && tsc",
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",

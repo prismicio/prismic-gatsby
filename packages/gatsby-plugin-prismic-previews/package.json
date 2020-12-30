@@ -11,9 +11,8 @@
     "src"
   ],
   "scripts": {
-    "clean": "rimraf ./dist",
-    "start": "yarn clean && microbundle watch src/index.ts -f modern,cjs --compress=false --jsx React.createElement",
-    "build": "yarn clean && tsc",
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",

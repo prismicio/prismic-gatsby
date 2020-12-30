@@ -1,11 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "jsx": "react",
-    "outDir": "dist",
-    "declaration": true
+    "rootDir": "./",
+    "resolveJsonModule": true,
+    "jsx": "react"
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "src/proxyNode.ts"]
+  "include": ["src", "test", "types"],
+  "exclude": ["src/proxyNode.ts"]
 }
