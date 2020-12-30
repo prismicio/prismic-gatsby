@@ -4,12 +4,15 @@ import { pipe } from 'fp-ts/function'
 import { buildNamedInferredNodeType } from '../lib/buildNamedInferredNodeType'
 import { getTypeName } from '../lib/getTypeName'
 import { registerType } from '../lib/registerType'
+import { createTypePath } from '../lib/createTypePath'
 
-import { Dependencies, FieldConfigCreator } from '../types'
+import { Dependencies, FieldConfigCreator, PrismicFieldType } from '../types'
 
-export const createEmbedFieldConfig: FieldConfigCreator = () =>
+export const createEmbedFieldConfig: FieldConfigCreator = (path) =>
   pipe(
-    RTE.asks((deps: Dependencies) =>
+    RTE.ask<Dependencies>(),
+    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Embed)),
+    RTE.map((deps: Dependencies) =>
       deps.globalNodeHelpers.createTypeName('EmbedType'),
     ),
     RTE.chain(buildNamedInferredNodeType),

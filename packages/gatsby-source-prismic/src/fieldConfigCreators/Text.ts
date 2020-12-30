@@ -1,5 +1,12 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { pipe } from 'fp-ts/function'
 
-import { FieldConfigCreator } from '../types'
+import { createTypePath } from '../lib/createTypePath'
 
-export const createTextFieldConfig: FieldConfigCreator = () => RTE.of('String')
+import { FieldConfigCreator, PrismicFieldType } from '../types'
+
+export const createTextFieldConfig: FieldConfigCreator = (path) =>
+  pipe(
+    createTypePath(path, PrismicFieldType.Text),
+    RTE.map(() => 'String'),
+  )

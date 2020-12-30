@@ -3,12 +3,12 @@ import * as gatsby from 'gatsby'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-import { camelCase } from 'gatsby-source-prismic/dist/lib/camelCase'
-import { UnknownRecord } from 'gatsby-source-prismic/dist/types'
 import { PREVIEWABLE_NODE_ID_FIELD } from 'gatsby-source-prismic/dist/constants'
 
 import { isPlainObject } from './lib/isPlainObject'
+import { camelCase } from './lib/camelCase'
 
+import { UnknownRecord } from './types'
 import { usePrismicContext, PrismicContextState } from './usePrismicContext'
 
 const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
@@ -27,7 +27,7 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
 
   // Iterate all elements in the node to find the previewable value.
   if (Array.isArray(nodeOrLeaf)) {
-    return nodeOrLeaf.map((subnode) =>
+    return (nodeOrLeaf as unknown[]).map((subnode) =>
       findAndReplacePreviewables(nodes)(subnode),
     )
   }

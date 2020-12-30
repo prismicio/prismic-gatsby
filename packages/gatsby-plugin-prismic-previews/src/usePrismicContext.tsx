@@ -1,20 +1,11 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import * as A from 'fp-ts/Array'
-import * as E from 'fp-ts/Either'
-import * as R from 'fp-ts/Record'
-import * as S from 'fp-ts/Semigroup'
-import { pipe } from 'fp-ts/function'
-import * as D from 'io-ts/Decoder'
-import { PluginOptions } from 'gatsby-source-prismic/dist/types'
-import { PluginOptionsD } from 'gatsby-source-prismic/dist/lib/PluginOptionsD'
+import { TypePathsStore } from 'gatsby-source-prismic'
 
-import { castArray } from './lib/castArray'
+import { PluginOptions } from './types'
 
 export enum PrismicContextActionType {
   CreateNode = 'CreateNode',
-  CreateType = 'CreateType',
-  DeleteNode = 'DeleteNode',
   SetAccessToken = 'SetAccessToken',
   CreateRootNodeRelationship = 'CreateRootNodeRelationship',
   IsBootstrapped = 'IsBootstrapped',
@@ -24,14 +15,6 @@ export type PrismicContextAction =
   | {
       type: PrismicContextActionType.CreateNode
       payload: gatsby.NodeInput & { prismicId?: string }
-    }
-  | {
-      type: PrismicContextActionType.CreateType
-      payload: gatsby.GatsbyGraphQLType
-    }
-  | {
-      type: PrismicContextActionType.DeleteNode
-      payload: gatsby.Node
     }
   | {
       type: PrismicContextActionType.SetAccessToken
@@ -49,49 +32,21 @@ export type PrismicContextAction =
 export interface PrismicContextState {
   pluginOptionsMap: Record<string, PluginOptions>
   nodes: Record<string, gatsby.NodeInput>
-  types: Record<string, gatsby.GatsbyGraphQLType>
+  typePathsStore: TypePathsStore
   rootNodeMap: Record<string, string>
   isBootstrappedMap: Record<string, boolean>
 }
 
 const createInitialState = (
-  pluginOptionsList: PluginOptions[] = [],
-): PrismicContextState =>
-  pipe(
-    E.right({
-      nodes: {},
-      types: {},
-      rootNodeMap: {},
-      isBootstrappedMap: {},
-    }),
-    E.bind('pluginOptionsMap', () =>
-      pipe(
-        pluginOptionsList,
-        A.map(PluginOptionsD.decode),
-        A.sequence(E.either),
-        E.mapLeft((error) => new Error(D.draw(error))),
-        E.map((pluginOptionsList) =>
-          R.fromFoldableMap(
-            S.getLastSemigroup<PluginOptions>(),
-            A.array,
-          )(pluginOptionsList, (pluginOptions) => [
-            pluginOptions.repositoryName,
-            pluginOptions,
-          ]),
-        ),
-      ),
-    ),
-    E.getOrElse((error) => {
-      E.throwError(error)
-      return {
-        pluginOptionsMap: {},
-        nodes: {},
-        types: {},
-        rootNodeMap: {},
-        isBootstrappedMap: {},
-      } as PrismicContextState
-    }),
-  )
+  typePathsStore: TypePathsStore = {},
+  pluginOptionsMap: Record<string, PluginOptions> = {},
+): PrismicContextState => ({
+  nodes: {},
+  rootNodeMap: {},
+  isBootstrappedMap: {},
+  typePathsStore,
+  pluginOptionsMap,
+})
 
 const reducer = (
   state: PrismicContextState,
@@ -105,29 +60,6 @@ const reducer = (
           ...state.nodes,
           [action.payload.prismicId ?? action.payload.id]: action.payload,
         },
-      }
-    }
-
-    case PrismicContextActionType.CreateType: {
-      return {
-        ...state,
-        types: {
-          ...state.types,
-          [action.payload.config.name]: action.payload,
-        },
-      }
-    }
-
-    case PrismicContextActionType.DeleteNode: {
-      const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        [action.payload.id]: _deletedNode,
-        ...remainingNodes
-      } = state.nodes
-
-      return {
-        ...state,
-        nodes: remainingNodes,
       }
     }
 
@@ -174,17 +106,25 @@ const PrismicContext = React.createContext([
 ] as const)
 
 type PrismicProviderProps = {
-  pluginOptions: PluginOptions | PluginOptions[]
+  pluginOptions: Record<string, PluginOptions>
   children?: React.ReactNode
 }
 
 export const PrismicProvider = ({
-  pluginOptions: pluginOptionsList,
+  pluginOptions: pluginOptionsMap,
   children,
 }: PrismicProviderProps): React.ReactNode => {
+  // TODO: Get the typePathsStore from Gatsby's cache
+  const typePathsStore = {}
+
+  // TODO: Get plugin options from gatsby-browser.js and merge with
+  // `pluginOptions` prop. `pluginOptions` can be treated as overrides, but
+  // linkResolver and htmlSerializer can *only* be provided via the prop. All
+  // other options can be provided via gatsby-config.js
+
   const reducerTuple = React.useReducer(
     reducer,
-    createInitialState(castArray(pluginOptionsList)),
+    createInitialState(typePathsStore, pluginOptionsMap),
   )
 
   return (

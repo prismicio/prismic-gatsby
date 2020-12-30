@@ -4,16 +4,15 @@ import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
-import {
-  Dependencies,
-  PrismicAPIDocument,
-} from 'gatsby-source-prismic/dist/types'
-import { createClient } from 'gatsby-source-prismic/dist/lib/createClient'
-import { queryById } from 'gatsby-source-prismic/dist/lib/queryById'
-import { buildQueryOptions } from 'gatsby-source-prismic/dist/lib/buildQueryOptions'
+import { PrismicAPIDocument } from 'gatsby-source-prismic'
 
+import { createClient } from './lib/createClient'
+import { queryById } from './lib/queryById'
+import { buildQueryOptions } from './lib/buildQueryOptions'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { notNullable } from './lib/notNullable'
+
+import { Dependencies } from './types'
 import { buildDependencies } from './buildDependencies'
 import {
   PrismicContextAction,

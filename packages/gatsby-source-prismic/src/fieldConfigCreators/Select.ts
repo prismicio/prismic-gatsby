@@ -1,7 +1,13 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { pipe } from 'fp-ts/function'
 
-import { FieldConfigCreator } from '../types'
+import { createTypePath } from '../lib/createTypePath'
+
+import { FieldConfigCreator, PrismicFieldType } from '../types'
 
 // TODO: Create an enum type
-export const createSelectFieldConfig: FieldConfigCreator = () =>
-  RTE.of('String')
+export const createSelectFieldConfig: FieldConfigCreator = (path) =>
+  pipe(
+    createTypePath(path, PrismicFieldType.Select),
+    RTE.map(() => 'String'),
+  )

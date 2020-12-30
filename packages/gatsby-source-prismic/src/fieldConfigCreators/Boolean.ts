@@ -1,6 +1,12 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { pipe } from 'fp-ts/function'
 
-import { FieldConfigCreator } from '../types'
+import { createTypePath } from '../lib/createTypePath'
 
-export const createBooleanFieldConfig: FieldConfigCreator = () =>
-  RTE.of('Boolean')
+import { FieldConfigCreator, PrismicFieldType } from '../types'
+
+export const createBooleanFieldConfig: FieldConfigCreator = (path) =>
+  pipe(
+    createTypePath(path, PrismicFieldType.Boolean),
+    RTE.map(() => 'Boolean'),
+  )

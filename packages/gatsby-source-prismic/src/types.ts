@@ -10,16 +10,17 @@ import { NodeHelpers } from 'gatsby-node-helpers'
 
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 
-export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
-  K,
-  unknown
->
+type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<K, unknown>
 
 export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
 >
 
+export type TypePathsStore = Record<string, PrismicFieldType>
+
 export interface Dependencies {
+  typePathsStore: TypePathsStore
+  createTypePath: (path: string[], type: PrismicFieldType) => void
   createTypes: gatsby.Actions['createTypes']
   createNode: gatsby.Actions['createNode']
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']
@@ -114,6 +115,7 @@ export enum PrismicFieldType {
   Group = 'Group',
   Slice = 'Slice',
   Slices = 'Slices',
+  Unknown = 'Unknown',
 }
 
 interface PrismicSchemaStandardField {

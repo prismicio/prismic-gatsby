@@ -7,6 +7,7 @@ import { createBaseTypes } from './lib/createBaseTypes'
 import { registerCustomTypes } from './lib/registerCustomTypes'
 import { registerAllDocumentTypesType } from './lib/registerAllDocumentTypesType'
 import { throwError } from './lib/throwError'
+import { writeTypePathsToCache } from './lib/writeTypePathsToCache'
 
 import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
@@ -34,8 +35,9 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   void
 > = pipe(
   RTE.ask<Dependencies>(),
-  RTE.chain(createBaseTypes),
+  RTE.chainFirst(createBaseTypes),
   RTE.bind('types', registerCustomTypes),
-  RTE.chain((scope) => registerAllDocumentTypesType(scope.types)),
+  RTE.chainFirst((scope) => registerAllDocumentTypesType(scope.types)),
+  RTE.chainFirst(() => writeTypePathsToCache),
   RTE.map(constVoid),
 )

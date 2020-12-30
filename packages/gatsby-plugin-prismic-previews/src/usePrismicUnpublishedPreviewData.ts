@@ -1,7 +1,7 @@
 import * as gatsby from 'gatsby'
 import * as React from 'react'
-import { UnknownRecord } from 'gatsby-source-prismic/dist/types'
 
+import { UnknownRecord } from './types'
 import { usePrismicContext } from './usePrismicContext'
 import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 

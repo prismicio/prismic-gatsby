@@ -1,9 +1,9 @@
 import * as gatsby from 'gatsby'
 import * as React from 'react'
-import { UnknownRecord } from 'gatsby-source-prismic/dist/types'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 
+import { UnknownRecord } from './types'
 import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 import { usePrismicPreview, UsePrismicPreviewConfig } from './usePrismicPreview'
 

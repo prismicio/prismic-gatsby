@@ -1,11 +1,10 @@
 import * as gatsby from 'gatsby'
 import * as React from 'react'
-import { ANONYMOUS_REPORTER_TEMPLATE } from 'gatsby-source-prismic/dist/constants'
-import { sprintf } from 'gatsby-source-prismic/dist/lib/sprintf'
-import { UnknownRecord } from 'gatsby-source-prismic/dist/types'
+import { ANONYMOUS_REPORTER_TEMPLATE, sprintf } from 'gatsby-source-prismic'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 
+import { UnknownRecord } from './types'
 import { usePrismicUnpublishedPreviewData } from './usePrismicUnpublishedPreviewData'
 
 export interface WithUnpublishedPreviewProps {

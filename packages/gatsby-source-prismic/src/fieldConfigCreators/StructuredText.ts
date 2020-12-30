@@ -5,16 +5,19 @@ import * as PrismicDOM from 'prismic-dom'
 import { buildObjectType } from '../lib/buildObjectType'
 import { registerType } from '../lib/registerType'
 import { getTypeName } from '../lib/getTypeName'
+import { createTypePath } from '../lib/createTypePath'
 
 import {
   Dependencies,
   FieldConfigCreator,
   PrismicAPIStructuredTextField,
+  PrismicFieldType,
 } from '../types'
 
-export const createStructuredTextFieldConfig: FieldConfigCreator = () =>
+export const createStructuredTextFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
+    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.StructuredText)),
     RTE.chain((deps) =>
       buildObjectType({
         name: deps.globalNodeHelpers.createTypeName('StructuredTextType'),

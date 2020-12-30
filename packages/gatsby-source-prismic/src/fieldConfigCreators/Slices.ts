@@ -11,12 +11,14 @@ import { getTypeName } from '../lib/getTypeName'
 import { listTypeName } from '../lib/listTypeName'
 import { registerType } from '../lib/registerType'
 import { registerTypes } from '../lib/registerTypes'
+import { createTypePath } from '../lib/createTypePath'
 
 import {
   Dependencies,
   FieldConfigCreator,
   PrismiaSchemaSlice,
   PrismicAPISliceField,
+  PrismicFieldType,
   PrismicSchemaSlicesField,
 } from '../types'
 
@@ -26,6 +28,7 @@ const buildSliceChoiceType = (
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
+    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Slice)),
     RTE.chain((deps) =>
       pipe(
         {} as Record<
@@ -103,6 +106,7 @@ export const createSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesFiel
 ) =>
   pipe(
     RTE.ask<Dependencies>(),
+    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Slices)),
     RTE.chain((deps) =>
       pipe(
         buildSliceTypes(path, schema.config.choices),

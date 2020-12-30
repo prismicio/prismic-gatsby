@@ -1,5 +1,12 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { pipe } from 'fp-ts/function'
 
-import { FieldConfigCreator } from '../types'
+import { createTypePath } from '../lib/createTypePath'
 
-export const createNumberFieldConfig: FieldConfigCreator = () => RTE.of('Float')
+import { FieldConfigCreator, PrismicFieldType } from '../types'
+
+export const createNumberFieldConfig: FieldConfigCreator = (path) =>
+  pipe(
+    createTypePath(path, PrismicFieldType.Number),
+    RTE.map(() => 'Float'),
+  )

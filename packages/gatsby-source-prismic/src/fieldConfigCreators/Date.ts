@@ -1,9 +1,15 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { pipe } from 'fp-ts/function'
 
-import { FieldConfigCreator } from '../types'
+import { createTypePath } from '../lib/createTypePath'
 
-export const createDateFieldConfig: FieldConfigCreator = () =>
-  RTE.of({
-    type: 'Date',
-    extensions: { dateformat: {} },
-  })
+import { FieldConfigCreator, PrismicFieldType } from '../types'
+
+export const createDateFieldConfig: FieldConfigCreator = (path) =>
+  pipe(
+    createTypePath(path, PrismicFieldType.Date),
+    RTE.map(() => ({
+      type: 'Date',
+      extensions: { dateformat: {} },
+    })),
+  )

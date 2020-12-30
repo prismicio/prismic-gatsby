@@ -5,11 +5,13 @@ import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
 import { buildObjectType } from '../lib/buildObjectType'
 import { getTypeName } from '../lib/getTypeName'
 import { registerType } from '../lib/registerType'
+import { createTypePath } from '../lib/createTypePath'
 
 import {
   Dependencies,
   FieldConfigCreator,
   PrismicAPIImageField,
+  PrismicFieldType,
 } from '../types'
 
 const resolveUrl = (source: PrismicAPIImageField) => source.url
@@ -17,9 +19,10 @@ const resolveWidth = (source: PrismicAPIImageField) => source.dimensions.width
 const resolveHeight = (source: PrismicAPIImageField) => source.dimensions.height
 
 // TODO: Support thumbnails
-export const createImageFieldConfig: FieldConfigCreator = () =>
+export const createImageFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
+    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Image)),
     RTE.bind('fixedType', (scope) =>
       RTE.of(
         gatsbyImgix.createImgixFixedType({
