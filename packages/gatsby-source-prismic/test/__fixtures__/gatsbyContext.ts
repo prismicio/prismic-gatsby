@@ -17,6 +17,7 @@ export const gatsbyContext = {
     info: jest.fn(),
     warn: jest.fn(),
   },
+  cache: new Map(),
   schema: {
     buildUnionType: jest.fn((config) => ({ kind: 'UNION', config })),
     buildObjectType: jest.fn((config) => ({ kind: 'OBJECT', config })),

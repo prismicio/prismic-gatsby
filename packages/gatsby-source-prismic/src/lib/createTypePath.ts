@@ -1,6 +1,6 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 
-import { Dependencies, PrismicFieldType } from '../types'
+import { Dependencies, PrismicTypePathType } from '../types'
 
 /**
  * Creates a type path using the environment's `createTypePath` function.
@@ -10,6 +10,6 @@ import { Dependencies, PrismicFieldType } from '../types'
  */
 export const createTypePath = (
   path: string[],
-  type: PrismicFieldType,
+  type: PrismicTypePathType,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   RTE.asks((deps) => deps.createTypePath(path, type))

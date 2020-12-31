@@ -23,6 +23,7 @@ const findCreateTypesCall = (
 
 beforeEach(() => {
   jest.clearAllMocks()
+  gatsbyContext.cache.clear()
 })
 
 test('creates types', async () => {
@@ -30,6 +31,16 @@ test('creates types', async () => {
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
   expect(gatsbyContext.actions.createTypes).toMatchSnapshot()
+})
+
+test('writes type paths to cache', async () => {
+  // @ts-expect-error - Partial gatsbyContext provided
+  await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+  const cacheKey = `type-paths ${pluginOptions.repositoryName}`
+  const cacheValue = gatsbyContext.cache.get(cacheKey)
+
+  expect(cacheValue).toMatchSnapshot()
 })
 
 describe('shared global types', () => {

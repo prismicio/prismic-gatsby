@@ -4,8 +4,8 @@ import { pipe } from 'fp-ts/function'
 import {
   Dependencies,
   FieldConfigCreator,
-  PrismicFieldType,
   PrismicSchemaField,
+  PrismicSpecialType,
 } from '../types'
 import { reportInfo } from '../lib/reportInfo'
 import { dotPath } from '../lib/dotPath'
@@ -20,7 +20,7 @@ export const createUnknownFieldConfig: FieldConfigCreator = (
 ) =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Unknown)),
+    RTE.chainFirst(() => createTypePath(path, PrismicSpecialType.Unknown)),
     RTE.chainFirst(() =>
       reportInfo(
         `An unknown field type "${schema.type}" was found at ${dotPath(

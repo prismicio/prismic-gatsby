@@ -9,18 +9,15 @@ import { buildSchemaRecordConfigMap } from './buildSchemaRecordConfigMap'
 export const buildSchemaRecordType = (
   path: string[],
   record: Record<string, PrismicSchemaField>,
+  typeName = path,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      pipe(
-        buildSchemaRecordConfigMap(path, record),
-        RTE.chain((fields) =>
-          buildObjectType({
-            name: deps.nodeHelpers.createTypeName(...path),
-            fields,
-          }),
-        ),
-      ),
+    RTE.bind('fields', () => buildSchemaRecordConfigMap(path, record)),
+    RTE.chain((scope) =>
+      buildObjectType({
+        name: scope.nodeHelpers.createTypeName(...typeName),
+        fields: scope.fields,
+      }),
     ),
   )

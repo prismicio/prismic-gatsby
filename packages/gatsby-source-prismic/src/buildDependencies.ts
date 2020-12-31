@@ -5,7 +5,7 @@ import { GLOBAL_TYPE_PREFIX } from './constants'
 import {
   Dependencies,
   PluginOptions,
-  PrismicFieldType,
+  PrismicTypePathType,
   TypePathsStore,
 } from './types'
 import { serializePath } from './lib/serializePath'
@@ -28,7 +28,7 @@ import { createUnknownFieldConfig } from './fieldConfigCreators/unknown'
 
 const createTypePath = (store: TypePathsStore) => (
   path: string[],
-  type: PrismicFieldType,
+  type: PrismicTypePathType,
 ): void => {
   store[serializePath(path)] = type
 }

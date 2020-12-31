@@ -34,7 +34,7 @@ export const buildDependencies = (
     }),
   cache: new Map(),
   getNode: (id: string) => state.nodes[id],
-  getFieldType: (path: string[]) => state.typePaths[serializePath(path)],
+  getFieldType: (path: string[]) => state.typePathsStore[serializePath(path)],
   reportInfo: console.log,
   reportWarning: console.warn,
   globalNodeHelpers: createNodeHelpers({

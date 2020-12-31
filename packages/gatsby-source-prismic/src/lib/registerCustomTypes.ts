@@ -9,6 +9,7 @@ import {
   PrismicSchema,
   PrismicSchemaField,
   PrismicAPIDocumentNode,
+  PrismicSpecialType,
 } from '../types'
 import {
   PREVIEWABLE_NODE_ID_FIELD,
@@ -18,6 +19,7 @@ import { getTypeName } from './getTypeName'
 import { buildObjectType } from './buildObjectType'
 import { registerType } from './registerType'
 import { buildSchemaRecordConfigMap } from './buildSchemaRecordConfigMap'
+import { createTypePath } from './createTypePath'
 
 const collectFields = (
   schema: PrismicSchema,
@@ -38,9 +40,17 @@ const registerCustomType = (
       pipe(
         schema,
         collectFields,
-        (record) => buildSchemaRecordConfigMap([name], record),
+        (record) => buildSchemaRecordConfigMap([name, 'data'], record),
         RTE.map(
           R.partitionWithIndex((i) => PRISMIC_API_NON_DATA_FIELDS.includes(i)),
+        ),
+        RTE.chainFirst(() =>
+          RTE.of(
+            deps.createTypePath(
+              [name, 'data'],
+              PrismicSpecialType.DocumentData,
+            ),
+          ),
         ),
         RTE.bind('data', (fields) =>
           pipe(
@@ -90,6 +100,9 @@ const registerCustomType = (
           }),
         ),
         RTE.chainFirst(registerType),
+        RTE.chainFirst(() =>
+          createTypePath([name], PrismicSpecialType.Document),
+        ),
       ),
     ),
   )

@@ -76,7 +76,6 @@ export const toFieldConfig = (
           return deps.fieldConfigCreators.UID(path, schema)
         }
 
-        case PrismicFieldType.Unknown:
         default: {
           return deps.fieldConfigCreators.Unknown(path, schema)
         }

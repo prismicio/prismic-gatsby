@@ -16,11 +16,11 @@ export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
 >
 
-export type TypePathsStore = Record<string, PrismicFieldType>
+export type TypePathsStore = Record<string, PrismicTypePathType>
 
 export interface Dependencies {
   typePathsStore: TypePathsStore
-  createTypePath: (path: string[], type: PrismicFieldType) => void
+  createTypePath: (path: string[], type: PrismicTypePathType) => void
   createTypes: gatsby.Actions['createTypes']
   createNode: gatsby.Actions['createNode']
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']
@@ -38,7 +38,7 @@ export interface Dependencies {
   pluginOptions: PluginOptions
   webhookBody?: unknown
   fieldConfigCreators: Record<
-    Exclude<PrismicFieldType, 'Slice'> | 'Unknown',
+    Exclude<PrismicFieldType, 'Slice'> | PrismicSpecialType.Unknown,
     FieldConfigCreator
   >
 }
@@ -98,6 +98,14 @@ export type PrismicSchemaField =
   | PrismicSchemaGroupField
   | PrismicSchemaSlicesField
 
+export type PrismicTypePathType = PrismicSpecialType | PrismicFieldType
+
+export enum PrismicSpecialType {
+  Document = 'Document',
+  DocumentData = 'DocumentData',
+  Unknown = 'Unknown',
+}
+
 export enum PrismicFieldType {
   Boolean = 'Boolean',
   Color = 'Color',
@@ -115,7 +123,6 @@ export enum PrismicFieldType {
   Group = 'Group',
   Slice = 'Slice',
   Slices = 'Slices',
-  Unknown = 'Unknown',
 }
 
 interface PrismicSchemaStandardField {

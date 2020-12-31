@@ -2,7 +2,7 @@ import * as gatsby from 'gatsby'
 import { NodeHelpers } from 'gatsby-node-helpers'
 import {
   PluginOptions as SourcePluginOptions,
-  PrismicFieldType,
+  PrismicTypePathType,
 } from 'gatsby-source-prismic'
 
 export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
@@ -12,8 +12,8 @@ export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
 
 export interface Dependencies {
   createNode: (node: gatsby.NodeInput) => void
-  getNode: (id: string) => gatsby.NodeInput
-  getFieldType: (path: string[]) => PrismicFieldType
+  getNode: (id: string) => gatsby.NodeInput | undefined
+  getFieldType: (path: string[]) => PrismicTypePathType | undefined
   cache: Map<string, unknown>
   reportInfo: (message: string) => void
   reportWarning: (message: string) => void
