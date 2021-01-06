@@ -88,12 +88,14 @@ describe('document', () => {
           prismicId: 'ID!',
           data: 'PrismicPrefixPageDataType',
           dataRaw: { type: 'JSON!' },
+          // eslint-disable-next-line @typescript-eslint/camelcase
           first_publication_date: {
             type: 'Date!',
             extensions: { dateformat: {} },
           },
           href: 'String!',
           lang: 'String!',
+          // eslint-disable-next-line @typescript-eslint/camelcase
           last_publication_date: {
             type: 'Date!',
             extensions: { dateformat: {} },

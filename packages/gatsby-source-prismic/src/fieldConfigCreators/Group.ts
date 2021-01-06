@@ -1,5 +1,5 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/lib/function'
+import { pipe } from 'fp-ts/function'
 
 import { registerType } from '../lib/registerType'
 import { getTypeName } from '../lib/getTypeName'

@@ -5,7 +5,11 @@
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "license": "MIT",
   "main": "./dist/gatsby-source-prismic.js",
-  "exports": "./dist/gatsby-source-prismic.modern.js",
+  "exports": {
+    "./": "./dist/gatsby-source-prismic.modern.js",
+    "./gatsby-node.js": "./dist/gatsby-node.js",
+    "./package.json": "./package.json"
+  },
   "module": "./dist/gatsby-source-prismic.module.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -17,8 +21,8 @@
   ],
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "microbundle --tsconfig tsconfig.build.json",
-    "dev": "microbundle watch",
+    "build": "microbundle build src/index.ts src/gatsby-node.ts --tsconfig tsconfig.build.json",
+    "dev": "microbundle watch src/index.ts src/gatsby-node.ts",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",
@@ -36,7 +40,7 @@
     "prismic"
   ],
   "dependencies": {
-    "fp-ts": "^2.9.1",
+    "fp-ts": "^2.9.3",
     "gatsby-node-helpers": "^1.0.2",
     "gatsby-plugin-imgix": "^0.8.2",
     "prismic-dom": "^2.2.4",

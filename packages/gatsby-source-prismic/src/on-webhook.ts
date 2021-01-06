@@ -14,30 +14,6 @@ import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
 import { onWebhookApiUpdate } from './on-webhook-api-update'
 import { onWebhookTestTrigger } from './on-webhook-test-trigger'
 
-/**
- * To be executed in the `sourceNodes` stage when a webhook is received.
- *
- * If the webhook is from Prismic, and the webhook's secret matches the secret
- * defined in the environment's plugin options, a handler appropriate to the
- * webhook's type is called.
- *
- * All nodes, regardless of the webhook' source or contents, are touched to
- * prevent garbage collection.
- */
-export const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.chain((deps) =>
-    pipe(
-      deps.webhookBody,
-      O.fromPredicate(
-        isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
-      ),
-      O.fold(() => RTE.of(void 0), onPrismicWebhook),
-    ),
-  ),
-  RTE.chain(touchAllNodes),
-)
-
 const onPrismicWebhook = (
   webhookBody: PrismicWebhookBody,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
@@ -65,3 +41,27 @@ const onPrismicWebhook = (
       ),
     ),
   )
+
+/**
+ * To be executed in the `sourceNodes` stage when a webhook is received.
+ *
+ * If the webhook is from Prismic, and the webhook's secret matches the secret
+ * defined in the environment's plugin options, a handler appropriate to the
+ * webhook's type is called.
+ *
+ * All nodes, regardless of the webhook' source or contents, are touched to
+ * prevent garbage collection.
+ */
+export const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
+  RTE.ask<Dependencies>(),
+  RTE.chain((deps) =>
+    pipe(
+      deps.webhookBody,
+      O.fromPredicate(
+        isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
+      ),
+      O.fold(() => RTE.of(void 0), onPrismicWebhook),
+    ),
+  ),
+  RTE.chain(touchAllNodes),
+)

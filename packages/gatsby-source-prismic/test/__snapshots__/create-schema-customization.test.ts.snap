@@ -20,7 +20,7 @@ exports[`creates types 1`] = `
     Array [
       Object {
         "config": Object {
-          "name": "PrismicLinkTypes",
+          "name": "PrismicGeoPointType",
           "values": Object {
             "Any": Object {},
             "Document": Object {},
@@ -38,7 +38,7 @@ exports[`creates types 1`] = `
             "latitude": "Int!",
             "longitude": "Int!",
           },
-          "name": "PrismicGeoPointType",
+          "name": "PrismicImageDimensionsType",
         },
         "kind": "OBJECT",
       },

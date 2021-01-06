@@ -10,20 +10,6 @@ import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
 import { onWebhook } from './on-webhook'
 
-export const sourceNodes: NonNullable<
-  gatsby.GatsbyNode['sourceNodes']
-> = async (
-  gatsbyContext: gatsby.SourceNodesArgs,
-  pluginOptions: PluginOptions,
-) =>
-  pipe(
-    await RTE.run(
-      sourceNodesProgram,
-      buildDependencies(gatsbyContext, pluginOptions),
-    ),
-    E.fold(throwError, constVoid),
-  )
-
 /**
  * To be executed in the `sourceNodes` stage.
  */
@@ -45,3 +31,17 @@ const sourceNodesProgram: RTE.ReaderTaskEither<
     () => onWebhook,
   ),
 )
+
+export const sourceNodes: NonNullable<
+  gatsby.GatsbyNode['sourceNodes']
+> = async (
+  gatsbyContext: gatsby.SourceNodesArgs,
+  pluginOptions: PluginOptions,
+) =>
+  pipe(
+    await RTE.run(
+      sourceNodesProgram,
+      buildDependencies(gatsbyContext, pluginOptions),
+    ),
+    E.fold(throwError, constVoid),
+  )

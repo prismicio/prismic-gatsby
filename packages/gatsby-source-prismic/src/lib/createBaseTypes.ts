@@ -30,7 +30,7 @@ const buildGeoPointType: RTE.ReaderTaskEither<
   RTE.ask<Dependencies>(),
   RTE.chain((deps) =>
     buildEnumType({
-      name: deps.globalNodeHelpers.createTypeName('LinkTypes'),
+      name: deps.globalNodeHelpers.createTypeName('GeoPointType'),
       values: { Any: {}, Document: {}, Media: {}, Web: {} },
     }),
   ),
@@ -44,7 +44,7 @@ const buildImageDimensionsType: RTE.ReaderTaskEither<
   RTE.ask<Dependencies>(),
   RTE.chain((deps) =>
     buildObjectType({
-      name: deps.globalNodeHelpers.createTypeName('GeoPointType'),
+      name: deps.globalNodeHelpers.createTypeName('ImageDimensionsType'),
       fields: { longitude: 'Int!', latitude: 'Int!' },
     }),
   ),

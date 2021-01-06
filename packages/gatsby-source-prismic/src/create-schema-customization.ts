@@ -12,20 +12,6 @@ import { writeTypePathsToCache } from './lib/writeTypePathsToCache'
 import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
 
-export const createSchemaCustomization: NonNullable<
-  gatsby.GatsbyNode['createSchemaCustomization']
-> = async (
-  gatsbyContext: gatsby.CreateSchemaCustomizationArgs,
-  pluginOptions: PluginOptions,
-) =>
-  pipe(
-    await RTE.run(
-      createSchemaCustomizationProgram,
-      buildDependencies(gatsbyContext, pluginOptions),
-    ),
-    E.fold(throwError, constVoid),
-  )
-
 /**
  * To be executed in the `createSchemaCustomization` stage.
  */
@@ -41,3 +27,17 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   RTE.chainFirst(() => writeTypePathsToCache),
   RTE.map(constVoid),
 )
+
+export const createSchemaCustomization: NonNullable<
+  gatsby.GatsbyNode['createSchemaCustomization']
+> = async (
+  gatsbyContext: gatsby.CreateSchemaCustomizationArgs,
+  pluginOptions: PluginOptions,
+) =>
+  pipe(
+    await RTE.run(
+      createSchemaCustomizationProgram,
+      buildDependencies(gatsbyContext, pluginOptions),
+    ),
+    E.fold(throwError, constVoid),
+  )

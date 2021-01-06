@@ -9,6 +9,27 @@ import { queryDocumentsByIds } from './lib/queryDocumentsByIds'
 import { deleteNodesForDocumentIds } from './lib/deleteNodesForDocumentIds'
 import { createNodes } from './lib/createNodes'
 
+const extractApiUpdateWebhookBodyDocumentIds = (
+  webhookBody: PrismicWebhookBodyApiUpdate,
+): RTE.ReaderTaskEither<Dependencies, never, string[]> =>
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.bindW('documentIds', () => RTE.right(webhookBody.documents)),
+    RTE.bindW('releaseDocumentIds', (scope) =>
+      pipe(
+        [
+          ...(webhookBody.releases.update || []),
+          ...(webhookBody.releases.addition || []),
+          ...(webhookBody.releases.deletion || []),
+        ],
+        A.filter((payload) => payload.id === scope.pluginOptions.releaseID),
+        A.chain((payload) => payload.documents),
+        RTE.right,
+      ),
+    ),
+    RTE.map((scope) => [...scope.documentIds, ...scope.releaseDocumentIds]),
+  )
+
 export const onWebhookApiUpdate = (
   webhookBody: PrismicWebhookBodyApiUpdate,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
@@ -42,25 +63,4 @@ export const onWebhookApiUpdate = (
     ),
     RTE.chainFirst((scope) => createNodes(scope.documentsToUpdate)),
     RTE.map(constVoid),
-  )
-
-const extractApiUpdateWebhookBodyDocumentIds = (
-  webhookBody: PrismicWebhookBodyApiUpdate,
-): RTE.ReaderTaskEither<Dependencies, never, string[]> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.bindW('documentIds', () => RTE.right(webhookBody.documents)),
-    RTE.bindW('releaseDocumentIds', (scope) =>
-      pipe(
-        [
-          ...(webhookBody.releases.update || []),
-          ...(webhookBody.releases.addition || []),
-          ...(webhookBody.releases.deletion || []),
-        ],
-        A.filter((payload) => payload.id === scope.pluginOptions.releaseID),
-        A.chain((payload) => payload.documents),
-        RTE.right,
-      ),
-    ),
-    RTE.map((scope) => [...scope.documentIds, ...scope.releaseDocumentIds]),
   )
