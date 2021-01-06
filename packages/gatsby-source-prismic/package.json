@@ -53,7 +53,7 @@
   "devDependencies": {
     "@types/prismic-dom": "^2.1.1",
     "@types/react-dom": "^17.0.0",
-    "gatsby-image": "^2.8.0",
-    "gatsby-plugin-utils": "^0.6.0"
+    "gatsby-image": "^2.9.0",
+    "gatsby-plugin-utils": "^0.7.0"
   }
 }
