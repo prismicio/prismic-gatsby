@@ -35,21 +35,34 @@ beforeEach(() => {
   gatsbyContext.cache.clear()
 })
 
-test('creates types', async () => {
-  // @ts-expect-error - Partial gatsbyContext provided
-  await createSchemaCustomization(gatsbyContext, pluginOptions)
-
-  expect(gatsbyContext.actions.createTypes).toMatchSnapshot()
-})
-
 test('writes type paths to cache', async () => {
+  const spy = jest.spyOn(gatsbyContext.cache, 'set')
+
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
   const cacheKey = `type-paths ${pluginOptions.repositoryName}`
-  const cacheValue = gatsbyContext.cache.get(cacheKey)
+  const call = spy.mock.calls.find((c) => c[0] === cacheKey)
+  const typePaths = JSON.parse(call?.[1])
 
-  expect(cacheValue).toMatchSnapshot()
+  expect(typePaths).toEqual({
+    page: 'Document',
+    'page.data': 'DocumentData',
+    'page.data.body': 'Slices',
+    'page.data.body.images': 'Slice',
+    'page.data.body.images.items.caption': 'StructuredText',
+    'page.data.body.images.items.image': 'Image',
+    'page.data.body.images.items.orientation': 'Boolean',
+    'page.data.body.text': 'Slice',
+    'page.data.body.text.primary.text': 'StructuredText',
+    'page.data.main': 'Slices',
+    'page.data.main.news_post': 'Slice',
+    'page.data.main.news_post.primary.published_on': 'Date',
+    'page.data.meta_description': 'Text',
+    'page.data.meta_title': 'Text',
+    'page.data.parent': 'Link',
+    'page.data.title': 'StructuredText',
+  })
 })
 
 describe('shared global types', () => {
@@ -153,7 +166,7 @@ describe('document', () => {
       config: {
         name: 'PrismicPrefixPage',
         fields: {
-          uid: 'String',
+          uid: 'String!',
           prismicId: 'ID!',
           data: 'PrismicPrefixPageDataType',
           dataRaw: { type: 'JSON!', resolve: expect.any(Function) },

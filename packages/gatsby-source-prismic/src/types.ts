@@ -1,8 +1,8 @@
 import * as gatsby from 'gatsby'
-import * as gqlc from 'graphql-compose'
 import * as gatsbyImgix from 'gatsby-plugin-imgix'
-import * as PrismicDOM from 'prismic-dom'
+import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as PrismicDOM from 'prismic-dom'
 import Prismic from 'prismic-javascript'
 import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/documents'
 import { QueryOptions as _PrismicClientQueryOptions } from 'prismic-javascript/types/ResolvedApi'
@@ -37,22 +37,7 @@ export interface Dependencies {
   nodeHelpers: NodeHelpers
   pluginOptions: PluginOptions
   webhookBody?: unknown
-  fieldConfigCreators: Record<
-    Exclude<PrismicFieldType, 'Slice'> | PrismicSpecialType.Unknown,
-    FieldConfigCreator
-  >
 }
-
-export type FieldConfigCreator<
-  TSchema extends PrismicSchemaField = PrismicSchemaField
-> = (
-  path: string[],
-  schema: TSchema,
-) => RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  gqlc.ComposeFieldConfig<unknown, unknown>
->
 
 export interface PluginOptions extends gatsby.PluginOptions {
   repositoryName: string
@@ -78,6 +63,17 @@ type ShouldDownloadImageArgs = {
   key: string
   value: string
 }
+
+export type FieldConfigCreator<
+  TSchema extends PrismicSchemaField = PrismicSchemaField
+> = (
+  path: string[],
+  schema: TSchema,
+) => RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gqlc.ComposeFieldConfig<unknown, unknown>
+>
 
 export interface PrismicAPIDocument<
   TData extends UnknownRecord<string> = UnknownRecord<string>
