@@ -16,7 +16,7 @@ import { createType } from './createType'
  *
  * @returns The registered `AllDocumentTypes` type.
  */
-export const registerAllDocumentTypesType = (
+export const createAllDocumentTypesType = (
   types: gatsby.GatsbyGraphQLObjectType[],
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLUnionType> =>
   pipe(

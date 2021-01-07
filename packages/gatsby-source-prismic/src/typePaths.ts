@@ -29,6 +29,6 @@ export const createTypePathsStore = (
   return { get, set, serialize }
 }
 
-export const hydrateTypePathsStore = (
+export const deserializeTypePathsStore = (
   serializedStore: string,
 ): TypePathsStoreInstance => createTypePathsStore(JSON.parse(serializedStore))

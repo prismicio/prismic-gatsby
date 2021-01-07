@@ -1,14 +1,15 @@
 import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as R from 'fp-ts/Record'
 import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import { pipe, constVoid } from 'fp-ts/function'
 
-import { registerCustomTypes } from './lib/registerCustomTypes'
-import { registerAllDocumentTypesType } from './lib/registerAllDocumentTypesType'
+import { createAllDocumentTypesType } from './lib/createAllDocumentTypesType'
+import { createCustomType } from './lib/createCustomType'
+import { createTypes } from './lib/createTypes'
 import { throwError } from './lib/throwError'
 import { writeTypePathsToCache } from './lib/writeTypePathsToCache'
-import { createTypes } from './lib/createTypes'
 
 import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
 import { buildGeoPointType } from './builders/buildGeoPointType'
@@ -34,6 +35,22 @@ export const createBaseTypes: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
+const createCustomTypes: RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gatsby.GatsbyGraphQLObjectType[]
+> = pipe(
+  RTE.ask<Dependencies>(),
+  RTE.chain((deps) =>
+    pipe(
+      deps.pluginOptions.schemas,
+      R.mapWithIndex(createCustomType),
+      R.sequence(RTE.readerTaskEither),
+      RTE.map(R.collect((_, value) => value)),
+    ),
+  ),
+)
+
 /**
  * To be executed in the `createSchemaCustomization` stage.
  */
@@ -44,8 +61,8 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<Dependencies>(),
   RTE.chainFirst(() => createBaseTypes),
-  RTE.bind('types', registerCustomTypes),
-  RTE.chainFirst((scope) => registerAllDocumentTypesType(scope.types)),
+  RTE.bind('types', () => createCustomTypes),
+  RTE.chainFirst((scope) => createAllDocumentTypesType(scope.types)),
   RTE.chainFirst(() => writeTypePathsToCache),
   RTE.map(constVoid),
 )

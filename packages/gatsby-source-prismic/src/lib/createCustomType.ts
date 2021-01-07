@@ -30,7 +30,7 @@ const collectFields = (
     S.fold(S.getObjectSemigroup<Record<string, PrismicSchemaField>>())({}),
   )
 
-const registerCustomType = (
+export const createCustomType = (
   name: string,
   schema: PrismicSchema,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
@@ -106,23 +106,6 @@ const registerCustomType = (
         RTE.chainFirst(() =>
           createTypePath([name], PrismicSpecialType.Document),
         ),
-      ),
-    ),
-  )
-
-export const registerCustomTypes = (): RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  gatsby.GatsbyGraphQLObjectType[]
-> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      pipe(
-        deps.pluginOptions.schemas,
-        R.mapWithIndex(registerCustomType),
-        R.sequence(RTE.readerTaskEither),
-        RTE.map(R.collect((_, value) => value)),
       ),
     ),
   )
