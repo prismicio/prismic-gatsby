@@ -66,7 +66,7 @@ test('writes type paths to cache', async () => {
 })
 
 describe('shared global types', () => {
-  test('creates link_types type', async () => {
+  test('creates link types union type', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
 
@@ -74,7 +74,7 @@ describe('shared global types', () => {
       expect.objectContaining({
         kind: 'ENUM',
         config: {
-          name: 'PrismicLinkTypes',
+          name: 'PrismicLinkType',
           values: { Any: {}, Document: {}, Media: {}, Web: {} },
         },
       }),
@@ -308,7 +308,7 @@ describe('link fields', () => {
         config: {
           name: 'PrismicPrefixLinkType',
           fields: {
-            link_type: 'PrismicLinkTypes',
+            link_type: 'PrismicLinkType',
             isBroken: 'Boolean',
             url: { type: 'String', resolve: expect.any(Function) },
             target: 'String',

@@ -8,16 +8,16 @@ import { toFieldConfig } from './toFieldConfig'
 
 import { Dependencies, PrismicSchemaField } from '../types'
 
-export const buildSchemaRecordConfigMap = (
+export const buildFieldConfigMap = (
   path: string[],
-  record: Record<string, PrismicSchemaField>,
+  fieldSchemas: Record<string, PrismicSchemaField>,
 ): RTE.ReaderTaskEither<
   Dependencies,
   never,
   gqlc.ComposeFieldConfigMap<unknown, unknown>
 > =>
   pipe(
-    record,
+    fieldSchemas,
     R.mapWithIndex((name, schema) => toFieldConfig(A.snoc(path, name), schema)),
     R.sequence(RTE.readerTaskEither),
   )

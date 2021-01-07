@@ -5,7 +5,7 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { Dependencies, FieldConfigCreator, PrismicFieldType } from '../types'
 
-export const createGeoPointFieldConfig: FieldConfigCreator = (path) =>
+export const buildGeoPointFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() => createTypePath(path, PrismicFieldType.GeoPoint)),

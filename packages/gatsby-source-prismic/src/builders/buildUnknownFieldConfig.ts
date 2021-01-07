@@ -7,14 +7,14 @@ import {
   PrismicSchemaField,
   PrismicSpecialType,
 } from '../types'
-import { reportInfo } from '../lib/reportInfo'
-import { dotPath } from '../lib/dotPath'
 import { buildInferredNodeType } from '../lib/buildInferredNodeType'
-import { registerType } from '../lib/registerType'
-import { getTypeName } from '../lib/getTypeName'
+import { createType } from '../lib/createType'
 import { createTypePath } from '../lib/createTypePath'
+import { dotPath } from '../lib/dotPath'
+import { getTypeName } from '../lib/getTypeName'
+import { reportInfo } from '../lib/reportInfo'
 
-export const createUnknownFieldConfig: FieldConfigCreator = (
+export const buildUnknownFieldConfig: FieldConfigCreator = (
   path: string[],
   schema: PrismicSchemaField,
 ) =>
@@ -29,6 +29,6 @@ export const createUnknownFieldConfig: FieldConfigCreator = (
       ),
     ),
     RTE.chain(() => buildInferredNodeType(path)),
-    RTE.chainFirst(registerType),
+    RTE.chainFirst(createType),
     RTE.map(getTypeName),
   )

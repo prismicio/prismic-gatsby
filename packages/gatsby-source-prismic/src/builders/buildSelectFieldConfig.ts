@@ -5,8 +5,9 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { FieldConfigCreator, PrismicFieldType } from '../types'
 
-export const createNumberFieldConfig: FieldConfigCreator = (path) =>
+// TODO: Create an enum type
+export const buildSelectFieldConfig: FieldConfigCreator = (path) =>
   pipe(
-    createTypePath(path, PrismicFieldType.Number),
-    RTE.map(() => 'Float'),
+    createTypePath(path, PrismicFieldType.Select),
+    RTE.map(() => 'String'),
   )

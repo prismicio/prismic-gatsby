@@ -3,22 +3,22 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 
 import { Dependencies, PrismicFieldType, PrismicSchemaField } from '../types'
 
-import { createBooleanFieldConfig } from '../fieldConfigCreators/Boolean'
-import { createColorFieldConfig } from '../fieldConfigCreators/Color'
-import { createDateFieldConfig } from '../fieldConfigCreators/Date'
-import { createEmbedFieldConfig } from '../fieldConfigCreators/Embed'
-import { createGeoPointFieldConfig } from '../fieldConfigCreators/GeoPoint'
-import { createGroupFieldConfig } from '../fieldConfigCreators/Group'
-import { createImageFieldConfig } from '../fieldConfigCreators/Image'
-import { createLinkFieldConfig } from '../fieldConfigCreators/Link'
-import { createNumberFieldConfig } from '../fieldConfigCreators/Number'
-import { createSelectFieldConfig } from '../fieldConfigCreators/Select'
-import { createStructuredTextFieldConfig } from '../fieldConfigCreators/StructuredText'
-import { createSlicesFieldConfig } from '../fieldConfigCreators/Slices'
-import { createTextFieldConfig } from '../fieldConfigCreators/Text'
-import { createTimestampFieldConfig } from '../fieldConfigCreators/Timestamp'
-import { createUIDFieldConfig } from '../fieldConfigCreators/UID'
-import { createUnknownFieldConfig } from '../fieldConfigCreators/unknown'
+import { buildBooleanFieldConfig } from '../builders/buildBooleanFieldConfig'
+import { buildColorFieldConfig } from '../builders/buildColorFieldConfig'
+import { buildDateFieldConfig } from '../builders/buildDateFieldConfig'
+import { buildEmbedFieldConfig } from '../builders/buildEmbedFieldConfig'
+import { buildGeoPointFieldConfig } from '../builders/buildGeoPointFieldConfig'
+import { buildGroupFieldConfig } from '../builders/buildGroupFieldConfig'
+import { buildImageFieldConfig } from '../builders/buildImageFieldConfig'
+import { buildLinkFieldConfig } from '../builders/buildLinkFieldConfig'
+import { buildNumberFieldConfig } from '../builders/buildNumberFieldConfig'
+import { buildSelectFieldConfig } from '../builders/buildSelectFieldConfig'
+import { buildStructuredTextFieldConfig } from '../builders/buildStructuredTextFieldConfig'
+import { buildSlicesFieldConfig } from '../builders/buildSlicesFieldConfig'
+import { buildTextFieldConfig } from '../builders/buildTextFieldConfig'
+import { buildTimestampFieldConfig } from '../builders/buildTimestampFieldConfig'
+import { buildUIDFieldConfig } from '../builders/buildUIDFieldConfig'
+import { buildUnknownFieldConfig } from '../builders/buildUnknownFieldConfig'
 
 export const toFieldConfig = (
   path: string[],
@@ -30,67 +30,67 @@ export const toFieldConfig = (
 > => {
   switch (schema.type) {
     case PrismicFieldType.Boolean: {
-      return createBooleanFieldConfig(path, schema)
+      return buildBooleanFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Color: {
-      return createColorFieldConfig(path, schema)
+      return buildColorFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Date: {
-      return createDateFieldConfig(path, schema)
+      return buildDateFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Embed: {
-      return createEmbedFieldConfig(path, schema)
+      return buildEmbedFieldConfig(path, schema)
     }
 
     case PrismicFieldType.GeoPoint: {
-      return createGeoPointFieldConfig(path, schema)
+      return buildGeoPointFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Group: {
-      return createGroupFieldConfig(path, schema)
+      return buildGroupFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Image: {
-      return createImageFieldConfig(path, schema)
+      return buildImageFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Link: {
-      return createLinkFieldConfig(path, schema)
+      return buildLinkFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Number: {
-      return createNumberFieldConfig(path, schema)
+      return buildNumberFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Select: {
-      return createSelectFieldConfig(path, schema)
+      return buildSelectFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Slices: {
-      return createSlicesFieldConfig(path, schema)
+      return buildSlicesFieldConfig(path, schema)
     }
 
     case PrismicFieldType.StructuredText: {
-      return createStructuredTextFieldConfig(path, schema)
+      return buildStructuredTextFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Text: {
-      return createTextFieldConfig(path, schema)
+      return buildTextFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Timestamp: {
-      return createTimestampFieldConfig(path, schema)
+      return buildTimestampFieldConfig(path, schema)
     }
 
     case PrismicFieldType.UID: {
-      return createUIDFieldConfig(path, schema)
+      return buildUIDFieldConfig(path, schema)
     }
 
     default: {
-      return createUnknownFieldConfig(path, schema)
+      return buildUnknownFieldConfig(path, schema)
     }
   }
 }

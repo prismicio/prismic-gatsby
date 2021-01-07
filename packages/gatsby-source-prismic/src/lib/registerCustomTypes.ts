@@ -17,8 +17,8 @@ import {
 } from '../constants'
 import { getTypeName } from './getTypeName'
 import { buildObjectType } from './buildObjectType'
-import { registerType } from './registerType'
-import { buildSchemaRecordConfigMap } from './buildSchemaRecordConfigMap'
+import { createType } from './createType'
+import { buildFieldConfigMap } from './buildFieldConfigMap'
 import { createTypePath } from './createTypePath'
 
 const collectFields = (
@@ -40,7 +40,7 @@ const registerCustomType = (
       pipe(
         schema,
         collectFields,
-        (record) => buildSchemaRecordConfigMap([name, 'data'], record),
+        (record) => buildFieldConfigMap([name, 'data'], record),
         RTE.map(
           R.partitionWithIndex((i) => PRISMIC_API_NON_DATA_FIELDS.includes(i)),
         ),
@@ -58,7 +58,7 @@ const registerCustomType = (
               name: deps.nodeHelpers.createTypeName(name, 'DataType'),
               fields: fields.left,
             }),
-            RTE.chainFirst(registerType),
+            RTE.chainFirst(createType),
             RTE.map(getTypeName),
           ),
         ),
@@ -102,7 +102,7 @@ const registerCustomType = (
             extensions: { infer: false },
           }),
         ),
-        RTE.chainFirst(registerType),
+        RTE.chainFirst(createType),
         RTE.chainFirst(() =>
           createTypePath([name], PrismicSpecialType.Document),
         ),

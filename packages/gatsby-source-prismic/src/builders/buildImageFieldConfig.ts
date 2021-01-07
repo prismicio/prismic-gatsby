@@ -1,4 +1,3 @@
-import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as A from 'fp-ts/Array'
@@ -7,9 +6,10 @@ import { pipe } from 'fp-ts/function'
 
 import { buildObjectType } from '../lib/buildObjectType'
 import { getTypeName } from '../lib/getTypeName'
-import { registerType } from '../lib/registerType'
+import { createType } from '../lib/createType'
 import { createTypePath } from '../lib/createTypePath'
-import { buildBaseImageFields } from '../lib/buildBaseImageFields'
+
+import { buildBaseImageFieldConfigMap } from './buildBaseImageFieldConfigMap'
 
 import {
   Dependencies,
@@ -19,10 +19,10 @@ import {
   PrismicSchemaImageThumbnail,
 } from '../types'
 
-const buildThumbnailsType = (
+const createThumbnailsType = (
   path: string[],
   schema: PrismicSchemaImageField,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
+): RTE.ReaderTaskEither<Dependencies, never, string> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('thumbnails', () => RTE.of(schema.config?.thumbnails ?? [])),
@@ -42,42 +42,31 @@ const buildThumbnailsType = (
         fields: scope.fields,
       }),
     ),
+    RTE.chainFirst(createType),
+    RTE.map(getTypeName),
   )
 
-export const createImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> = (
+export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> = (
   path,
   schema,
 ) =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Image)),
-    RTE.bind('imageFields', () => buildBaseImageFields),
-    RTE.bind('hasThumbnails', () =>
-      RTE.of(A.isNonEmpty(schema.config?.thumbnails ?? [])),
+    RTE.bind('thumbnailsTypeName', () =>
+      A.isEmpty(schema.config?.thumbnails ?? [])
+        ? RTE.of(undefined)
+        : createThumbnailsType(path, schema),
     ),
-    RTE.bind('thumbnailsType', (scope) =>
-      scope.hasThumbnails
-        ? buildThumbnailsType(path, schema)
-        : RTE.of(undefined),
-    ),
-    RTE.bind('thumbnailsTypeName', (scope) =>
-      RTE.of(
-        scope.thumbnailsType ? getTypeName(scope.thumbnailsType) : undefined,
-      ),
-    ),
-    RTE.chainFirst((scope) =>
-      scope.thumbnailsType
-        ? registerType(scope.thumbnailsType)
-        : RTE.of(void 0),
-    ),
+    RTE.bind('baseFields', () => buildBaseImageFieldConfigMap),
     RTE.chain((scope) =>
       buildObjectType({
         name: scope.nodeHelpers.createTypeName(...path, 'ImageType'),
         fields: scope.thumbnailsTypeName
-          ? { ...scope.imageFields, thumbnails: scope.thumbnailsTypeName }
-          : scope.imageFields,
+          ? { ...scope.baseFields, thumbnails: scope.thumbnailsTypeName }
+          : scope.baseFields,
       }),
     ),
-    RTE.chainFirst(registerType),
+    RTE.chainFirst(createType),
     RTE.map(getTypeName),
   )

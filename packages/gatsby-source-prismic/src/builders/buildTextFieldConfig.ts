@@ -5,8 +5,8 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { FieldConfigCreator, PrismicFieldType } from '../types'
 
-export const createColorFieldConfig: FieldConfigCreator = (path) =>
+export const buildTextFieldConfig: FieldConfigCreator = (path) =>
   pipe(
-    createTypePath(path, PrismicFieldType.Color),
+    createTypePath(path, PrismicFieldType.Text),
     RTE.map(() => 'String'),
   )

@@ -3,7 +3,7 @@ import { pipe, identity } from 'fp-ts/function'
 import * as PrismicDOM from 'prismic-dom'
 
 import { buildObjectType } from '../lib/buildObjectType'
-import { registerType } from '../lib/registerType'
+import { createType } from '../lib/createType'
 import { getTypeName } from '../lib/getTypeName'
 import { createTypePath } from '../lib/createTypePath'
 
@@ -14,7 +14,7 @@ import {
   PrismicFieldType,
 } from '../types'
 
-export const createStructuredTextFieldConfig: FieldConfigCreator = (path) =>
+export const buildStructuredTextFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() => createTypePath(path, PrismicFieldType.StructuredText)),
@@ -40,6 +40,6 @@ export const createStructuredTextFieldConfig: FieldConfigCreator = (path) =>
         },
       }),
     ),
-    RTE.chainFirst(registerType),
+    RTE.chainFirst(createType),
     RTE.map(getTypeName),
   )

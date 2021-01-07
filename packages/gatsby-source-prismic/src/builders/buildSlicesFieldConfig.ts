@@ -9,8 +9,8 @@ import { buildSchemaRecordType } from '../lib/buildSchemaRecordType'
 import { buildUnionType } from '../lib/buildUnionType'
 import { getTypeName } from '../lib/getTypeName'
 import { listTypeName } from '../lib/listTypeName'
-import { registerType } from '../lib/registerType'
-import { registerTypes } from '../lib/registerTypes'
+import { createType } from '../lib/createType'
+import { createTypes } from '../lib/createTypes'
 import { createTypePath } from '../lib/createTypePath'
 
 import {
@@ -55,7 +55,7 @@ const buildSliceChoiceType = (
         RTE.chainFirst(
           flow(
             R.collect((_, type) => type),
-            registerTypes,
+            createTypes,
           ),
         ),
         RTE.map(
@@ -97,7 +97,7 @@ const buildSliceTypes = (
     RTE.map(R.collect((_, type) => type)),
   )
 
-export const createSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField> = (
+export const buildSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField> = (
   path,
   schema,
 ) =>
@@ -107,7 +107,7 @@ export const createSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesFiel
     RTE.chain((deps) =>
       pipe(
         buildSliceTypes(path, schema.config.choices),
-        RTE.chainFirst(registerTypes),
+        RTE.chainFirst(createTypes),
         RTE.map(A.map(getTypeName)),
         RTE.chain((types) =>
           buildUnionType({
@@ -117,7 +117,7 @@ export const createSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesFiel
               deps.nodeHelpers.createTypeName(...path, source.slice_type),
           }),
         ),
-        RTE.chainFirst(registerType),
+        RTE.chainFirst(createType),
         RTE.map(getTypeName),
         RTE.map(listTypeName),
       ),

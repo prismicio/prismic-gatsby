@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function'
 
 import { Dependencies } from '../types'
 
-import { buildObjectType } from './buildObjectType'
+import { buildNamedInferredNodeType } from './buildNamedInferredNodeType'
 
 /**
  * Builds a GraphQL object type using Gatsby's Node interface with field
@@ -23,10 +23,6 @@ export const buildInferredNodeType = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chain((deps) =>
-      buildObjectType({
-        name: deps.nodeHelpers.createTypeName(...path),
-        interfaces: ['Node'],
-        extensions: { infer: true },
-      }),
+      buildNamedInferredNodeType(deps.nodeHelpers.createTypeName(...path)),
     ),
   )

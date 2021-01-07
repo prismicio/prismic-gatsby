@@ -6,7 +6,7 @@ import { pipe } from 'fp-ts/function'
 import { Dependencies } from '../types'
 import { getTypeName } from './getTypeName'
 import { buildUnionType } from './buildUnionType'
-import { registerType } from './registerType'
+import { createType } from './createType'
 
 /**
  * Registers the `AllDocumentTypes` GraphQL union type containing all provided
@@ -30,7 +30,7 @@ export const registerAllDocumentTypesType = (
             name: deps.nodeHelpers.createTypeName('AllDocumentTypes'),
             types,
           }),
-        RTE.chainFirst(registerType),
+        RTE.chainFirst(createType),
       ),
     ),
   )

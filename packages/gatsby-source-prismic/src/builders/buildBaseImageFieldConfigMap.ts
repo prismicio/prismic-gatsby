@@ -9,7 +9,7 @@ const resolveUrl = (source: PrismicAPIImageField) => source.url
 const resolveWidth = (source: PrismicAPIImageField) => source.dimensions.width
 const resolveHeight = (source: PrismicAPIImageField) => source.dimensions.height
 
-export const buildBaseImageFields: RTE.ReaderTaskEither<
+export const buildBaseImageFieldConfigMap: RTE.ReaderTaskEither<
   Dependencies,
   never,
   gqlc.ComposeFieldConfigMap<any, any>

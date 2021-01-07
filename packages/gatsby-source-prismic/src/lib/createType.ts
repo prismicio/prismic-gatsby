@@ -8,7 +8,7 @@ import { Dependencies } from '../types'
  *
  * @param type GraphQL type to create.
  */
-export const registerType = <A extends gatsby.GatsbyGraphQLType>(
+export const createType = <A extends gatsby.GatsbyGraphQLType>(
   type: A,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   RTE.asks((deps) => deps.createTypes(type))

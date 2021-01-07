@@ -3,7 +3,7 @@ import { pipe, identity } from 'fp-ts/function'
 import * as PrismicDOM from 'prismic-dom'
 
 import { buildObjectType } from '../lib/buildObjectType'
-import { registerType } from '../lib/registerType'
+import { createType } from '../lib/createType'
 import { getTypeName } from '../lib/getTypeName'
 import { createTypePath } from '../lib/createTypePath'
 
@@ -14,9 +14,7 @@ import {
   PrismicFieldType,
 } from '../types'
 
-// TODO: Create union type for `document` field that only includes allowed
-// custom types.
-export const createLinkFieldConfig: FieldConfigCreator = (path) =>
+export const buildLinkFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Link)),
@@ -24,7 +22,7 @@ export const createLinkFieldConfig: FieldConfigCreator = (path) =>
       buildObjectType({
         name: deps.nodeHelpers.createTypeName('LinkType'),
         fields: {
-          link_type: deps.globalNodeHelpers.createTypeName('LinkTypes'),
+          link_type: deps.globalNodeHelpers.createTypeName('LinkType'),
           isBroken: 'Boolean',
           url: {
             type: 'String',
@@ -54,6 +52,6 @@ export const createLinkFieldConfig: FieldConfigCreator = (path) =>
         },
       }),
     ),
-    RTE.chainFirst(registerType),
+    RTE.chainFirst(createType),
     RTE.map(getTypeName),
   )

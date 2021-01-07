@@ -5,8 +5,11 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { FieldConfigCreator, PrismicFieldType } from '../types'
 
-export const createBooleanFieldConfig: FieldConfigCreator = (path) =>
+export const buildDateFieldConfig: FieldConfigCreator = (path) =>
   pipe(
-    createTypePath(path, PrismicFieldType.Boolean),
-    RTE.map(() => 'Boolean'),
+    createTypePath(path, PrismicFieldType.Date),
+    RTE.map(() => ({
+      type: 'Date',
+      extensions: { dateformat: {} },
+    })),
   )

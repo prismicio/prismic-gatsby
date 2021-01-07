@@ -5,9 +5,11 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { FieldConfigCreator, PrismicFieldType } from '../types'
 
-// TODO: Create an enum type
-export const createSelectFieldConfig: FieldConfigCreator = (path) =>
+export const buildTimestampFieldConfig: FieldConfigCreator = (path) =>
   pipe(
-    createTypePath(path, PrismicFieldType.Select),
-    RTE.map(() => 'String'),
+    createTypePath(path, PrismicFieldType.Timestamp),
+    RTE.map(() => ({
+      type: 'Date',
+      extensions: { dateformat: {} },
+    })),
   )
