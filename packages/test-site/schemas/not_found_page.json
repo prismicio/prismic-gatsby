@@ -1,0 +1,17 @@
+{
+  "Main" : {
+    "title" : {
+      "type" : "StructuredText",
+      "config" : {
+        "single" : "heading1",
+        "label" : "Title"
+      }
+    },
+    "some_value" : {
+      "type" : "Text",
+      "config" : {
+        "label" : "Some value"
+      }
+    }
+  }
+}

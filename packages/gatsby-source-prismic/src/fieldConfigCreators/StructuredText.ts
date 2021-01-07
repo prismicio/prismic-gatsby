@@ -20,7 +20,7 @@ export const createStructuredTextFieldConfig: FieldConfigCreator = (path) =>
     RTE.chainFirst(() => createTypePath(path, PrismicFieldType.StructuredText)),
     RTE.chain((deps) =>
       buildObjectType({
-        name: deps.globalNodeHelpers.createTypeName('StructuredTextType'),
+        name: deps.nodeHelpers.createTypeName('StructuredTextType'),
         fields: {
           text: {
             type: 'String',

@@ -20,142 +20,23 @@ exports[`creates types 1`] = `
     Array [
       Object {
         "config": Object {
-          "name": "PrismicGeoPointType",
-          "values": Object {
-            "Any": Object {},
-            "Document": Object {},
-            "Media": Object {},
-            "Web": Object {},
-          },
-        },
-        "kind": "ENUM",
-      },
-    ],
-    Array [
-      Object {
-        "config": Object {
           "fields": Object {
             "latitude": "Int!",
             "longitude": "Int!",
           },
+          "name": "PrismicGeoPointType",
+        },
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "height": "Int!",
+            "width": "Int!",
+          },
           "name": "PrismicImageDimensionsType",
-        },
-        "kind": "OBJECT",
-      },
-    ],
-    Array [
-      Object {
-        "config": Object {
-          "fields": Object {
-            "document": Object {
-              "extensions": Object {
-                "link": Object {},
-              },
-              "resolve": [Function],
-              "type": "PrismicPrefixAllDocumentTypes",
-            },
-            "id": "ID",
-            "isBroken": "Boolean",
-            "lang": "String",
-            "link_type": "PrismicLinkTypes",
-            "raw": Object {
-              "resolve": [Function],
-              "type": "JSON",
-            },
-            "size": "Int",
-            "slug": "String",
-            "tags": "[String]",
-            "target": "String",
-            "type": "String",
-            "uid": "String",
-            "url": Object {
-              "resolve": [Function],
-              "type": "String",
-            },
-          },
-          "name": "PrismicPrefixLinkType",
-        },
-        "kind": "OBJECT",
-      },
-    ],
-    Array [
-      Object {
-        "config": Object {
-          "fields": Object {
-            "html": Object {
-              "resolve": [Function],
-              "type": "String",
-            },
-            "raw": Object {
-              "resolve": [Function],
-              "type": "JSON",
-            },
-            "text": Object {
-              "resolve": [Function],
-              "type": "String",
-            },
-          },
-          "name": "PrismicStructuredTextType",
-        },
-        "kind": "OBJECT",
-      },
-    ],
-    Array [
-      Object {
-        "config": Object {
-          "fields": Object {
-            "html": Object {
-              "resolve": [Function],
-              "type": "String",
-            },
-            "raw": Object {
-              "resolve": [Function],
-              "type": "JSON",
-            },
-            "text": Object {
-              "resolve": [Function],
-              "type": "String",
-            },
-          },
-          "name": "PrismicStructuredTextType",
-        },
-        "kind": "OBJECT",
-      },
-    ],
-    Array [
-      Object {
-        "config": Object {
-          "fields": Object {
-            "html": Object {
-              "resolve": [Function],
-              "type": "String",
-            },
-            "raw": Object {
-              "resolve": [Function],
-              "type": "JSON",
-            },
-            "text": Object {
-              "resolve": [Function],
-              "type": "String",
-            },
-          },
-          "name": "PrismicStructuredTextType",
-        },
-        "kind": "OBJECT",
-      },
-    ],
-    Array [
-      Object {
-        "config": Object {
-          "fields": Object {
-            "published_on": Object {
-              "extensions": Object {
-                "dateformat": Object {},
-              },
-              "type": "Date",
-            },
-          },
-          "name": "PrismicPrefixPageDataMainNewsPostPrimary",
         },
         "kind": "OBJECT",
       },
@@ -216,6 +97,7 @@ exports[`creates types 1`] = `
               "extensions": Object {
                 "link": Object {},
               },
+              "resolve": [Function],
               "type": "File",
             },
             "url": Object {
@@ -229,7 +111,7 @@ exports[`creates types 1`] = `
               "type": "String",
             },
           },
-          "name": "PrismicPrefixImageType",
+          "name": "PrismicPrefixImageThumbnailType",
         },
         "kind": "OBJECT",
       },
@@ -238,7 +120,124 @@ exports[`creates types 1`] = `
       Object {
         "config": Object {
           "fields": Object {
-            "text": "PrismicStructuredTextType",
+            "document": Object {
+              "extensions": Object {
+                "link": Object {},
+              },
+              "resolve": [Function],
+              "type": "PrismicPrefixAllDocumentTypes",
+            },
+            "id": "ID",
+            "isBroken": "Boolean",
+            "lang": "String",
+            "link_type": "PrismicLinkTypes",
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
+            "size": "Int",
+            "slug": "String",
+            "tags": "[String]",
+            "target": "String",
+            "type": "String",
+            "uid": "String",
+            "url": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+          },
+          "name": "PrismicPrefixLinkType",
+        },
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "html": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
+            "text": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+          },
+          "name": "PrismicPrefixStructuredTextType",
+        },
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "html": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
+            "text": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+          },
+          "name": "PrismicPrefixStructuredTextType",
+        },
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "html": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+            "raw": Object {
+              "resolve": [Function],
+              "type": "JSON",
+            },
+            "text": Object {
+              "resolve": [Function],
+              "type": "String",
+            },
+          },
+          "name": "PrismicPrefixStructuredTextType",
+        },
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "published_on": Object {
+              "extensions": Object {
+                "dateformat": Object {},
+              },
+              "type": "Date",
+            },
+          },
+          "name": "PrismicPrefixPageDataMainNewsPostPrimary",
+        },
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "text": "PrismicPrefixStructuredTextType",
           },
           "name": "PrismicPrefixPageDataBodyTextPrimary",
         },
@@ -265,11 +264,9 @@ exports[`creates types 1`] = `
       Object {
         "config": Object {
           "fields": Object {
-            "caption": "PrismicStructuredTextType",
-            "image": "PrismicPrefixImageType",
-            "orientation": "Boolean",
+            "Mobile": "PrismicPrefixImageThumbnailType",
           },
-          "name": "PrismicPrefixPageDataBodyImagesItems",
+          "name": "PrismicPrefixPageDataBodyImagesItemsImageImageThumbnailsType",
         },
         "kind": "OBJECT",
       },
@@ -284,6 +281,95 @@ exports[`creates types 1`] = `
           ],
         },
         "kind": "UNION",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "alt": "String",
+            "copyright": "String",
+            "dimensions": "PrismicImageDimensionsType",
+            "fixed": Object {
+              "args": Object {
+                "height": Object {
+                  "type": "Int",
+                },
+                "imgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "placeholderImgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "width": Object {
+                  "defaultValue": 400,
+                  "type": "Int",
+                },
+              },
+              "resolve": [Function],
+              "type": "PrismicPrefixImageFixedType",
+            },
+            "fluid": Object {
+              "args": Object {
+                "imgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "maxHeight": Object {
+                  "type": "Int",
+                },
+                "maxWidth": Object {
+                  "defaultValue": 800,
+                  "type": "Int",
+                },
+                "placeholderImgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+                "srcSetBreakpoints": Object {
+                  "type": "[Int]",
+                },
+              },
+              "resolve": [Function],
+              "type": "PrismicPrefixImageFluidType",
+            },
+            "localFile": Object {
+              "extensions": Object {
+                "link": Object {},
+              },
+              "resolve": [Function],
+              "type": "File",
+            },
+            "thumbnails": "PrismicPrefixPageDataBodyImagesItemsImageImageThumbnailsType",
+            "url": Object {
+              "args": Object {
+                "imgixParams": Object {
+                  "defaultValue": Object {},
+                  "type": "ImgixUrlParamsInput",
+                },
+              },
+              "resolve": [Function],
+              "type": "String",
+            },
+          },
+          "name": "PrismicPrefixPageDataBodyImagesItemsImageImageType",
+        },
+        "kind": "OBJECT",
+      },
+    ],
+    Array [
+      Object {
+        "config": Object {
+          "fields": Object {
+            "caption": "PrismicPrefixStructuredTextType",
+            "image": "PrismicPrefixPageDataBodyImagesItemsImageImageType",
+            "orientation": "Boolean",
+          },
+          "name": "PrismicPrefixPageDataBodyImagesItems",
+        },
+        "kind": "OBJECT",
       },
     ],
     Array [
@@ -340,7 +426,7 @@ exports[`creates types 1`] = `
             "meta_description": "String",
             "meta_title": "String",
             "parent": "PrismicPrefixLinkType",
-            "title": "PrismicStructuredTextType",
+            "title": "PrismicPrefixStructuredTextType",
           },
           "name": "PrismicPrefixPageDataType",
         },
@@ -407,6 +493,14 @@ exports[`creates types 1`] = `
     ],
   ],
   "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
     Object {
       "type": "return",
       "value": undefined,

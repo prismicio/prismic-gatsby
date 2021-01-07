@@ -2,7 +2,7 @@ import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
-import { pipe, identity } from 'fp-ts/function'
+import { pipe } from 'fp-ts/function'
 
 import {
   Dependencies,
@@ -71,7 +71,10 @@ const registerCustomType = (
               // statically analize the object keys.
               [deps.nodeHelpers.createFieldName('id') as 'id']: 'ID!',
               data: fields.data,
-              dataRaw: { type: 'JSON!', resolve: identity },
+              dataRaw: {
+                type: 'JSON!',
+                resolve: (source: PrismicAPIDocumentNode) => source.data,
+              },
               first_publication_date: {
                 type: 'Date!',
                 extensions: { dateformat: {} },

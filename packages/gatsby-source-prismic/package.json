@@ -7,7 +7,7 @@
   "main": "./dist/gatsby-source-prismic.js",
   "exports": {
     "./": "./dist/gatsby-source-prismic.modern.js",
-    "./gatsby-node.js": "./dist/gatsby-node.js",
+    "./gatsby-node": "./dist/gatsby-node.js",
     "./package.json": "./package.json"
   },
   "module": "./dist/gatsby-source-prismic.module.js",
@@ -41,7 +41,7 @@
   ],
   "dependencies": {
     "fp-ts": "^2.9.3",
-    "gatsby-node-helpers": "^1.0.2",
+    "gatsby-node-helpers": "^1.0.3",
     "gatsby-plugin-imgix": "^0.8.2",
     "prismic-dom": "^2.2.4",
     "prismic-javascript": "^3.0.2",

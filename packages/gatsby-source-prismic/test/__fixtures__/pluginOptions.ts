@@ -17,5 +17,7 @@ export const pluginOptions: PluginOptions = {
   webhookSecret: 'secret',
   imageImgixParams: DEFAULT_IMGIX_PARAMS,
   imagePlaceholderImgixParams: DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
+  linkResolver: () => 'linkResolver',
+  htmlSerializer: () => 'htmlSerializer',
   plugins: [],
 }

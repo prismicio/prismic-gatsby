@@ -10,7 +10,10 @@ module.exports = {
         repositoryName: process.env.PRISMIC_REPOSITORY_NAME,
         accessToken: process.env.PRISMIC_ACCESS_TOKEN,
         schemas: {
+          navigation: require('./schemas/navigation.json'),
+          not_found_page: require('./schemas/not_found_page.json'),
           page: require('./schemas/page.json'),
+          settings: require('./schemas/settings.json'),
         },
       },
     },

@@ -95,6 +95,7 @@ interface PrismicSchemaTab {
 
 export type PrismicSchemaField =
   | PrismicSchemaStandardField
+  | PrismicSchemaImageField
   | PrismicSchemaGroupField
   | PrismicSchemaSlicesField
 
@@ -126,11 +127,25 @@ export enum PrismicFieldType {
 }
 
 interface PrismicSchemaStandardField {
-  type: Exclude<PrismicFieldType, 'Group' | 'Slice' | 'Slices'>
+  type: Exclude<PrismicFieldType, 'Image' | 'Group' | 'Slice' | 'Slices'>
   config: {
     label?: string
     placeholder?: string
   }
+}
+
+export interface PrismicSchemaImageField {
+  type: PrismicFieldType.Image
+  config: {
+    label?: string
+    thumbnails?: PrismicSchemaImageThumbnail[]
+  }
+}
+
+export interface PrismicSchemaImageThumbnail {
+  name: string
+  width?: number
+  height?: number
 }
 
 export interface PrismicSchemaGroupField {
@@ -146,11 +161,11 @@ export interface PrismicSchemaSlicesField {
   type: PrismicFieldType.Slices
   config: {
     labels?: Record<string, string[]>
-    choices: Record<string, PrismiaSchemaSlice>
+    choices: Record<string, PrismicSchemaSlice>
   }
 }
 
-export interface PrismiaSchemaSlice {
+export interface PrismicSchemaSlice {
   type: PrismicFieldType.Slice
   'non-repeat': Record<string, PrismicSchemaStandardField>
   repeat: Record<string, PrismicSchemaStandardField>

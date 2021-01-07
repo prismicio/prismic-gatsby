@@ -1,0 +1,56 @@
+{
+  "Main": {
+    "title": {
+      "type": "StructuredText",
+      "config": {
+        "single": "heading1",
+        "label": "Title"
+      }
+    },
+    "main": {
+      "type": "Slices",
+      "fieldset": "Slice zone",
+      "config": {
+        "choices": {
+          "nav_item": {
+            "type": "Slice",
+            "fieldset": "Nav Item",
+            "description": "Nav Item with Sub Navigation",
+            "icon": "insert_link",
+            "display": "list",
+            "non-repeat": {
+              "name": {
+                "type": "Text",
+                "config": {
+                  "label": "Name"
+                }
+              },
+              "link": {
+                "type": "Link",
+                "config": {
+                  "allowTargetBlank": true,
+                  "label": "Link"
+                }
+              }
+            },
+            "repeat": {
+              "name": {
+                "type": "Text",
+                "config": {
+                  "label": "Name"
+                }
+              },
+              "link": {
+                "type": "Link",
+                "config": {
+                  "allowTargetBlank": true,
+                  "label": "Link"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

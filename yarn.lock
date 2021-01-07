@@ -7130,6 +7130,14 @@ gatsby-node-helpers@^1.0.2:
     camel-case "^4.1.2"
     pascal-case "^3.1.2"
 
+gatsby-node-helpers@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/gatsby-node-helpers/-/gatsby-node-helpers-1.0.3.tgz#bf87fc301de90ed9806bbea74325acb7606887b9"
+  integrity sha512-qIBK7V77A0gpHz20H8T4dWn2gc0CJPqM3mUYeOFRTPcUgBbVKczehyrrtSlmgq+NOcqKrA+vbEkNjzx11+Equg==
+  dependencies:
+    camel-case "^4.1.2"
+    pascal-case "^3.1.2"
+
 gatsby-page-utils@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/gatsby-page-utils/-/gatsby-page-utils-0.6.1.tgz#dc067c0bbc095021cc8b15fb77cca9162bd529e3"

@@ -7,6 +7,7 @@ import { Dependencies } from '../types'
 import { buildEnumType } from './buildEnumType'
 import { registerTypes } from './registerTypes'
 import { buildObjectType } from './buildObjectType'
+import { buildBaseImageFields } from './buildBaseImageFields'
 
 const buildLinkTypesUnionType: RTE.ReaderTaskEither<
   Dependencies,
@@ -29,9 +30,9 @@ const buildGeoPointType: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<Dependencies>(),
   RTE.chain((deps) =>
-    buildEnumType({
+    buildObjectType({
       name: deps.globalNodeHelpers.createTypeName('GeoPointType'),
-      values: { Any: {}, Document: {}, Media: {}, Web: {} },
+      fields: { longitude: 'Int!', latitude: 'Int!' },
     }),
   ),
 )
@@ -45,7 +46,22 @@ const buildImageDimensionsType: RTE.ReaderTaskEither<
   RTE.chain((deps) =>
     buildObjectType({
       name: deps.globalNodeHelpers.createTypeName('ImageDimensionsType'),
-      fields: { longitude: 'Int!', latitude: 'Int!' },
+      fields: { width: 'Int!', height: 'Int!' },
+    }),
+  ),
+)
+
+const buildImageThumbnailType: RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gatsby.GatsbyGraphQLType
+> = pipe(
+  RTE.ask<Dependencies>(),
+  RTE.bind('imageFields', () => buildBaseImageFields),
+  RTE.chain((scope) =>
+    buildObjectType({
+      name: scope.nodeHelpers.createTypeName('ImageThumbnailType'),
+      fields: scope.imageFields,
     }),
   ),
 )
@@ -56,7 +72,12 @@ export const createBaseTypes = (): RTE.ReaderTaskEither<
   void
 > =>
   pipe(
-    [buildLinkTypesUnionType, buildGeoPointType, buildImageDimensionsType],
+    [
+      buildLinkTypesUnionType,
+      buildGeoPointType,
+      buildImageDimensionsType,
+      buildImageThumbnailType,
+    ],
     A.sequence(RTE.readerTaskEither),
     RTE.chain(registerTypes),
     RTE.map(constVoid),
