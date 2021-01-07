@@ -40,15 +40,10 @@ const createCustomTypes: RTE.ReaderTaskEither<
   never,
   gatsby.GatsbyGraphQLObjectType[]
 > = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.chain((deps) =>
-    pipe(
-      deps.pluginOptions.schemas,
-      R.mapWithIndex(createCustomType),
-      R.sequence(RTE.readerTaskEither),
-      RTE.map(R.collect((_, value) => value)),
-    ),
-  ),
+  RTE.asks((deps: Dependencies) => deps.pluginOptions.schemas),
+  RTE.map(R.mapWithIndex(createCustomType)),
+  RTE.chain(R.sequence(RTE.readerTaskEither)),
+  RTE.map(R.collect((_, value) => value)),
 )
 
 /**
