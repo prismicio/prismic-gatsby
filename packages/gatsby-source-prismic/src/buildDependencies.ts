@@ -2,32 +2,21 @@ import * as gatsby from 'gatsby'
 import { createNodeHelpers } from 'gatsby-node-helpers'
 
 import { GLOBAL_TYPE_PREFIX } from './constants'
-import {
-  Dependencies,
-  PluginOptions,
-  PrismicTypePathType,
-  TypePathsStore,
-} from './types'
-import { serializePath } from './lib/serializePath'
-
-const createTypePath = (store: TypePathsStore) => (
-  path: string[],
-  type: PrismicTypePathType,
-): void => {
-  store[serializePath(path)] = type
-}
+import { Dependencies, PluginOptions } from './types'
+import { createTypePathsStore } from './typePaths'
 
 export const buildDependencies = (
   gatsbyContext: gatsby.SourceNodesArgs | gatsby.CreateSchemaCustomizationArgs,
   pluginOptions: PluginOptions,
 ): Dependencies => {
-  const typePathsStore = {}
+  const typePathsStore = createTypePathsStore()
 
   return {
     pluginOptions,
     webhookBody: gatsbyContext.webhookBody,
-    typePathsStore,
-    createTypePath: createTypePath(typePathsStore),
+    createTypePath: typePathsStore.set,
+    getTypePath: typePathsStore.get,
+    serializeTypePathStore: typePathsStore.serialize,
     createNode: gatsbyContext.actions.createNode,
     createTypes: gatsbyContext.actions.createTypes,
     touchNode: gatsbyContext.actions.touchNode,

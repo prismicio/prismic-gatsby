@@ -4,7 +4,6 @@ import { pipe, constVoid } from 'fp-ts/function'
 import { Dependencies } from '../types'
 import { TYPE_PATHS_CACHE_KEY_TEMPLATE } from '../constants'
 import { sprintf } from './sprintf'
-import { serializeTypePathsStore } from './serializeTypePathStore'
 
 export const writeTypePathsToCache: RTE.ReaderTaskEither<
   Dependencies,
@@ -13,7 +12,7 @@ export const writeTypePathsToCache: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<Dependencies>(),
   RTE.bind('serializedTypePaths', (scope) =>
-    RTE.of(serializeTypePathsStore(scope.typePathsStore)),
+    RTE.of(scope.serializeTypePathStore()),
   ),
   RTE.bind('cacheKey', (scope) =>
     RTE.of(
