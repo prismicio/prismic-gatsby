@@ -44,6 +44,7 @@ const resolveLocalFileProgram = (
 export const buildBaseImageFieldConfigMap: RTE.ReaderTaskEither<
   Dependencies,
   never,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gqlc.ComposeFieldConfigMap<any, any>
 > = pipe(
   RTE.ask<Dependencies>(),
