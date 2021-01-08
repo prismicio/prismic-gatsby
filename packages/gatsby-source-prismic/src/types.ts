@@ -33,7 +33,10 @@ export interface Dependencies {
   getNodes: gatsby.SourceNodesArgs['getNodes']
   touchNode: gatsby.Actions['touchNode']
   deleteNode: gatsby.Actions['deleteNode']
+  createNodeId: gatsby.NodePluginArgs['createNodeId']
   cache: gatsby.GatsbyCache
+  store: gatsby.NodePluginArgs['store']
+  reporter: gatsby.Reporter
   reportInfo: gatsby.Reporter['info']
   reportWarning: gatsby.Reporter['warn']
   globalNodeHelpers: NodeHelpers
@@ -55,16 +58,10 @@ export interface PluginOptions extends gatsby.PluginOptions {
   schemas: Record<string, PrismicSchema>
   imageImgixParams: gatsbyImgix.ImgixUrlParams
   imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
-  shouldDownloadImage?: (args: ShouldDownloadImageArgs) => boolean
+  downloadLocal: boolean
   typePrefix?: string
   webhookSecret?: string
   plugins: []
-}
-
-type ShouldDownloadImageArgs = {
-  node: PrismicAPIDocument
-  key: string
-  value: string
 }
 
 export type FieldConfigCreator<

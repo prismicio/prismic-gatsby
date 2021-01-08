@@ -444,4 +444,69 @@ describe('image fields', () => {
       },
     })
   })
+
+  test('localFile field resolves to null if downloadLocal is false', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, {
+      ...pluginOptions,
+      schemas: {
+        page: {
+          Main: {
+            foo: { type: 'Image' },
+          },
+        },
+      },
+    })
+
+    const call = findCreateTypesCall('PrismicPrefixPageDataFooImageType')
+    const field = { url: 'url' }
+    const resolver = call.config.fields.localFile.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe(null)
+  })
+
+  test('localFile field resolves to remote node ID if downloadLocal is true', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, {
+      ...pluginOptions,
+      downloadLocal: true,
+      schemas: {
+        page: {
+          Main: {
+            foo: { type: 'Image' },
+          },
+        },
+      },
+    })
+
+    const call = findCreateTypesCall('PrismicPrefixPageDataFooImageType')
+    const field = { url: 'url' }
+    const resolver = call.config.fields.localFile.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe('remoteFileNodeId')
+  })
+
+  test('localFile field resolves to null if downloadLocal is true and image is empty', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, {
+      ...pluginOptions,
+      downloadLocal: true,
+      schemas: {
+        page: {
+          Main: {
+            foo: { type: 'Image' },
+          },
+        },
+      },
+    })
+
+    const call = findCreateTypesCall('PrismicPrefixPageDataFooImageType')
+    const field = { url: null }
+    const resolver = call.config.fields.localFile.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe(null)
+  })
 })

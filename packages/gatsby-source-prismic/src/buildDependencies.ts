@@ -21,6 +21,8 @@ export const buildDependencies = (
     createTypes: gatsbyContext.actions.createTypes,
     touchNode: gatsbyContext.actions.touchNode,
     deleteNode: gatsbyContext.actions.deleteNode,
+    createNodeId: gatsbyContext.createNodeId,
+    reporter: gatsbyContext.reporter,
     reportInfo: gatsbyContext.reporter.info,
     reportWarning: gatsbyContext.reporter.warn,
     buildUnionType: gatsbyContext.schema.buildUnionType,
@@ -28,6 +30,7 @@ export const buildDependencies = (
     buildEnumType: gatsbyContext.schema.buildEnumType,
     getNode: gatsbyContext.getNode,
     getNodes: gatsbyContext.getNodes,
+    store: gatsbyContext.store,
     cache: gatsbyContext.cache,
     globalNodeHelpers: createNodeHelpers({
       typePrefix: GLOBAL_TYPE_PREFIX,

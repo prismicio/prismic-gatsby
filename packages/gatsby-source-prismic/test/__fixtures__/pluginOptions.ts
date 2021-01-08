@@ -1,4 +1,5 @@
 import {
+  DEFAULT_DOWNLOAD_LOCAL,
   DEFAULT_IMGIX_PARAMS,
   DEFAULT_LANG,
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
@@ -14,6 +15,7 @@ export const pluginOptions: PluginOptions = {
     page: schemaFixture as PrismicSchema,
   },
   lang: DEFAULT_LANG,
+  downloadLocal: DEFAULT_DOWNLOAD_LOCAL,
   webhookSecret: 'secret',
   imageImgixParams: DEFAULT_IMGIX_PARAMS,
   imagePlaceholderImgixParams: DEFAULT_PLACEHOLDER_IMGIX_PARAMS,

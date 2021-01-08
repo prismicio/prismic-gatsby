@@ -6,6 +6,22 @@ export const nodes = [
   { id: `Prismic ${pluginOptions.typePrefix} 3`, prismicId: '3' },
 ]
 
+const createCache = () => {
+  const cache = new Map()
+
+  return {
+    get: jest
+      .fn()
+      .mockImplementation((key: string) => Promise.resolve(cache.get(key))),
+    set: jest
+      .fn()
+      .mockImplementation(<T>(key: string, value: T) =>
+        Promise.resolve(cache.set(key, value)),
+      ),
+    clear: () => cache.clear(),
+  }
+}
+
 export const gatsbyContext = {
   actions: {
     createNode: jest.fn(),
@@ -17,7 +33,7 @@ export const gatsbyContext = {
     info: jest.fn(),
     warn: jest.fn(),
   },
-  cache: new Map(),
+  cache: createCache(),
   schema: {
     buildUnionType: jest.fn((config) => ({ kind: 'UNION', config })),
     buildObjectType: jest.fn((config) => ({ kind: 'OBJECT', config })),

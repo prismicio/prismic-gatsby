@@ -1,13 +1,45 @@
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
+import * as E from 'fp-ts/Either'
+import * as O from 'fp-ts/Option'
+import { pipe, constNull } from 'fp-ts/function'
 import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
 
+import { createRemoteFileNode } from '../lib/createRemoteFileNode'
+import { getFromOrSetToCache } from '../lib/getFromOrSetToCache'
+import { sprintf } from '../lib/sprintf'
+
+import { LOCAL_FILE_CACHE_KEY_TEMPLATE } from '../constants'
 import { Dependencies, PrismicAPIImageField } from '../types'
 
 const resolveUrl = (source: PrismicAPIImageField) => source.url
 const resolveWidth = (source: PrismicAPIImageField) => source.dimensions.width
 const resolveHeight = (source: PrismicAPIImageField) => source.dimensions.height
+
+const resolveLocalFileProgram = (
+  source: PrismicAPIImageField,
+): RTE.ReaderTaskEither<Dependencies, Error, string> =>
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.chainFirstW(
+      RTE.fromPredicate(
+        (deps) => deps.pluginOptions.downloadLocal,
+        () => new Error('downloadLocal is false'),
+      ),
+    ),
+    RTE.bindW('url', () =>
+      pipe(
+        O.fromNullable(source.url),
+        RTE.fromOption(() => new Error('URL is not set')),
+      ),
+    ),
+    RTE.bind('cacheKey', (scope) =>
+      RTE.of(sprintf(LOCAL_FILE_CACHE_KEY_TEMPLATE, scope.url)),
+    ),
+    RTE.chain((scope) =>
+      getFromOrSetToCache(scope.cacheKey, createRemoteFileNode(scope.url)),
+    ),
+  )
 
 export const buildBaseImageFieldConfigMap: RTE.ReaderTaskEither<
   Dependencies,
@@ -59,12 +91,13 @@ export const buildBaseImageFieldConfigMap: RTE.ReaderTaskEither<
       defaultPlaceholderImgixParams:
         scope.pluginOptions.imagePlaceholderImgixParams,
     }),
-    // TODO: Create resolver that downloads the file, creates a
-    // node, and returns the ID. This can be handled using
-    // gatsby-source-filesystem's helper functions.
     localFile: {
       type: 'File',
-      resolve: (_source: PrismicAPIImageField) => {},
+      resolve: async (source: PrismicAPIImageField) =>
+        pipe(
+          await RTE.run(resolveLocalFileProgram(source), scope),
+          E.getOrElseW(constNull),
+        ),
       extensions: { link: {} },
     },
   })),
