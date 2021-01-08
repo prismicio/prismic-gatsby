@@ -1,8 +1,14 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
+import { AsyncReturnType } from 'type-fest'
 
-import { Dependencies, PrismicClient } from '../types'
+export interface CreateClientEnv {
+  apiEndpoint: string
+  accessToken: string | null
+}
+
+export type Client = AsyncReturnType<typeof Prismic.getApi>
 
 /**
  * Creates a Prismic API client using the environment's configuration. The
@@ -21,16 +27,16 @@ import { Dependencies, PrismicClient } from '../types'
  * @returns A Prismic API client.
  */
 export const createClient = (): RTE.ReaderTaskEither<
-  Pick<Dependencies, 'pluginOptions'>,
+  CreateClientEnv,
   never,
-  PrismicClient
+  Client
 > =>
   pipe(
-    RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
-    RTE.chain((deps) =>
+    RTE.ask<CreateClientEnv>(),
+    RTE.chain((env) =>
       RTE.rightTask(() =>
-        Prismic.getApi(deps.pluginOptions.apiEndpoint, {
-          accessToken: deps.pluginOptions.accessToken,
+        Prismic.getApi(env.apiEndpoint, {
+          accessToken: env.accessToken ?? undefined,
         }),
       ),
     ),

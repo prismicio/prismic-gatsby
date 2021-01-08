@@ -36,11 +36,15 @@
     "es-cookie": "^1.3.2",
     "fp-ts": "^2.9.3",
     "gatsby-node-helpers": "^1.0.2",
+    "prismic-javascript": "^3.0.2",
     "tiny-hashes": "^1.0.1"
   },
   "peerDependencies": {
     "gatsby": ">=2.29",
     "gatsby-source-prismic": ">=4",
     "react": ">=16.13"
+  },
+  "devDependencies": {
+    "type-fest": "^0.20.2"
   }
 }

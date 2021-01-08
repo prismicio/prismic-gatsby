@@ -3,7 +3,10 @@ import {
   DEFAULT_IMGIX_PARAMS,
   DEFAULT_LANG,
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
+  DEFAULT_PRISMIC_API_ENDPOINT,
 } from 'gatsby-source-prismic'
+
+import { sprintf } from './lib/sprintf'
 
 export const pluginOptionsSchema: NonNullable<
   gatsby.GatsbyNode['pluginOptionsSchema']
@@ -13,7 +16,9 @@ export const pluginOptionsSchema: NonNullable<
   const schema = Joi.object({
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
-    apiEndpoint: Joi.string(),
+    apiEndpoint: Joi.string().default((parent) =>
+      sprintf(DEFAULT_PRISMIC_API_ENDPOINT, parent.repositoryName),
+    ),
     releaseID: Joi.string(),
     fetchLinks: Joi.array().items(Joi.string().required()),
     graphQuery: Joi.string(),

@@ -17,6 +17,7 @@ import {
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
   MISSING_SCHEMAS_MSG,
   MISSING_SCHEMA_MSG,
+  DEFAULT_PRISMIC_API_ENDPOINT,
 } from './constants'
 import { Dependencies, JoiValidationError, PluginOptions } from './types'
 
@@ -65,7 +66,9 @@ export const pluginOptionsSchema: NonNullable<
   const schema = Joi.object({
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
-    apiEndpoint: Joi.string(),
+    apiEndpoint: Joi.string().default((parent) =>
+      sprintf(DEFAULT_PRISMIC_API_ENDPOINT, parent.repositoryName),
+    ),
     releaseID: Joi.string(),
     fetchLinks: Joi.array().items(Joi.string().required()),
     graphQuery: Joi.string(),

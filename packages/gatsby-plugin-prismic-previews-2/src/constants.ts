@@ -1,3 +1,5 @@
+export const QUERY_PAGE_SIZE = 100
+
 export const TYPE_PATHS_BASENAME_TEMPLATE = 'type-paths-store %s'
 
 export const REPORTER_TEMPLATE = 'gatsby-plugin-prismic-previews(%s) - %s'
