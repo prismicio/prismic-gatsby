@@ -9,7 +9,7 @@ import { getTypeName } from '../lib/getTypeName'
 import { createType } from '../lib/createType'
 import { createTypePath } from '../lib/createTypePath'
 
-import { buildBaseImageFieldConfigMap } from './buildBaseImageFieldConfigMap'
+import { buildImageBaseFieldConfigMap } from './buildImageBaseFieldConfigMap'
 
 import {
   Dependencies,
@@ -58,7 +58,7 @@ export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> 
         ? RTE.of(undefined)
         : createThumbnailsType(path, schema),
     ),
-    RTE.bind('baseFields', () => buildBaseImageFieldConfigMap),
+    RTE.bind('baseFields', () => buildImageBaseFieldConfigMap),
     RTE.chain((scope) =>
       buildObjectType({
         name: scope.nodeHelpers.createTypeName(...path, 'ImageType'),

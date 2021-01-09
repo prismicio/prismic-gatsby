@@ -11,7 +11,6 @@ import { sprintf } from './lib/sprintf'
 import { throwError } from './lib/throwError'
 
 import {
-  DEFAULT_DOWNLOAD_LOCAL,
   DEFAULT_IMGIX_PARAMS,
   DEFAULT_LANG,
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
@@ -80,7 +79,6 @@ export const pluginOptionsSchema: NonNullable<
     imagePlaceholderImgixParams: Joi.object().default(
       DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
     ),
-    downloadLocal: Joi.boolean().default(DEFAULT_DOWNLOAD_LOCAL),
     typePrefix: Joi.string(),
     webhookSecret: Joi.string(),
   })

@@ -15,14 +15,15 @@ module.exports = {
           page: require('./schemas/page.json'),
           settings: require('./schemas/settings.json'),
         },
+        typePrefix: 'prefix',
       },
     },
-    {
-      resolve: 'gatsby-plugin-prismic-previews-2',
-      options: {
-        repositoryName: process.env.PRISMIC_REPOSITORY_NAME,
-        accessToken: process.env.PRISMIC_ACCESS_TOKEN,
-      },
-    },
+    // {
+    //   resolve: 'gatsby-plugin-prismic-previews-2',
+    //   options: {
+    //     repositoryName: process.env.PRISMIC_REPOSITORY_NAME,
+    //     accessToken: process.env.PRISMIC_ACCESS_TOKEN,
+    //   },
+    // },
   ],
 }

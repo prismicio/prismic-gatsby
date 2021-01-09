@@ -1,3 +1,4 @@
+import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
@@ -7,7 +8,7 @@ import { Dependencies } from '../types'
 
 export const createRemoteFileNode = (
   url: string,
-): RTE.ReaderTaskEither<Dependencies, Error, string> =>
+): RTE.ReaderTaskEither<Dependencies, Error, gatsby.Node> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainW((deps) =>
@@ -26,5 +27,4 @@ export const createRemoteFileNode = (
         ),
       ),
     ),
-    RTE.map((node) => node.id),
   )

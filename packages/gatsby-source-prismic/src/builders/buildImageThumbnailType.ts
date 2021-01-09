@@ -5,7 +5,7 @@ import { pipe } from 'fp-ts/function'
 import { Dependencies } from '../types'
 import { buildObjectType } from '../lib/buildObjectType'
 
-import { buildBaseImageFieldConfigMap } from './buildBaseImageFieldConfigMap'
+import { buildImageBaseFieldConfigMap } from './buildImageBaseFieldConfigMap'
 
 export const buildImageThumbnailType: RTE.ReaderTaskEither<
   Dependencies,
@@ -13,7 +13,7 @@ export const buildImageThumbnailType: RTE.ReaderTaskEither<
   gatsby.GatsbyGraphQLType
 > = pipe(
   RTE.ask<Dependencies>(),
-  RTE.bind('imageFields', () => buildBaseImageFieldConfigMap),
+  RTE.bind('imageFields', () => buildImageBaseFieldConfigMap),
   RTE.chain((scope) =>
     buildObjectType({
       name: scope.nodeHelpers.createTypeName('ImageThumbnailType'),

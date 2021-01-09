@@ -31,6 +31,7 @@ export interface Dependencies {
   buildEnumType: gatsby.NodePluginSchema['buildEnumType']
   getNode: gatsby.SourceNodesArgs['getNode']
   getNodes: gatsby.SourceNodesArgs['getNodes']
+  getNodeAndSavePathDependency: gatsby.NodePluginArgs['getNodeAndSavePathDependency']
   touchNode: gatsby.Actions['touchNode']
   deleteNode: gatsby.Actions['deleteNode']
   createNodeId: gatsby.NodePluginArgs['createNodeId']
@@ -59,7 +60,6 @@ export interface PluginOptions extends gatsby.PluginOptions {
   schemas: Record<string, PrismicSchema>
   imageImgixParams: gatsbyImgix.ImgixUrlParams
   imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
-  downloadLocal: boolean
   typePrefix?: string
   webhookSecret?: string
   plugins: []
