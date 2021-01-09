@@ -1,8 +1,8 @@
 import * as gqlc from 'graphql-compose'
+import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
-import { createRemoteFileNode } from 'gatsby-source-filesystem'
 
 import { Dependencies, PrismicAPIImageField } from '../types'
 
@@ -55,14 +55,16 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
     localFile: {
       type: 'File',
       resolve: async (source: PrismicAPIImageField) =>
-        createRemoteFileNode({
-          url: source.url,
-          store: deps.store,
-          cache: deps.cache,
-          createNode: deps.createNode,
-          createNodeId: deps.createNodeId,
-          reporter: deps.reporter,
-        }),
+        source.url
+          ? await gatsbyFs.createRemoteFileNode({
+              url: source.url,
+              store: deps.store,
+              cache: deps.cache,
+              createNode: deps.createNode,
+              createNodeId: deps.createNodeId,
+              reporter: deps.reporter,
+            })
+          : null,
     },
   })),
 )

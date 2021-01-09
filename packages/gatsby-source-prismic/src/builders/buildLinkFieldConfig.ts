@@ -1,3 +1,4 @@
+import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe, identity } from 'fp-ts/function'
 import * as PrismicDOM from 'prismic-dom'
@@ -22,7 +23,7 @@ export const buildLinkFieldConfig: FieldConfigCreator = (path) =>
       buildObjectType({
         name: deps.nodeHelpers.createTypeName('LinkType'),
         fields: {
-          link_type: deps.globalNodeHelpers.createTypeName('LinkType'),
+          link_type: deps.globalNodeHelpers.createTypeName('LinkTypeEnum'),
           isBroken: 'Boolean',
           url: {
             type: 'String',
@@ -47,6 +48,20 @@ export const buildLinkFieldConfig: FieldConfigCreator = (path) =>
                 ? deps.nodeHelpers.createNodeId(source.id)
                 : undefined,
             extensions: { link: {} },
+          },
+          localFile: {
+            type: 'File',
+            resolve: async (source: PrismicAPILinkField) =>
+              source.url && source.link_type === 'Media'
+                ? await gatsbyFs.createRemoteFileNode({
+                    url: source.url,
+                    store: deps.store,
+                    cache: deps.cache,
+                    createNode: deps.createNode,
+                    createNodeId: deps.createNodeId,
+                    reporter: deps.reporter,
+                  })
+                : null,
           },
           raw: { type: 'JSON', resolve: identity },
         },

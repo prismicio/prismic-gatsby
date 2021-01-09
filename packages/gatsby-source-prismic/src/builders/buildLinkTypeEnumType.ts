@@ -13,7 +13,7 @@ export const buildLinkTypeEnumType: RTE.ReaderTaskEither<
   RTE.ask<Dependencies>(),
   RTE.chain((deps) =>
     buildEnumType({
-      name: deps.globalNodeHelpers.createTypeName('LinkType'),
+      name: deps.globalNodeHelpers.createTypeName('LinkTypeEnum'),
       values: { Any: {}, Document: {}, Media: {}, Web: {} },
     }),
   ),
