@@ -47,56 +47,48 @@ export const buildBaseImageFieldConfigMap: RTE.ReaderTaskEither<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gqlc.ComposeFieldConfigMap<any, any>
 > = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.bind('fixedType', (scope) =>
-    RTE.of(
-      gatsbyImgix.createImgixFixedType({
-        name: scope.nodeHelpers.createTypeName('ImageFixedType'),
-        cache: scope.cache,
-      }),
-    ),
-  ),
-  RTE.bind('fluidType', (scope) =>
-    RTE.of(
-      gatsbyImgix.createImgixFluidType({
-        name: scope.nodeHelpers.createTypeName('ImageFluidType'),
-        cache: scope.cache,
-      }),
-    ),
-  ),
-  RTE.map((scope) => ({
+  RTE.asks((deps) => ({
     alt: 'String',
     copyright: 'String',
-    dimensions: scope.globalNodeHelpers.createTypeName('ImageDimensionsType'),
-    url: gatsbyImgix.createImgixUrlSchemaFieldConfig({
+    dimensions: deps.globalNodeHelpers.createTypeName('ImageDimensionsType'),
+    url: gatsbyImgix.createImgixUrlFieldConfig({
+      paramsInputType: deps.globalNodeHelpers.createTypeName(
+        'ImgixUrlParamsInput',
+      ),
       resolveUrl,
-      defaultImgixParams: scope.pluginOptions.imageImgixParams,
+      defaultImgixParams: deps.pluginOptions.imageImgixParams,
     }),
-    fixed: gatsbyImgix.createImgixFixedSchemaFieldConfig({
-      type: scope.fixedType,
+    fixed: gatsbyImgix.createImgixFixedFieldConfig({
+      type: deps.nodeHelpers.createTypeName('ImageFixedType'),
+      paramsInputType: deps.globalNodeHelpers.createTypeName(
+        'ImgixUrlParamsInput',
+      ),
       resolveUrl,
       resolveWidth,
       resolveHeight,
-      cache: scope.cache,
-      defaultImgixParams: scope.pluginOptions.imageImgixParams,
+      cache: deps.cache,
+      defaultImgixParams: deps.pluginOptions.imageImgixParams,
       defaultPlaceholderImgixParams:
-        scope.pluginOptions.imagePlaceholderImgixParams,
+        deps.pluginOptions.imagePlaceholderImgixParams,
     }),
-    fluid: gatsbyImgix.createImgixFluidSchemaFieldConfig({
-      type: scope.fluidType,
+    fluid: gatsbyImgix.createImgixFluidFieldConfig({
+      type: deps.nodeHelpers.createTypeName('ImageFluidType'),
+      paramsInputType: deps.globalNodeHelpers.createTypeName(
+        'ImgixUrlParamsInput',
+      ),
       resolveUrl,
       resolveWidth,
       resolveHeight,
-      cache: scope.cache,
-      defaultImgixParams: scope.pluginOptions.imageImgixParams,
+      cache: deps.cache,
+      defaultImgixParams: deps.pluginOptions.imageImgixParams,
       defaultPlaceholderImgixParams:
-        scope.pluginOptions.imagePlaceholderImgixParams,
+        deps.pluginOptions.imagePlaceholderImgixParams,
     }),
     localFile: {
       type: 'File',
       resolve: async (source: PrismicAPIImageField) =>
         pipe(
-          await RTE.run(resolveLocalFileProgram(source), scope),
+          await RTE.run(resolveLocalFileProgram(source), deps),
           E.getOrElseW(constNull),
         ),
       extensions: { link: {} },

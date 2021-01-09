@@ -36,7 +36,7 @@
   "dependencies": {
     "fp-ts": "^2.9.3",
     "gatsby-node-helpers": "^1.0.3",
-    "gatsby-plugin-imgix": "^0.8.2",
+    "gatsby-plugin-imgix": "^0.9.0-schema.0",
     "gatsby-source-filesystem": "^2.9.0",
     "prismic-dom": "^2.2.4",
     "prismic-javascript": "^3.0.2",

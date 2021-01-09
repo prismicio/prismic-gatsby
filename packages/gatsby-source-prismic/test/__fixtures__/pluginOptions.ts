@@ -10,6 +10,7 @@ import schemaFixture from './schema.json'
 export const pluginOptions: PluginOptions = {
   repositoryName: 'qwerty',
   accessToken: 'accessToken',
+  apiEndpoint: 'https://qwerty.prismic.io/api/v2',
   typePrefix: 'prefix',
   schemas: {
     page: schemaFixture as PrismicSchema,

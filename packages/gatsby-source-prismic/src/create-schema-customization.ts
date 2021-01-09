@@ -15,22 +15,34 @@ import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
 import { buildGeoPointType } from './builders/buildGeoPointType'
 import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
 import { buildImageDimensionsType } from './builders/buildImageDimensionsType'
+import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
 
 import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
+
+const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
 export const createBaseTypes: RTE.ReaderTaskEither<
   Dependencies,
   never,
   void
 > = pipe(
-  [
-    buildLinkTypeEnumType,
-    buildGeoPointType,
-    buildImageDimensionsType,
-    buildImageThumbnailType,
-  ],
-  A.sequence(RTE.readerTaskEither),
+  RTE.ask<Dependencies>(),
+  RTE.bind('baseTypes', () =>
+    pipe(
+      [
+        buildLinkTypeEnumType,
+        buildGeoPointType,
+        buildImageDimensionsType,
+        buildImageThumbnailType,
+      ],
+      A.sequence(RTE.readerTaskEither),
+    ),
+  ),
+  RTE.bind('imgixTypes', () => buildImgixImageTypes),
+  RTE.map((scope) =>
+    GatsbyGraphQLTypeM.concat(scope.baseTypes, scope.imgixTypes),
+  ),
   RTE.chain(createTypes),
   RTE.map(constVoid),
 )

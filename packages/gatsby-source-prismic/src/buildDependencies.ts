@@ -30,6 +30,7 @@ export const buildDependencies = (
     buildEnumType: gatsbyContext.schema.buildEnumType,
     getNode: gatsbyContext.getNode,
     getNodes: gatsbyContext.getNodes,
+    schema: gatsbyContext.schema,
     store: gatsbyContext.store,
     cache: gatsbyContext.cache,
     globalNodeHelpers: createNodeHelpers({

@@ -19,20 +19,6 @@ test('creates nodes', async () => {
   )
 })
 
-test('uses default API endpoint with repository name', async () => {
-  const spy = jest.spyOn(Prismic, 'getApi')
-
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
-
-  expect(
-    spy,
-  ).toHaveBeenCalledWith(
-    `https://${pluginOptions.repositoryName}.prismic.io/api/v2`,
-    { accessToken: pluginOptions.accessToken },
-  )
-})
-
 test('uses apiEndpoint plugin option if provided', async () => {
   const options = { ...pluginOptions }
   options.apiEndpoint = 'api-endpoint'

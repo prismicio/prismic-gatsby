@@ -34,8 +34,9 @@ export interface Dependencies {
   touchNode: gatsby.Actions['touchNode']
   deleteNode: gatsby.Actions['deleteNode']
   createNodeId: gatsby.NodePluginArgs['createNodeId']
+  schema: gatsby.NodePluginSchema
   cache: gatsby.GatsbyCache
-  store: gatsby.NodePluginArgs['store']
+  store: gatsby.Store
   reporter: gatsby.Reporter
   reportInfo: gatsby.Reporter['info']
   reportWarning: gatsby.Reporter['warn']
