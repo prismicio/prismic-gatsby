@@ -38,6 +38,7 @@ export const gatsbyContext = {
     buildUnionType: jest.fn((config) => ({ kind: 'UNION', config })),
     buildObjectType: jest.fn((config) => ({ kind: 'OBJECT', config })),
     buildEnumType: jest.fn((config) => ({ kind: 'ENUM', config })),
+    buildInterfaceType: jest.fn((config) => ({ kind: 'INTERFACE', config })),
     buildInputObjectType: jest.fn((config) => ({
       kind: 'INPUT_OBJECT',
       config,
