@@ -26,8 +26,8 @@ export const query = graphql`
             ... on PrismicPrefixPageDataBodyImages {
               items {
                 image {
-                  localFile {
-                    absolutePath
+                  fluid {
+                    ...GatsbyImgixFluid
                   }
                 }
               }
