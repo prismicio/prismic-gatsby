@@ -7189,14 +7189,14 @@ gatsby-page-utils@^0.7.0:
     lodash "^4.17.20"
     micromatch "^4.0.2"
 
-gatsby-plugin-imgix@^0.9.0-schema.0:
-  version "0.9.0-schema.0"
-  resolved "https://registry.yarnpkg.com/gatsby-plugin-imgix/-/gatsby-plugin-imgix-0.9.0-schema.0.tgz#93cf9d75316f62e0b6c530a03f083d4ab402c00b"
-  integrity sha512-6Brdnn7oMhIykT0QnSwBQlnx3WU5l/Guwcs102xyZpwYNeOpxdcPsEJuTVFt3+P/97FghiVYeFgk6NkSARMIQA==
+gatsby-plugin-imgix@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-imgix/-/gatsby-plugin-imgix-0.9.0.tgz#7c2b6ade0902346d6726adffb47ca0ab2ee63904"
+  integrity sha512-MLCjNWl3JjiUQJp33g5ObU0k3dBSNjZGhPUDV5ivdGmE2s0GQEzvfl1wiLjrbJCSB/1jkAyhWqsoHXQnfuOg/g==
   dependencies:
     camel-case "^4.1.2"
     fp-ts "^2.9.3"
-    imgix-url-params "^11.11.1"
+    imgix-url-params "^11.11.2"
     md5 "^2.3.0"
     node-fetch "^2.6.1"
     param-case "^3.0.4"
@@ -8642,10 +8642,10 @@ ignore@^5.1.1, ignore@^5.1.4:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
 
-imgix-url-params@^11.11.1:
-  version "11.11.1"
-  resolved "https://registry.yarnpkg.com/imgix-url-params/-/imgix-url-params-11.11.1.tgz#db5a6c8024050304b1d9cf7e36aa7cbd190d7f13"
-  integrity sha512-SeIPIeOZe0etThHCzfqJEFZREmY5O41xRZ3JTpX8WM8REuVWUBa2+6f9Qg8rbJNflu1CwzEIijXPnJj1ksJ5EA==
+imgix-url-params@^11.11.2:
+  version "11.11.2"
+  resolved "https://registry.yarnpkg.com/imgix-url-params/-/imgix-url-params-11.11.2.tgz#451fee60c43bf04313a49b29744b4cd818e90623"
+  integrity sha512-T0XU7g1CyNLwcuKWPpuhItFs7XhzMLKVkH9udmRGxaGXycjL2l93rvXhAEz/Ur5X8Z5Nyzet+FszrXo98xEzhw==
 
 import-cwd@^2.0.0:
   version "2.1.0"
