@@ -14,6 +14,4 @@ export const getFromOrSetToCache = <T>(
     RTE.ask<Dependencies>(),
     RTE.chain(() => getFromCache<T>(key)),
     RTE.orElse(() => pipe(f, RTE.chainFirstW(setToCache(key)))),
-    // RTE.getOrElse(() => pipe(f, RTE.chainFirstW(setToCache(key)), RTE.getOrElse(constVoid))),
-    // RTE.orElse(() => pipe(f, RTE.chainW(setToCache(key)))),
   )
