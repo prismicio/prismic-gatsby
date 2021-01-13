@@ -8,20 +8,24 @@ export interface PluginOptions extends gatsby.PluginOptions {
   repositoryName: string
   accessToken?: string
   apiEndpoint: string
-  releaseID?: string
   graphQuery?: string
   fetchLinks?: string[]
   lang: string
   linkResolver?: (doc: gatsbyPrismic.PrismicAPIDocument) => string
   htmlSerializer?: typeof PrismicDOM.HTMLSerializer
-  schemas: Record<string, gatsbyPrismic.PrismicSchema>
   imageImgixParams: gatsbyImgix.ImgixUrlParams
   imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
-  downloadLocal: boolean
   typePrefix?: string
-  webhookSecret?: string
+  toolbar: PrismicToolbarType
   plugins: []
 }
+
+export enum PrismicToolbarType {
+  New = 'new',
+  Legacy = 'legacy',
+}
+
+export type TypePathsStore = Record<string, gatsbyPrismic.PrismicTypePathType>
 
 export interface PrismicAPIDocument<
   TData extends UnknownRecord<string> = UnknownRecord<string>

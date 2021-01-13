@@ -35,17 +35,19 @@ beforeEach(() => {
   gatsbyContext.cache.clear()
 })
 
-test('writes type paths to cache', async () => {
-  const spy = jest.spyOn(gatsbyContext.cache, 'set')
-
+test.only('creates type path nodes', async () => {
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-  const cacheKey = `type-paths ${pluginOptions.repositoryName}`
-  const call = spy.mock.calls.find((c) => c[0] === cacheKey)
-  const typePaths = JSON.parse(call?.[1])
+  const calls = gatsbyContext.actions.createNode.mock.calls
+    .filter((call) => call[0].internal.type === 'PrismicPrefixTypePathType')
+    .reduce((acc, call) => {
+      acc[call[0].path.join('.')] = call[0].type
 
-  expect(typePaths).toEqual({
+      return acc
+    }, {} as Record<string, string>)
+
+  expect(calls).toEqual({
     page: 'Document',
     'page.data': 'DocumentData',
     'page.data.body': 'Slices',

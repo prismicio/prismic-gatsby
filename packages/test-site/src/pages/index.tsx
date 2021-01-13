@@ -1,8 +1,15 @@
 import * as React from 'react'
 import { graphql, PageProps } from 'gatsby'
+import { usePrismicPreviewContext } from 'gatsby-plugin-prismic-previews-2'
 
 const HomePage = ({ data }: PageProps): JSX.Element => {
   const dataStr = JSON.stringify(data, null, 2)
+
+  const context = usePrismicPreviewContext(
+    process.env.GATSBY_PRISMIC_REPOSITORY_NAME as string,
+  )
+
+  console.log(context)
 
   return (
     <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>

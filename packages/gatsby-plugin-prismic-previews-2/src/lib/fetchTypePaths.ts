@@ -1,19 +1,17 @@
 import * as gatsby from 'gatsby'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import md5 from 'tiny-hashes/md5'
 
-import { TYPE_PATHS_BASENAME_TEMPLATE } from '../constants'
+import {
+  BuildTypePathsStoreFilenameEnv,
+  buildTypePathsStoreFilename,
+} from './buildTypePathsStoreFilename'
+import { TypePathsStore } from '../types'
 
-import { sprintf } from './sprintf'
+export type FetchTypePathsStoreEnv = BuildTypePathsStoreFilenameEnv
 
-interface FetchTypePathsStoreEnv {
-  repositoryName: string
-}
-
-const fetchText = (url: string): TE.TaskEither<Error, string> =>
+const fetchJSON = <T = unknown>(url: string): TE.TaskEither<Error, T> =>
   pipe(
     TE.tryCatch(
       () => fetch(url),
@@ -27,31 +25,30 @@ const fetchText = (url: string): TE.TaskEither<Error, string> =>
     ),
     TE.chain((res) =>
       TE.tryCatch(
-        () => res.text(),
+        () => res.json() as Promise<T>,
         (e) => e as Error,
       ),
     ),
   )
 
 const buildTypePathsStoreURL: RTE.ReaderTaskEither<
-  FetchTypePathsStoreEnv,
+  BuildTypePathsStoreFilenameEnv,
   never,
   string
 > = pipe(
-  RTE.ask<FetchTypePathsStoreEnv>(),
-  RTE.map((env) =>
-    md5(sprintf(TYPE_PATHS_BASENAME_TEMPLATE, env.repositoryName)),
-  ),
-  RTE.map((basename) => gatsby.withAssetPrefix(`/static/${basename}.json`)),
+  RTE.ask<BuildTypePathsStoreFilenameEnv>(),
+  RTE.chain(() => buildTypePathsStoreFilename),
+  RTE.map((filename) => gatsby.withAssetPrefix(`/static/${filename}`)),
 )
 
 export const fetchTypePathsStore: RTE.ReaderTaskEither<
   FetchTypePathsStoreEnv,
   Error,
-  gatsbyPrismic.TypePathsStoreInstance
+  TypePathsStore
 > = pipe(
-  RTE.ask<FetchTypePathsStoreEnv>(),
+  RTE.ask<BuildTypePathsStoreFilenameEnv>(),
   RTE.bind('url', () => buildTypePathsStoreURL),
-  RTE.bind('store', (scope) => RTE.fromTaskEither(fetchText(scope.url))),
-  RTE.map((scope) => gatsbyPrismic.deserializeTypePathsStore(scope.store)),
+  RTE.chain((scope) =>
+    RTE.fromTaskEither(fetchJSON<TypePathsStore>(scope.url)),
+  ),
 )

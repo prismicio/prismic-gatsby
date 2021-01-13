@@ -1,4 +1,7 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import { constVoid, pipe } from 'fp-ts/function'
+
+import { createNodeOfType } from './createNodeOfType'
 
 import { Dependencies, PrismicTypePathType } from '../types'
 
@@ -12,4 +15,8 @@ export const createTypePath = (
   path: string[],
   type: PrismicTypePathType,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  RTE.asks((deps) => deps.createTypePath(path, type))
+  pipe(
+    RTE.right({ id: path.toString(), path, type }),
+    RTE.chain((node) => createNodeOfType(node, 'TypePathType')),
+    RTE.map(constVoid),
+  )

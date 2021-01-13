@@ -9,13 +9,13 @@ import { createAllDocumentTypesType } from './lib/createAllDocumentTypesType'
 import { createCustomType } from './lib/createCustomType'
 import { createTypes } from './lib/createTypes'
 import { throwError } from './lib/throwError'
-import { writeTypePathsToCache } from './lib/writeTypePathsToCache'
 
-import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
 import { buildGeoPointType } from './builders/buildGeoPointType'
-import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
 import { buildImageDimensionsType } from './builders/buildImageDimensionsType'
+import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
 import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
+import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
+import { buildTypePathType } from './builders/buildTypePathType'
 
 import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
@@ -31,10 +31,11 @@ export const createBaseTypes: RTE.ReaderTaskEither<
   RTE.bind('baseTypes', () =>
     pipe(
       [
-        buildLinkTypeEnumType,
         buildGeoPointType,
         buildImageDimensionsType,
         buildImageThumbnailType,
+        buildLinkTypeEnumType,
+        buildTypePathType,
       ],
       A.sequence(RTE.readerTaskEither),
     ),
@@ -70,7 +71,6 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   RTE.chainFirst(() => createBaseTypes),
   RTE.bind('types', () => createCustomTypes),
   RTE.chainFirst((scope) => createAllDocumentTypesType(scope.types)),
-  RTE.chainFirst(() => writeTypePathsToCache),
   RTE.map(constVoid),
 )
 

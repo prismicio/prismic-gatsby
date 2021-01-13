@@ -8,8 +8,6 @@ import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/docume
 import { QueryOptions as _PrismicClientQueryOptions } from 'prismic-javascript/types/ResolvedApi'
 import { NodeHelpers } from 'gatsby-node-helpers'
 
-import { TypePathsStoreInstance } from './typePaths'
-
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 
 type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<K, unknown>
@@ -18,12 +16,14 @@ export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
 >
 
-export type TypePathsStore = Record<string, PrismicTypePathType>
+export interface TypePath {
+  path: string[]
+  type: PrismicTypePathType
+}
+
+export type TypePathNode = TypePath & gatsby.Node
 
 export interface Dependencies {
-  createTypePath: TypePathsStoreInstance['set']
-  getTypePath: TypePathsStoreInstance['get']
-  serializeTypePathStore: TypePathsStoreInstance['serialize']
   createTypes: gatsby.Actions['createTypes']
   createNode: gatsby.Actions['createNode']
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']

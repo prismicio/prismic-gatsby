@@ -45,12 +45,7 @@ export const createCustomType = (
           R.partitionWithIndex((i) => PRISMIC_API_NON_DATA_FIELDS.includes(i)),
         ),
         RTE.chainFirst(() =>
-          RTE.of(
-            deps.createTypePath(
-              [name, 'data'],
-              PrismicSpecialType.DocumentData,
-            ),
-          ),
+          createTypePath([name, 'data'], PrismicSpecialType.DocumentData),
         ),
         RTE.bind('data', (fields) =>
           pipe(
