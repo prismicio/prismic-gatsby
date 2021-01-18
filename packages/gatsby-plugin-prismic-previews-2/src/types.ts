@@ -33,4 +33,6 @@ export interface PrismicAPIDocument<
   data: TData
 }
 
+export type LinkResolver = (doc: PrismicAPIDocument) => string
+
 type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<K, unknown>

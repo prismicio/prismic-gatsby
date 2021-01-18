@@ -10,6 +10,8 @@ export const QUERY_PAGE_SIZE = 100
 
 export const TYPE_PATHS_BASENAME_TEMPLATE = 'type-paths-store %s'
 
+export const WINDOW_CONTEXTS_KEY = '__GATSBY_PLUGIN_PRISMIC_PREVIEWS_CONTEXTS__'
+
 export const REPORTER_TEMPLATE = 'gatsby-plugin-prismic-previews(%s) - %s'
 
 export const WROTE_TYPE_PATHS_TO_FS_MSG = 'Wrote type paths store to %s'

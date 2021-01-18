@@ -1,42 +1,31 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import * as RE from 'fp-ts/ReaderEither'
-import * as E from 'fp-ts/Either'
-import { identity, pipe } from 'fp-ts/function'
-
-import { throwError } from './lib/throwError'
+import * as Rr from 'fp-ts/Reader'
+import { pipe } from 'fp-ts/function'
 
 import { PluginOptions } from './types'
 import {
   createPrismicContext,
-  CreateStoreContextEnv,
+  CreatePrismicContextEnv,
 } from './usePrismicPreviewContext'
 
-interface WrapRootElementProgramEnv extends CreateStoreContextEnv {
+interface WrapRootElementProgramEnv extends CreatePrismicContextEnv {
   element: React.ReactNode;
 }
 
-const wrapRootElementProgram: RE.ReaderEither<
+const wrapRootElementProgram: Rr.Reader<
   WrapRootElementProgramEnv,
-  Error,
-  React.ReactNode
+  JSX.Element
 > = pipe(
-  RE.ask<WrapRootElementProgramEnv>(),
-  RE.bindW('provider', () => createPrismicContext),
-  RE.map((env) => {
-    const PrismicPreviewProvider = env.provider
-
-    return <PrismicPreviewProvider>{env.element}</PrismicPreviewProvider>
-  }),
+  Rr.ask<WrapRootElementProgramEnv>(),
+  Rr.bindW('Provider', () => createPrismicContext),
+  Rr.map(({ Provider, element }) => <Provider>{element}</Provider>),
 )
 
 export const wrapRootElement: NonNullable<
   gatsby.GatsbyBrowser['wrapRootElement']
 > = (gatsbyContext, pluginOptions: PluginOptions) =>
-  pipe(
-    wrapRootElementProgram({
-      element: gatsbyContext.element,
-      pluginOptions,
-    }),
-    E.fold(throwError, identity),
-  )
+  wrapRootElementProgram({
+    pluginOptions,
+    element: gatsbyContext.element,
+  })

@@ -1,8 +1,10 @@
 import * as React from 'react'
-import * as RE from 'fp-ts/ReaderEither'
+import * as Rr from 'fp-ts/Reader'
+import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
-import { constVoid, pipe } from 'fp-ts/function'
+import { pipe } from 'fp-ts/function'
 
+import { WINDOW_CONTEXTS_KEY } from './constants'
 import { PluginOptions } from './types'
 import {
   contextReducer,
@@ -12,26 +14,31 @@ import {
   PrismicContextValue,
 } from './contextReducer'
 
+declare global {
+  interface Window {
+    [WINDOW_CONTEXTS_KEY]: Record<string, PrismicContext>;
+  }
+}
+
 /**
- * Singleton holding all contexts in memory. When multiple repositories with
- * preview support are configured in `gatsby-config.js`, this object holds a
- * React Context instance for each.
+ * Shared global record holding all contexts in memory. This object holds a
+ * React Context instance for each Prismic repository in `gatsby-config.js`
+ * that supports previews.
  */
-const CONTEXTS = {} as Record<string, PrismicContext>
+window[WINDOW_CONTEXTS_KEY] = {}
 
 export type PrismicProviderProps = {
   children?: React.ReactNode;
 }
 
-export interface CreateStoreContextEnv {
+export interface CreatePrismicContextEnv {
   pluginOptions: PluginOptions;
 }
 
-const buildInitialState: RE.ReaderEither<
-  CreateStoreContextEnv,
-  never,
+const buildInitialState: Rr.Reader<
+  CreatePrismicContextEnv,
   PrismicContextState
-> = RE.asks((env) => ({
+> = Rr.asks((env) => ({
   repositoryName: env.pluginOptions.repositoryName,
   pluginOptions: env.pluginOptions,
   documents: {},
@@ -40,53 +47,36 @@ const buildInitialState: RE.ReaderEither<
   isBootstrapped: false,
 }))
 
-const registerContext = (
-  context: PrismicContext,
-): RE.ReaderEither<CreateStoreContextEnv, never, void> =>
-  pipe(
-    RE.ask<CreateStoreContextEnv>(),
-    RE.chainFirst((env) =>
-      RE.of((CONTEXTS[env.pluginOptions.repositoryName] = context)),
-    ),
-    (x) => {
-      console.log({ x, CONTEXTS })
-
-      return x
-    },
-    RE.map(constVoid),
-  )
-// RE.asks((env) => {
-//   CONTEXTS[env.pluginOptions.repositoryName] = context
-// })
-
-export const createPrismicContext: RE.ReaderEither<
-  CreateStoreContextEnv,
-  never,
+export const createPrismicContext: Rr.Reader<
+  CreatePrismicContextEnv,
   React.ComponentType<PrismicProviderProps>
 > = pipe(
-  RE.ask<CreateStoreContextEnv>(),
-  RE.bind('initialState', () => buildInitialState),
-  RE.bind('defaultValue', (env) =>
-    RE.of([
+  Rr.ask<CreatePrismicContextEnv>(),
+  Rr.bind('initialState', () => buildInitialState),
+  Rr.bind('defaultValue', (env) =>
+    Rr.of([
       env.initialState,
       (_: PrismicContextAction): void => void 0,
     ] as const),
   ),
-  RE.bind('context', (env) => RE.of(React.createContext(env.defaultValue))),
-  RE.chainFirst((env) =>
-    RE.of(
+  Rr.bind('context', (env) => Rr.of(React.createContext(env.defaultValue))),
+  Rr.chainFirst((env) =>
+    Rr.of(
       (env.context.displayName = `PrismicPreview(${env.pluginOptions.repositoryName})`),
     ),
   ),
-  RE.chainFirst((env) => registerContext(env.context)),
-  RE.map((env) => ({ children }: PrismicProviderProps): JSX.Element => {
-    const PrismicContext = env.context
+  Rr.chainFirst((env) =>
+    Rr.of(
+      (window[WINDOW_CONTEXTS_KEY][env.pluginOptions.repositoryName] =
+        env.context),
+    ),
+  ),
+  Rr.map((env) => (props: PrismicProviderProps): JSX.Element => {
+    const Context = env.context
     const reducerTuple = React.useReducer(contextReducer, env.initialState)
 
     return (
-      <PrismicContext.Provider value={reducerTuple}>
-        {children}
-      </PrismicContext.Provider>
+      <Context.Provider value={reducerTuple}>{props.children}</Context.Provider>
     )
   }),
 )
@@ -95,7 +85,8 @@ export const usePrismicPreviewContext = (
   repositoryName: string,
 ): PrismicContextValue =>
   pipe(
-    O.fromNullable(CONTEXTS[repositoryName]),
+    window[WINDOW_CONTEXTS_KEY],
+    R.lookup(repositoryName),
     O.fold(() => {
       throw new Error(
         `Could not find a React Context for repository "${repositoryName}"`,

@@ -56,7 +56,7 @@ export const queryAllDocuments: RTE.ReaderTaskEither<
   PrismicAPIDocument[]
 > = pipe(
   RTE.ask<QueryAllDocumentsEnv>(),
-  RTE.bindW('client', createClient),
+  RTE.bindW('client', () => createClient),
   RTE.bindW('queryOptions', (scope) => buildQueryOptions(scope.client)),
   RTE.chain((scope) =>
     RTE.fromTask(aggregateQuery(scope.client, scope.queryOptions)),

@@ -26,9 +26,9 @@ import {
 interface OnPostBootstrapProgramEnv
   extends BuildTypePathsStoreFilenameEnv,
     ReportVerboseEnv {
-  getNodesByType: gatsby.NodePluginArgs['getNodesByType']
-  repositoryName: string
-  nodeHelpers: NodeHelpers
+  getNodesByType: gatsby.NodePluginArgs['getNodesByType'];
+  repositoryName: string;
+  nodeHelpers: NodeHelpers;
 }
 
 const onPostBootstrapProgram: RTE.ReaderTaskEither<
