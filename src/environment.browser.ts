@@ -52,7 +52,7 @@ const loadLinkFieldDocument = async (
   const { hasNodeById } = context as DocumentsToNodesEnvironmentBrowserContext
   const { repositoryName, accessToken, fetchLinks } = pluginOptions
 
-  const linkedDocId = createNodeId(`${field.type} ${field.id}`)
+  const linkedDocId = createNodeId(field.id)
 
   // Skip the fetch process if the node already exists in the store.
   if (hasNodeById(linkedDocId)) return
@@ -132,7 +132,7 @@ const normalizeLinkField: LinkFieldNormalizer = async (
       value: field,
       node: doc,
     })
-  const linkedDocId = createNodeId(`${field.type} ${field.id}`)
+  const linkedDocId = createNodeId(field.id)
 
   if (field.link_type === LinkFieldType.Document && field.id && !field.isBroken)
     await loadLinkFieldDocument(field as UnbrokenDocumentLinkField, env)

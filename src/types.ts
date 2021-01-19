@@ -147,7 +147,7 @@ export interface LinkField {
   url?: string
   target?: string
   size?: number
-  id?: string
+  id: string
   type?: string
   tags?: string[]
   lang?: string

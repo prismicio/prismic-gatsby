@@ -107,7 +107,7 @@ const normalizeLinkField: LinkFieldNormalizer = (
 
   let linkedDocId: NodeID | undefined = undefined
   if (field.link_type === LinkFieldType.Document)
-    linkedDocId = createNodeId(`${field.type} ${field.id}`)
+    linkedDocId = createNodeId(field.id)
 
   return {
     ...field,
