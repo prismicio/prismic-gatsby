@@ -27,6 +27,7 @@ import {
   SlicesFieldNormalizer,
   StructuredTextFieldNormalizer,
   TypePath,
+  NodeID,
 } from './types'
 
 interface UnbrokenDocumentLinkField extends LinkField {
@@ -132,7 +133,10 @@ const normalizeLinkField: LinkFieldNormalizer = async (
       value: field,
       node: doc,
     })
-  const linkedDocId = createNodeId(field.id)
+
+  let linkedDocId: NodeID | undefined = undefined
+  if (field.link_type === LinkFieldType.Document && field.id)
+    linkedDocId = createNodeId(field.id)
 
   if (field.link_type === LinkFieldType.Document && field.id && !field.isBroken)
     await loadLinkFieldDocument(field as UnbrokenDocumentLinkField, env)
@@ -149,8 +153,8 @@ const normalizeLinkField: LinkFieldNormalizer = async (
         if (prop === 'document') {
           if (
             field.link_type === LinkFieldType.Document &&
-            field.id &&
-            !field.isBroken
+            !field.isBroken &&
+            linkedDocId
           )
             return getNodeById(linkedDocId)
 
