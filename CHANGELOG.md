@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.3.2](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.1...v3.3.2) (2021-01-20)
+
+
+### Bug Fixes
+
+* use consistent node IDs to better support Gatsby Preview ([4bfef99](https://github.com/angeloashmore/gatsby-source-prismic/commit/4bfef99aa186f27ff1877f32ffae7f9ab812e34e)), closes [issue#297](https://github.com/angeloashmore/issue/issues/297)
+
 ### [3.3.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.0...v3.3.1) (2020-12-10)
 
 
