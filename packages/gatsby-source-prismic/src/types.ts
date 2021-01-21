@@ -31,7 +31,6 @@ export interface Dependencies {
   buildEnumType: gatsby.NodePluginSchema['buildEnumType']
   getNode: gatsby.SourceNodesArgs['getNode']
   getNodes: gatsby.SourceNodesArgs['getNodes']
-  getNodeAndSavePathDependency: gatsby.NodePluginArgs['getNodeAndSavePathDependency']
   touchNode: gatsby.Actions['touchNode']
   deleteNode: gatsby.Actions['deleteNode']
   createNodeId: gatsby.NodePluginArgs['createNodeId']

@@ -22,6 +22,11 @@ import { buildDependencies } from './buildDependencies'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
+/**
+ * Create general types used by other types. Some types are global (i.e. not
+ * repository-specific), while others are repository-specific, depending on
+ * the type's use of custom plugin options.
+ */
 export const createBaseTypes: RTE.ReaderTaskEither<
   Dependencies,
   never,
@@ -48,6 +53,10 @@ export const createBaseTypes: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
+/**
+ * Create types for all repository custom types using the JSON schemas provided
+ * at `pluginOptions.schemas`.
+ */
 const createCustomTypes: RTE.ReaderTaskEither<
   Dependencies,
   never,
@@ -60,7 +69,7 @@ const createCustomTypes: RTE.ReaderTaskEither<
 )
 
 /**
- * To be executed in the `createSchemaCustomization` stage.
+ * To be executed in the `createSchemaCustomization` API.
  */
 const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   Dependencies,
@@ -74,6 +83,11 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
+/**
+ * Create all GraphQL types for the plugin's configured Prismic repository.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#createSchemaCustomization
+ */
 export const createSchemaCustomization: NonNullable<
   gatsby.GatsbyNode['createSchemaCustomization']
 > = async (

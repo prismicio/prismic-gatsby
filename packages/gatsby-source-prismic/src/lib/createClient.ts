@@ -29,6 +29,8 @@ export const createClient = (): RTE.ReaderTaskEither<
     RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
     RTE.chain((deps) =>
       RTE.rightTask(() =>
+        // TODO: Replace `getApi` with `client`. There shouldn't be a need to
+        // eagerly get the API response.
         Prismic.getApi(deps.pluginOptions.apiEndpoint, {
           accessToken: deps.pluginOptions.accessToken,
         }),

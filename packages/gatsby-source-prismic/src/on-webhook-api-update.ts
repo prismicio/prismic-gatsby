@@ -9,6 +9,10 @@ import { queryDocumentsByIds } from './lib/queryDocumentsByIds'
 import { deleteNodesForDocumentIds } from './lib/deleteNodesForDocumentIds'
 import { createNodes } from './lib/createNodes'
 
+/**
+ * Extract all document IDs from a Prismic `api-update` webhook body. All
+ * document IDs, including deleted documents, are returned in the same list.
+ */
 const extractApiUpdateWebhookBodyDocumentIds = (
   webhookBody: PrismicWebhookBodyApiUpdate,
 ): RTE.ReaderTaskEither<Dependencies, never, string[]> =>
@@ -30,6 +34,21 @@ const extractApiUpdateWebhookBodyDocumentIds = (
     RTE.map((scope) => [...scope.documentIds, ...scope.releaseDocumentIds]),
   )
 
+/**
+ * To be executed in the `sourceNodes` API when a Prismic `api-update` webhook
+ * is received.
+ *
+ * This handler is implemented specifically for Gatsby Preview support.
+ *
+ * This handler performs delta changes to documents that have been updated or
+ * deleted.
+ *
+ * - UPDATED documents: Nodes are updated in the Gatsby data layer.
+ * - DELETED documents: Nodes are deleted from the Gatsby data layer.
+ *
+ * After the handle is complete, the Gatsby data layer should be identical to
+ * one that just performed a fresh bootstrap.
+ */
 export const onWebhookApiUpdate = (
   webhookBody: PrismicWebhookBodyApiUpdate,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
@@ -51,6 +70,13 @@ export const onWebhookApiUpdate = (
         (ids) => RTE.of(ids),
       ),
     ),
+    // Documents that have been deleted are included in the `documents` field,
+    // but they are not marked as deleted. They appear adjacent to documents
+    // that still exist but have only been updated.
+    //
+    // To check if the document was deleted, we query for all documents in the
+    // `documents` field and compare the result to that list. Documents that
+    // have been deleted will not be returned from the query.
     RTE.bind('documentIdsToDelete', (scope) =>
       pipe(
         scope.documentIds,

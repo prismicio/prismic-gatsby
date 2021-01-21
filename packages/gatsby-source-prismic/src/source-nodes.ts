@@ -11,7 +11,7 @@ import { buildDependencies } from './buildDependencies'
 import { onWebhook } from './on-webhook'
 
 /**
- * To be executed in the `sourceNodes` stage.
+ * To be executed in the `sourceNodes` API.
  */
 const sourceNodesProgram: RTE.ReaderTaskEither<
   Dependencies,
@@ -32,6 +32,11 @@ const sourceNodesProgram: RTE.ReaderTaskEither<
   ),
 )
 
+/**
+ * Extension point to tell plugins to source nodes.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#sourceNodes
+ */
 export const sourceNodes: NonNullable<
   gatsby.GatsbyNode['sourceNodes']
 > = async (

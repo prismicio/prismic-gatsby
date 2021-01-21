@@ -20,6 +20,14 @@ import {
 } from './constants'
 import { Dependencies, JoiValidationError, PluginOptions } from './types'
 
+/**
+ * To be executed during the `external` phase of `pluginOptionsSchema`.
+ *
+ * Validates plugin options for the following:
+ *
+ * - Access to the Prismic repository
+ * - Missing custom type schemas
+ */
 const externalValidationProgram = (
   Joi: gatsby.PluginOptionsSchemaArgs['Joi'],
 ): RTE.ReaderTaskEither<
@@ -57,6 +65,12 @@ const externalValidationProgram = (
     RTE.map(constVoid),
   )
 
+/**
+ * Run during the bootstrap phase. Plugins can use this to define a schema for
+ * their options using Joi to validate the options users pass to the plugin.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#pluginOptionsSchema
+ */
 export const pluginOptionsSchema: NonNullable<
   gatsby.GatsbyNode['pluginOptionsSchema']
 > = (args) => {

@@ -8,6 +8,15 @@ import { toFieldConfig } from './toFieldConfig'
 
 import { Dependencies, PrismicSchemaField } from '../types'
 
+/**
+ * Builds a `graphql-compose`-compatible field config map by calling
+ * `lib/toFieldConfig` for each field.
+ *
+ * @param path Field path leading to `fieldSchemas`'s location.
+ * @param fieldSchemas Record of Prismic custom type schema fields.
+ *
+ * @returns Field config map including `fieldSchemas`'s fields.
+ */
 export const buildFieldConfigMap = (
   path: string[],
   fieldSchemas: Record<string, PrismicSchemaField>,

@@ -14,6 +14,11 @@ import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
 import { onWebhookApiUpdate } from './on-webhook-api-update'
 import { onWebhookTestTrigger } from './on-webhook-test-trigger'
 
+/**
+ * Calls the appropriate webhook handler depending on its contents.
+ *
+ * If the webhook is not intended for this plugin, the webhook is ignored.
+ */
 const onPrismicWebhook = (
   webhookBody: PrismicWebhookBody,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>

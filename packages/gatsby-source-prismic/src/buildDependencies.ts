@@ -4,8 +4,21 @@ import { createNodeHelpers } from 'gatsby-node-helpers'
 import { GLOBAL_TYPE_PREFIX } from './constants'
 import { Dependencies, PluginOptions } from './types'
 
+/**
+ * Build the dependencies used by functions throughout the plugin.
+ *
+ * This collection of dependencies is shared through the use of the
+ * `fp-ts/Reader` monad.
+ *
+ * @see https://gcanti.github.io/fp-ts/modules/Reader.ts.html
+ *
+ * @param gatsbyContext Arguments provided to Gatsby's Node APIs.
+ * @param pluginOptions The plugin instance's options.
+ *
+ * @returns Dependencies used throughout the plugin.
+ */
 export const buildDependencies = (
-  gatsbyContext: gatsby.SourceNodesArgs | gatsby.CreateSchemaCustomizationArgs,
+  gatsbyContext: gatsby.NodePluginArgs,
   pluginOptions: PluginOptions,
 ): Dependencies => ({
   pluginOptions,
@@ -23,7 +36,6 @@ export const buildDependencies = (
   buildEnumType: gatsbyContext.schema.buildEnumType,
   getNode: gatsbyContext.getNode,
   getNodes: gatsbyContext.getNodes,
-  getNodeAndSavePathDependency: gatsbyContext.getNodeAndSavePathDependency,
   schema: gatsbyContext.schema,
   store: gatsbyContext.store,
   cache: gatsbyContext.cache,
