@@ -52,7 +52,7 @@ const aggregateQuery = (
  */
 export const queryAllDocuments: RTE.ReaderTaskEither<
   QueryAllDocumentsEnv,
-  never,
+  Error,
   PrismicAPIDocument[]
 > = pipe(
   RTE.ask<QueryAllDocumentsEnv>(),

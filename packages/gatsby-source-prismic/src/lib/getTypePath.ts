@@ -10,8 +10,11 @@ export const getTypePath = (
 ): RTE.ReaderTaskEither<Dependencies, Error, TypePathNode> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      RTE.fromIO(() => deps.getNode(path.toString()) as TypePathNode),
+    RTE.bind('nodeId', (scope) =>
+      RTE.of(scope.nodeHelpers.createNodeId(path.toString())),
+    ),
+    RTE.chain((scope) =>
+      RTE.fromIO(() => scope.getNode(scope.nodeId) as TypePathNode),
     ),
     RTE.chainW(
       RTE.fromPredicate(

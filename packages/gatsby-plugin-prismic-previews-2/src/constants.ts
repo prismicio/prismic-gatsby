@@ -6,11 +6,16 @@ export const GLOBAL_TYPE_PREFIX = 'Prismic'
 
 export const DEFAULT_TOOLBAR = PrismicToolbarType.New
 
+export const DEFAULT_PROMPT_FOR_ACCESS_TOKEN = false
+
 export const QUERY_PAGE_SIZE = 100
 
 export const TYPE_PATHS_BASENAME_TEMPLATE = 'type-paths-store %s'
 
 export const WINDOW_CONTEXTS_KEY = '__GATSBY_PLUGIN_PRISMIC_PREVIEWS_CONTEXTS__'
+
+export const COOKIE_ACCESS_TOKEN_NAME =
+  'gatsby-plugin-prismic-previews.%s.accessToken'
 
 export const REPORTER_TEMPLATE = 'gatsby-plugin-prismic-previews(%s) - %s'
 

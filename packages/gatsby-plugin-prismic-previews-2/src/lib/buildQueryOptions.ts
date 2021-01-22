@@ -15,10 +15,10 @@ export { QueryOptions }
 
 export const buildQueryOptions = (
   client: Client,
-): RTE.ReaderTaskEither<BuildQueryOptionsEnv, never, QueryOptions> =>
+): RTE.ReaderTaskEither<BuildQueryOptionsEnv, Error, QueryOptions> =>
   pipe(
     RTE.ask<BuildQueryOptionsEnv>(),
-    RTE.bind('ref', () => RTE.of(getRef(client))),
+    RTE.bind('ref', () => RTE.fromTaskEither(getRef(client))),
     RTE.bind('graphQueryObj', (scope) =>
       RTE.of(scope.graphQuery ? { graphQuery: scope.graphQuery } : undefined),
     ),

@@ -7,6 +7,7 @@ import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/docume
 export interface PluginOptions extends gatsby.PluginOptions {
   repositoryName: string
   accessToken?: string
+  promptForAccessToken?: boolean
   apiEndpoint: string
   graphQuery?: string
   fetchLinks?: string[]
@@ -33,6 +34,16 @@ export interface PrismicAPIDocument<
   data: TData
 }
 
+export interface PrismicAPIDocumentNode<
+  TData extends UnknownRecord<string> = UnknownRecord<string>
+> extends PrismicAPIDocument<TData>,
+    gatsby.Node {
+  prismicId: string
+}
+
 export type LinkResolver = (doc: PrismicAPIDocument) => string
 
-type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<K, unknown>
+export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
+  K,
+  unknown
+>

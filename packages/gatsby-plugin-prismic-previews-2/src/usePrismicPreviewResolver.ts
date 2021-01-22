@@ -7,54 +7,61 @@ import * as E from 'fp-ts/Either'
 import { constVoid, pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
 
-import { LinkResolver, PrismicAPIDocument } from './types'
-import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { createClient, CreateClientEnv } from './lib/createClient'
 import { UnauthorizedError } from './errors/NotAuthorizedError'
 
-interface LocalState {
-  state: 'INIT' | 'RESOLVING' | 'RESOLVED' | 'FAILED';
-  document?: PrismicAPIDocument;
-  path?: string;
-  error?: Error;
+import { LinkResolver, PrismicAPIDocument } from './types'
+import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
+
+export type UsePrismicPreviewResolverFn = () => void
+
+export interface UsePrismicPreviewResolverState {
+  state: 'INIT' | 'RESOLVING' | 'RESOLVED' | 'FAILED'
+  document?: PrismicAPIDocument
+  path?: string
+  error?: Error
 }
 
-enum LocalActionType {
+enum UsePrismicPreviewResolverActionType {
   BeginResolving = 'BeginResolving',
   Resolved = 'Resolved',
   Fail = 'Fail',
 }
 
-type LocalAction =
+type UsePrismicPreviewResolverAction =
   | {
-      type: LocalActionType.BeginResolving;
+      type: UsePrismicPreviewResolverActionType.BeginResolving
     }
   | {
-      type: LocalActionType.Resolved;
-      payload: string;
+      type: UsePrismicPreviewResolverActionType.Resolved
+      payload: string
     }
   | {
-      type: LocalActionType.Fail;
-      payload: Error;
+      type: UsePrismicPreviewResolverActionType.Fail
+      payload: Error
     }
 
-const initialLocalState: LocalState = {
+const initialLocalState: UsePrismicPreviewResolverState = {
   state: 'INIT',
   document: undefined,
   path: undefined,
 }
 
-const localReducer = (state: LocalState, action: LocalAction): LocalState => {
+const localReducer = (
+  state: UsePrismicPreviewResolverState,
+  action: UsePrismicPreviewResolverAction,
+): UsePrismicPreviewResolverState => {
   switch (action.type) {
-    case LocalActionType.BeginResolving: {
+    case UsePrismicPreviewResolverActionType.BeginResolving: {
       return {
         ...initialLocalState,
         state: 'RESOLVING',
       }
     }
 
-    case LocalActionType.Resolved: {
+    case UsePrismicPreviewResolverActionType.Resolved: {
       return {
         ...state,
         state: 'RESOLVED',
@@ -62,7 +69,7 @@ const localReducer = (state: LocalState, action: LocalAction): LocalState => {
       }
     }
 
-    case LocalActionType.Fail: {
+    case UsePrismicPreviewResolverActionType.Fail: {
       return {
         ...initialLocalState,
         state: 'FAILED',
@@ -73,10 +80,11 @@ const localReducer = (state: LocalState, action: LocalAction): LocalState => {
 }
 
 interface UsePrismicPreviewResolverProgramEnv extends CreateClientEnv {
-  beginResolving(): void;
-  resolved(path: string): void;
-  linkResolver(doc: PrismicAPIDocument): string;
-  shouldAutoRedirect: boolean;
+  repositoryName: string
+  beginResolving(): void
+  resolved(path: string): void
+  linkResolver(doc: PrismicAPIDocument): string
+  shouldAutoRedirect: boolean
 }
 
 const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
@@ -89,6 +97,11 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
     pipe(
       getURLSearchParam('token'),
       RTE.fromOption(() => new Error('token URL parameter not present')),
+    ),
+  ),
+  RTE.chainFirst((env) =>
+    RTE.fromEither(
+      validatePreviewTokenForRepository(env.repositoryName, env.token),
     ),
   ),
   RTE.bindW('documentId', () =>
@@ -124,43 +137,51 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
 )
 
 export type UsePrismicPreviewResolverConfig = {
-  linkResolver: LinkResolver;
-  shouldAutoRedirect?: boolean;
+  linkResolver: LinkResolver
+  shouldAutoRedirect?: boolean
 }
 
 export const usePrismicPreviewResolver = (
   repositoryName: string,
   config: UsePrismicPreviewResolverConfig,
-): LocalState => {
+): readonly [UsePrismicPreviewResolverState, UsePrismicPreviewResolverFn] => {
+  const [state] = usePrismicPreviewContext(repositoryName)
   const [localState, localDispatch] = React.useReducer(
     localReducer,
     initialLocalState,
   )
-  const [state] = usePrismicPreviewContext(repositoryName)
 
-  React.useEffect(() => {
-    const asyncEffect = async (): Promise<void> => {
-      pipe(
-        await RTE.run(usePrismicPreviewResolverProgram, {
-          beginResolving: () =>
-            localDispatch({ type: LocalActionType.BeginResolving }),
-          resolved: (path) =>
-            localDispatch({ type: LocalActionType.Resolved, payload: path }),
-          linkResolver: config.linkResolver,
-          apiEndpoint: state.pluginOptions.apiEndpoint,
-          accessToken: state.pluginOptions.accessToken,
-          shouldAutoRedirect: config.shouldAutoRedirect ?? false,
-        }),
-        E.fold(
-          (error) =>
-            localDispatch({ type: LocalActionType.Fail, payload: error }),
-          constVoid,
-        ),
-      )
-    }
-
-    asyncEffect()
+  const resolvePreview = React.useCallback(async (): Promise<void> => {
+    pipe(
+      await RTE.run(usePrismicPreviewResolverProgram, {
+        repositoryName,
+        beginResolving: () =>
+          localDispatch({
+            type: UsePrismicPreviewResolverActionType.BeginResolving,
+          }),
+        resolved: (path) =>
+          localDispatch({
+            type: UsePrismicPreviewResolverActionType.Resolved,
+            payload: path,
+          }),
+        linkResolver: config.linkResolver,
+        apiEndpoint: state.pluginOptions.apiEndpoint,
+        accessToken: state.pluginOptions.accessToken,
+        shouldAutoRedirect: config.shouldAutoRedirect ?? false,
+      }),
+      E.fold(
+        (error) =>
+          localDispatch({
+            type: UsePrismicPreviewResolverActionType.Fail,
+            payload: error,
+          }),
+        constVoid,
+      ),
+    )
   }, [])
 
-  return localState
+  return React.useMemo(() => [localState, resolvePreview] as const, [
+    localState,
+    resolvePreview,
+  ])
 }

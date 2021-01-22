@@ -4,13 +4,10 @@ import * as Rr from 'fp-ts/Reader'
 import { pipe } from 'fp-ts/function'
 
 import { PluginOptions } from './types'
-import {
-  createPrismicContext,
-  CreatePrismicContextEnv,
-} from './usePrismicPreviewContext'
+import { createPrismicContext, CreatePrismicContextEnv } from './context'
 
 interface WrapRootElementProgramEnv extends CreatePrismicContextEnv {
-  element: React.ReactNode;
+  element: React.ReactNode
 }
 
 const wrapRootElementProgram: Rr.Reader<
