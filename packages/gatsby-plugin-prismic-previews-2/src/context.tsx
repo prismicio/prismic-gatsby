@@ -2,6 +2,8 @@ import * as React from 'react'
 import * as Rr from 'fp-ts/Reader'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
+import * as IOE from 'fp-ts/IOEither'
+import * as IO from 'fp-ts/IO'
 import { pipe } from 'fp-ts/function'
 
 import { COOKIE_ACCESS_TOKEN_NAME, WINDOW_CONTEXTS_KEY } from './constants'
@@ -134,20 +136,23 @@ export interface CreatePrismicContextEnv {
 // Populate a plugin options' `accessToken` value with one stored in a persisted
 // cookie, if available. If an access token already exists in the plugin
 // options, that token takes priority.
-const populateAccessToken = (pluginOptions: PluginOptions): PluginOptions =>
+const populateAccessToken = (
+  pluginOptions: PluginOptions,
+): IO.IO<PluginOptions> =>
   pipe(
-    O.fromNullable(pluginOptions.accessToken),
-    O.fold(
-      () =>
-        pipe(
-          getCookie(
-            sprintf(COOKIE_ACCESS_TOKEN_NAME, pluginOptions.repositoryName),
-          )(),
-          O.map((accessToken) => ({ ...pluginOptions, accessToken })),
-          O.getOrElse(() => pluginOptions),
-        ),
-      () => pluginOptions,
+    IOE.Do,
+    IOE.chain(
+      IOE.fromPredicate(
+        () => pluginOptions.accessToken == null,
+        () => void 0,
+      ),
     ),
+    IOE.bind('cookieName', () =>
+      IOE.of(sprintf(COOKIE_ACCESS_TOKEN_NAME, pluginOptions.repositoryName)),
+    ),
+    IOE.bindW('accessToken', (scope) => getCookie(scope.cookieName)),
+    IOE.map((scope) => ({ ...pluginOptions, accessToken: scope.accessToken })),
+    IOE.getOrElse(() => IO.of(pluginOptions)),
   )
 
 const buildInitialState: Rr.Reader<
@@ -164,7 +169,7 @@ const buildInitialState: Rr.Reader<
   })),
   Rr.map((state) => ({
     ...state,
-    pluginOptions: populateAccessToken(state.pluginOptions),
+    pluginOptions: populateAccessToken(state.pluginOptions)(),
   })),
 )
 

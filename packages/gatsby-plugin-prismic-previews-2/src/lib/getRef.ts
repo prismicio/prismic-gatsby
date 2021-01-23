@@ -29,7 +29,6 @@ const getMasterRef = (client: Client): TE.TaskEither<Error, string> =>
  */
 export const getRef = (client: Client): TE.TaskEither<Error, string> =>
   pipe(
-    TE.fromIO(getCookie(Prismic.previewCookie)),
-    TE.chainW(TE.fromOption(() => new Error('No persisted preview ref'))),
+    TE.fromIOEither(getCookie(Prismic.previewCookie)),
     TE.orElse(() => getMasterRef(client)),
   )
