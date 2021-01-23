@@ -1,36 +1,34 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import * as E from 'fp-ts/Either'
+import * as IOE from 'fp-ts/IOEither'
+import * as IO from 'fp-ts/IO'
 import { pipe } from 'fp-ts/function'
+import Prismic from 'prismic-javascript'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
-import { getURLSearchParam } from './lib/getURLSearchParam'
+import { getCookie } from './lib/getCookie'
 
+import { UnknownRecord } from './types'
 import { UnauthorizedError } from './errors/NotAuthorizedError'
 import {
-  usePrismicPreviewResolver,
-  UsePrismicPreviewResolverConfig,
-  UsePrismicPreviewResolverFn,
-  UsePrismicPreviewResolverState,
-} from './usePrismicPreviewResolver'
+  usePrismicPreviewBootstrap,
+  UsePrismicPreviewBootstrapFn,
+  UsePrismicPreviewBootstrapState,
+} from './usePrismicPreviewBootstrap'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-import {
-  SetAccessTokenFn,
-  usePrismicPreviewAccessToken,
-} from './usePrismicPreviewAccessToken'
+import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
+import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 
-export interface WithPrismicPreviewResolverProps {
-  resolvePrismicPreview: UsePrismicPreviewResolverFn
-  prismicPreviewState: UsePrismicPreviewResolverState['state']
-  prismicPreviewPath: UsePrismicPreviewResolverState['path']
-  prismicPreviewDocument: UsePrismicPreviewResolverState['document']
-  prismicPreviewError: UsePrismicPreviewResolverState['error']
-  prismicPreviewSetAccessToken: SetAccessTokenFn
+export interface WithPrismicPreviewProps {
+  bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn
+  isPrismicPreview: boolean
+  prismicPreviewState: UsePrismicPreviewBootstrapState['state']
+  prismicPreviewError: UsePrismicPreviewBootstrapState['error']
 }
 
-type WithPrismicPreviewResolverConfig = UsePrismicPreviewResolverConfig & {
-  autoRedirect?: boolean
+type WithPrismicPreviewConfig = {
+  mergePreviewData?: boolean
 }
 
 type LocalState =
@@ -39,52 +37,47 @@ type LocalState =
   | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
   | 'DISPLAY_ERROR'
 
-export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
+const isValidToken = (repositoryName: string) =>
+  pipe(
+    getCookie(Prismic.previewCookie),
+    IOE.chain((token) =>
+      IOE.fromEither(validatePreviewTokenForRepository(repositoryName, token)),
+    ),
+    IOE.getOrElse(() => IO.of(false)),
+  )
+
+export const withPrismicPreview = <
+  TStaticData extends UnknownRecord,
+  TProps extends gatsby.PageProps<TStaticData>
+>(
   WrappedComponent: React.ComponentType<TProps>,
   repositoryName: string,
-  config: WithPrismicPreviewResolverConfig,
-): React.ComponentType<TProps & WithPrismicPreviewResolverProps> => {
-  const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
+  config: WithPrismicPreviewConfig = {},
+): React.ComponentType<TProps & WithPrismicPreviewProps> => {
+  const WithPrismicPreview = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext(repositoryName)
-    const [resolverState, resolvePreview] = usePrismicPreviewResolver(
+    const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
       repositoryName,
-      config,
     )
     const [, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       repositoryName,
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
 
-    // Begin resolving on page entry if the preview token is for this repository.
+    // Begin bootstrapping on page entry if the preview token is for this
+    // repository and we haven't already bootstrapped.
     React.useEffect(() => {
-      const isValidToken = pipe(
-        getURLSearchParam('token'),
-        E.fromOption(() => new Error('token URL parameter not present')),
-        E.chain((token) =>
-          validatePreviewTokenForRepository(repositoryName, token),
-        ),
-        E.getOrElse(() => false),
-      )
-
-      if (isValidToken) {
-        resolvePreview()
+      if (isValidToken(repositoryName)() && !contextState.isBootstrapped) {
+        bootstrapPreview()
       }
     }, [])
 
     // Handle state changes from the preview resolver.
     React.useEffect(() => {
-      switch (resolverState.state) {
-        case 'RESOLVED': {
-          if ((config.autoRedirect ?? true) && resolverState.path) {
-            gatsby.navigate(resolverState.path)
-          }
-
-          break
-        }
-
+      switch (bootstrapState.state) {
         case 'FAILED': {
           if (
-            resolverState.error instanceof UnauthorizedError &&
+            bootstrapState.error instanceof UnauthorizedError &&
             contextState.pluginOptions.promptForAccessToken
           ) {
             // If we encountered an UnauthorizedError, we don't have the correct
@@ -106,7 +99,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
           break
         }
       }
-    }, [resolverState.state, resolverState.error, resolverState.path])
+    }, [bootstrapState.state, bootstrapState.error])
 
     // TODO: Replace this with a proper UI in the DOM.
     // TODO: Have a user-facing button to clear the access token cookie.
@@ -120,9 +113,9 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 
           if (accessToken) {
             // Set the access token in the repository's context and retry
-            // resolving the preview.
+            // bootstrapping the preview.
             setAccessToken(accessToken)
-            resolvePreview()
+            bootstrapPreview()
           } else {
             setLocalState('DISPLAY_ERROR')
           }
@@ -131,28 +124,33 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
         }
 
         case 'DISPLAY_ERROR': {
-          console.error(resolverState.error)
+          console.error(bootstrapState.error)
 
           break
         }
       }
     }, [localState])
 
+    const mergedData = useMergePrismicPreviewData(repositoryName, props.data, {
+      mergeStrategy: 'traverseAndReplace',
+      skip: config.mergePreviewData,
+    })
+
     return (
       <WrappedComponent
         {...props}
-        resolvePrismicPreview={resolvePreview}
-        prismicPreviewState={resolverState.state}
-        prismicPreviewPath={resolverState.path}
-        prismicPreviewDocument={resolverState.document}
-        prismicPreviewError={resolverState.error}
+        data={mergedData.data}
+        boostrapPrismicPreview={bootstrapPreview}
+        isPrismicPreview={mergedData.isPreview}
+        prismicPreviewState={bootstrapState.state}
+        prismicPreviewError={bootstrapState.error}
         prismicPreviewSetAccessToken={setAccessToken}
       />
     )
   }
 
   const wrappedComponentName = getComponentDisplayName(WrappedComponent)
-  WithPrismicPreviewResolver.displayName = `withPrismicPreviewResolver(${wrappedComponentName})`
+  WithPrismicPreview.displayName = `withPrismicPreview(${wrappedComponentName})`
 
-  return WithPrismicPreviewResolver
+  return WithPrismicPreview
 }

@@ -29,7 +29,7 @@ export interface UsePrismicPreviewBootstrapState {
 
 enum UsePrismicPreviewBootstrapActionType {
   BeginBootstrapping = 'BeginBootstrapping',
-  Bootstrapped = 'Resolved',
+  Bootstrapped = 'Bootstrapped',
   Fail = 'Fail',
 }
 
@@ -45,32 +45,31 @@ type UsePrismicPreviewBootstrapAction =
       payload: Error
     }
 
-const initialLocalState: UsePrismicPreviewBootstrapState = {
-  state: 'INIT',
-}
+const buildInitialLocalState = (
+  isBootstrapped: boolean,
+): UsePrismicPreviewBootstrapState => ({
+  state: isBootstrapped ? 'BOOTSTRAPPED' : 'INIT',
+})
 
 const localReducer = (
-  state: UsePrismicPreviewBootstrapState,
+  _: UsePrismicPreviewBootstrapState,
   action: UsePrismicPreviewBootstrapAction,
 ): UsePrismicPreviewBootstrapState => {
   switch (action.type) {
     case UsePrismicPreviewBootstrapActionType.BeginBootstrapping: {
       return {
-        ...initialLocalState,
         state: 'BOOTSTRAPPING',
       }
     }
 
     case UsePrismicPreviewBootstrapActionType.Bootstrapped: {
       return {
-        ...state,
         state: 'BOOTSTRAPPED',
       }
     }
 
     case UsePrismicPreviewBootstrapActionType.Fail: {
       return {
-        ...initialLocalState,
         state: 'FAILED',
         error: action.payload,
       }
@@ -171,10 +170,11 @@ export const usePrismicPreviewBootstrap = (
   )
   const [localState, localDispatch] = React.useReducer(
     localReducer,
-    initialLocalState,
+    contextState.isBootstrapped,
+    buildInitialLocalState,
   )
 
-  const resolvePreview = React.useCallback(async (): Promise<void> => {
+  const bootstrapPreview = React.useCallback(async (): Promise<void> => {
     pipe(
       await RTE.run(usePrismicPreviewBootstrapProgram, {
         repositoryName,
@@ -212,8 +212,8 @@ export const usePrismicPreviewBootstrap = (
     )
   }, [])
 
-  return React.useMemo(() => [localState, resolvePreview] as const, [
+  return React.useMemo(() => [localState, bootstrapPreview] as const, [
     localState,
-    resolvePreview,
+    bootstrapPreview,
   ])
 }

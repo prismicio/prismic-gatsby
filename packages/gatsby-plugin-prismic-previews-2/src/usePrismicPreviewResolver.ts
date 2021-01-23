@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as E from 'fp-ts/Either'

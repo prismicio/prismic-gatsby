@@ -97,8 +97,15 @@ const traverseAndReplace = <TStaticData extends UnknownRecord>(
 // TODO: Update references to gatsby.NodeInput and nodes to PrismicAPIDocumentNodes
 
 export type UsePrismicPreviewDataConfig =
-  | { mergeStrategy: 'traverseAndReplace' }
-  | { mergeStrategy: 'rootReplaceOrInsert'; nodePrismicId: string }
+  | {
+      mergeStrategy: 'traverseAndReplace'
+      skip?: boolean
+    }
+  | {
+      mergeStrategy: 'rootReplaceOrInsert'
+      nodePrismicId: string
+      skip?: boolean
+    }
 
 export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   repositoryName: string,
@@ -108,6 +115,10 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   const [state] = usePrismicPreviewContext(repositoryName)
 
   return React.useMemo(() => {
+    if (config.skip) {
+      return { data: staticData, isPreview: false }
+    }
+
     switch (config.mergeStrategy) {
       case 'rootReplaceOrInsert': {
         return rootReplaceOrInsert(
