@@ -1,10 +1,9 @@
-import * as cookie from 'es-cookie'
 import * as TE from 'fp-ts/TaskEither'
-import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
 
 import { Client } from './createClient'
+import { getCookie } from './getCookie'
 
 // Returns the master ref. Requires a network request to fetch the repository's
 // current state.
@@ -30,7 +29,7 @@ const getMasterRef = (client: Client): TE.TaskEither<Error, string> =>
  */
 export const getRef = (client: Client): TE.TaskEither<Error, string> =>
   pipe(
-    TE.fromIO(() => O.fromNullable(cookie.get(Prismic.previewCookie))),
+    TE.fromIO(getCookie(Prismic.previewCookie)),
     TE.chainW(TE.fromOption(() => new Error('No persisted preview ref'))),
     TE.orElse(() => getMasterRef(client)),
   )

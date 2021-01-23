@@ -5,7 +5,11 @@ import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
 
 import { COOKIE_ACCESS_TOKEN_NAME, WINDOW_CONTEXTS_KEY } from './constants'
-import { PluginOptions, PrismicAPIDocumentNode, TypePathsStore } from './types'
+import {
+  PluginOptions,
+  PrismicAPIDocumentNodeInput,
+  TypePathsStore,
+} from './types'
 import { getCookie } from './lib/getCookie'
 import { sprintf } from './lib/sprintf'
 
@@ -43,7 +47,7 @@ export interface PrismicContextState {
   repositoryName: string
   pluginOptions: PluginOptions
   /** Record of Prismic document nodes keyed by their `prismicId` field. */
-  nodes: Record<string, PrismicAPIDocumentNode>
+  nodes: Record<string, PrismicAPIDocumentNodeInput>
   typePaths: TypePathsStore
   rootNodeMap: Record<string, string>
   isBootstrapped: boolean
@@ -63,7 +67,7 @@ export type PrismicContextAction =
     }
   | {
       type: PrismicContextActionType.AppendNodes
-      payload: PrismicAPIDocumentNode[]
+      payload: PrismicAPIDocumentNodeInput[]
     }
   | {
       type: PrismicContextActionType.Bootstrapped
@@ -138,7 +142,7 @@ const populateAccessToken = (pluginOptions: PluginOptions): PluginOptions =>
         pipe(
           getCookie(
             sprintf(COOKIE_ACCESS_TOKEN_NAME, pluginOptions.repositoryName),
-          ),
+          )(),
           O.map((accessToken) => ({ ...pluginOptions, accessToken })),
           O.getOrElse(() => pluginOptions),
         ),

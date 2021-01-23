@@ -1,19 +1,20 @@
 import * as React from 'react'
-import * as gatsby from 'gatsby'
 import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as E from 'fp-ts/Either'
+import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { createClient, CreateClientEnv } from './lib/createClient'
-import { UnauthorizedError } from './errors/NotAuthorizedError'
 
 import { LinkResolver, PrismicAPIDocument } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
+import { normalizePrismicError } from './lib/normalizePrismicError'
+import { setCookie } from './lib/setCookie'
 
 export type UsePrismicPreviewResolverFn = () => void
 
@@ -81,10 +82,9 @@ const localReducer = (
 
 interface UsePrismicPreviewResolverProgramEnv extends CreateClientEnv {
   repositoryName: string
-  beginResolving(): void
-  resolved(path: string): void
+  beginResolving: IO.IO<void>
+  resolved(path: string): IO.IO<void>
   linkResolver(doc: PrismicAPIDocument): string
-  shouldAutoRedirect: boolean
 }
 
 const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
@@ -99,46 +99,50 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
       RTE.fromOption(() => new Error('token URL parameter not present')),
     ),
   ),
-  RTE.chainFirst((env) =>
-    RTE.fromEither(
-      validatePreviewTokenForRepository(env.repositoryName, env.token),
-    ),
-  ),
   RTE.bindW('documentId', () =>
     pipe(
       getURLSearchParam('token'),
       RTE.fromOption(() => new Error('documentId URL parameter not present')),
     ),
   ),
+
+  // Only continue if this preview session is for this repository.
   RTE.chainFirst((env) =>
-    RTE.fromIO(() => cookie.set(Prismic.previewCookie, env.token)),
+    RTE.fromEither(
+      validatePreviewTokenForRepository(env.repositoryName, env.token),
+    ),
   ),
+
+  // Persist the token for resuming this preview session at a later time.
+  RTE.chainFirst((env) =>
+    RTE.fromIO(setCookie(Prismic.previewCookie, env.token)),
+  ),
+
   RTE.bindW('client', () => createClient),
   RTE.bind('pathResolver', (env) =>
     RTE.of(env.client.getPreviewResolver(env.token, env.documentId)),
   ),
+
+  // Start resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
+
   RTE.bind('path', (env) =>
     RTE.fromTaskEither(
       TE.tryCatch(
         () => env.pathResolver.resolve(env.linkResolver, '/'),
-        (error) =>
-          error instanceof Error && /401/.test(error.message)
-            ? new UnauthorizedError()
-            : (error as Error),
+        (error) => normalizePrismicError(error as Error),
       ),
     ),
   ),
-  RTE.chainFirst((env) => RTE.fromIO(() => env.resolved(env.path))),
-  RTE.chainFirst((env) =>
-    RTE.fromIO(() => env.shouldAutoRedirect && gatsby.navigate(env.path)),
-  ),
+
+  // End resolving.
+  RTE.chainFirst((env) => RTE.fromIO(env.resolved(env.path))),
+
   RTE.map(constVoid),
 )
 
 export type UsePrismicPreviewResolverConfig = {
   linkResolver: LinkResolver
-  shouldAutoRedirect?: boolean
 }
 
 export const usePrismicPreviewResolver = (
@@ -159,7 +163,7 @@ export const usePrismicPreviewResolver = (
           localDispatch({
             type: UsePrismicPreviewResolverActionType.BeginResolving,
           }),
-        resolved: (path) =>
+        resolved: (path) => () =>
           localDispatch({
             type: UsePrismicPreviewResolverActionType.Resolved,
             payload: path,
@@ -167,7 +171,6 @@ export const usePrismicPreviewResolver = (
         linkResolver: config.linkResolver,
         apiEndpoint: state.pluginOptions.apiEndpoint,
         accessToken: state.pluginOptions.accessToken,
-        shouldAutoRedirect: config.shouldAutoRedirect ?? false,
       }),
       E.fold(
         (error) =>

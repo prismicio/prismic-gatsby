@@ -34,10 +34,10 @@ export interface PrismicAPIDocument<
   data: TData
 }
 
-export interface PrismicAPIDocumentNode<
+export interface PrismicAPIDocumentNodeInput<
   TData extends UnknownRecord<string> = UnknownRecord<string>
 > extends PrismicAPIDocument<TData>,
-    gatsby.Node {
+    gatsby.NodeInput {
   prismicId: string
 }
 

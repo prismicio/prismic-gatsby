@@ -6,11 +6,10 @@ import { pipe } from 'fp-ts/function'
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 
 import {
-  usePrismicPreviewResolver,
-  UsePrismicPreviewResolverConfig,
-  UsePrismicPreviewResolverFn,
-  UsePrismicPreviewResolverState,
-} from './usePrismicPreviewResolver'
+  usePrismicPreviewBootstrap,
+  UsePrismicPreviewBootstrapFn,
+  UsePrismicPreviewBootstrapState,
+} from './usePrismicPreviewBootstrap'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { PrismicContextActionType } from './context'
 import { UnauthorizedError } from './errors/NotAuthorizedError'
@@ -20,17 +19,17 @@ import { COOKIE_ACCESS_TOKEN_NAME } from './constants'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 
-export interface WithPrismicPreviewResolverProps {
-  resolvePrismicPreview: UsePrismicPreviewResolverFn
-  prismicPreviewState: UsePrismicPreviewResolverState['state']
-  prismicPreviewPath: UsePrismicPreviewResolverState['path']
-  prismicPreviewDocument: UsePrismicPreviewResolverState['document']
-  prismicPreviewError: UsePrismicPreviewResolverState['error']
+export interface WithPrismicPreviewBootstrapProps {
+  resolvePrismicPreview: UsePrismicPreviewBootstrapFn
+  prismicPreviewState: UsePrismicPreviewBootstrapState['state']
+  prismicPreviewPath: UsePrismicPreviewBootstrapState['path']
+  prismicPreviewDocument: UsePrismicPreviewBootstrapState['document']
+  prismicPreviewError: UsePrismicPreviewBootstrapState['error']
 }
 
-type WithPrismicPreviewResolverConfig = UsePrismicPreviewResolverConfig & {
-  shouldAutoRedirect?: boolean
-}
+// TODO: The config parameter can be removed if this ends up staying as a never
+// record.
+type WithPrismicPreviewBootstrapConfig = Record<string, never>
 
 type LocalState =
   | 'IDLE'
@@ -38,16 +37,16 @@ type LocalState =
   | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
   | 'DISPLAY_ERROR'
 
-export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
+export const withPrismicPreviewBootstrap = <TProps extends gatsby.PageProps>(
   WrappedComponent: React.ComponentType<TProps>,
   repositoryName: string,
-  config: WithPrismicPreviewResolverConfig,
-): React.ComponentType<TProps & WithPrismicPreviewResolverProps> => {
-  const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
+  config: WithPrismicPreviewBootstrapConfig,
+): React.ComponentType<TProps & WithPrismicPreviewBootstrapProps> => {
+  const WithPrismicPreviewBootstrap = (props: TProps): React.ReactElement => {
     const [contextState, contextDispatch] = usePrismicPreviewContext(
       repositoryName,
     )
-    const [resolverState, resolvePreview] = usePrismicPreviewResolver(
+    const [resolverState, resolvePreview] = usePrismicPreviewBootstrap(
       repositoryName,
       config,
     )
@@ -178,9 +177,9 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       />
     )
   }
-  WithPrismicPreviewResolver.displayName = `withPrismicPreviewResolver(${getComponentDisplayName(
+  WithPrismicPreviewBootstrap.displayName = `withPrismicPreviewBootstrap(${getComponentDisplayName(
     WrappedComponent,
   )})`
 
-  return WithPrismicPreviewResolver
+  return WithPrismicPreviewBootstrap
 }

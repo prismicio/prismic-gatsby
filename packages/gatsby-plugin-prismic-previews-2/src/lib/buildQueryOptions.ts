@@ -7,7 +7,7 @@ import { getRef } from './getRef'
 
 export interface BuildQueryOptionsEnv {
   graphQuery?: string
-  fetchLinks?: string
+  fetchLinks?: string[]
   lang: string
 }
 

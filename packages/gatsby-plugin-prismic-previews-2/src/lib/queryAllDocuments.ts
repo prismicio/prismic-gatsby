@@ -1,5 +1,5 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as T from 'fp-ts/Task'
+import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
 
 import { QUERY_PAGE_SIZE } from '../constants'
@@ -11,25 +11,29 @@ import {
   BuildQueryOptionsEnv,
   QueryOptions,
 } from './buildQueryOptions'
+import { normalizePrismicError } from './normalizePrismicError'
 
-type QueryAllDocumentsEnv = CreateClientEnv & BuildQueryOptionsEnv
+export type QueryAllDocumentsEnv = CreateClientEnv & BuildQueryOptionsEnv
 
 const aggregateQuery = (
   client: Client,
   queryOptions: QueryOptions,
   page = 1,
   docs: PrismicAPIDocument[] = [],
-): T.Task<PrismicAPIDocument[]> =>
+): TE.TaskEither<Error, PrismicAPIDocument[]> =>
   pipe(
-    () =>
-      client.query([], { ...queryOptions, page, pageSize: QUERY_PAGE_SIZE }),
-    T.bind('aggregateResults', (response) =>
-      T.of([...docs, ...response.results]),
+    TE.tryCatch(
+      () =>
+        client.query([], { ...queryOptions, page, pageSize: QUERY_PAGE_SIZE }),
+      (error) => normalizePrismicError(error as Error),
     ),
-    T.chain((scope) =>
+    TE.bind('aggregateResults', (response) =>
+      TE.of([...docs, ...response.results]),
+    ),
+    TE.chain((scope) =>
       page < scope.total_pages
         ? aggregateQuery(client, queryOptions, page + 1, scope.aggregateResults)
-        : T.of(scope.aggregateResults),
+        : TE.of(scope.aggregateResults),
     ),
   )
 
@@ -59,6 +63,6 @@ export const queryAllDocuments: RTE.ReaderTaskEither<
   RTE.bindW('client', () => createClient),
   RTE.bindW('queryOptions', (scope) => buildQueryOptions(scope.client)),
   RTE.chain((scope) =>
-    RTE.fromTask(aggregateQuery(scope.client, scope.queryOptions)),
+    RTE.fromTaskEither(aggregateQuery(scope.client, scope.queryOptions)),
   ),
 )
