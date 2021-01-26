@@ -185,7 +185,7 @@ export type PrismicAPILinkField = {
 }
 
 export type PrismicAPIImageField = {
-  dimensions: { width: number; height: number }
+  dimensions: { width: number; height: number } | null
   alt: string | null
   copyright: string | null
   url: string | null

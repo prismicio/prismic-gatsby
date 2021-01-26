@@ -12,8 +12,6 @@ export interface PluginOptions extends gatsby.PluginOptions {
   graphQuery?: string
   fetchLinks?: string[]
   lang: string
-  linkResolver?: (doc: gatsbyPrismic.PrismicAPIDocument) => string
-  htmlSerializer?: typeof PrismicDOM.HTMLSerializer
   imageImgixParams: gatsbyImgix.ImgixUrlParams
   imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
   typePrefix?: string
@@ -42,6 +40,7 @@ export interface PrismicAPIDocumentNodeInput<
 }
 
 export type LinkResolver = (doc: PrismicAPIDocument) => string
+export type HTMLSerializer = typeof PrismicDOM.HTMLSerializer
 
 export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
   K,

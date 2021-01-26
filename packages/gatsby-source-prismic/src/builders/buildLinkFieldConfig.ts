@@ -28,7 +28,9 @@ export const buildLinkFieldConfig: FieldConfigCreator = (path) =>
           url: {
             type: 'String',
             resolve: (source: PrismicAPILinkField) =>
-              PrismicDOM.Link.url(source, deps.pluginOptions.linkResolver),
+              source.link_type === 'Document'
+                ? PrismicDOM.Link.url(source, deps.pluginOptions.linkResolver)
+                : source.url,
           },
           target: 'String',
           size: 'Int',

@@ -13,6 +13,7 @@ import { UnknownRecord } from './types'
 import { UnauthorizedError } from './errors/NotAuthorizedError'
 import {
   usePrismicPreviewBootstrap,
+  UsePrismicPreviewBootstrapConfig,
   UsePrismicPreviewBootstrapFn,
   UsePrismicPreviewBootstrapState,
 } from './usePrismicPreviewBootstrap'
@@ -20,15 +21,16 @@ import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
 import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 
-export interface WithPrismicPreviewProps {
-  bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn
-  isPrismicPreview: boolean
-  prismicPreviewState: UsePrismicPreviewBootstrapState['state']
-  prismicPreviewError: UsePrismicPreviewBootstrapState['error']
+export interface WithPrismicPreviewProps<TStaticData> {
+  bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn;
+  isPrismicPreview: boolean;
+  prismicPreviewState: UsePrismicPreviewBootstrapState['state'];
+  prismicPreviewError: UsePrismicPreviewBootstrapState['error'];
+  prismicPreviewOriginalData: TStaticData;
 }
 
-type WithPrismicPreviewConfig = {
-  mergePreviewData?: boolean
+type WithPrismicPreviewConfig = UsePrismicPreviewBootstrapConfig & {
+  mergePreviewData?: boolean;
 }
 
 type LocalState =
@@ -37,13 +39,13 @@ type LocalState =
   | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
   | 'DISPLAY_ERROR'
 
-const isValidToken = (repositoryName: string) =>
+const isValidToken = (repositoryName: string): IO.IO<boolean> =>
   pipe(
     getCookie(Prismic.previewCookie),
     IOE.chain((token) =>
       IOE.fromEither(validatePreviewTokenForRepository(repositoryName, token)),
     ),
-    IOE.getOrElse(() => IO.of(false)),
+    IOE.getOrElse(() => IO.of(false as boolean)),
   )
 
 export const withPrismicPreview = <
@@ -52,14 +54,15 @@ export const withPrismicPreview = <
 >(
   WrappedComponent: React.ComponentType<TProps>,
   repositoryName: string,
-  config: WithPrismicPreviewConfig = {},
-): React.ComponentType<TProps & WithPrismicPreviewProps> => {
+  config: WithPrismicPreviewConfig,
+): React.ComponentType<TProps & WithPrismicPreviewProps<TStaticData>> => {
   const WithPrismicPreview = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext(repositoryName)
     const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
       repositoryName,
+      config,
     )
-    const [, { set: setAccessToken }] = usePrismicPreviewAccessToken(
+    const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       repositoryName,
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
@@ -81,9 +84,9 @@ export const withPrismicPreview = <
             contextState.pluginOptions.promptForAccessToken
           ) {
             // If we encountered an UnauthorizedError, we don't have the correct
-            // access token, and the plugin is configured to prompt for a token,
+            // access token. If the plugin is configured to prompt for a token,
             // prompt for the correct token.
-            if (contextState.pluginOptions.accessToken) {
+            if (accessToken) {
               setLocalState('PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN')
             } else {
               setLocalState('PROMPT_FOR_ACCESS_TOKEN')
@@ -145,6 +148,7 @@ export const withPrismicPreview = <
         prismicPreviewState={bootstrapState.state}
         prismicPreviewError={bootstrapState.error}
         prismicPreviewSetAccessToken={setAccessToken}
+        prismicPreviewOriginalData={props.data}
       />
     )
   }

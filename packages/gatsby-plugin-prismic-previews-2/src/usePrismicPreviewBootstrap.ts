@@ -6,6 +6,7 @@ import * as A from 'fp-ts/Array'
 import { constVoid, pipe } from 'fp-ts/function'
 import { createNodeHelpers } from 'gatsby-node-helpers'
 import { GLOBAL_TYPE_PREFIX } from 'gatsby-source-prismic'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import Prismic from 'prismic-javascript'
 import md5 from 'tiny-hashes/md5'
 
@@ -15,10 +16,18 @@ import {
   queryAllDocuments,
   QueryAllDocumentsEnv,
 } from './lib/queryAllDocuments'
+import { proxifyDocumentNodeInput } from './lib/proxifyDocumentNodeInput'
 
-import { PrismicAPIDocumentNodeInput, UnknownRecord } from './types'
+import {
+  HTMLSerializer,
+  LinkResolver,
+  PluginOptions,
+  PrismicAPIDocumentNodeInput,
+  UnknownRecord,
+} from './types'
 import { PrismicContextActionType } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { serializePath } from './lib/serializePath'
 
 export type UsePrismicPreviewBootstrapFn = () => void
 
@@ -86,6 +95,14 @@ interface UsePrismicPreviewBootstrapProgramEnv extends QueryAllDocumentsEnv {
   appendNodes(nodes: PrismicAPIDocumentNodeInput[]): IO.IO<void>
   createNodeId(input: string): string
   createContentDigest(input: string | UnknownRecord): string
+
+  // Proxify node env
+  getNode(id: string): PrismicAPIDocumentNodeInput | undefined
+  getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType
+  linkResolver: LinkResolver
+  htmlSerializer?: HTMLSerializer
+  imageImgixParams: PluginOptions['imageImgixParams']
+  imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
 }
 
 const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
@@ -152,6 +169,19 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
             ) as PrismicAPIDocumentNodeInput,
         ),
       ),
+      // TODO: Clean up once proxifyDocumentNodeInput is refactored.
+      RTE.map(
+        A.map((nodeInput) =>
+          proxifyDocumentNodeInput(nodeInput)({
+            getTypePath: env.getTypePath,
+            getNode: env.getNode,
+            linkResolver: env.linkResolver,
+            htmlSerializer: env.htmlSerializer,
+            imageImgixParams: env.imageImgixParams,
+            imagePlaceholderImgixParams: env.imagePlaceholderImgixParams,
+          }),
+        ),
+      ),
     ),
   ),
   RTE.chainFirst((env) => RTE.fromIO(env.appendNodes(env.nodes))),
@@ -162,8 +192,14 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
+export type UsePrismicPreviewBootstrapConfig = {
+  linkResolver: LinkResolver
+  htmlSerializer?: HTMLSerializer
+}
+
 export const usePrismicPreviewBootstrap = (
   repositoryName: string,
+  config: UsePrismicPreviewBootstrapConfig,
 ): readonly [UsePrismicPreviewBootstrapState, UsePrismicPreviewBootstrapFn] => {
   const [contextState, contextDispatch] = usePrismicPreviewContext(
     repositoryName,
@@ -200,6 +236,14 @@ export const usePrismicPreviewBootstrap = (
         createNodeId: (input: string) => md5(input),
         createContentDigest: (input: string | UnknownRecord) =>
           md5(JSON.stringify(input)),
+        getNode: (id: string) => contextState.nodes[id],
+        getTypePath: (path: string[]) =>
+          contextState.typePaths[serializePath(path)],
+        linkResolver: config.linkResolver,
+        htmlSerializer: config.htmlSerializer,
+        imageImgixParams: contextState.pluginOptions.imageImgixParams,
+        imagePlaceholderImgixParams:
+          contextState.pluginOptions.imagePlaceholderImgixParams,
       }),
       E.fold(
         (error) =>

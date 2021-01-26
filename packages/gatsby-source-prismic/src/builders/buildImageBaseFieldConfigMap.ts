@@ -6,9 +6,11 @@ import { pipe } from 'fp-ts/function'
 
 import { Dependencies, PrismicAPIImageField } from '../types'
 
-const resolveUrl = (source: PrismicAPIImageField) => source.url
-const resolveWidth = (source: PrismicAPIImageField) => source.dimensions.width
-const resolveHeight = (source: PrismicAPIImageField) => source.dimensions.height
+const resolveUrl = (source: PrismicAPIImageField): string | null => source.url
+const resolveWidth = (source: PrismicAPIImageField): number | undefined =>
+  source.dimensions?.width
+const resolveHeight = (source: PrismicAPIImageField): number | undefined =>
+  source.dimensions?.height
 
 export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
   Dependencies,
@@ -54,7 +56,9 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
     }),
     localFile: {
       type: 'File',
-      resolve: async (source: PrismicAPIImageField) =>
+      resolve: async (
+        source: PrismicAPIImageField,
+      ): Promise<gatsbyFs.FileSystemNode | null> =>
         source.url
           ? await gatsbyFs.createRemoteFileNode({
               url: source.url,

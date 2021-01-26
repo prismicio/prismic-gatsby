@@ -144,7 +144,7 @@ const populateAccessToken = (
     IOE.chain(
       IOE.fromPredicate(
         () => pluginOptions.accessToken == null,
-        () => void 0,
+        () => new Error('Access token is already populated'),
       ),
     ),
     IOE.bind('cookieName', () =>
