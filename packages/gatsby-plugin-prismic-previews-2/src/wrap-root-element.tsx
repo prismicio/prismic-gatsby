@@ -16,6 +16,7 @@ const wrapRootElementProgram: Rr.Reader<
 > = pipe(
   Rr.ask<WrapRootElementProgramEnv>(),
   Rr.bindW('Provider', () => createPrismicContext),
+  // eslint-disable-next-line react/jsx-key
   Rr.map(({ Provider, element }) => <Provider>{element}</Provider>),
 )
 

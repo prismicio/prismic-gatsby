@@ -33,27 +33,30 @@ export const usePrismicPreviewAccessToken = (
    * @param accessToken Access token to set for the repository.
    * @param remember Determines if the access token should be stored for future preview sessions.
    */
-  const setAccessToken = React.useCallback((
-    accessToken: string,
-    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-    remember: boolean = true,
-  ): void => {
-    contextDispatch({
-      type: PrismicContextActionType.SetAccessToken,
-      payload: accessToken,
-    })
+  const setAccessToken = React.useCallback(
+    (
+      accessToken: string,
+      // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+      remember: boolean = true,
+    ): void => {
+      contextDispatch({
+        type: PrismicContextActionType.SetAccessToken,
+        payload: accessToken,
+      })
 
-    if (remember) {
-      setCookie(cookieName, accessToken)()
-    }
-  }, [])
+      if (remember) {
+        setCookie(cookieName, accessToken)()
+      }
+    },
+    [cookieName, contextDispatch],
+  )
 
   /**
    * Removes the stored access token, if set.
    */
   const removeAccessTokenCookie = React.useCallback(() => {
     removeCookie(cookieName)()
-  }, [])
+  }, [cookieName])
 
   return React.useMemo(
     () =>

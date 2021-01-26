@@ -180,7 +180,12 @@ export const usePrismicPreviewResolver = (
         constVoid,
       ),
     )
-  }, [])
+  }, [
+    repositoryName,
+    config.linkResolver,
+    state.pluginOptions.accessToken,
+    state.pluginOptions.apiEndpoint,
+  ])
 
   return React.useMemo(() => [localState, resolvePreview] as const, [
     localState,

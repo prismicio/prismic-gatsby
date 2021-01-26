@@ -98,13 +98,13 @@ const traverseAndReplace = <TStaticData extends UnknownRecord>(
 
 export type UsePrismicPreviewDataConfig =
   | {
-      mergeStrategy: 'traverseAndReplace';
-      skip?: boolean;
+      mergeStrategy: 'traverseAndReplace'
+      skip?: boolean
     }
   | {
-      mergeStrategy: 'rootReplaceOrInsert';
-      nodePrismicId: string;
-      skip?: boolean;
+      mergeStrategy: 'rootReplaceOrInsert'
+      nodePrismicId: string
+      skip?: boolean
     }
 
 export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
@@ -134,6 +134,7 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   }, [
     staticData,
     config.mergeStrategy,
+    config.skip,
     state.nodes,
     // @ts-expect-error - config.nodePrismicId only exists if mergeStrategy is "rootReplaceOrInsert"
     config.nodePrismicId,

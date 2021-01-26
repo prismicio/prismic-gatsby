@@ -2,8 +2,8 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import Prismic from 'prismic-javascript'
 
 export interface CreateClientEnv {
-  apiEndpoint: string;
-  accessToken?: string;
+  apiEndpoint: string
+  accessToken?: string
 }
 
 export type Client = ReturnType<typeof Prismic.client>

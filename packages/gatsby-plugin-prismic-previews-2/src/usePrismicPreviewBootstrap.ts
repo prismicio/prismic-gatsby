@@ -254,7 +254,13 @@ export const usePrismicPreviewBootstrap = (
         constVoid,
       ),
     )
-  }, [])
+  }, [
+    repositoryName,
+    config.linkResolver,
+    config.htmlSerializer,
+    contextState,
+    contextDispatch,
+  ])
 
   return React.useMemo(() => [localState, bootstrapPreview] as const, [
     localState,

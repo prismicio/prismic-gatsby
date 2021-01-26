@@ -22,15 +22,15 @@ import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
 import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 
 export interface WithPrismicPreviewProps<TStaticData> {
-  bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn;
-  isPrismicPreview: boolean;
-  prismicPreviewState: UsePrismicPreviewBootstrapState['state'];
-  prismicPreviewError: UsePrismicPreviewBootstrapState['error'];
-  prismicPreviewOriginalData: TStaticData;
+  bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn
+  isPrismicPreview: boolean
+  prismicPreviewState: UsePrismicPreviewBootstrapState['state']
+  prismicPreviewError: UsePrismicPreviewBootstrapState['error']
+  prismicPreviewOriginalData: TStaticData
 }
 
 type WithPrismicPreviewConfig = UsePrismicPreviewBootstrapConfig & {
-  mergePreviewData?: boolean;
+  mergePreviewData?: boolean
 }
 
 type LocalState =
@@ -73,7 +73,7 @@ export const withPrismicPreview = <
       if (isValidToken(repositoryName)() && !contextState.isBootstrapped) {
         bootstrapPreview()
       }
-    }, [])
+    }, [bootstrapPreview, contextState.isBootstrapped])
 
     // Handle state changes from the preview resolver.
     React.useEffect(() => {
@@ -102,7 +102,12 @@ export const withPrismicPreview = <
           break
         }
       }
-    }, [bootstrapState.state, bootstrapState.error])
+    }, [
+      accessToken,
+      contextState.pluginOptions.promptForAccessToken,
+      bootstrapState.state,
+      bootstrapState.error,
+    ])
 
     // TODO: Replace this with a proper UI in the DOM.
     // TODO: Have a user-facing button to clear the access token cookie.
@@ -132,7 +137,7 @@ export const withPrismicPreview = <
           break
         }
       }
-    }, [localState])
+    }, [localState, bootstrapPreview, bootstrapState.error, setAccessToken])
 
     const mergedData = useMergePrismicPreviewData(repositoryName, props.data, {
       mergeStrategy: 'traverseAndReplace',

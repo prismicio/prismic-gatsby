@@ -50,7 +50,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       repositoryName,
       config,
     )
-    const [, { set: setAccessToken }] = usePrismicPreviewAccessToken(
+    const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       repositoryName,
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
@@ -69,7 +69,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       if (isValidToken) {
         resolvePreview()
       }
-    }, [])
+    }, [resolvePreview])
 
     // Handle state changes from the preview resolver.
     React.useEffect(() => {
@@ -90,7 +90,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
             // If we encountered an UnauthorizedError, we don't have the correct
             // access token, and the plugin is configured to prompt for a token,
             // prompt for the correct token.
-            if (contextState.pluginOptions.accessToken) {
+            if (accessToken) {
               setLocalState('PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN')
             } else {
               setLocalState('PROMPT_FOR_ACCESS_TOKEN')
@@ -106,7 +106,13 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
           break
         }
       }
-    }, [resolverState.state, resolverState.error, resolverState.path])
+    }, [
+      accessToken,
+      resolverState.state,
+      resolverState.error,
+      resolverState.path,
+      contextState.pluginOptions.promptForAccessToken,
+    ])
 
     // TODO: Replace this with a proper UI in the DOM.
     // TODO: Have a user-facing button to clear the access token cookie.
@@ -136,7 +142,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
           break
         }
       }
-    }, [localState])
+    }, [localState, resolvePreview, resolverState.error, setAccessToken])
 
     return (
       <WrappedComponent

@@ -3,12 +3,12 @@ import * as gatsbyImgix from 'gatsby-plugin-imgix'
 import * as PrismicDOM from 'prismic-dom'
 
 import {
+  HTMLSerializer,
+  LinkResolver,
   PluginOptions,
   PrismicAPIDocumentNodeInput,
-  TypePathsStore,
   UnknownRecord,
 } from '../types'
-import { serializePath } from './serializePath'
 
 // interface ProxifyFieldEnv {
 //   typePaths: TypePathsStore
@@ -93,12 +93,12 @@ import { serializePath } from './serializePath'
 // > => proxifyField([nodeInput.type], nodeInput)
 
 interface ProxifyDocumentNodeInputEnv {
-  getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType;
-  getNode(id: string): PrismicAPIDocumentNodeInput | undefined;
-  linkResolver: PluginOptions['linkResolver'];
-  htmlSerializer: PluginOptions['htmlSerializer'];
-  imageImgixParams: PluginOptions['imageImgixParams'];
-  imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams'];
+  getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType
+  getNode(id: string): PrismicAPIDocumentNodeInput | undefined
+  linkResolver: LinkResolver
+  htmlSerializer?: HTMLSerializer
+  imageImgixParams: PluginOptions['imageImgixParams']
+  imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
 }
 
 const proxifyRecord = <T extends UnknownRecord>(path: string[], input: T) => (
@@ -110,9 +110,7 @@ const proxifyRecord = <T extends UnknownRecord>(path: string[], input: T) => (
         return Reflect.get(target, prop, receiver)
       }
 
-      const thisPath = [...path, prop]
-      const serializedPath = serializePath(thisPath)
-      const type = env.typePaths[serializedPath]
+      const type = env.getTypePath([...path, prop])
       if (!type) {
         return Reflect.get(target, prop, receiver)
       }
