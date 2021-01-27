@@ -16,7 +16,7 @@ test('passes on valid options', async () => {
   }
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
-  // expect(res.isValid).toBe(true)
+  expect(res.isValid).toBe(true)
   expect(res.errors).toEqual([])
 })
 
