@@ -218,10 +218,15 @@ export const usePrismicPreviewBootstrap = (
           localDispatch({
             type: UsePrismicPreviewBootstrapActionType.BeginBootstrapping,
           }),
-        bootstrapped: () =>
+        // TODO: Remove local bootstrapped state? We already have it in context.
+        bootstrapped: () => {
           localDispatch({
             type: UsePrismicPreviewBootstrapActionType.Bootstrapped,
-          }),
+          })
+          contextDispatch({
+            type: PrismicContextActionType.Bootstrapped,
+          })
+        },
         appendNodes: (nodes: PrismicAPIDocumentNodeInput[]) => () =>
           contextDispatch({
             type: PrismicContextActionType.AppendNodes,

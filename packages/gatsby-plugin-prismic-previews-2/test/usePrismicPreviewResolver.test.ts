@@ -1,9 +1,12 @@
 import { renderHook, act } from '@testing-library/react-hooks'
-import Prismic from 'prismic-javascript'
 import { pipe } from 'fp-ts/function'
+import Prismic from 'prismic-javascript'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
+import { createPreviewToken } from './__testutils__/createPreviewToken'
+import { createPreviewURL } from './__testutils__/createPreviewURL'
+import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 
 import {
   createPrismicContext,
@@ -11,7 +14,6 @@ import {
   usePrismicPreviewResolver,
   UsePrismicPreviewResolverConfig,
 } from '../src'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 
 const createConfig = (): UsePrismicPreviewResolverConfig => ({
   linkResolver: (doc): string => `/${doc.id}`,
@@ -39,7 +41,7 @@ test('initial state', () => {
 })
 
 test('fails if documentId is not in URL', async () => {
-  window.history.replaceState({}, '', '?token=token')
+  window.history.replaceState({}, '', createPreviewURL({ token: 'token' }))
 
   const pluginOptions = createPluginOptions()
   const Provider = createPrismicContext({ pluginOptions })
@@ -63,7 +65,11 @@ test('fails if documentId is not in URL', async () => {
 })
 
 test('fails if token is not in URL', async () => {
-  window.history.replaceState({}, '', '?documentId=documentId')
+  window.history.replaceState(
+    {},
+    '',
+    createPreviewURL({ documentId: 'documentId' }),
+  )
 
   const pluginOptions = createPluginOptions()
   const Provider = createPrismicContext({ pluginOptions })
@@ -90,7 +96,11 @@ test('fails if token does not match repository', async () => {
   const pluginOptions = createPluginOptions()
   const token = encodeURIComponent(`https://no-match.prismic.io/previews/token`)
 
-  window.history.replaceState({}, '', `?token=${token}&documentId=documentId`)
+  window.history.replaceState(
+    {},
+    '',
+    createPreviewURL({ token, documentId: 'documentId' }),
+  )
 
   const Provider = createPrismicContext({ pluginOptions })
   const options = { wrapper: Provider }
@@ -115,22 +125,14 @@ test('fails if token does not match repository', async () => {
 // TODO: Clean up
 test('resolves a path using the link resolver', async () => {
   const pluginOptions = createPluginOptions()
+  const token = createPreviewToken(pluginOptions.repositoryName)
   const documentId = 'documentId'
-  const token = encodeURIComponent(
-    `https://${pluginOptions.repositoryName}.prismic.io/previews/token`,
-  )
-
-  window.history.replaceState(
-    {},
-    '',
-    `?token=${token}&documentId=${documentId}`,
-  )
-
   const Provider = createPrismicContext({ pluginOptions })
-  const options = { wrapper: Provider }
   const config = createConfig()
-
   const spy = jest.spyOn(Prismic, 'client')
+
+  window.history.replaceState({}, '', createPreviewURL({ token, documentId }))
+
   // @ts-expect-error - Partial client provided
   spy.mockReturnValue({
     getPreviewResolver: jest.fn().mockImplementation((_token, documentId) => ({
@@ -147,7 +149,7 @@ test('resolves a path using the link resolver', async () => {
 
   const { result, waitForNextUpdate } = renderHook(
     () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
-    options,
+    { wrapper: Provider },
   )
   const resolvePreview = result.current[1]
 
@@ -157,7 +159,7 @@ test('resolves a path using the link resolver', async () => {
     resolvePreview()
   })
 
-  // TODO: Test for RESOLVING state. It may be changing to quickly in the test
+  // TODO: Test for RESOLVING state. It may be changing too quickly in the test
   // to track the change. May need to artificially delay the preview resolver
   // spy.
   //
@@ -166,7 +168,7 @@ test('resolves a path using the link resolver', async () => {
 
   await waitForNextUpdate()
 
-  expect(result.current[0].error).toBeUndefined()
   expect(result.current[0].state).toBe('RESOLVED')
   expect(result.current[0].path).toBe(`/${documentId}`)
+  expect(result.current[0].error).toBeUndefined()
 })
