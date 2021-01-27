@@ -6,7 +6,7 @@ import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { usePrismicPreviewAccessToken, createPrismicContext } from '../src'
 
 beforeEach(() => {
-  clearAllCookies
+  clearAllCookies()
 })
 
 test('returns the current access token', () => {
