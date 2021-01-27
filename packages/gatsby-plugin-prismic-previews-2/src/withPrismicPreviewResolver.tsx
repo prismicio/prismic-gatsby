@@ -21,16 +21,15 @@ import {
 } from './usePrismicPreviewAccessToken'
 
 export interface WithPrismicPreviewResolverProps {
-  resolvePrismicPreview: UsePrismicPreviewResolverFn
-  prismicPreviewState: UsePrismicPreviewResolverState['state']
-  prismicPreviewPath: UsePrismicPreviewResolverState['path']
-  prismicPreviewDocument: UsePrismicPreviewResolverState['document']
-  prismicPreviewError: UsePrismicPreviewResolverState['error']
-  prismicPreviewSetAccessToken: SetAccessTokenFn
+  resolvePrismicPreview: UsePrismicPreviewResolverFn;
+  prismicPreviewState: UsePrismicPreviewResolverState['state'];
+  prismicPreviewPath: UsePrismicPreviewResolverState['path'];
+  prismicPreviewError: UsePrismicPreviewResolverState['error'];
+  prismicPreviewSetAccessToken: SetAccessTokenFn;
 }
 
 type WithPrismicPreviewResolverConfig = UsePrismicPreviewResolverConfig & {
-  autoRedirect?: boolean
+  autoRedirect?: boolean;
 }
 
 type LocalState =
@@ -150,7 +149,6 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
         resolvePrismicPreview={resolvePreview}
         prismicPreviewState={resolverState.state}
         prismicPreviewPath={resolverState.path}
-        prismicPreviewDocument={resolverState.document}
         prismicPreviewError={resolverState.error}
         prismicPreviewSetAccessToken={setAccessToken}
       />

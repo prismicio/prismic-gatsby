@@ -4,7 +4,7 @@ export const createPluginOptions = (): PluginOptions => ({
   repositoryName: 'qwerty',
   accessToken: 'accessToken',
   typePrefix: 'prefix',
-  apiEndpoint: 'apiEndpoint',
+  apiEndpoint: 'https://qwerty.prismic.io/api/v2',
   lang: '*',
   toolbar: 'new',
   imageImgixParams: { q: 100 },

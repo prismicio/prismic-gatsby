@@ -15,7 +15,7 @@ test('returns the current access token', () => {
   const options = { wrapper: Provider }
 
   const { result } = renderHook(
-    () => usePrismicPreviewAccessToken('qwerty'),
+    () => usePrismicPreviewAccessToken(pluginOptions.repositoryName),
     options,
   )
 
@@ -75,7 +75,7 @@ describe('set function', () => {
     })
 
     expect(document.cookie).toBe(
-      `; gatsby-plugin-prismic-previews.qwerty.accessToken=${newAccessToken}`,
+      `; gatsby-plugin-prismic-previews.${pluginOptions.repositoryName}.accessToken=${newAccessToken}`,
     )
   })
 
@@ -117,7 +117,7 @@ describe('removeCookie function', () => {
     })
 
     expect(document.cookie).toBe(
-      `; gatsby-plugin-prismic-previews.qwerty.accessToken=${newAccessToken}`,
+      `; gatsby-plugin-prismic-previews.${pluginOptions.repositoryName}.accessToken=${newAccessToken}`,
     )
 
     act(() => {

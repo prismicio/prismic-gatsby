@@ -8,7 +8,7 @@ export const validatePreviewTokenForRepository = (
   pipe(
     E.tryCatch(
       () => new URL(decodeURIComponent(token)),
-      () => new Error(`Invalid preview token: ${token}`),
+      () => new Error(`Invalid preview token format: ${token}`),
     ),
     E.chain(
       E.fromPredicate(

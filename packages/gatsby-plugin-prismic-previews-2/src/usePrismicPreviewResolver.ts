@@ -15,11 +15,10 @@ import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForReposi
 import { normalizePrismicError } from './lib/normalizePrismicError'
 import { setCookie } from './lib/setCookie'
 
-export type UsePrismicPreviewResolverFn = () => void
+export type UsePrismicPreviewResolverFn = () => Promise<void>
 
 export interface UsePrismicPreviewResolverState {
   state: 'INIT' | 'RESOLVING' | 'RESOLVED' | 'FAILED'
-  document?: PrismicAPIDocument
   path?: string
   error?: Error
 }
@@ -45,7 +44,6 @@ type UsePrismicPreviewResolverAction =
 
 const initialLocalState: UsePrismicPreviewResolverState = {
   state: 'INIT',
-  document: undefined,
   path: undefined,
 }
 
@@ -100,7 +98,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
   ),
   RTE.bindW('documentId', () =>
     pipe(
-      getURLSearchParam('token'),
+      getURLSearchParam('documentId'),
       RTE.fromOption(() => new Error('documentId URL parameter not present')),
     ),
   ),
