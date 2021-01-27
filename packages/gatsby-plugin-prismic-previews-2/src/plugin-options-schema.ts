@@ -5,7 +5,7 @@ import {
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
   DEFAULT_PRISMIC_API_ENDPOINT,
 } from 'gatsby-source-prismic'
-import { DEFAULT_PROMPT_FOR_ACCESS_TOKEN, DEFAULT_TOOLBAR } from './constants'
+import { DEFAULT_TOOLBAR } from './constants'
 
 import { sprintf } from './lib/sprintf'
 
@@ -17,9 +17,7 @@ export const pluginOptionsSchema: NonNullable<
   const schema = Joi.object({
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
-    promptForAccessToken: Joi.boolean().default(
-      DEFAULT_PROMPT_FOR_ACCESS_TOKEN,
-    ),
+    promptForAccessToken: Joi.boolean(),
     apiEndpoint: Joi.string().default((parent) =>
       sprintf(DEFAULT_PRISMIC_API_ENDPOINT, parent.repositoryName),
     ),

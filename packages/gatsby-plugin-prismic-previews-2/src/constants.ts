@@ -1,12 +1,8 @@
-import * as chalk from 'chalk'
-
-import { PrismicToolbarType } from './types'
+import chalk from 'chalk'
 
 export const GLOBAL_TYPE_PREFIX = 'Prismic'
 
-export const DEFAULT_TOOLBAR = PrismicToolbarType.New
-
-export const DEFAULT_PROMPT_FOR_ACCESS_TOKEN = false
+export const DEFAULT_TOOLBAR = 'new'
 
 export const QUERY_PAGE_SIZE = 100
 

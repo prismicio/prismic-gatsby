@@ -15,13 +15,8 @@ export interface PluginOptions extends gatsby.PluginOptions {
   imageImgixParams: gatsbyImgix.ImgixUrlParams
   imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
   typePrefix?: string
-  toolbar: PrismicToolbarType
+  toolbar: 'new' | 'legacy'
   plugins: []
-}
-
-export enum PrismicToolbarType {
-  New = 'new',
-  Legacy = 'legacy',
 }
 
 export type TypePathsStore = Record<string, gatsbyPrismic.PrismicTypePathType>

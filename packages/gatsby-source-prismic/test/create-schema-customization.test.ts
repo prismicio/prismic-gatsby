@@ -35,7 +35,7 @@ beforeEach(() => {
   gatsbyContext.cache.clear()
 })
 
-test.only('creates type path nodes', async () => {
+test('creates type path nodes', async () => {
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 

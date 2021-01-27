@@ -26,9 +26,9 @@ import {
 interface OnPostBootstrapProgramEnv
   extends BuildTypePathsStoreFilenameEnv,
     ReportVerboseEnv {
-  getNodesByType: gatsby.NodePluginArgs['getNodesByType']
-  repositoryName: string
-  nodeHelpers: NodeHelpers
+  getNodesByType: gatsby.NodePluginArgs['getNodesByType'];
+  repositoryName: string;
+  nodeHelpers: NodeHelpers;
 }
 
 const onPostBootstrapProgram: RTE.ReaderTaskEither<
@@ -55,7 +55,7 @@ const onPostBootstrapProgram: RTE.ReaderTaskEither<
   ),
   RTE.bindW('filename', () => buildTypePathsStoreFilename),
   RTE.bind('publicPath', (env) =>
-    RTE.of(path.resolve(process.cwd(), 'public', 'static', env.filename)),
+    RTE.of(path.join('public', 'static', env.filename)),
   ),
   RTE.chainFirst((env) =>
     RTE.fromIO(() => fs.writeFileSync(env.publicPath, env.serializedTypePaths)),
@@ -66,29 +66,31 @@ const onPostBootstrapProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
+// This needs to be written in thenable syntax to satisfy Gatsby's API.
+// The TypeScript types say this function only supports the callback method,
+// not the Promise-returning method.
 export const onPostBootstrap: NonNullable<
   gatsby.GatsbyNode['onPostBootstrap']
-> = async (gatsbyContext, pluginOptions: PluginOptions) =>
-  pipe(
-    await RTE.run(onPostBootstrapProgram, {
-      getNodesByType: gatsbyContext.getNodesByType,
-      reportVerbose: gatsbyContext.reporter.verbose,
-      repositoryName: pluginOptions.repositoryName,
-      nodeHelpers: createNodeHelpers({
-        typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
-          .filter(Boolean)
-          .join(' '),
-        fieldPrefix: GLOBAL_TYPE_PREFIX,
-        createNodeId: gatsbyContext.createNodeId,
-        createContentDigest: gatsbyContext.createContentDigest,
-      }),
+> = (gatsbyContext, pluginOptions: PluginOptions, callback) =>
+  RTE.run(onPostBootstrapProgram, {
+    getNodesByType: gatsbyContext.getNodesByType,
+    reportVerbose: gatsbyContext.reporter.verbose,
+    repositoryName: pluginOptions.repositoryName,
+    nodeHelpers: createNodeHelpers({
+      typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
+        .filter(Boolean)
+        .join(' '),
+      fieldPrefix: GLOBAL_TYPE_PREFIX,
+      createNodeId: gatsbyContext.createNodeId,
+      createContentDigest: gatsbyContext.createContentDigest,
     }),
+  }).then(
     E.fold(
       (error) =>
         reportPanic(error.message)({
           repositoryName: pluginOptions.repositoryName,
           reportPanic: gatsbyContext.reporter.panic,
         })(),
-      constVoid,
+      () => (callback ? callback(null) : void 0),
     ),
   )

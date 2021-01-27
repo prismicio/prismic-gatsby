@@ -10,11 +10,10 @@
       "jsx": true
     }
   },
-  "plugins": ["@typescript-eslint", "react", "react-hooks"],
+  "plugins": ["@typescript-eslint", "react-hooks"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react/recommended"
   ],
   "rules": {
     "curly": "error",
@@ -24,6 +23,9 @@
       "error",
       { "argsIgnorePattern": "^_" }
     ],
-    "react/display-name": "off"
+    "@typescript-eslint/camelcase": "off",
+    "react/display-name": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   }
 }

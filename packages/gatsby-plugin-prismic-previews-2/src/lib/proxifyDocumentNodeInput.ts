@@ -153,28 +153,30 @@ const proxifyRecord = <T extends UnknownRecord>(path: string[], input: T) => (
           const propValue = target[prop] as gatsbyPrismic.PrismicAPIImageField
 
           const url = propValue.url
-          if (!url) {
+          const sourceWidth = propValue.dimensions?.width
+          const sourceHeight = propValue.dimensions?.height
+
+          if (!url || !sourceWidth || !sourceHeight) {
             return propValue
+          }
+
+          const args = {
+            imgixParams: env.imageImgixParams,
+            placeholderImgixParams: env.imagePlaceholderImgixParams,
           }
 
           const fixed = gatsbyImgix.buildImgixFixed({
             url,
-            sourceWidth: propValue.dimensions.width,
-            sourceHeight: propValue.dimensions.height,
-            args: {
-              imgixParams: env.imageImgixParams,
-              placeholderImgixParams: env.imagePlaceholderImgixParams,
-            },
+            sourceWidth,
+            sourceHeight,
+            args,
           })
 
           const fluid = gatsbyImgix.buildImgixFluid({
             url,
-            sourceWidth: propValue.dimensions.width,
-            sourceHeight: propValue.dimensions.height,
-            args: {
-              imgixParams: env.imageImgixParams,
-              placeholderImgixParams: env.imagePlaceholderImgixParams,
-            },
+            sourceWidth,
+            sourceHeight,
+            args,
           })
 
           return { ...propValue, fixed, fluid }
