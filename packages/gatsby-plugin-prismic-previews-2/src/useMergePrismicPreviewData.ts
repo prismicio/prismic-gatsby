@@ -23,6 +23,10 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
       return nodeOrLeaf
     }
 
+    // TODO: previewableValue is directly from Prismic (e.g. "XjfuYy307S8fn").
+    // Our node store is indexed by an MD5 version of that since we use the
+    // `node.id` value.
+    // Solution: Use the document's ID to index the node store.
     return nodes[previewableValue] ?? nodeOrLeaf
   }
 

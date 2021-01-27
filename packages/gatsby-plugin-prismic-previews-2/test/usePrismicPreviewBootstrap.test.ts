@@ -1,9 +1,13 @@
 import { renderHook, act } from '@testing-library/react-hooks'
+import { createNodeHelpers } from 'gatsby-node-helpers'
 import * as cookie from 'es-cookie'
 import Prismic from 'prismic-javascript'
 import md5 from 'tiny-hashes/md5'
 
+import { clearAllCookies } from './__testutils__/clearAllCookies'
+import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewToken } from './__testutils__/createPreviewToken'
+import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 
 import {
   createPrismicContext,
@@ -11,10 +15,6 @@ import {
   UsePrismicPreviewBootstrapConfig,
   usePrismicPreviewContext,
 } from '../src'
-import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { clearAllCookies } from './__testutils__/clearAllCookies'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
-import { createNodeHelpers } from 'gatsby-node-helpers'
 
 const createConfig = (): UsePrismicPreviewBootstrapConfig => ({
   linkResolver: (doc): string => `/${doc.id}`,
@@ -131,11 +131,11 @@ test('fetches all repository documents and bootstraps context', async () => {
 
   const { result, waitForNextUpdate } = renderHook(
     () => {
+      const context = usePrismicPreviewContext(pluginOptions.repositoryName)
       const bootstrap = usePrismicPreviewBootstrap(
         pluginOptions.repositoryName,
         config,
       )
-      const context = usePrismicPreviewContext(pluginOptions.repositoryName)
 
       return { bootstrap, context }
     },
@@ -161,10 +161,6 @@ test('fetches all repository documents and bootstraps context', async () => {
   expect(result.current.bootstrap[0].error).toBeUndefined()
 
   expect(result.current.context[0].isBootstrapped).toBe(true)
-
-  const x = nodeHelpers.createNodeFactory(queryResults[0].type)(queryResults[0])
-  expect(result.current.context[0].nodes[x.id]).toEqual(x)
-
   expect(result.current.context[0].nodes).toEqual({
     [queryResultsNodes[0].id]: queryResultsNodes[0],
     [queryResultsNodes[1].id]: queryResultsNodes[1],
@@ -206,11 +202,11 @@ test('fails if already bootstrapped', async () => {
 
   const { result, waitForNextUpdate } = renderHook(
     () => {
+      const context = usePrismicPreviewContext(pluginOptions.repositoryName)
       const bootstrap = usePrismicPreviewBootstrap(
         pluginOptions.repositoryName,
         config,
       )
-      const context = usePrismicPreviewContext(pluginOptions.repositoryName)
 
       return { bootstrap, context }
     },

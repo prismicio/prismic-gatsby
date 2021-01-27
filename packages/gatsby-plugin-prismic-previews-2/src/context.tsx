@@ -86,7 +86,7 @@ export const contextReducer = (
   switch (action.type) {
     case PrismicContextActionType.AppendNodes: {
       const nodesMap = action.payload.reduce((acc, node) => {
-        acc[node.id] = node
+        acc[node.prismicId] = node
 
         return acc
       }, {} as PrismicContextState['nodes'])
