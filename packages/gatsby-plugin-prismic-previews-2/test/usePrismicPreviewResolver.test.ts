@@ -157,6 +157,13 @@ test('resolves a path using the link resolver', async () => {
     resolvePreview()
   })
 
+  // TODO: Test for RESOLVING state. It may be changing to quickly in the test
+  // to track the change. May need to artificially delay the preview resolver
+  // spy.
+  //
+  // await waitForValueToChange(() => result.current[0].state)
+  // expect(result.current[0].state).toBe('RESOLVING')
+
   await waitForNextUpdate()
 
   expect(result.current[0].error).toBeUndefined()
