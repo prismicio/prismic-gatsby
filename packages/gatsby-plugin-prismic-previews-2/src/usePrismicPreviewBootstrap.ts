@@ -23,11 +23,14 @@ import {
   LinkResolver,
   PluginOptions,
   PrismicAPIDocumentNodeInput,
+  TypePathsStore,
   UnknownRecord,
 } from './types'
 import { PrismicContextActionType } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { serializePath } from './lib/serializePath'
+import { fetchTypePathsStore } from './lib/fetchTypePaths'
+import { BuildTypePathsStoreFilenameEnv } from './lib/buildTypePathsStoreFilename'
 
 export type UsePrismicPreviewBootstrapFn = () => void
 
@@ -86,13 +89,16 @@ const localReducer = (
   }
 }
 
-interface UsePrismicPreviewBootstrapProgramEnv extends QueryAllDocumentsEnv {
+interface UsePrismicPreviewBootstrapProgramEnv
+  extends QueryAllDocumentsEnv,
+    BuildTypePathsStoreFilenameEnv {
   repositoryName: string
   typePrefix: string | undefined
   isBootstrapped: boolean
   beginBootstrapping: IO.IO<void>
   bootstrapped: IO.IO<void>
   appendNodes(nodes: PrismicAPIDocumentNodeInput[]): IO.IO<void>
+  appendTypePaths(typePathsStore: TypePathsStore): IO.IO<void>
   createNodeId(input: string): string
   createContentDigest(input: string | UnknownRecord): string
 
@@ -185,6 +191,7 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
     ),
   ),
   RTE.chainFirst((env) => RTE.fromIO(env.appendNodes(env.nodes))),
+  RTE.bindW('typePathsStore', () => fetchTypePathsStore),
 
   // End bootstrap.
   RTE.chainFirst((env) => RTE.fromIO(env.bootstrapped)),
@@ -214,6 +221,7 @@ export const usePrismicPreviewBootstrap = (
     pipe(
       await RTE.run(usePrismicPreviewBootstrapProgram, {
         repositoryName,
+        accessToken: contextState.pluginOptions.accessToken,
         beginBootstrapping: () =>
           localDispatch({
             type: UsePrismicPreviewBootstrapActionType.BeginBootstrapping,
@@ -231,6 +239,11 @@ export const usePrismicPreviewBootstrap = (
           contextDispatch({
             type: PrismicContextActionType.AppendNodes,
             payload: nodes,
+          }),
+        appendTypePaths: (typePathsStore: TypePathsStore) => () =>
+          contextDispatch({
+            type: PrismicContextActionType.AppendTypePaths,
+            payload: typePathsStore,
           }),
         isBootstrapped: contextState.isBootstrapped,
         apiEndpoint: contextState.pluginOptions.apiEndpoint,

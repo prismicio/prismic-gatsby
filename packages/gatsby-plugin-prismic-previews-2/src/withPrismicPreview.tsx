@@ -21,7 +21,9 @@ import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
 import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 
-export interface WithPrismicPreviewProps<TStaticData> {
+export interface WithPrismicPreviewProps<
+  TStaticData extends UnknownRecord = UnknownRecord
+> {
   bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn
   isPrismicPreview: boolean
   prismicPreviewState: UsePrismicPreviewBootstrapState['state']

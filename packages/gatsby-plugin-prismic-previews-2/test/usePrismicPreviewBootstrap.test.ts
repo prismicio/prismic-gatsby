@@ -95,6 +95,7 @@ test('fails if not for this repository', async () => {
   expect(state.error?.message).toMatch(/token is not for this repository/i)
 })
 
+// TODO: Need to mock type paths loading using fetch.
 test('fetches all repository documents and bootstraps context', async () => {
   const pluginOptions = createPluginOptions()
   const Provider = createPrismicContext({ pluginOptions })

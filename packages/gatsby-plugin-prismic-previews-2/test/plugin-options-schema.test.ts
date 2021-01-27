@@ -6,6 +6,7 @@ test('passes on valid options', async () => {
   const pluginOptions = {
     repositoryName: 'string',
     accessToken: 'string',
+    promptForAccessToken: true,
     apiEndpoint: 'string',
     graphQuery: 'string',
     lang: 'string',
@@ -32,6 +33,7 @@ test('fails on invalid options', async () => {
   const pluginOptions = {
     repositoryName: Symbol(),
     accessToken: Symbol(),
+    promptForAccessToken: Symbol(),
     apiEndpoint: Symbol(),
     graphQuery: Symbol(),
     lang: Symbol(),
@@ -46,6 +48,7 @@ test('fails on invalid options', async () => {
   expect(res.errors).toEqual([
     '"repositoryName" must be a string',
     '"accessToken" must be a string',
+    '"promptForAccessToken" must be a boolean',
     '"apiEndpoint" must be a string',
     '"graphQuery" must be a string',
     '"lang" must be a string',
@@ -68,19 +71,5 @@ test('allows only one of qraphQuery or fetchLinks', async () => {
   expect(res.isValid).toBe(false)
   expect(res.errors).toEqual([
     '"value" contains a conflict between optional exclusive peers [fetchLinks, graphQuery]',
-  ])
-})
-
-test('allows only one of accessToken or promptForAccessToken', async () => {
-  const pluginOptions = {
-    repositoryName: 'qwerty',
-    accessToken: 'string',
-    promptForAccessToken: false,
-  }
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
-
-  expect(res.isValid).toBe(false)
-  expect(res.errors).toEqual([
-    '"value" contains a conflict between optional exclusive peers [accessToken, promptForAccessToken]',
   ])
 })

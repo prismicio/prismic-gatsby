@@ -4,6 +4,8 @@ export const GLOBAL_TYPE_PREFIX = 'Prismic'
 
 export const DEFAULT_TOOLBAR = 'new'
 
+export const DEFAULT_PROMPT_FOR_ACCESS_TOKEN = true
+
 export const QUERY_PAGE_SIZE = 100
 
 export const TYPE_PATHS_BASENAME_TEMPLATE = 'type-paths-store %s'

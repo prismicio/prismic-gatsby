@@ -59,6 +59,7 @@ export enum PrismicContextActionType {
   SetAccessToken = 'SetAccessToken',
   CreateRootNodeRelationship = 'CreateRootNodeRelationship',
   AppendNodes = 'AppendDocuments',
+  AppendTypePaths = 'AppendTypePaths',
   Bootstrapped = 'Bootstrapped',
 }
 
@@ -70,6 +71,10 @@ export type PrismicContextAction =
   | {
       type: PrismicContextActionType.AppendNodes
       payload: PrismicAPIDocumentNodeInput[]
+    }
+  | {
+      type: PrismicContextActionType.AppendTypePaths
+      payload: TypePathsStore
     }
   | {
       type: PrismicContextActionType.Bootstrapped
@@ -96,6 +101,16 @@ export const contextReducer = (
         nodes: {
           ...state.nodes,
           ...nodesMap,
+        },
+      }
+    }
+
+    case PrismicContextActionType.AppendTypePaths: {
+      return {
+        ...state,
+        typePaths: {
+          ...state.typePaths,
+          ...action.payload,
         },
       }
     }
