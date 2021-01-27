@@ -21,15 +21,15 @@ import {
 } from './usePrismicPreviewAccessToken'
 
 export interface WithPrismicPreviewResolverProps {
-  resolvePrismicPreview: UsePrismicPreviewResolverFn;
-  prismicPreviewState: UsePrismicPreviewResolverState['state'];
-  prismicPreviewPath: UsePrismicPreviewResolverState['path'];
-  prismicPreviewError: UsePrismicPreviewResolverState['error'];
-  prismicPreviewSetAccessToken: SetAccessTokenFn;
+  resolvePrismicPreview: UsePrismicPreviewResolverFn
+  prismicPreviewState: UsePrismicPreviewResolverState['state']
+  prismicPreviewPath: UsePrismicPreviewResolverState['path']
+  prismicPreviewError: UsePrismicPreviewResolverState['error']
+  prismicPreviewSetAccessToken: SetAccessTokenFn
 }
 
 type WithPrismicPreviewResolverConfig = UsePrismicPreviewResolverConfig & {
-  autoRedirect?: boolean;
+  autoRedirect?: boolean
 }
 
 type LocalState =

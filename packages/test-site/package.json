@@ -8,17 +8,17 @@
     "build": "gatsby build"
   },
   "dependencies": {
-    "gatsby": "^2.30.1",
+    "gatsby": "^2.31.1",
     "gatsby-plugin-prismic-previews-2": "^4.0.0",
     "gatsby-source-prismic": "^4.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.12.0",
-    "@typescript-eslint/parser": "^4.12.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
     "dotenv": "^8.2.0",
-    "eslint": "^7.17.0",
+    "eslint": "^7.18.0",
     "eslint-plugin-react": "^7.22.0",
     "gatsby": "^2.30.1",
     "standard-version": "^9.1.0",
