@@ -40,7 +40,8 @@
     "gatsby-source-filesystem": "^2.10.0",
     "prismic-dom": "^2.2.4",
     "prismic-javascript": "^3.0.2",
-    "tiny-hashes": "^1.0.1"
+    "tiny-hashes": "^1.0.1",
+    "ts-prismic": "^0.2.0"
   },
   "peerDependencies": {
     "gatsby": ">=2.29"

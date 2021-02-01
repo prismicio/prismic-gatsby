@@ -14249,6 +14249,13 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
+ts-prismic@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ts-prismic/-/ts-prismic-0.2.0.tgz#43c66c71f3b62052ad889f86667f406ba57a3244"
+  integrity sha512-eIol0sBnXdUgMeZS1LiIHVhJ9RFfuJ1XSxRjToV5w5wRFQpCkuOe227tTPq7kjt0qUvVQA/DQ1iXxZ3j4wd/Cw==
+  dependencies:
+    type-fest "^0.20.2"
+
 tsconfig-paths@^3.9.0:
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.9.0.tgz#098547a6c4448807e8fcb8eae081064ee9a3c90b"
