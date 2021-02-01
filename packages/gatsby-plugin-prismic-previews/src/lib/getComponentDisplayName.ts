@@ -1,3 +1,5 @@
+import * as React from 'react'
+
 /**
  * Returns a component's display name. If none is provided, "Component" is
  * returned.
@@ -6,8 +8,7 @@
  *
  * @returns `WrappedComponent`'s display name.
  */
-export const getComponentDisplayName = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  WrappedComponent: React.ComponentType<any>,
+export const getComponentDisplayName = <TProps>(
+  WrappedComponent: React.ComponentType<TProps>,
 ): string =>
   WrappedComponent.displayName || WrappedComponent.name || 'Component'

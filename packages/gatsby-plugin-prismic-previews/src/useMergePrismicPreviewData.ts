@@ -1,15 +1,16 @@
 import * as React from 'react'
-import * as gatsby from 'gatsby'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-import { PREVIEWABLE_NODE_ID_FIELD } from 'gatsby-source-prismic/dist/constants'
+import { PREVIEWABLE_NODE_ID_FIELD } from 'gatsby-source-prismic'
+import { ValueOf } from 'type-fest'
 
 import { isPlainObject } from './lib/isPlainObject'
 import { camelCase } from './lib/camelCase'
 
 import { UnknownRecord } from './types'
-import { usePrismicContext, PrismicContextState } from './usePrismicContext'
+import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { PrismicContextState } from './context'
 
 const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
   nodeOrLeaf: unknown,
@@ -22,6 +23,10 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
       return nodeOrLeaf
     }
 
+    // TODO: previewableValue is directly from Prismic (e.g. "XjfuYy307S8fn").
+    // Our node store is indexed by an MD5 version of that since we use the
+    // `node.id` value.
+    // Solution: Use the document's ID to index the node store.
     return nodes[previewableValue] ?? nodeOrLeaf
   }
 
@@ -49,14 +54,13 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
  */
 const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  node: gatsby.NodeInput,
+  node: ValueOf<PrismicContextState['nodes']>,
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
-    node,
-    O.fromNullable,
-    O.map((previewData) => ({
+    O.fromNullable(node),
+    O.map((node) => ({
       ...staticData,
-      [camelCase(previewData.internal.type)]: previewData,
+      [camelCase(node.internal.type)]: node,
     })),
     O.fold(
       () => ({ data: staticData, isPreview: false as boolean }),
@@ -81,31 +85,44 @@ const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
  */
 const traverseAndReplace = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  nodes: Record<string, gatsby.NodeInput>,
+  nodes: PrismicContextState['nodes'],
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
     nodes,
     O.fromPredicate((nodes) => !R.isEmpty(nodes)),
-    O.map(
-      () => R.map(findAndReplacePreviewables(nodes))(staticData) as TStaticData,
-    ),
+    O.map(() => staticData),
+    O.map(R.map(findAndReplacePreviewables(nodes))),
     O.fold(
       () => ({ data: staticData, isPreview: false as boolean }),
-      (data) => ({ data, isPreview: true }),
+      (data) => ({ data: data as TStaticData, isPreview: true }),
     ),
   )
 
+// TODO: Update references to gatsby.NodeInput and nodes to PrismicAPIDocumentNodes
+
 export type UsePrismicPreviewDataConfig =
-  | { mergeStrategy: 'traverseAndReplace' }
-  | { mergeStrategy: 'rootReplaceOrInsert'; nodePrismicId: string }
+  | {
+      mergeStrategy: 'traverseAndReplace'
+      skip?: boolean
+    }
+  | {
+      mergeStrategy: 'rootReplaceOrInsert'
+      nodePrismicId: string
+      skip?: boolean
+    }
 
 export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
+  repositoryName: string,
   staticData: TStaticData,
   config: UsePrismicPreviewDataConfig = { mergeStrategy: 'traverseAndReplace' },
 ): { data: TStaticData; isPreview: boolean } => {
-  const [state] = usePrismicContext()
+  const [state] = usePrismicPreviewContext(repositoryName)
 
   return React.useMemo(() => {
+    if (config.skip) {
+      return { data: staticData, isPreview: false }
+    }
+
     switch (config.mergeStrategy) {
       case 'rootReplaceOrInsert': {
         return rootReplaceOrInsert(
@@ -121,6 +138,7 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   }, [
     staticData,
     config.mergeStrategy,
+    config.skip,
     state.nodes,
     // @ts-expect-error - config.nodePrismicId only exists if mergeStrategy is "rootReplaceOrInsert"
     config.nodePrismicId,

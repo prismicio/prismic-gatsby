@@ -1,4 +1,4 @@
-import { UnknownRecord } from 'gatsby-source-prismic/dist/types'
+import { UnknownRecord } from '../types'
 
 /**
  * Get the string tag of a value.
@@ -27,7 +27,7 @@ const isMapOrSet = <T>(value: T): boolean => {
  *
  * @returns true if value is a plain object, false otherwise.
  */
-export const isPlainObject = (value: unknown): value is UnknownRecord =>
+export const isPlainObject = <T = UnknownRecord>(value: unknown): value is T =>
   isMapOrSet(value)
     ? false
     : value !== null && typeof value === 'object' && !Array.isArray(value)

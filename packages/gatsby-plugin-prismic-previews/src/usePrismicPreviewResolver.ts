@@ -1,167 +1,192 @@
 import * as React from 'react'
-import * as gatsby from 'gatsby'
-import * as cookie from 'es-cookie'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
+import * as TE from 'fp-ts/TaskEither'
+import * as E from 'fp-ts/Either'
+import * as IO from 'fp-ts/IO'
+import { constVoid, pipe } from 'fp-ts/function'
 import Prismic from 'prismic-javascript'
-import { PrismicAPIDocument } from 'gatsby-source-prismic'
 
-import { createClient } from './lib/createClient'
-import { queryById } from './lib/queryById'
-import { buildQueryOptions } from './lib/buildQueryOptions'
 import { getURLSearchParam } from './lib/getURLSearchParam'
-import { notNullable } from './lib/notNullable'
+import { createClient, CreateClientEnv } from './lib/createClient'
 
-import { Dependencies } from './types'
-import { buildDependencies } from './buildDependencies'
-import {
-  PrismicContextAction,
-  PrismicContextActionType,
-  usePrismicContext,
-} from './usePrismicContext'
+import { LinkResolver, PrismicAPIDocument } from './types'
+import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
+import { normalizePrismicError } from './lib/normalizePrismicError'
+import { setCookie } from './lib/setCookie'
 
-enum ActionType {
-  DocumentLoaded = 'DocumentLoaded',
-}
+export type UsePrismicPreviewResolverFn = () => Promise<void>
 
-type Action = {
-  type: ActionType.DocumentLoaded
-  payload: { path: string; document: PrismicAPIDocument }
-}
-
-interface State {
-  isLoading: boolean
-  document?: PrismicAPIDocument
+export interface UsePrismicPreviewResolverState {
+  state: 'INIT' | 'RESOLVING' | 'RESOLVED' | 'FAILED'
   path?: string
+  error?: Error
 }
 
-const initialState = {
-  isLoading: false,
-  document: undefined,
+enum UsePrismicPreviewResolverActionType {
+  BeginResolving = 'BeginResolving',
+  Resolved = 'Resolved',
+  Fail = 'Fail',
+}
+
+type UsePrismicPreviewResolverAction =
+  | {
+      type: UsePrismicPreviewResolverActionType.BeginResolving
+    }
+  | {
+      type: UsePrismicPreviewResolverActionType.Resolved
+      payload: string
+    }
+  | {
+      type: UsePrismicPreviewResolverActionType.Fail
+      payload: Error
+    }
+
+const initialLocalState: UsePrismicPreviewResolverState = {
+  state: 'INIT',
   path: undefined,
 }
 
-const reducer = (state: State, action: Action): State => {
+const localReducer = (
+  state: UsePrismicPreviewResolverState,
+  action: UsePrismicPreviewResolverAction,
+): UsePrismicPreviewResolverState => {
   switch (action.type) {
-    case ActionType.DocumentLoaded: {
+    case UsePrismicPreviewResolverActionType.BeginResolving: {
+      return {
+        ...initialLocalState,
+        state: 'RESOLVING',
+      }
+    }
+
+    case UsePrismicPreviewResolverActionType.Resolved: {
       return {
         ...state,
-        isLoading: false,
-        document: action.payload.document,
-        path: action.payload.path,
+        state: 'RESOLVED',
+        path: action.payload,
+      }
+    }
+
+    case UsePrismicPreviewResolverActionType.Fail: {
+      return {
+        ...initialLocalState,
+        state: 'FAILED',
+        error: action.payload,
       }
     }
   }
 }
 
-interface PrismicPreviewProgramDependencies {
-  shouldAutoRedirect: boolean
-  dispatch: (action: Action) => void
-  contextDispatch: (action: PrismicContextAction) => void
+interface UsePrismicPreviewResolverProgramEnv extends CreateClientEnv {
+  repositoryName: string
+  beginResolving: IO.IO<void>
+  resolved(path: string): IO.IO<void>
+  linkResolver(doc: PrismicAPIDocument): string
 }
 
-const documentLoaded = (
-  path: string,
-  document: PrismicAPIDocument,
-): RTE.ReaderTaskEither<PrismicPreviewProgramDependencies, never, void> =>
-  RTE.asks((deps) =>
-    deps.dispatch({
-      type: ActionType.DocumentLoaded,
-      payload: { path, document },
-    }),
-  )
-
-const createRootNodeRelationship = (
-  path: string,
-  nodeId: string,
-): RTE.ReaderTaskEither<PrismicPreviewProgramDependencies, never, void> =>
-  RTE.asks((deps) =>
-    deps.contextDispatch({
-      type: PrismicContextActionType.CreateRootNodeRelationship,
-      payload: { path, nodeId },
-    }),
-  )
-
-const prismicPreviewResolverProgram = pipe(
-  RTE.ask<PrismicPreviewProgramDependencies & Dependencies>(),
-  RTE.bindW('previewRef', () =>
+const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
+  UsePrismicPreviewResolverProgramEnv,
+  Error,
+  void
+> = pipe(
+  RTE.ask<UsePrismicPreviewResolverProgramEnv>(),
+  RTE.bindW('token', () =>
     pipe(
       getURLSearchParam('token'),
-      RTE.fromOption(() => Error('token URL parameter not present')),
+      RTE.fromOption(() => new Error('token URL parameter not present')),
     ),
   ),
   RTE.bindW('documentId', () =>
     pipe(
       getURLSearchParam('documentId'),
-      RTE.fromOption(() => Error('documentId URL parameter not present')),
+      RTE.fromOption(() => new Error('documentId URL parameter not present')),
     ),
   ),
-  RTE.chainFirst((scope) =>
-    RTE.of(cookie.set(Prismic.previewCookie, scope.previewRef)),
-  ),
-  RTE.bindW('client', createClient),
-  RTE.bindW('queryOptions', (scope) => buildQueryOptions(scope.client)),
-  RTE.bindW('document', (scope) =>
-    pipe(
-      queryById(scope.client, scope.documentId, scope.queryOptions),
-      RTE.fromTask,
+
+  // Only continue if this preview session is for this repository.
+  RTE.chainFirst((env) =>
+    RTE.fromEither(
+      validatePreviewTokenForRepository(env.repositoryName, env.token),
     ),
   ),
-  RTE.bindW('path', (scope) =>
-    pipe(
-      scope.pluginOptions.linkResolver?.(scope.document),
-      RTE.fromPredicate(notNullable, () =>
-        Error(
-          'linkResolver did not resolve to a path for the previewed document',
-        ),
+
+  // Persist the token for resuming this preview session at a later time.
+  RTE.chainFirst((env) =>
+    RTE.fromIO(setCookie(Prismic.previewCookie, env.token)),
+  ),
+
+  RTE.bindW('client', () => createClient),
+  RTE.bind('pathResolver', (env) =>
+    RTE.of(env.client.getPreviewResolver(env.token, env.documentId)),
+  ),
+
+  // Start resolving.
+  RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
+
+  RTE.bind('path', (env) =>
+    RTE.fromTaskEither(
+      TE.tryCatch(
+        () => env.pathResolver.resolve(env.linkResolver, '/'),
+        (error) => normalizePrismicError(error as Error),
       ),
     ),
   ),
-  RTE.chainFirstW((scope) =>
-    createRootNodeRelationship(scope.path, scope.document.id),
-  ),
-  RTE.chainFirstW((scope) => documentLoaded(scope.path, scope.document)),
-  // TODO: Replace this map with something more side-effect-y
-  RTE.map((scope) => {
-    if (scope.shouldAutoRedirect) {
-      gatsby.navigate(scope.path)
-    }
-  }),
+
+  // End resolving.
+  RTE.chainFirst((env) => RTE.fromIO(env.resolved(env.path))),
+
+  RTE.map(constVoid),
 )
 
 export type UsePrismicPreviewResolverConfig = {
-  repositoryName: string
-  shouldAutoRedirect?: boolean
+  linkResolver: LinkResolver
 }
 
 export const usePrismicPreviewResolver = (
+  repositoryName: string,
   config: UsePrismicPreviewResolverConfig,
-): State => {
-  const [state, dispatch] = React.useReducer(reducer, initialState)
-  const [contextState, contextDispatch] = usePrismicContext()
+): readonly [UsePrismicPreviewResolverState, UsePrismicPreviewResolverFn] => {
+  const [state] = usePrismicPreviewContext(repositoryName)
+  const [localState, localDispatch] = React.useReducer(
+    localReducer,
+    initialLocalState,
+  )
 
-  React.useEffect(() => {
-    const pluginOptions = contextState.pluginOptionsMap[config.repositoryName]
-    if (!pluginOptions) {
-      throw Error(
-        `usePrismicPreviewResolver was configured to use a repository with the name "${config.repositoryName}" but was not registered in the top-level PrismicProvider component. Please check your repository name and/or PrismicProvider props.`,
-      )
-    }
-
-    const dependencies = {
-      ...buildDependencies(contextState, contextDispatch, pluginOptions),
-      shouldAutoRedirect: config.shouldAutoRedirect ?? true,
-      dispatch,
-      contextDispatch,
-    }
-
-    RTE.run(prismicPreviewResolverProgram, dependencies)
+  const resolvePreview = React.useCallback(async (): Promise<void> => {
+    pipe(
+      await RTE.run(usePrismicPreviewResolverProgram, {
+        repositoryName,
+        beginResolving: () =>
+          localDispatch({
+            type: UsePrismicPreviewResolverActionType.BeginResolving,
+          }),
+        resolved: (path) => () =>
+          localDispatch({
+            type: UsePrismicPreviewResolverActionType.Resolved,
+            payload: path,
+          }),
+        linkResolver: config.linkResolver,
+        apiEndpoint: state.pluginOptions.apiEndpoint,
+        accessToken: state.pluginOptions.accessToken,
+      }),
+      E.fold(
+        (error) =>
+          localDispatch({
+            type: UsePrismicPreviewResolverActionType.Fail,
+            payload: error,
+          }),
+        constVoid,
+      ),
+    )
   }, [
-    contextDispatch,
-    contextState,
-    config.repositoryName,
-    config.shouldAutoRedirect,
+    repositoryName,
+    config.linkResolver,
+    state.pluginOptions.accessToken,
+    state.pluginOptions.apiEndpoint,
   ])
 
-  return state
+  return React.useMemo(() => [localState, resolvePreview] as const, [
+    localState,
+    resolvePreview,
+  ])
 }
