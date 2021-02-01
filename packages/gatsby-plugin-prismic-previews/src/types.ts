@@ -1,8 +1,8 @@
 import * as gatsby from 'gatsby'
 import * as gatsbyImgix from 'gatsby-plugin-imgix'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
+import * as prismic from 'ts-prismic'
 import * as PrismicDOM from 'prismic-dom'
-import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/documents'
 
 export interface PluginOptions extends gatsby.PluginOptions {
   repositoryName: string
@@ -21,20 +21,13 @@ export interface PluginOptions extends gatsby.PluginOptions {
 
 export type TypePathsStore = Record<string, gatsbyPrismic.PrismicTypePathType>
 
-export interface PrismicAPIDocument<
-  TData extends UnknownRecord<string> = UnknownRecord<string>
-> extends _PrismicAPIDocument {
-  data: TData
-}
-
-export interface PrismicAPIDocumentNodeInput<
-  TData extends UnknownRecord<string> = UnknownRecord<string>
-> extends PrismicAPIDocument<TData>,
+export interface PrismicAPIDocumentNodeInput<TData = unknown>
+  extends prismic.Document<TData>,
     gatsby.NodeInput {
   prismicId: string
 }
 
-export type LinkResolver = (doc: PrismicAPIDocument) => string
+export type LinkResolver = (doc: prismic.Document) => string
 export type HTMLSerializer = typeof PrismicDOM.HTMLSerializer
 
 export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<

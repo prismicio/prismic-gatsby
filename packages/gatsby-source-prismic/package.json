@@ -41,7 +41,7 @@
     "got": "^11.8.1",
     "prismic-dom": "^2.2.4",
     "tiny-hashes": "^1.0.1",
-    "ts-prismic": "^0.2.1"
+    "ts-prismic": "^0.2.2"
   },
   "peerDependencies": {
     "gatsby": ">=2.29"

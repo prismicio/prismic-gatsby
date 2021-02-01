@@ -1,13 +1,12 @@
 import * as gatsby from 'gatsby'
+import * as prismic from 'ts-prismic'
 import {
   DEFAULT_IMGIX_PARAMS,
   DEFAULT_LANG,
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
-  DEFAULT_PRISMIC_API_ENDPOINT,
 } from 'gatsby-source-prismic'
-import { DEFAULT_PROMPT_FOR_ACCESS_TOKEN, DEFAULT_TOOLBAR } from './constants'
 
-import { sprintf } from './lib/sprintf'
+import { DEFAULT_PROMPT_FOR_ACCESS_TOKEN, DEFAULT_TOOLBAR } from './constants'
 
 export const pluginOptionsSchema: NonNullable<
   gatsby.GatsbyNode['pluginOptionsSchema']
@@ -21,7 +20,7 @@ export const pluginOptionsSchema: NonNullable<
       DEFAULT_PROMPT_FOR_ACCESS_TOKEN,
     ),
     apiEndpoint: Joi.string().default((parent) =>
-      sprintf(DEFAULT_PRISMIC_API_ENDPOINT, parent.repositoryName),
+      prismic.defaultEndpoint(parent.repositoryName),
     ),
     graphQuery: Joi.string(),
     fetchLinks: Joi.array().items(Joi.string().required()),

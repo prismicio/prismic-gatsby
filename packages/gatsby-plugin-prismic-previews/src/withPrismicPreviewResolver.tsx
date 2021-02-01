@@ -2,12 +2,12 @@ import * as React from 'react'
 import * as gatsby from 'gatsby'
 import * as E from 'fp-ts/Either'
 import { pipe } from 'fp-ts/function'
+import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 
-import { UnauthorizedError } from './errors/NotAuthorizedError'
 import {
   usePrismicPreviewResolver,
   UsePrismicPreviewResolverConfig,
@@ -86,12 +86,13 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 
         case 'FAILED': {
           if (
-            resolverState.error instanceof UnauthorizedError &&
+            resolverState.error instanceof ky.HTTPError &&
+            resolverState.error.response.status === 401 &&
             contextState.pluginOptions.promptForAccessToken
           ) {
-            // If we encountered an UnauthorizedError, we don't have the correct
-            // access token, and the plugin is configured to prompt for a token,
-            // prompt for the correct token.
+            // If we encountered a 401 status, we don't have the correct access
+            // token, and the plugin is configured to prompt for a token, prompt
+            // for the correct token.
             if (accessToken) {
               setLocalState('PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN')
             } else {

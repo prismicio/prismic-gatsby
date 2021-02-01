@@ -1,10 +1,9 @@
+import * as prismic from 'ts-prismic'
 import md5 from 'tiny-hashes/md5'
 
-import { PrismicAPIDocument, UnknownRecord } from '../../src'
-
-export const createPrismicAPIDocument = <TData extends UnknownRecord<string>>(
+export const createPrismicAPIDocument = <TData = unknown>(
   data: TData = {} as TData,
-): PrismicAPIDocument<TData> => {
+): prismic.Document<TData> => {
   const id = md5(Math.random().toString())
 
   return {

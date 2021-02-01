@@ -2,7 +2,12 @@ import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
-import { Dependencies } from '../types'
+export interface BuildQueryParamsEnv {
+  accessToken?: string
+  graphQuery?: string
+  fetchLinks?: string[]
+  lang: string
+}
 
 /**
  * Build a query params argument for a Prismic request using the environment's
@@ -13,15 +18,15 @@ import { Dependencies } from '../types'
  * @returns Query params that can be used to query for documents.
  */
 export const buildQueryParams: RTE.ReaderTaskEither<
-  Dependencies,
+  BuildQueryParamsEnv,
   Error,
   prismic.QueryParams
 > = pipe(
-  RTE.ask<Dependencies>(),
+  RTE.ask<BuildQueryParamsEnv>(),
   RTE.map((scope) => ({
-    accessToken: scope.pluginOptions.accessToken,
-    lang: scope.pluginOptions.lang,
-    graphQuery: scope.pluginOptions.graphQuery,
-    fetchLinks: scope.pluginOptions.fetchLinks,
+    accessToken: scope.accessToken,
+    lang: scope.lang,
+    graphQuery: scope.graphQuery,
+    fetchLinks: scope.fetchLinks,
   })),
 )

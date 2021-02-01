@@ -1,16 +1,16 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
+import * as prismic from 'ts-prismic'
 import * as IOE from 'fp-ts/IOEither'
 import * as IO from 'fp-ts/IO'
 import { pipe } from 'fp-ts/function'
-import Prismic from 'prismic-javascript'
+import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
 import { getCookie } from './lib/getCookie'
 
 import { UnknownRecord } from './types'
-import { UnauthorizedError } from './errors/NotAuthorizedError'
 import {
   usePrismicPreviewBootstrap,
   UsePrismicPreviewBootstrapConfig,
@@ -47,7 +47,7 @@ type LocalState =
 
 const isValidToken = (repositoryName: string): IO.IO<boolean> =>
   pipe(
-    getCookie(Prismic.previewCookie),
+    getCookie(prismic.cookie.preview),
     IOE.chain((token) =>
       IOE.fromEither(validatePreviewTokenForRepository(repositoryName, token)),
     ),
@@ -86,12 +86,13 @@ export const withPrismicPreview = <
       switch (bootstrapState.state) {
         case 'FAILED': {
           if (
-            bootstrapState.error instanceof UnauthorizedError &&
+            bootstrapState.error instanceof ky.HTTPError &&
+            bootstrapState.error.response.status === 401 &&
             contextState.pluginOptions.promptForAccessToken
           ) {
-            // If we encountered an UnauthorizedError, we don't have the correct
-            // access token. If the plugin is configured to prompt for a token,
-            // prompt for the correct token.
+            // If we encountered a 401 status, we don't have the correct access
+            // token, and the plugin is configured to prompt for a token, prompt
+            // for the correct token.
             if (accessToken) {
               setLocalState('PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN')
             } else {

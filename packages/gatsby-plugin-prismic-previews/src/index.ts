@@ -9,6 +9,4 @@ export * from './withPrismicPreviewResolver'
 
 export * from './context'
 
-export * from './errors/NotAuthorizedError'
-
 export * from './types'

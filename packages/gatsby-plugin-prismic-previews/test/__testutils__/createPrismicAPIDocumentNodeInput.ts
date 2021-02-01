@@ -1,14 +1,12 @@
 import { createNodeHelpers } from 'gatsby-node-helpers'
 
-import { PrismicAPIDocumentNodeInput, UnknownRecord } from '../../src'
+import { PrismicAPIDocumentNodeInput } from '../../src'
 import { createPrismicAPIDocument } from './createPrismicAPIDocument'
 
 const createNodeId = (id: string): string => id
 const createContentDigest = (_: unknown): string => 'createContentDigest'
 
-export const createPrismicAPIDocumentNodeInput = <
-  TData extends UnknownRecord<string>
->(
+export const createPrismicAPIDocumentNodeInput = <TData = unknown>(
   data: TData = {} as TData,
   { typePrefix = 'Prismic' } = {},
 ): PrismicAPIDocumentNodeInput<TData> => {

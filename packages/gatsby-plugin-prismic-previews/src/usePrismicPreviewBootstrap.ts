@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as E from 'fp-ts/Either'
 import * as IO from 'fp-ts/IO'
@@ -7,7 +8,6 @@ import { constVoid, pipe } from 'fp-ts/function'
 import { createNodeHelpers } from 'gatsby-node-helpers'
 import { GLOBAL_TYPE_PREFIX } from 'gatsby-source-prismic'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
-import Prismic from 'prismic-javascript'
 import md5 from 'tiny-hashes/md5'
 
 import { getCookie } from './lib/getCookie'
@@ -122,7 +122,7 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   // presence of the Prismic preview cookie.
   RTE.bindW('token', () =>
     pipe(
-      RTE.fromIOEither(getCookie(Prismic.previewCookie)),
+      RTE.fromIOEither(getCookie(prismic.cookie.preview)),
       RTE.mapLeft(
         () => new Error('Not a preview session. No preview cookie detected.'),
       ),

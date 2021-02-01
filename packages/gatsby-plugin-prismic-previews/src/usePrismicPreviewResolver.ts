@@ -1,19 +1,20 @@
 import * as React from 'react'
+import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as E from 'fp-ts/Either'
+import * as A from 'fp-ts/Array'
 import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
-import Prismic from 'prismic-javascript'
+import ky from 'ky'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
-import { createClient, CreateClientEnv } from './lib/createClient'
 
-import { LinkResolver, PrismicAPIDocument } from './types'
+import { LinkResolver } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
-import { normalizePrismicError } from './lib/normalizePrismicError'
 import { setCookie } from './lib/setCookie'
+import { BuildQueryParamsEnv, buildQueryParams } from './lib/buildQueryParams'
 
 export type UsePrismicPreviewResolverFn = () => Promise<void>
 
@@ -77,11 +78,13 @@ const localReducer = (
   }
 }
 
-interface UsePrismicPreviewResolverProgramEnv extends CreateClientEnv {
+interface UsePrismicPreviewResolverProgramEnv extends BuildQueryParamsEnv {
+  apiEndpoint: string
+  accessToken?: string
   repositoryName: string
   beginResolving: IO.IO<void>
   resolved(path: string): IO.IO<void>
-  linkResolver(doc: PrismicAPIDocument): string
+  linkResolver: LinkResolver
 }
 
 const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
@@ -112,25 +115,38 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
 
   // Persist the token for resuming this preview session at a later time.
   RTE.chainFirst((env) =>
-    RTE.fromIO(setCookie(Prismic.previewCookie, env.token)),
-  ),
-
-  RTE.bindW('client', () => createClient),
-  RTE.bind('pathResolver', (env) =>
-    RTE.of(env.client.getPreviewResolver(env.token, env.documentId)),
+    RTE.fromIO(setCookie(prismic.cookie.preview, env.token)),
   ),
 
   // Start resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
 
-  RTE.bind('path', (env) =>
-    RTE.fromTaskEither(
-      TE.tryCatch(
-        () => env.pathResolver.resolve(env.linkResolver, '/'),
-        (error) => normalizePrismicError(error as Error),
+  RTE.bindW('params', () => buildQueryParams),
+  RTE.bind('url', (env) =>
+    RTE.of(
+      prismic.buildQueryURL(
+        env.apiEndpoint,
+        env.token,
+        prismic.predicate.at('document.id', env.documentId),
+        env.params,
       ),
     ),
   ),
+  RTE.bind('res', (env) =>
+    RTE.fromTaskEither(
+      TE.tryCatch(
+        () => ky(env.url).json() as Promise<prismic.Response.Query>,
+        (error) => error as Error,
+      ),
+    ),
+  ),
+  RTE.bindW('document', (env) =>
+    pipe(
+      A.head(env.res.results),
+      RTE.fromOption(() => new Error('Document could not be found.')),
+    ),
+  ),
+  RTE.bind('path', (env) => RTE.of(env.linkResolver(env.document))),
 
   // End resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.resolved(env.path))),
@@ -168,6 +184,9 @@ export const usePrismicPreviewResolver = (
         linkResolver: config.linkResolver,
         apiEndpoint: state.pluginOptions.apiEndpoint,
         accessToken: state.pluginOptions.accessToken,
+        graphQuery: state.pluginOptions.graphQuery,
+        fetchLinks: state.pluginOptions.fetchLinks,
+        lang: state.pluginOptions.lang,
       }),
       E.fold(
         (error) =>
