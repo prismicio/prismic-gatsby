@@ -26,7 +26,9 @@ declare global {
  * React Context instance for each Prismic repository in `gatsby-config.js`
  * that supports previews.
  */
-window[WINDOW_CONTEXTS_KEY] = {}
+if (typeof window !== 'undefined') {
+  window[WINDOW_CONTEXTS_KEY] = {}
+}
 
 /**
  * Returns a PrismicContext value for the requested repository. The return

@@ -1,5 +1,7 @@
 import chalk from 'chalk'
 
+export const VERSION = '4.0.0'
+
 export const GLOBAL_TYPE_PREFIX = 'Prismic'
 
 export const DEFAULT_TOOLBAR = 'new'

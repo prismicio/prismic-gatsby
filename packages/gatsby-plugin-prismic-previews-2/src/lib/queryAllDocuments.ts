@@ -25,11 +25,7 @@ const aggregateQuery = (
     TE.tryCatch(
       () =>
         client.query([], { ...queryOptions, page, pageSize: QUERY_PAGE_SIZE }),
-      (error) => {
-        console.log({ error })
-        
-return normalizePrismicError(error as Error)
-      },
+      (error) => normalizePrismicError(error as Error),
     ),
     TE.bind('aggregateResults', (response) =>
       TE.of([...docs, ...response.results]),

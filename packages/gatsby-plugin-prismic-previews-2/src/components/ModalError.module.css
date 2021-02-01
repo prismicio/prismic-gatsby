@@ -1,0 +1,64 @@
+.content {
+  display: grid;
+  grid-gap: 24px;
+}
+
+.intro {
+  text-align: center;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 26px;
+  margin: 0 0 12px;
+}
+
+.p {
+  margin: 0;
+}
+
+.errorMessage {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  text-align: center;
+}
+
+.cancelButton {
+  justify-self: center;
+}
+
+.details {
+  align-items: center;
+  color: #ffb4b4;
+  display: grid;
+  font-size: 11px;
+  grid-gap: 4px;
+  justify-content: center;
+  justify-items: center;
+}
+
+.detailsItem {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 6px;
+}
+
+.detailsLabel {
+  font-weight: 600;
+}
+
+.detailsValue {
+  margin: 0;
+}
+
+@media (min-width: 480px) {
+  .heading {
+    margin-bottom: 5px;
+  }
+
+  .details {
+    grid-auto-flow: column;
+    grid-gap: 16px;
+  }
+}

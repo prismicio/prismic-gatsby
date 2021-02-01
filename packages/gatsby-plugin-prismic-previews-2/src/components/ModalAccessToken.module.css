@@ -1,0 +1,100 @@
+.content {
+  display: grid;
+  grid-gap: 24px;
+}
+
+.intro {
+  text-align: center;
+}
+
+.heading {
+  color: #212735;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 26px;
+  margin: 0 0 12px;
+}
+
+.details {
+  display: grid;
+  grid-gap: 4px;
+}
+
+.p {
+  margin: 0;
+}
+
+.repositoryName {
+  font-weight: 500;
+}
+
+.form {
+  display: grid;
+  grid-gap: 22px;
+}
+
+.input {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  background-color: #f5f6f9;
+  border-radius: 4px;
+  border: 1px solid #e0e2ee;
+  color: #4a5669;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  line-height: 1;
+  margin: 0;
+  outline: none;
+  padding: 10px;
+  text-align: inherit;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: #9fa5b1;
+}
+
+.buttonList {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 15px;
+}
+
+.helpText {
+  text-align: center;
+}
+
+.link {
+  color: #5d6acc;
+  text-decoration: none;
+  transition: color 100ms;
+}
+
+.link:hover,
+.link:focus {
+  color: #4c58af;
+}
+
+@media (min-width: 480px) {
+  .heading {
+    margin-bottom: 5px;
+  }
+
+  .headingBreak {
+    display: none;
+  }
+
+  .details {
+    grid-gap: 7px;
+  }
+
+  .helpText {
+    font-size: 12px;
+  }
+
+  .helpTextBreak {
+    display: none;
+  }
+}

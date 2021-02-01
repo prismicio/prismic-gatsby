@@ -29,13 +29,25 @@ const Page = (
         <code>{props.prismicPreviewState}</code>
       </pre>
       <hr />
-      <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
+      <pre
+        style={{
+          backgroundColor: 'lightgray',
+          padding: '2rem',
+          overflow: 'auto',
+        }}
+      >
         <code>
           {JSON.stringify(props.data.prismicPrefixPage.data.title, null, 2)}
         </code>
       </pre>
       <hr />
-      <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
+      <pre
+        style={{
+          backgroundColor: 'lightgray',
+          padding: '2rem',
+          overflow: 'auto',
+        }}
+      >
         <code>{propsStr}</code>
       </pre>
     </div>

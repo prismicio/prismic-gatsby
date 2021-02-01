@@ -21,6 +21,10 @@ import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
 import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 
+import { Root } from './components/Root'
+import { ModalAccessToken } from './components/ModalAccessToken'
+import { ModalError } from './components/ModalError'
+
 export interface WithPrismicPreviewProps<
   TStaticData extends UnknownRecord = UnknownRecord
 > {
@@ -111,35 +115,35 @@ export const withPrismicPreview = <
       bootstrapState.error,
     ])
 
-    // TODO: Replace this with a proper UI in the DOM.
-    // TODO: Have a user-facing button to clear the access token cookie.
-    React.useEffect(() => {
-      switch (localState) {
-        case 'PROMPT_FOR_ACCESS_TOKEN':
-        case 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN': {
-          const accessToken = prompt(
-            `Enter Prismic access token for ${repositoryName}`,
-          )
+    // // TODO: Replace this with a proper UI in the DOM.
+    // // TODO: Have a user-facing button to clear the access token cookie.
+    // React.useEffect(() => {
+    //   switch (localState) {
+    //     case 'PROMPT_FOR_ACCESS_TOKEN':
+    //     case 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN': {
+    //       const accessToken = prompt(
+    //         `Enter Prismic access token for ${repositoryName}`,
+    //       )
 
-          if (accessToken) {
-            // Set the access token in the repository's context and retry
-            // bootstrapping the preview.
-            setAccessToken(accessToken)
-            bootstrapPreview()
-          } else {
-            setLocalState('DISPLAY_ERROR')
-          }
+    //       if (accessToken) {
+    //         // Set the access token in the repository's context and retry
+    //         // bootstrapping the preview.
+    //         setAccessToken(accessToken)
+    //         bootstrapPreview()
+    //       } else {
+    //         setLocalState('DISPLAY_ERROR')
+    //       }
 
-          break
-        }
+    //       break
+    //     }
 
-        case 'DISPLAY_ERROR': {
-          console.error(bootstrapState.error)
+    //     case 'DISPLAY_ERROR': {
+    //       console.error(bootstrapState.error)
 
-          break
-        }
-      }
-    }, [localState, bootstrapPreview, bootstrapState.error, setAccessToken])
+    //       break
+    //     }
+    //   }
+    // }, [localState, bootstrapPreview, bootstrapState.error, setAccessToken])
 
     const mergedData = useMergePrismicPreviewData(repositoryName, props.data, {
       mergeStrategy: 'traverseAndReplace',
@@ -147,16 +151,37 @@ export const withPrismicPreview = <
     })
 
     return (
-      <WrappedComponent
-        {...props}
-        data={mergedData.data}
-        boostrapPrismicPreview={bootstrapPreview}
-        isPrismicPreview={mergedData.isPreview}
-        prismicPreviewState={bootstrapState.state}
-        prismicPreviewError={bootstrapState.error}
-        prismicPreviewSetAccessToken={setAccessToken}
-        prismicPreviewOriginalData={props.data}
-      />
+      <>
+        <WrappedComponent
+          {...props}
+          data={mergedData.data}
+          boostrapPrismicPreview={bootstrapPreview}
+          isPrismicPreview={mergedData.isPreview}
+          prismicPreviewState={bootstrapState.state}
+          prismicPreviewError={bootstrapState.error}
+          prismicPreviewSetAccessToken={setAccessToken}
+          prismicPreviewOriginalData={props.data}
+        />
+        {(localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
+          (localState === 'DISPLAY_ERROR' &&
+            bootstrapState.error?.message)) && (
+          <Root>
+            {localState === 'PROMPT_FOR_ACCESS_TOKEN' && (
+              <ModalAccessToken
+                repositoryName={repositoryName}
+                afterSubmit={bootstrapPreview}
+              />
+            )}
+            {localState === 'DISPLAY_ERROR' &&
+              bootstrapState.error?.message && (
+                <ModalError
+                  repositoryName={repositoryName}
+                  errorMessage={bootstrapState.error.message}
+                />
+              )}
+          </Root>
+        )}
+      </>
     )
   }
 

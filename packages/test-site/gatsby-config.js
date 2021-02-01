@@ -24,6 +24,7 @@ module.exports = {
         repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
         // accessToken: process.env.PRISMIC_ACCESS_TOKEN,
         typePrefix: 'prefix',
+        toolbar: 'legacy',
       },
     },
   ],
