@@ -60,11 +60,6 @@ export const DEFAULT_PLACEHOLDER_IMGIX_PARAMS = {
 } as const
 
 /**
- * Format used to build the default Prismic REST API v2 url for a repository.
- */
-export const DEFAULT_PRISMIC_API_ENDPOINT = `https://%s.prismic.io/api/v2`
-
-/**
  * Default Prismic language option used when fetching documents. The current
  * default fetches all languages.
  *
@@ -108,6 +103,12 @@ export const WEBHOOK_SECRET_MISMATCH_MSG =
  */
 export const WEBHOOK_TEST_TRIGGER_SUCCESS_MSG =
   'Success! Received a test trigger webhook.'
+
+/**
+ * Message displayed to the user when a repository cannot be accessed.
+ */
+export const COULD_NOT_ACCESS_MSG =
+  'The repository could not be accessed. Please check your repository name and access token.'
 
 /**
  * Message displayed to the user when a missing custom type schema is detected.

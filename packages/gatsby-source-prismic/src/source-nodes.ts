@@ -15,7 +15,7 @@ import { onWebhook } from './on-webhook'
  */
 const sourceNodesProgram: RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   void
 > = pipe(
   RTE.ask<Dependencies>(),

@@ -21,7 +21,7 @@ import { onWebhookTestTrigger } from './on-webhook-test-trigger'
  */
 const onPrismicWebhook = (
   webhookBody: PrismicWebhookBody,
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
+): RTE.ReaderTaskEither<Dependencies, Error, void> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chain((deps) =>
@@ -57,7 +57,7 @@ const onPrismicWebhook = (
  * All nodes, regardless of the webhook' source or contents, are touched to
  * prevent garbage collection.
  */
-export const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
+export const onWebhook: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
   RTE.ask<Dependencies>(),
   RTE.chain((deps) =>
     pipe(
@@ -68,5 +68,5 @@ export const onWebhook: RTE.ReaderTaskEither<Dependencies, never, void> = pipe(
       O.fold(() => RTE.of(void 0), onPrismicWebhook),
     ),
   ),
-  RTE.chain(touchAllNodes),
+  RTE.chainW(touchAllNodes),
 )

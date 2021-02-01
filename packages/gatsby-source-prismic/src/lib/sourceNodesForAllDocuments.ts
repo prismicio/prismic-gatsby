@@ -12,6 +12,6 @@ import { queryAllDocuments } from './queryAllDocuments'
  */
 export const sourceNodesForAllDocuments: RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   void
-> = pipe(queryAllDocuments, RTE.chain(createNodes), RTE.map(constVoid))
+> = pipe(queryAllDocuments, RTE.chainW(createNodes), RTE.map(constVoid))

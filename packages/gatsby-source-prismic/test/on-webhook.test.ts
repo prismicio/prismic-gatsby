@@ -1,20 +1,36 @@
+import nock from 'nock'
+
 import { sourceNodes } from '../src/source-nodes'
 import { gatsbyContext, nodes } from './__fixtures__/gatsbyContext'
 import { pluginOptions } from './__fixtures__/pluginOptions'
 import * as webhooks from './__fixtures__/webhooks'
-import {
-  setDeletedDocumentIds,
-  resetDeletedDocumentIds,
-} from './__mocks__/prismic-javascript'
+import mockDocument from './__fixtures__/document.json'
 
 const testTriggerCtx = {
   ...gatsbyContext,
   webhookBody: webhooks.testTrigger,
 }
 
+const url = new URL(pluginOptions.apiEndpoint)
+const origin = url.origin
+
 beforeEach(() => {
   jest.clearAllMocks()
-  resetDeletedDocumentIds()
+
+  nock(origin)
+    .get('/api/v2')
+    .query({ access_token: pluginOptions.accessToken })
+    .reply(200, {
+      types: { page: 'Page' },
+      refs: [
+        { id: 'master', ref: 'master', isMasterRef: true },
+        {
+          id: 'XyfxIPl3p7YAQ7Mg',
+          ref: 'XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8',
+          isMasterRef: false,
+        },
+      ],
+    })
 })
 
 describe('any webhook', () => {
@@ -102,6 +118,21 @@ describe('api-update', () => {
   }
 
   test('reports received message', async () => {
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'master',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+        q: '[[in(document.id, ["1"])]]',
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: nodes.map((node) => ({ ...mockDocument, id: node.prismicId })),
+      })
+
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateDocAdditionCtx, pluginOptions)
 
@@ -110,6 +141,21 @@ describe('api-update', () => {
   })
 
   test('doc addition creates/updates node', async () => {
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'master',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+        q: '[[in(document.id, ["1"])]]',
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: nodes.map((node) => ({ ...mockDocument, id: node.prismicId })),
+      })
+
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateDocAdditionCtx, pluginOptions)
 
@@ -121,7 +167,20 @@ describe('api-update', () => {
   })
 
   test('doc deletion deletes node', async () => {
-    setDeletedDocumentIds([webhooks.apiUpdateDocDeletion.documents[0]])
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'master',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+        q: '[[in(document.id, ["1"])]]',
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: [],
+      })
 
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateDocDeletionCtx, pluginOptions)
@@ -136,6 +195,21 @@ describe('api-update', () => {
     options.releaseID =
       webhooks.apiUpdateReleaseDocAddition.releases.update?.[0]?.id
 
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+        q: '[[in(document.id, ["1"])]]',
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: nodes.map((node) => ({ ...mockDocument, id: node.prismicId })),
+      })
+
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateReleaseDocAdditionCtx, options)
 
@@ -149,6 +223,21 @@ describe('api-update', () => {
   })
 
   test('release doc addition does nothing if plugin options release ID does not match', async () => {
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'master',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+        q: '[[in(document.id, [])]]',
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: [],
+      })
+
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateReleaseDocAdditionCtx, pluginOptions)
 
@@ -160,9 +249,20 @@ describe('api-update', () => {
     options.releaseID =
       webhooks.apiUpdateReleaseDocDeletion.releases.update?.[0]?.id
 
-    setDeletedDocumentIds([
-      webhooks.apiUpdateReleaseDocDeletion.releases.update?.[0]?.documents?.[0],
-    ])
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+        q: '[[in(document.id, ["1"])]]',
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: [],
+      })
 
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateReleaseDocDeletionCtx, options)
@@ -173,6 +273,21 @@ describe('api-update', () => {
   })
 
   test('release doc deletion does nothing if plugin options release ID does not match', async () => {
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'master',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+        q: '[[in(document.id, [])]]',
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: [],
+      })
+
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateReleaseDocDeletionCtx, pluginOptions)
 

@@ -2,8 +2,6 @@ import { pluginOptions } from './pluginOptions'
 
 export const nodes = [
   { id: `Prismic ${pluginOptions.typePrefix} 1`, prismicId: '1' },
-  { id: `Prismic ${pluginOptions.typePrefix} 2`, prismicId: '2' },
-  { id: `Prismic ${pluginOptions.typePrefix} 3`, prismicId: '3' },
 ]
 
 const createCache = () => {

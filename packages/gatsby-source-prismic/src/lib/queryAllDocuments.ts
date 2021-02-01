@@ -1,43 +1,9 @@
+import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as T from 'fp-ts/Task'
-import { pipe } from 'fp-ts/function'
 
-import {
-  Dependencies,
-  PrismicClient,
-  PrismicClientQueryOptions,
-  PrismicAPIDocument,
-  ResolveType,
-} from '../types'
-import { QUERY_PAGE_SIZE } from '../constants'
+import { Dependencies } from '../types'
 
-import { createClient } from './createClient'
-import { buildQueryOptions } from './buildQueryOptions'
-
-const query = (
-  client: PrismicClient,
-  queryOptions: PrismicClientQueryOptions,
-): T.Task<ResolveType<ReturnType<PrismicClient['query']>>> => (): ReturnType<
-  typeof client.query
-> => client.query([], queryOptions)
-
-const aggregateQuery = (
-  client: PrismicClient,
-  queryOptions: PrismicClientQueryOptions,
-  page = 1,
-  docs: PrismicAPIDocument[] = [],
-): T.Task<PrismicAPIDocument[]> =>
-  pipe(
-    query(client, { ...queryOptions, page, pageSize: QUERY_PAGE_SIZE }),
-    T.bind('aggregateResults', (response) =>
-      T.of([...docs, ...response.results]),
-    ),
-    T.chain((scope) =>
-      page < scope.total_pages
-        ? aggregateQuery(client, queryOptions, page + 1, scope.aggregateResults)
-        : T.of(scope.aggregateResults),
-    ),
-  )
+import { aggregateQuery } from './aggregateQuery'
 
 /**
  * Queries all documents from a Prismic repository using the environment's
@@ -52,18 +18,10 @@ const aggregateQuery = (
  * - `pluginOptions.lang`: Language of documents to fetch. If not provided, all
  *   languages are fetched.
  *
- * @see gatsby-source-prismic/lib/createClient.ts
- *
  * @returns List of Prismic documents.
  */
 export const queryAllDocuments: RTE.ReaderTaskEither<
   Dependencies,
-  never,
-  PrismicAPIDocument[]
-> = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.bindW('client', createClient),
-  RTE.bind('queryOptions', (scope) => buildQueryOptions(scope.client)),
-  RTE.map((scope) => aggregateQuery(scope.client, scope.queryOptions)),
-  RTE.chain((docs) => RTE.fromTask(docs)),
-)
+  Error,
+  prismic.Document[]
+> = aggregateQuery(null)

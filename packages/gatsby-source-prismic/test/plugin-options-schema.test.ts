@@ -1,4 +1,5 @@
-import Prismic from 'prismic-javascript'
+import nock from 'nock'
+import * as prismic from 'ts-prismic'
 import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
 
 import { pluginOptionsSchema } from '../src/plugin-options-schema'
@@ -9,7 +10,7 @@ test('passes on valid options', async () => {
   const pluginOptions = {
     repositoryName: 'string',
     accessToken: 'string',
-    apiEndpoint: 'string',
+    apiEndpoint: 'https://example.com',
     releaseID: 'string',
     graphQuery: 'string',
     lang: 'string',
@@ -21,6 +22,15 @@ test('passes on valid options', async () => {
     typePrefix: 'string',
     webhookSecret: 'string',
   }
+
+  nock(pluginOptions.apiEndpoint)
+    .get('/')
+    .query({ access_token: pluginOptions.accessToken })
+    .reply(200, {
+      types: { page: 'Page' },
+      refs: [{ ref: 'master', isMasterRef: true }],
+    })
+
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
   expect(res.isValid).toBe(true)
@@ -90,17 +100,18 @@ test('allows only one of qraphQuery or fetchLinks', async () => {
 })
 
 test('checks that all schemas are provided', async () => {
-  jest.spyOn(Prismic, 'getApi').mockReturnValueOnce(
-    // @ts-expect-error - Partial Prismic.getApi provided
-    Promise.resolve({
-      types: { page: 'Page', blogPost: 'Blog Post' },
-    }),
-  )
-
   const pluginOptions = {
     repositoryName: 'qwerty',
     schemas: { page: schemaFixture },
   }
+
+  const url = prismic.defaultEndpoint(pluginOptions.repositoryName)
+  const origin = new URL(url).origin
+
+  nock(origin)
+    .get('/api/v2')
+    .reply(200, { types: { page: 'Page', blogPost: 'Blog Post' } })
+
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
   expect(res.isValid).toBe(false)

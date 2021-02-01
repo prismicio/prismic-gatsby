@@ -51,7 +51,7 @@ const extractApiUpdateWebhookBodyDocumentIds = (
  */
 export const onWebhookApiUpdate = (
   webhookBody: PrismicWebhookBodyApiUpdate,
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
+): RTE.ReaderTaskEither<Dependencies, Error, void> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
@@ -84,9 +84,9 @@ export const onWebhookApiUpdate = (
         (ids) => RTE.of(ids),
       ),
     ),
-    RTE.chainFirst((scope) =>
+    RTE.chainFirstW((scope) =>
       deleteNodesForDocumentIds(scope.documentIdsToDelete),
     ),
-    RTE.chainFirst((scope) => createNodes(scope.documentsToUpdate)),
+    RTE.chainFirstW((scope) => createNodes(scope.documentsToUpdate)),
     RTE.map(constVoid),
   )

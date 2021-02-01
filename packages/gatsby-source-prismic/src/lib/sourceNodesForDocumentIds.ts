@@ -15,9 +15,9 @@ import { queryDocumentsByIds } from './queryDocumentsByIds'
  */
 export const sourceNodesForDocumentIds = (
   documentIds: string[],
-): RTE.ReaderTaskEither<Dependencies, never, void> =>
+): RTE.ReaderTaskEither<Dependencies, Error, void> =>
   pipe(
     queryDocumentsByIds(documentIds),
-    RTE.chain(createNodes),
+    RTE.chainW(createNodes),
     RTE.map(constVoid),
   )

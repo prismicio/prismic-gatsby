@@ -2,8 +2,8 @@ import * as gatsby from 'gatsby'
 import * as gatsbyImgix from 'gatsby-plugin-imgix'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as prismic from 'ts-prismic'
 import * as PrismicDOM from 'prismic-dom'
-import Prismic from 'prismic-javascript'
 import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/documents'
 import { QueryOptions as _PrismicClientQueryOptions } from 'prismic-javascript/types/ResolvedApi'
 import { NodeHelpers } from 'gatsby-node-helpers'
@@ -54,7 +54,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   graphQuery?: string
   fetchLinks?: string[]
   lang: string
-  linkResolver?: (doc: PrismicAPIDocument) => string
+  linkResolver?: (doc: prismic.Document) => string
   htmlSerializer?: typeof PrismicDOM.HTMLSerializer
   schemas: Record<string, PrismicSchema>
   imageImgixParams: gatsbyImgix.ImgixUrlParams
@@ -74,12 +74,6 @@ export type FieldConfigCreator<
   never,
   gqlc.ComposeFieldConfig<unknown, unknown>
 >
-
-export interface PrismicAPIDocument<
-  TData extends UnknownRecord<string> = UnknownRecord<string>
-> extends _PrismicAPIDocument {
-  data: TData
-}
 
 export interface PrismicSchema {
   [tabName: string]: PrismicSchemaTab
@@ -167,9 +161,6 @@ export interface PrismicSchemaSlice {
   repeat: Record<string, PrismicSchemaStandardField>
 }
 
-export type PrismicClient = ResolveType<ReturnType<typeof Prismic.getApi>>
-export type PrismicClientQueryOptions = _PrismicClientQueryOptions
-
 export type PrismicAPILinkField = {
   link_type: 'Any' | 'Document' | 'Media' | 'Web'
   isBroken: boolean
@@ -198,9 +189,7 @@ export type PrismicAPIStructuredTextField = {
   spans: { [key: string]: unknown }
 }[]
 
-export interface PrismicAPIDocumentNode
-  extends PrismicAPIDocument,
-    gatsby.Node {
+export interface PrismicAPIDocumentNode extends prismic.Document, gatsby.Node {
   prismicId: string
 }
 

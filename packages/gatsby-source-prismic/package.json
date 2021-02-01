@@ -38,10 +38,10 @@
     "gatsby-node-helpers": "^1.0.3",
     "gatsby-plugin-imgix": "^0.9.0",
     "gatsby-source-filesystem": "^2.10.0",
+    "got": "^11.8.1",
     "prismic-dom": "^2.2.4",
-    "prismic-javascript": "^3.0.2",
     "tiny-hashes": "^1.0.1",
-    "ts-prismic": "^0.2.0"
+    "ts-prismic": "^0.2.1"
   },
   "peerDependencies": {
     "gatsby": ">=2.29"
@@ -50,6 +50,7 @@
     "@types/prismic-dom": "^2.1.1",
     "@types/react-dom": "^17.0.0",
     "gatsby-image": "^2.10.0",
-    "gatsby-plugin-utils": "^0.8.0"
+    "gatsby-plugin-utils": "^0.8.0",
+    "nock": "^13.0.7"
   }
 }
