@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.3.3](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.2...v3.3.3) (2021-02-02)
+
+
+### Bug Fixes
+
+* error when link fields are null ([b742a57](https://github.com/angeloashmore/gatsby-source-prismic/commit/b742a57dfb68ab9e635d88059785caf2c7872fe2)), closes [#312](https://github.com/angeloashmore/gatsby-source-prismic/issues/312)
+
 ### [3.3.2](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.1...v3.3.2) (2021-01-20)
 
 ### Bug Fixes
