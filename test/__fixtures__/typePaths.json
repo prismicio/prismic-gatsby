@@ -6,6 +6,7 @@
   { "path": ["page", "data", "meta_title"], "type": "String" },
   { "path": ["page", "data", "meta_description"], "type": "String" },
   { "path": ["page", "data", "parent"], "type": "PrismicLinkType" },
+  { "path": ["page", "data", "related"], "type": "PrismicLinkType" },
   {
     "path": ["page", "data", "main", "news_post", "primary", "published_on"],
     "type": "Date"

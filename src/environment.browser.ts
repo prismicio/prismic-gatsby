@@ -135,10 +135,15 @@ const normalizeLinkField: LinkFieldNormalizer = async (
     })
 
   let linkedDocId: NodeID | undefined = undefined
-  if (field.link_type === LinkFieldType.Document && field.id)
+  if (field && field.link_type === LinkFieldType.Document && field.id)
     linkedDocId = createNodeId(field.id)
 
-  if (field.link_type === LinkFieldType.Document && field.id && !field.isBroken)
+  if (
+    field &&
+    field.link_type === LinkFieldType.Document &&
+    field.id &&
+    !field.isBroken
+  )
     await loadLinkFieldDocument(field as UnbrokenDocumentLinkField, env)
 
   return new Proxy(
@@ -152,6 +157,7 @@ const normalizeLinkField: LinkFieldNormalizer = async (
       get: (obj, prop: keyof NormalizedLinkField) => {
         if (prop === 'document') {
           if (
+            field &&
             field.link_type === LinkFieldType.Document &&
             !field.isBroken &&
             linkedDocId

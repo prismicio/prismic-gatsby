@@ -1,7 +1,15 @@
 import fs from 'fs'
-import { SourceNodesArgs, ParentSpanPluginArgs, CreateSchemaCustomizationArgs } from 'gatsby'
+import {
+  SourceNodesArgs,
+  ParentSpanPluginArgs,
+  CreateSchemaCustomizationArgs,
+} from 'gatsby'
 
-import { sourceNodes, onPreExtractQueries, createSchemaCustomization } from '../src/gatsby-node'
+import {
+  sourceNodes,
+  onPreExtractQueries,
+  createSchemaCustomization,
+} from '../src/gatsby-node'
 
 import mockSchema from './__fixtures__/schema.json'
 
@@ -60,12 +68,16 @@ describe('sourceNodes', () => {
   }
 
   test('creates types', async () => {
+    const mockCreateSchemaCustomizationArgs = (mockGatsbyContext as unknown) as CreateSchemaCustomizationArgs
 
-    const mockCreateSchemaCustomizationArgs = mockGatsbyContext as unknown as CreateSchemaCustomizationArgs
- 
-    await createSchemaCustomization(mockCreateSchemaCustomizationArgs, pluginOptions)
+    await createSchemaCustomization(
+      mockCreateSchemaCustomizationArgs,
+      pluginOptions,
+    )
 
-    expect(mockCreateSchemaCustomizationArgs.actions.createTypes).toMatchSnapshot()
+    expect(
+      mockCreateSchemaCustomizationArgs.actions.createTypes,
+    ).toMatchSnapshot()
   })
 
   test('creates nodes', async () => {
@@ -80,7 +92,7 @@ describe('sourceNodes', () => {
     expect(
       (fs.writeFileSync as jest.Mock).mock.calls[0][0],
     ).toMatchInlineSnapshot(
-      `"/__PROGRAM_DIRECTORY__/public/prismic-typepaths---9769f52526da286b236e9bd2cb0d0291.json"`,
+      `"/__PROGRAM_DIRECTORY__/public/prismic-typepaths---f1fe195f001964fae8d94958ae858bc6.json"`,
     )
 
     // Ensure valid JSON.

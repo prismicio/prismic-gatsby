@@ -18,7 +18,7 @@ const createMockFetch = (map: { [url: string]: any }) =>
   })
 
 window.fetch = createMockFetch({
-  '/prismic-typepaths---9769f52526da286b236e9bd2cb0d0291.json': mockTypePaths,
+  '/prismic-typepaths---f1fe195f001964fae8d94958ae858bc6.json': mockTypePaths,
 })
 
 const mockGatsbyContext = {

@@ -243,6 +243,11 @@ Object {
               },
               "url": "",
             },
+            "related": Object {
+              "document": null,
+              "raw": null,
+              "url": "",
+            },
             "title": Object {
               "html": "<h1>Home</h1>",
               "raw": Array [
@@ -313,6 +318,7 @@ Object {
               "id": "linkId123xYz",
               "link_type": "Document",
             },
+            "related": null,
             "title": Array [
               Object {
                 "spans": Array [],
@@ -321,12 +327,12 @@ Object {
               },
             ],
           },
-          "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\",\\"id\\":\\"linkId123xYz\\"},\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\",\\"Mobile\\":{\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667\\",\\"dimensions\\":{\\"width\\":1000,\\"height\\":667}}},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
+          "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\",\\"id\\":\\"linkId123xYz\\"},\\"related\\":null,\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\",\\"Mobile\\":{\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667\\",\\"dimensions\\":{\\"width\\":1000,\\"height\\":667}}},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
           "first_publication_date": "2019-01-06T04:03:51+0000",
           "href": "https://gatsby-starter-ww.cdn.prismic.io/api/v2/documents/search?ref=Xj9DrRUAACcAJ33X&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22XDF-DhEAACAA5b4F%22%29+%5D%5D",
           "id": "f651ca90-a9d2-5339-a416-12f5866b2993",
           "internal": Object {
-            "contentDigest": "58c1f697911b3eba63b3c8a322980d1a",
+            "contentDigest": "2f11f74ddb57317c401897d433e06d8e",
             "type": "PrismicPage",
           },
           "lang": "en-us",
@@ -347,6 +353,11 @@ Object {
           "id": "linkId123xYz",
           "link_type": "Document",
         },
+        "url": "",
+      },
+      "related": Object {
+        "document": null,
+        "raw": null,
         "url": "",
       },
       "title": Object {
@@ -419,6 +430,7 @@ Object {
         "id": "linkId123xYz",
         "link_type": "Document",
       },
+      "related": null,
       "title": Array [
         Object {
           "spans": Array [],
@@ -427,12 +439,12 @@ Object {
         },
       ],
     },
-    "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\",\\"id\\":\\"linkId123xYz\\"},\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\",\\"Mobile\\":{\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667\\",\\"dimensions\\":{\\"width\\":1000,\\"height\\":667}}},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
+    "dataString": "{\\"title\\":[{\\"type\\":\\"heading1\\",\\"text\\":\\"Home\\",\\"spans\\":[]}],\\"meta_title\\":null,\\"meta_description\\":null,\\"parent\\":{\\"link_type\\":\\"Document\\",\\"id\\":\\"linkId123xYz\\"},\\"related\\":null,\\"main\\":[],\\"body\\":[{\\"slice_type\\":\\"text\\",\\"slice_label\\":null,\\"items\\":[{}],\\"primary\\":{\\"text\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example text\\",\\"spans\\":[]}]}},{\\"slice_type\\":\\"images\\",\\"slice_label\\":null,\\"items\\":[{\\"image\\":{\\"dimensions\\":{\\"width\\":2000,\\"height\\":1333},\\"alt\\":\\"Example alt text\\",\\"copyright\\":null,\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333\\",\\"Mobile\\":{\\"url\\":\\"https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667\\",\\"dimensions\\":{\\"width\\":1000,\\"height\\":667}}},\\"caption\\":[{\\"type\\":\\"paragraph\\",\\"text\\":\\"Example camption\\",\\"spans\\":[]}]}],\\"primary\\":{}}]}",
     "first_publication_date": "2019-01-06T04:03:51+0000",
     "href": "https://gatsby-starter-ww.cdn.prismic.io/api/v2/documents/search?ref=Xj9DrRUAACcAJ33X&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22XDF-DhEAACAA5b4F%22%29+%5D%5D",
     "id": "ec62e232-90e3-5cd6-988e-c086695ceb57",
     "internal": Object {
-      "contentDigest": "ea6221fd3789de0562757f3d8c574bcb",
+      "contentDigest": "282a98e1492ca03c5f9580c937f9ea3b",
       "type": "PrismicPage",
     },
     "lang": "en-us",

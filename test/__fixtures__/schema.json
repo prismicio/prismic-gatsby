@@ -36,6 +36,15 @@
         "placeholder": "Optional - Parent of the page"
       }
     },
+    "related": {
+      "type": "Link",
+      "config": {
+        "select": "document",
+        "customtypes": ["page"],
+        "label": "Parent",
+        "placeholder": "Optional - Related page"
+      }
+    },
     "main": {
       "type": "Slices",
       "fieldset": "Slice zone",
