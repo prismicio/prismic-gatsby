@@ -18,6 +18,7 @@ import {
 } from 'gatsby'
 import { PluginOptions, TypePath, PrismicWebhook } from './types'
 import { isPrismicWebhook, validateSecret, handleWebhook } from './webhook'
+import {getCustomTypes} from './api'
 
 export const createSchemaCustomization: NonNullable<
   GatsbyNode['createSchemaCustomization']
@@ -25,7 +26,9 @@ export const createSchemaCustomization: NonNullable<
   args: CreateSchemaCustomizationArgs,
   pluginOptions: PluginOptions,
 ) => {
-  const { typeDefs } = schemasToTypeDefs(pluginOptions.schemas, args)
+  const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas // TODO: this is repeated else where
+  console.dir({schemas}, {depth: null})
+  const { typeDefs } = schemasToTypeDefs(schemas, args)
 
   createPrismicTypes(pluginOptions, args, typeDefs)
 }
@@ -152,8 +155,10 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     reporter.panic(error)
   }
 
+  const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas // TODO: this is repeated else where, maybe cache them?
+
   const { typePaths } = schemasToTypeDefs(
-    pluginOptions.schemas,
+    schemas,
     (gatsbyContext as unknown) as CreateSchemaCustomizationArgs,
   )
 

@@ -8,12 +8,19 @@ import PrismicResolvedApi, {
   QueryOptions,
 } from 'prismic-javascript/d.ts/ResolvedApi'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
-import { PluginOptions } from './types'
+import { PluginOptions, Schema, Schemas } from './types'
 import ApiSearchResponse from 'prismic-javascript/d.ts/ApiSearchResponse'
 
-export function toPrismicUrl(nameOrUrl: string) {
+import {get} from 'https'
+
+function parsePrismicUrl(maybeUrl: string): null | Array<string> {
   const urlRegex = /^https?:\/\/([^.]+)\.(wroom\.(?:test|io)|prismic\.io)/
-  const addr = nameOrUrl.match(urlRegex)
+  return maybeUrl.match(urlRegex)
+}
+
+export function toPrismicUrl(nameOrUrl: string) {
+  
+  const addr = parsePrismicUrl(nameOrUrl)
 
   return addr ? addr[0] + '/api/v2' : `https://${nameOrUrl}.prismic.io/api/v2`
 }
@@ -130,4 +137,66 @@ export async function fetchDocumentsByIds(
   const responses: ApiSearchResponse[] = await Promise.all(chunks)
 
   return responses.flatMap((doc) => doc.results)
+}
+
+function parseJson<T>(str: string): Promise<T> {
+  try {
+    const data = JSON.parse(str) as T
+    return Promise.resolve(data)
+  } catch (error) {
+    return Promise.reject(error)
+  }
+}
+
+export const getCustomTypes = async (
+  pluginOptions: PluginOptions,
+): Promise<Schemas> => {
+
+  const [
+    ,
+    repoName = pluginOptions.repositoryName,
+    domain = 'prismic.io',
+  ] = parsePrismicUrl(pluginOptions.repositoryName) || []
+
+  const addr = `https://customtypes.${domain}/customtypes?static=true`
+
+
+
+  return new Promise<Schemas>((resolve, reject) => {
+    const req = get(addr, {
+      headers: {
+        repository: repoName,
+        Authorization: `Bearer ${pluginOptions.customTypeToken}`
+      }
+    }, (res) => {
+      if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
+        return reject(new Error('Failed to get custom-types, status code: ' + res.statusCode));
+      }
+
+      let chunks = '';
+      res.on('data', chunk => chunks += chunk)
+      res.on('end', () => {
+        const schemas = parseJson<Array<CustomType>>(chunks).then(customTypesToSchemas)
+        resolve(schemas)
+      })
+    })
+    req.on('error', (error) => reject(error))
+  })
+
+}
+
+function customTypesToSchemas(customTypes: Array<CustomType>): Schemas {
+  return customTypes.reduce<Schemas>((acc, customType) => {
+    const {id, json} = customType
+    return {...acc, [id]: json}
+  }, {})
+}
+
+interface CustomType {
+  id: string,
+  label: string,
+  repeatable: boolean,
+  json: Schema,
+  hash: string,
+  status: boolean,
 }

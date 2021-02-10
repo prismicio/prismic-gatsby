@@ -17,8 +17,8 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "start": "yarn clean && microbundle watch src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts -o dist -f modern,cjs --jsx React.createElement",
-    "build": "yarn clean && microbundle build src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts -o dist -f modern,cjs --jsx React.createElement",
+    "start": "yarn clean && microbundle watch src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts -o dist -f modern,cjs --jsx React.createElement --target node",
+    "build": "yarn clean && microbundle build src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts -o dist -f modern,cjs --jsx React.createElement --target node",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",

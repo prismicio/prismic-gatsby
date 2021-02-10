@@ -5,8 +5,9 @@ import { PluginOptions, BrowserPluginOptions } from './types'
 const baseSchema = {
   repositoryName: struct.string(),
   accessToken: struct.optional(struct.string()),
+  customTypeToken: struct.optional(struct.string()), // TODO: Maybe rename
   releaseID: struct.optional(struct.string()),
-  schemas: struct.record(struct.string(), struct.object()),
+  schemas: struct.record(struct.string(), struct.object()), // TODO: should this be mandatory if customTypeToken is given.
   linkResolver: struct.defaulted(struct.func(), () => () => () => {}),
   htmlSerializer: struct.defaulted(struct.func(), () => () => () => {}),
   fetchLinks: struct.defaulted(struct.array(struct.string()), []),
