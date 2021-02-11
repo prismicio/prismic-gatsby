@@ -97,7 +97,7 @@ export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
   // @ts-expect-error
   const hydratedOptions: UsePrismicPreviewOptions & {
     plugins: []
-    schemas: {}
+    // schemas: {}
     lang: string
     typePathsFilenamePrefix: string
     schemasDigest: string
@@ -116,7 +116,7 @@ export const usePrismicPreview = (options: UsePrismicPreviewOptions) => {
       schemasDigest: context.schemasDigest,
       // Need to include an empty object because environment.browser.ts is
       // expecting it. We do not include the actual schemas in the browser.
-      schemas: {},
+      // schemas: {},
       ...options,
     })
   }, [options])

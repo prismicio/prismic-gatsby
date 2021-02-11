@@ -7,8 +7,6 @@ const baseSchema = {
   repositoryName: struct.string(),
   accessToken: struct.optional(struct.string()),
   releaseID: struct.optional(struct.string()),
-  // customTypeToken: struct.string(),
-  schemas: struct.record(struct.string(), struct.object()),
   linkResolver: struct.defaulted(struct.func(), () => () => () => {}),
   htmlSerializer: struct.defaulted(struct.func(), () => () => () => {}),
   fetchLinks: struct.defaulted(struct.array(struct.string()), []),
@@ -44,12 +42,14 @@ const baseSchema = {
 
 const PluginOptions = struct.object({
   ...baseSchema,
+  
   shouldDownloadImage: struct.defaulted(
     struct.optional(struct.func()),
     () => () => false,
   ),
   webhookSecret: struct.optional(struct.string()),
   customTypeToken: struct.string(),
+  schemas: struct.record(struct.string(), struct.object()),
 })
 
 const BrowserPluginOptions = struct.object({

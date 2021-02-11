@@ -37,7 +37,7 @@ window[BROWSER_STORE_KEY] = {
     pluginOptions: {
       plugins: [],
       repositoryName: 'repositoryName',
-      schemas: {},
+      // schemas: {},
     },
     schemasDigest: 'schemasDigest',
   },

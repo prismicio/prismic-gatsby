@@ -26,7 +26,7 @@ export const createSchemaCustomization: NonNullable<
   args: CreateSchemaCustomizationArgs,
   pluginOptions: PluginOptions,
 ) => {
-  const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas // TODO: this is repeated else where
+  const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas || {} // TODO: this is repeated else where
   const { typeDefs } = schemasToTypeDefs(schemas, args)
 
   createPrismicTypes(pluginOptions, args, typeDefs)
@@ -154,7 +154,7 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
     reporter.panic(error)
   }
 
-  const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas // TODO: this is repeated else where, maybe cache them?
+  const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas || {}// TODO: this is repeated else where, maybe cache them?
 
   const { typePaths } = schemasToTypeDefs(
     schemas,
