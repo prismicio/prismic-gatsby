@@ -96,7 +96,7 @@ const buildAll = async (
   createNodesActivity.end()
 }
 
-const writeTypePaths = (
+const writeTypePaths = async (
   pluginOptions: PluginOptions,
   gatsbyContext: SourceNodesArgs,
   typePaths: TypePath[],
@@ -115,7 +115,10 @@ const writeTypePaths = (
 
   reporter.verbose(msg('starting to write out type paths'))
 
-  const schemasDigest = md5(JSON.stringify(pluginOptions.schemas))
+  const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas || {} // TODO: this is repeated else where
+
+  // what are these made public for?
+  const schemasDigest = md5(JSON.stringify(schemas))
   const typePathsFilename = path.resolve(
     program.directory,
     'public',
@@ -164,7 +167,8 @@ export const sourceNodes: NonNullable<GatsbyNode['sourceNodes']> = async (
   if (!webhookBody || JSON.stringify(webhookBody) === '{}') {
     /** Initial build or rebuild everything */
     await buildAll(pluginOptions, gatsbyContext, typePaths)
-    writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
+    // TODO: what happens when a new custom-types is added?
+    await writeTypePaths(pluginOptions, gatsbyContext, typePaths, program)
   } else if (
     isPrismicWebhook(webhookBody) &&
     validateSecret(pluginOptions, webhookBody)
