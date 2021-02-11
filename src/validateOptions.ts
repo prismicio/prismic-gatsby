@@ -2,12 +2,13 @@ import * as struct from 'superstruct'
 
 import { PluginOptions, BrowserPluginOptions } from './types'
 
+
 const baseSchema = {
   repositoryName: struct.string(),
   accessToken: struct.optional(struct.string()),
-  customTypeToken: struct.optional(struct.string()), // TODO: Maybe rename
   releaseID: struct.optional(struct.string()),
-  schemas: struct.record(struct.string(), struct.object()), // TODO: should this be mandatory if customTypeToken is given.
+  // customTypeToken: struct.string(),
+  schemas: struct.record(struct.string(), struct.object()),
   linkResolver: struct.defaulted(struct.func(), () => () => () => {}),
   htmlSerializer: struct.defaulted(struct.func(), () => () => () => {}),
   fetchLinks: struct.defaulted(struct.array(struct.string()), []),
@@ -48,6 +49,7 @@ const PluginOptions = struct.object({
     () => () => false,
   ),
   webhookSecret: struct.optional(struct.string()),
+  customTypeToken: struct.string(),
 })
 
 const BrowserPluginOptions = struct.object({
@@ -57,15 +59,19 @@ const BrowserPluginOptions = struct.object({
 })
 
 export const validatePluginOptions = (pluginOptions: PluginOptions) => {
-  const coerced = struct.coerce(pluginOptions, PluginOptions)
-  struct.assert(coerced, PluginOptions)
+  // This could be done better
+  const schemasOrTypeToken = struct.omit(PluginOptions, pluginOptions.customTypeToken ? ['schemas'] : ['customTypeToken'])
+  const coerced = struct.create(pluginOptions, schemasOrTypeToken)
+  struct.assert(coerced, schemasOrTypeToken)
   return (coerced as unknown) as PluginOptions
 }
 
 export const validateBrowserOptions = (
   browserOptions: BrowserPluginOptions,
 ) => {
-  const coerced = struct.coerce(browserOptions, BrowserPluginOptions)
+  // needed although I don't think schemas or customTypes token are passed to the browser ?
+  // const schemasOrTypeToken = struct.omit(BrowserPluginOptions, ['schemas'])
+  const coerced = struct.create(browserOptions, BrowserPluginOptions)
   struct.assert(coerced, BrowserPluginOptions)
   return (coerced as unknown) as BrowserPluginOptions
 }

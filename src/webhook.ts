@@ -19,6 +19,7 @@ export function validateSecret(
   return pluginOptions.webhookSecret === webhookBody.secret
 }
 
+// TODO: pretty sure this is defined else where
 export function isPrismicUrl(url: string | undefined): boolean {
   if (!url) return false
   const regexp = /^https?:\/\/([^.]+)\.(wroom\.(?:test|io)|prismic\.io)\/api\/?/

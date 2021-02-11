@@ -27,7 +27,6 @@ export const createSchemaCustomization: NonNullable<
   pluginOptions: PluginOptions,
 ) => {
   const schemas = pluginOptions.customTypeToken ? await getCustomTypes(pluginOptions) : pluginOptions.schemas // TODO: this is repeated else where
-  console.dir({schemas}, {depth: null})
   const { typeDefs } = schemasToTypeDefs(schemas, args)
 
   createPrismicTypes(pluginOptions, args, typeDefs)

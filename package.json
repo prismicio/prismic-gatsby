@@ -47,7 +47,7 @@
     "pascal-case": "^3.1.1",
     "prismic-dom": "^2.2.3",
     "prismic-javascript": "^2.7.1",
-    "superstruct": "^0.10.12",
+    "superstruct": "^0.14.0",
     "uuid": "^8.2.0"
   },
   "devDependencies": {
