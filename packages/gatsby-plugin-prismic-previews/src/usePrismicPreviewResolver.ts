@@ -6,7 +6,8 @@ import * as E from 'fp-ts/Either'
 import * as A from 'fp-ts/Array'
 import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
-import ky from 'ky'
+import axios from 'redaxios'
+// import ky from 'ky'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
 
@@ -135,7 +136,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
   RTE.bind('res', (env) =>
     RTE.fromTaskEither(
       TE.tryCatch(
-        () => ky(env.url).json() as Promise<prismic.Response.Query>,
+        async () => (await axios(env.url)).data as prismic.Response.Query,
         (error) => error as Error,
       ),
     ),

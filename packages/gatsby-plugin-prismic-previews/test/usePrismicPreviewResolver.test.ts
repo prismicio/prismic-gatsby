@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react-hooks'
-import { pipe } from 'fp-ts/function'
-import Prismic from 'prismic-javascript'
+import * as prismic from 'ts-prismic'
+import nock from 'nock'
+import 'cross-fetch/polyfill'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
@@ -10,7 +11,6 @@ import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocume
 
 import {
   createPrismicContext,
-  LinkResolver,
   usePrismicPreviewResolver,
   UsePrismicPreviewResolverConfig,
 } from '../src'
@@ -122,32 +122,31 @@ test('fails if token does not match repository', async () => {
   )
 })
 
-// TODO: Clean up
 test('resolves a path using the link resolver', async () => {
   const pluginOptions = createPluginOptions()
   const token = createPreviewToken(pluginOptions.repositoryName)
-  const documentId = 'documentId'
+  const doc = createPrismicAPIDocument()
+  const documentId = doc.id
   const Provider = createPrismicContext({ pluginOptions })
   const config = createConfig()
-  const spy = jest.spyOn(Prismic, 'client')
+
+  nock(new URL(pluginOptions.apiEndpoint).origin)
+    .get('/api/v2/documents/search')
+    .query({
+      ref: token,
+      access_token: pluginOptions.accessToken,
+      lang: pluginOptions.lang,
+      graphQuery: pluginOptions.graphQuery,
+      q: `[${prismic.predicate.at('document.id', documentId)}]`,
+    })
+    .reply(200, {
+      total_pages: 1,
+      results: [doc],
+    })
 
   window.history.replaceState({}, '', createPreviewURL({ token, documentId }))
 
-  // @ts-expect-error - Partial client provided
-  spy.mockReturnValue({
-    getPreviewResolver: jest.fn().mockImplementation((_token, documentId) => ({
-      resolve: jest.fn().mockImplementation((linkResolver: LinkResolver) =>
-        pipe(
-          createPrismicAPIDocument(),
-          (doc) => (doc.id = documentId) && doc,
-          linkResolver,
-          (path) => Promise.resolve(path),
-        ),
-      ),
-    })),
-  })
-
-  const { result, waitForNextUpdate } = renderHook(
+  const { result, waitForValueToChange } = renderHook(
     () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
     { wrapper: Provider },
   )
@@ -159,15 +158,10 @@ test('resolves a path using the link resolver', async () => {
     resolvePreview()
   })
 
-  // TODO: Test for RESOLVING state. It may be changing too quickly in the test
-  // to track the change. May need to artificially delay the preview resolver
-  // spy.
-  //
-  // await waitForValueToChange(() => result.current[0].state)
-  // expect(result.current[0].state).toBe('RESOLVING')
+  await waitForValueToChange(() => result.current[0].state)
+  expect(result.current[0].state).toBe('RESOLVING')
 
-  await waitForNextUpdate()
-
+  await waitForValueToChange(() => result.current[0].state)
   expect(result.current[0].state).toBe('RESOLVED')
   expect(result.current[0].path).toBe(`/${documentId}`)
   expect(result.current[0].error).toBeUndefined()

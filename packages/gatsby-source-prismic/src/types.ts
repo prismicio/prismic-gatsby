@@ -4,8 +4,6 @@ import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as prismic from 'ts-prismic'
 import * as PrismicDOM from 'prismic-dom'
-import { Document as _PrismicAPIDocument } from 'prismic-javascript/types/documents'
-import { QueryOptions as _PrismicClientQueryOptions } from 'prismic-javascript/types/ResolvedApi'
 import { NodeHelpers } from 'gatsby-node-helpers'
 
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T

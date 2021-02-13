@@ -4,7 +4,7 @@ import * as prismic from 'ts-prismic'
 import * as IOE from 'fp-ts/IOEither'
 import * as IO from 'fp-ts/IO'
 import { pipe } from 'fp-ts/function'
-import ky from 'ky'
+// import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
@@ -86,8 +86,8 @@ export const withPrismicPreview = <
       switch (bootstrapState.state) {
         case 'FAILED': {
           if (
-            bootstrapState.error instanceof ky.HTTPError &&
-            bootstrapState.error.response.status === 401 &&
+            bootstrapState.error instanceof Response &&
+            bootstrapState.error.status === 401 &&
             contextState.pluginOptions.promptForAccessToken
           ) {
             // If we encountered a 401 status, we don't have the correct access

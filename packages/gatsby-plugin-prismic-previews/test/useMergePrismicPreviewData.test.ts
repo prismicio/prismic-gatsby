@@ -1,8 +1,10 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import { createNodeHelpers } from 'gatsby-node-helpers'
+import * as prismic from 'ts-prismic'
 import * as cookie from 'es-cookie'
-import Prismic from 'prismic-javascript'
 import md5 from 'tiny-hashes/md5'
+import nock from 'nock'
+import 'cross-fetch/polyfill'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
@@ -39,6 +41,14 @@ const nodeHelpers = createNodeHelpers({
   createContentDigest: (input) => md5(JSON.stringify(input)),
 })
 
+declare global {
+  interface Window {
+    __BASE_PATH__: string
+  }
+}
+
+window.__BASE_PATH__ = 'https://example.com'
+
 beforeEach(() => {
   clearAllCookies()
 })
@@ -61,7 +71,9 @@ test('merges data only where `_previewable` field matches', async () => {
   const pluginOptions = createPluginOptions()
   const Provider = createPrismicContext({ pluginOptions })
   const config = createConfig()
-  const spy = jest.spyOn(Prismic, 'client')
+
+  const token = createPreviewToken(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, token)
 
   const queryResults = [
     createPrismicAPIDocument(),
@@ -76,20 +88,39 @@ test('merges data only where `_previewable` field matches', async () => {
       ) as PrismicAPIDocumentNodeInput,
   )
 
-  // @ts-expect-error - Partial client provided
-  spy.mockReturnValue({
-    query: jest.fn().mockImplementation((_, options) =>
-      options.page === 1
-        ? Promise.resolve({
-            total_pages: 2,
-            results: queryResults.slice(0, 2),
-          })
-        : Promise.resolve({
-            total_pages: 2,
-            results: queryResults.slice(2),
-          }),
-    ),
-  })
+  nock(new URL(pluginOptions.apiEndpoint).origin)
+    .get('/api/v2/documents/search')
+    .query({
+      ref: token,
+      access_token: pluginOptions.accessToken,
+      lang: pluginOptions.lang,
+      graphQuery: pluginOptions.graphQuery,
+      page: 1,
+      pageSize: 100,
+    })
+    .reply(200, {
+      total_pages: 2,
+      results: queryResults.slice(0, 2),
+    })
+
+  nock(new URL(pluginOptions.apiEndpoint).origin)
+    .get('/api/v2/documents/search')
+    .query({
+      ref: token,
+      access_token: pluginOptions.accessToken,
+      lang: pluginOptions.lang,
+      graphQuery: pluginOptions.graphQuery,
+      page: 2,
+      pageSize: 100,
+    })
+    .reply(200, {
+      total_pages: 2,
+      results: queryResults.slice(2),
+    })
+
+  nock(window.__BASE_PATH__)
+    .get('/static/9e387d94c04ebf0e369948edd9c66d2b.json')
+    .reply(200, '{}')
 
   // Need to use the query results nodes rather than new documents to ensure
   // the IDs match.
@@ -101,10 +132,7 @@ test('merges data only where `_previewable` field matches', async () => {
   // Marking this data as "old" and should be replaced during the merge.
   staticData.previewable.uid = 'old'
 
-  const token = createPreviewToken(pluginOptions.repositoryName)
-  cookie.set(Prismic.previewCookie, token)
-
-  const { result, waitForNextUpdate } = renderHook(
+  const { result, waitForValueToChange } = renderHook(
     () => {
       const context = usePrismicPreviewContext(pluginOptions.repositoryName)
       const bootstrap = usePrismicPreviewBootstrap(
@@ -127,7 +155,11 @@ test('merges data only where `_previewable` field matches', async () => {
     bootstrapPreview()
   })
 
-  await waitForNextUpdate()
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
+  expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPING')
+
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
+  expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPED')
 
   expect(result.current.mergedData.isPreview).toBe(true)
   expect(result.current.mergedData.data.previewable.uid).toEqual(

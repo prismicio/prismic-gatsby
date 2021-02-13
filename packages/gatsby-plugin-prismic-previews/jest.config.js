@@ -1,7 +1,6 @@
 module.exports = {
-  preset: 'ts-jest/presets/js-with-ts',
+  preset: 'ts-jest',
   modulePathIgnorePatterns: ['dist/'],
-  transformIgnorePatterns: ['node_modules/(?!(ky))'],
   moduleNameMapper: {
     '\\.css$': 'identity-obj-proxy',
   },

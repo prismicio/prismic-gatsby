@@ -1,8 +1,10 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import { createNodeHelpers } from 'gatsby-node-helpers'
+import * as prismic from 'ts-prismic'
 import * as cookie from 'es-cookie'
-import Prismic from 'prismic-javascript'
 import md5 from 'tiny-hashes/md5'
+import nock from 'nock'
+import 'cross-fetch/polyfill'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
@@ -11,6 +13,7 @@ import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocume
 
 import {
   createPrismicContext,
+  PrismicAPIDocumentNodeInput,
   usePrismicPreviewBootstrap,
   UsePrismicPreviewBootstrapConfig,
   usePrismicPreviewContext,
@@ -26,6 +29,14 @@ const nodeHelpers = createNodeHelpers({
   createNodeId: (id) => md5(id),
   createContentDigest: (input) => md5(JSON.stringify(input)),
 })
+
+declare global {
+  interface Window {
+    __BASE_PATH__: string
+  }
+}
+
+window.__BASE_PATH__ = 'https://example.com'
 
 beforeEach(() => {
   clearAllCookies()
@@ -75,7 +86,7 @@ test('fails if not for this repository', async () => {
   const config = createConfig()
 
   const token = createPreviewToken('not-this-repository')
-  cookie.set(Prismic.previewCookie, token)
+  cookie.set(prismic.cookie.preview, token)
 
   const { result, waitForNextUpdate } = renderHook(
     () => usePrismicPreviewBootstrap(pluginOptions.repositoryName, config),
@@ -95,12 +106,13 @@ test('fails if not for this repository', async () => {
   expect(state.error?.message).toMatch(/token is not for this repository/i)
 })
 
-// TODO: Need to mock type paths loading using fetch.
 test('fetches all repository documents and bootstraps context', async () => {
   const pluginOptions = createPluginOptions()
   const Provider = createPrismicContext({ pluginOptions })
   const config = createConfig()
-  const spy = jest.spyOn(Prismic, 'client')
+
+  const token = createPreviewToken(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, token)
 
   const queryResults = [
     createPrismicAPIDocument(),
@@ -108,29 +120,48 @@ test('fetches all repository documents and bootstraps context', async () => {
     createPrismicAPIDocument(),
     createPrismicAPIDocument(),
   ]
-  const queryResultsNodes = queryResults.map((doc) =>
-    nodeHelpers.createNodeFactory(doc.type)(doc),
+  const queryResultsNodes = queryResults.map(
+    (doc) =>
+      nodeHelpers.createNodeFactory(doc.type)(
+        doc,
+      ) as PrismicAPIDocumentNodeInput,
   )
 
-  // @ts-expect-error - Partial client provided
-  spy.mockReturnValue({
-    query: jest.fn().mockImplementation((_, options) =>
-      options.page === 1
-        ? Promise.resolve({
-            total_pages: 2,
-            results: queryResults.slice(0, 2),
-          })
-        : Promise.resolve({
-            total_pages: 2,
-            results: queryResults.slice(2),
-          }),
-    ),
-  })
+  nock(new URL(pluginOptions.apiEndpoint).origin)
+    .get('/api/v2/documents/search')
+    .query({
+      ref: token,
+      access_token: pluginOptions.accessToken,
+      lang: pluginOptions.lang,
+      graphQuery: pluginOptions.graphQuery,
+      page: 1,
+      pageSize: 100,
+    })
+    .reply(200, {
+      total_pages: 2,
+      results: queryResults.slice(0, 2),
+    })
 
-  const token = createPreviewToken(pluginOptions.repositoryName)
-  cookie.set(Prismic.previewCookie, token)
+  nock(new URL(pluginOptions.apiEndpoint).origin)
+    .get('/api/v2/documents/search')
+    .query({
+      ref: token,
+      access_token: pluginOptions.accessToken,
+      lang: pluginOptions.lang,
+      graphQuery: pluginOptions.graphQuery,
+      page: 2,
+      pageSize: 100,
+    })
+    .reply(200, {
+      total_pages: 2,
+      results: queryResults.slice(2),
+    })
 
-  const { result, waitForNextUpdate } = renderHook(
+  nock(window.__BASE_PATH__)
+    .get('/static/9e387d94c04ebf0e369948edd9c66d2b.json')
+    .reply(200, '{}')
+
+  const { result, waitForValueToChange } = renderHook(
     () => {
       const context = usePrismicPreviewContext(pluginOptions.repositoryName)
       const bootstrap = usePrismicPreviewBootstrap(
@@ -150,23 +181,18 @@ test('fetches all repository documents and bootstraps context', async () => {
     bootstrapPreview()
   })
 
-  // TODO: Test for RESOLVING state. It may be changing too quickly in the test
-  // to track the change. May need to artificially delay the query fn.
-  //
-  // await waitForValueToChange(() => result.current.bootstrap[0].state)
-  // expect(result.current.bootstrap[0].state).toBe('RESOLVING')
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
+  expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPING')
 
-  await waitForNextUpdate()
-
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
   expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPED')
   expect(result.current.bootstrap[0].error).toBeUndefined()
-
   expect(result.current.context[0].isBootstrapped).toBe(true)
   expect(result.current.context[0].nodes).toEqual({
-    [queryResultsNodes[0].id]: queryResultsNodes[0],
-    [queryResultsNodes[1].id]: queryResultsNodes[1],
-    [queryResultsNodes[2].id]: queryResultsNodes[2],
-    [queryResultsNodes[3].id]: queryResultsNodes[3],
+    [queryResultsNodes[0].prismicId]: queryResultsNodes[0],
+    [queryResultsNodes[1].prismicId]: queryResultsNodes[1],
+    [queryResultsNodes[2].prismicId]: queryResultsNodes[2],
+    [queryResultsNodes[3].prismicId]: queryResultsNodes[3],
   })
 })
 
@@ -174,7 +200,9 @@ test('fails if already bootstrapped', async () => {
   const pluginOptions = createPluginOptions()
   const Provider = createPrismicContext({ pluginOptions })
   const config = createConfig()
-  const spy = jest.spyOn(Prismic, 'client')
+
+  const token = createPreviewToken(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, token)
 
   const queryResults = [
     createPrismicAPIDocument(),
@@ -183,25 +211,41 @@ test('fails if already bootstrapped', async () => {
     createPrismicAPIDocument(),
   ]
 
-  // @ts-expect-error - Partial client provided
-  spy.mockReturnValue({
-    query: jest.fn().mockImplementation((_, options) =>
-      options.page === 1
-        ? Promise.resolve({
-            total_pages: 2,
-            results: queryResults.slice(0, 2),
-          })
-        : Promise.resolve({
-            total_pages: 2,
-            results: queryResults.slice(2),
-          }),
-    ),
-  })
+  nock(new URL(pluginOptions.apiEndpoint).origin)
+    .get('/api/v2/documents/search')
+    .query({
+      ref: token,
+      access_token: pluginOptions.accessToken,
+      lang: pluginOptions.lang,
+      graphQuery: pluginOptions.graphQuery,
+      page: 1,
+      pageSize: 100,
+    })
+    .reply(200, {
+      total_pages: 2,
+      results: queryResults.slice(0, 2),
+    })
 
-  const token = createPreviewToken(pluginOptions.repositoryName)
-  cookie.set(Prismic.previewCookie, token)
+  nock(new URL(pluginOptions.apiEndpoint).origin)
+    .get('/api/v2/documents/search')
+    .query({
+      ref: token,
+      access_token: pluginOptions.accessToken,
+      lang: pluginOptions.lang,
+      graphQuery: pluginOptions.graphQuery,
+      page: 2,
+      pageSize: 100,
+    })
+    .reply(200, {
+      total_pages: 2,
+      results: queryResults.slice(2),
+    })
 
-  const { result, waitForNextUpdate } = renderHook(
+  nock(window.__BASE_PATH__)
+    .get('/static/9e387d94c04ebf0e369948edd9c66d2b.json')
+    .reply(200, '{}')
+
+  const { result, waitForValueToChange } = renderHook(
     () => {
       const context = usePrismicPreviewContext(pluginOptions.repositoryName)
       const bootstrap = usePrismicPreviewBootstrap(
@@ -221,8 +265,10 @@ test('fails if already bootstrapped', async () => {
     result.current.bootstrap[1]()
   })
 
-  await waitForNextUpdate()
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
+  expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPING')
 
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
   expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPED')
   expect(result.current.bootstrap[0].error).toBeUndefined()
 
@@ -231,8 +277,7 @@ test('fails if already bootstrapped', async () => {
     result.current.bootstrap[1]()
   })
 
-  await waitForNextUpdate()
-
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
   expect(result.current.bootstrap[0].state).toBe('FAILED')
   expect(result.current.bootstrap[0].error?.message).toMatch(
     /already been bootstrapped/i,

@@ -6,6 +6,5 @@
     "jsx": "react",
     "allowJs": true
   },
-  "include": ["src", "test", "types"],
-  "exclude": ["src/proxyNode.ts"]
+  "include": ["src", "test", "types"]
 }
