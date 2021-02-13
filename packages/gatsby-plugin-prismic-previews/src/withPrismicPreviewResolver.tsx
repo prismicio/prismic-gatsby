@@ -2,7 +2,6 @@ import * as React from 'react'
 import * as gatsby from 'gatsby'
 import * as E from 'fp-ts/Either'
 import { pipe } from 'fp-ts/function'
-// import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'

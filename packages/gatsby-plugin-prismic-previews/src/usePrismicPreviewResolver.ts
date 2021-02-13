@@ -7,7 +7,6 @@ import * as A from 'fp-ts/Array'
 import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
 import axios from 'redaxios'
-// import ky from 'ky'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
 

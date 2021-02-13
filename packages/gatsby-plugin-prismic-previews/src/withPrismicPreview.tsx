@@ -4,7 +4,6 @@ import * as prismic from 'ts-prismic'
 import * as IOE from 'fp-ts/IOEither'
 import * as IO from 'fp-ts/IO'
 import { pipe } from 'fp-ts/function'
-// import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'

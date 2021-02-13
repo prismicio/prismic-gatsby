@@ -4,7 +4,6 @@ import * as TE from 'fp-ts/TaskEither'
 import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
 import axios from 'redaxios'
-// import ky from 'ky'
 
 import { getCookie } from './getCookie'
 
