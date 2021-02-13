@@ -1,1 +1,1 @@
-import 'gatsby-plugin-prismic-previews-2/dist/gatsby-source-prismic-previews.css'
+import 'gatsby-plugin-prismic-previews/dist/gatsby-plugin-prismic-previews.css'

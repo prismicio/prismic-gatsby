@@ -4,7 +4,7 @@ import {
   usePrismicPreviewAccessToken,
   withPrismicPreview,
   WithPrismicPreviewProps,
-} from 'gatsby-plugin-prismic-previews-2'
+} from 'gatsby-plugin-prismic-previews'
 
 import { linkResolver } from '../linkResolver'
 

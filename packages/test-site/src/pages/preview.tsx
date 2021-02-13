@@ -3,7 +3,7 @@ import { PageProps } from 'gatsby'
 import {
   withPrismicPreviewResolver,
   WithPrismicPreviewResolverProps,
-} from 'gatsby-plugin-prismic-previews-2'
+} from 'gatsby-plugin-prismic-previews'
 
 import { linkResolver } from '../linkResolver'
 

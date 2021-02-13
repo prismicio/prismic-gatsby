@@ -3,7 +3,7 @@ import { graphql, PageProps } from 'gatsby'
 import {
   usePrismicPreviewAccessToken,
   usePrismicPreviewContext,
-} from 'gatsby-plugin-prismic-previews-2'
+} from 'gatsby-plugin-prismic-previews'
 
 const repoName = process.env.GATSBY_PRISMIC_REPOSITORY_NAME as string
 
