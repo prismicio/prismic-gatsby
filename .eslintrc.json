@@ -10,11 +10,11 @@
       "jsx": true
     }
   },
-  "plugins": ["@typescript-eslint", "react-hooks"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended"
   ],
+  "plugins": ["react-hooks"],
   "rules": {
     "curly": "error",
     "prefer-const": "error",
