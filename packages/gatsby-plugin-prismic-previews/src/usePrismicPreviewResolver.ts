@@ -9,12 +9,12 @@ import { constVoid, pipe } from 'fp-ts/function'
 import axios from 'redaxios'
 
 import { getURLSearchParam } from './lib/getURLSearchParam'
-
-import { LinkResolver } from './types'
-import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
 import { setCookie } from './lib/setCookie'
 import { BuildQueryParamsEnv, buildQueryParams } from './lib/buildQueryParams'
+
+import { LinkResolver } from './types'
+import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 
 export type UsePrismicPreviewResolverFn = () => Promise<void>
 
@@ -202,6 +202,9 @@ export const usePrismicPreviewResolver = (
     config.linkResolver,
     state.pluginOptions.accessToken,
     state.pluginOptions.apiEndpoint,
+    state.pluginOptions.graphQuery,
+    state.pluginOptions.fetchLinks,
+    state.pluginOptions.lang,
   ])
 
   return React.useMemo(() => [localState, resolvePreview] as const, [
