@@ -118,8 +118,8 @@ describe('actions', () => {
     const context = result.current[0]
 
     expect(context.nodes).toEqual({
-      [nodeInputs[0].id]: nodeInputs[0],
-      [nodeInputs[1].id]: nodeInputs[1],
+      [nodeInputs[0].prismicId]: nodeInputs[0],
+      [nodeInputs[1].prismicId]: nodeInputs[1],
     })
   })
 
