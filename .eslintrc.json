@@ -23,6 +23,10 @@
       "error",
       { "argsIgnorePattern": "^_" }
     ],
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      { "multiline": { "delimiter": "none" } }
+    ],
     "@typescript-eslint/camelcase": "off",
     "react/display-name": "off",
     "react-hooks/rules-of-hooks": "error",
