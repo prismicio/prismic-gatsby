@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "./",
     "resolveJsonModule": true,
-    "jsx": "react"
+    "jsx": "react",
+    "allowJs": true
   },
   "include": ["src", "test", "types"],
   "exclude": ["src/proxyNode.ts"]
