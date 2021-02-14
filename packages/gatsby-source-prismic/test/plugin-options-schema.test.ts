@@ -4,7 +4,7 @@ import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
 
 import { pluginOptionsSchema } from '../src/plugin-options-schema'
 
-import schemaFixture from './__fixtures__/schema.json'
+import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
 
 test('passes on valid options', async () => {
   const pluginOptions = {
@@ -16,7 +16,7 @@ test('passes on valid options', async () => {
     lang: 'string',
     linkResolver: (): void => void 0,
     htmlSerializer: (): void => void 0,
-    schemas: { page: schemaFixture },
+    schemas: { page: kitchenSinkSchemaFixture },
     imageImgixParams: { q: 100 },
     imagePlaceholderImgixParams: { q: 100 },
     typePrefix: 'string',
@@ -87,7 +87,7 @@ test('fails on invalid options', async () => {
 test('allows only one of qraphQuery or fetchLinks', async () => {
   const pluginOptions = {
     repositoryName: 'qwerty',
-    schemas: { page: schemaFixture },
+    schemas: { page: kitchenSinkSchemaFixture },
     graphQuery: 'string',
     fetchLinks: ['string'],
   }
@@ -102,7 +102,7 @@ test('allows only one of qraphQuery or fetchLinks', async () => {
 test('checks that all schemas are provided', async () => {
   const pluginOptions = {
     repositoryName: 'qwerty',
-    schemas: { page: schemaFixture },
+    schemas: { page: kitchenSinkSchemaFixture },
   }
 
   const url = prismic.defaultEndpoint(pluginOptions.repositoryName)

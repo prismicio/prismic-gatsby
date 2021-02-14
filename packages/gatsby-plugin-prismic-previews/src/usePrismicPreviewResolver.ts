@@ -8,10 +8,10 @@ import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
 import axios from 'redaxios'
 
-import { getURLSearchParam } from './lib/getURLSearchParam'
-import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
-import { setCookie } from './lib/setCookie'
 import { BuildQueryParamsEnv, buildQueryParams } from './lib/buildQueryParams'
+import { getCookie } from './lib/getCookie'
+import { getURLSearchParam } from './lib/getURLSearchParam'
+// import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
 
 import { LinkResolver } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
@@ -93,12 +93,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
   void
 > = pipe(
   RTE.ask<UsePrismicPreviewResolverProgramEnv>(),
-  RTE.bindW('token', () =>
-    pipe(
-      getURLSearchParam('token'),
-      RTE.fromOption(() => new Error('token URL parameter not present')),
-    ),
-  ),
+
   RTE.bindW('documentId', () =>
     pipe(
       getURLSearchParam('documentId'),
@@ -106,17 +101,27 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
     ),
   ),
 
-  // Only continue if this preview session is for this repository.
-  RTE.chainFirst((env) =>
-    RTE.fromEither(
-      validatePreviewTokenForRepository(env.repositoryName, env.token),
+  // Only continue if this is a preview session, which is determined by the
+  // presence of the Prismic preview cookie.
+  RTE.bindW('token', () =>
+    pipe(
+      RTE.fromIOEither(getCookie(prismic.cookie.preview)),
+      RTE.mapLeft(
+        () => new Error('Not a preview session. No preview cookie detected.'),
+      ),
     ),
   ),
 
-  // Persist the token for resuming this preview session at a later time.
-  RTE.chainFirst((env) =>
-    RTE.fromIO(setCookie(prismic.cookie.preview, env.token)),
-  ),
+  // TODO: Support new style ref in addition to old URL style:
+  //
+  // {%22_tracker%22:%22gjrM9Kx7%22%2C%22gatsby-source-prismic-v4.prismic.io%22:{%22preview%22:%22https://gatsby-source-prismic-v4.prismic.io/previews/YCiXchUAACMAxgIi?websitePreviewId=YCig0BUAACYAxiu-%22}}
+  //
+  // // Only continue if this preview session is for this repository.
+  // RTE.chainFirst((env) =>
+  //   RTE.fromEither(
+  //     validatePreviewTokenForRepository(env.repositoryName, env.token),
+  //   ),
+  // ),
 
   // Start resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),

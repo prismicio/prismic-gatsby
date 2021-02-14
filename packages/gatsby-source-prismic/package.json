@@ -4,8 +4,7 @@
   "version": "4.0.0",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "license": "MIT",
-  "main": "./dist/gatsby-source-prismic.js",
-  "module": "./dist/gatsby-source-prismic.module.js",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
@@ -15,8 +14,8 @@
   ],
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "microbundle build src/index.ts src/gatsby-node.ts --tsconfig tsconfig.build.json",
-    "dev": "microbundle watch src/index.ts src/gatsby-node.ts --tsconfig tsconfig.build.json",
+    "build": "NODE_ENV=production concurrently -p '[{time}-{name}]' -n 'esbuild,tsc' -c 'yellow,blue' 'node ./build.mjs' 'tsc -p ./tsconfig.build.json'",
+    "dev": "NODE_ENV=development concurrently -p '[{time}-{name}]' -n 'esbuild,tsc' -c 'yellow,blue' 'node ./build.mjs -w' 'tsc -w --preserveWatchOutput -p ./tsconfig.build.json'",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",
     "prepare": "yarn build",

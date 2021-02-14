@@ -26,7 +26,7 @@ export default HomePage
 
 export const query = graphql`
   {
-    allPrismicPrefixPage {
+    allPrismicPrefixKitchenSink {
       nodes {
         id
         data {
@@ -34,9 +34,9 @@ export const query = graphql`
             text
           }
           body {
-            ... on PrismicPrefixPageDataBodyImages {
+            ... on PrismicPrefixKitchenSinkDataBodyFirstOption {
               items {
-                image {
+                first_option_repeat_image {
                   fluid {
                     ...GatsbyImgixFluid
                   }

@@ -1,56 +1,652 @@
 {
-  "id": "XDF-DhEAACAA5b4F",
+  "id": "YCiUyRUAACQAxfZK",
   "uid": "home",
-  "type": "page",
-  "href": "https://gatsby-starter-ww.cdn.prismic.io/api/v2/documents/search?ref=Xj9DrRUAACcAJ33X&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22XDF-DhEAACAA5b4F%22%29+%5D%5D",
+  "type": "kitchen_sink",
+  "href": "https://gatsby-source-prismic-v4.cdn.prismic.io/api/v2/documents/search?ref=YCiXchUAACMAxgIi&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22YCiUyRUAACQAxfZK%22%29+%5D%5D",
   "tags": [],
-  "first_publication_date": "2019-01-06T04:03:51+0000",
-  "last_publication_date": "2020-02-08T23:26:37+0000",
+  "first_publication_date": "2021-02-14T03:22:26+0000",
+  "last_publication_date": "2021-02-14T03:22:26+0000",
   "slugs": ["home"],
   "linked_documents": [],
   "lang": "en-us",
   "alternate_languages": [],
   "data": {
     "title": [{ "type": "heading1", "text": "Home", "spans": [] }],
-    "meta_title": null,
-    "meta_description": null,
-    "parent": { "link_type": "Document" },
-    "main": [],
-    "body": [
+    "rich_text": [{ "type": "paragraph", "text": "Rich Text", "spans": [] }],
+    "image": {
+      "dimensions": { "width": 2048, "height": 1536 },
+      "alt": null,
+      "copyright": null,
+      "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+      "Mobile": {
+        "dimensions": { "width": 400, "height": 400 },
+        "alt": null,
+        "copyright": null,
+        "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=257,0,1536,1536&w=400&h=400"
+      },
+      "Tablet": {
+        "dimensions": { "width": 800, "height": 800 },
+        "alt": null,
+        "copyright": null,
+        "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=255,0,1536,1536&w=800&h=800"
+      }
+    },
+    "content_relationship": {
+      "id": "YCiU1hUAACQAxfaH",
+      "type": "kitchen_sink",
+      "tags": [],
+      "slug": "about",
+      "lang": "en-us",
+      "uid": "about",
+      "link_type": "Document",
+      "isBroken": false
+    },
+    "link": {
+      "link_type": "Web",
+      "url": "https://prismic.io",
+      "target": "_blank"
+    },
+    "link_to_media": {
+      "link_type": "Media",
+      "name": "groovy.png",
+      "kind": "image",
+      "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+      "size": "201892",
+      "height": "1536",
+      "width": "2048"
+    },
+    "date": "2021-02-13",
+    "timestamp": "2021-02-13T10:00:00+0000",
+    "color": "#000000",
+    "number": 1.0,
+    "key_text": "Key Text",
+    "select": "Option 1",
+    "boolean": true,
+    "embed": {
+      "provider_name": "YouTube",
+      "provider_url": "https://www.youtube.com/",
+      "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+      "author_name": "Prismic",
+      "author_url": "https://www.youtube.com/c/Prismic",
+      "type": "video",
+      "height": 113,
+      "width": 200,
+      "version": "1.0",
+      "thumbnail_height": 360,
+      "thumbnail_width": 480,
+      "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+      "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+      "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+    },
+    "geopoint": { "latitude": 37.3318683, "longitude": -122.0324424 },
+    "group": [
       {
-        "slice_type": "text",
-        "slice_label": null,
-        "items": [{}],
-        "primary": {
-          "text": [{ "type": "paragraph", "text": "Example text", "spans": [] }]
+        "group_image": { "Mobile": {}, "Tablet": {} },
+        "group_title": [
+          { "type": "heading1", "text": "Group Title", "spans": [] }
+        ],
+        "group_rich_text": [
+          { "type": "paragraph", "text": "Group Rich Text", "spans": [] }
+        ],
+        "group_content_relationship": {
+          "id": "YCiU1hUAACQAxfaH",
+          "type": "kitchen_sink",
+          "tags": [],
+          "slug": "about",
+          "lang": "en-us",
+          "uid": "about",
+          "link_type": "Document",
+          "isBroken": false
+        },
+        "group_link": {
+          "link_type": "Web",
+          "url": "https://prismic.io",
+          "target": "_blank"
+        },
+        "group_link_to_media": {
+          "link_type": "Media",
+          "name": "groovy.png",
+          "kind": "image",
+          "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+          "size": "201892",
+          "height": "1536",
+          "width": "2048"
+        },
+        "group_date": "2021-02-13",
+        "group_timestamp": "2021-02-13T10:00:00+0000",
+        "group_color": "#000000",
+        "group_number": 1.0,
+        "group_key_text": "Group Key Text",
+        "group_select": "Option 1",
+        "group_boolean": true,
+        "group_embed": {
+          "provider_name": "YouTube",
+          "provider_url": "https://www.youtube.com/",
+          "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+          "author_name": "Prismic",
+          "author_url": "https://www.youtube.com/c/Prismic",
+          "type": "video",
+          "height": 113,
+          "width": 200,
+          "version": "1.0",
+          "thumbnail_height": 360,
+          "thumbnail_width": 480,
+          "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+          "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+          "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+        },
+        "group_geopoint": {
+          "latitude": 37.3318683,
+          "longitude": -122.0324424
         }
       },
       {
-        "slice_type": "images",
+        "group_image": { "Mobile": {}, "Tablet": {} },
+        "group_title": [
+          { "type": "heading1", "text": "Group Title 2", "spans": [] }
+        ],
+        "group_rich_text": [
+          { "type": "paragraph", "text": "Group Rich Text 2", "spans": [] }
+        ],
+        "group_content_relationship": {
+          "id": "YCiUyRUAACQAxfZK",
+          "type": "kitchen_sink",
+          "tags": [],
+          "slug": "home",
+          "lang": "en-us",
+          "uid": "home",
+          "link_type": "Document",
+          "isBroken": false
+        },
+        "group_link": {
+          "link_type": "Web",
+          "url": "https://prismic.io",
+          "target": "_blank"
+        },
+        "group_link_to_media": {
+          "link_type": "Media",
+          "name": "groovy.png",
+          "kind": "image",
+          "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+          "size": "201892",
+          "height": "1536",
+          "width": "2048"
+        },
+        "group_date": "2021-02-13",
+        "group_timestamp": "2021-02-13T10:00:00+0000",
+        "group_color": "#000000",
+        "group_number": 2.0,
+        "group_key_text": "Group Key Text 2",
+        "group_select": "Option 2",
+        "group_boolean": true,
+        "group_embed": {
+          "provider_name": "YouTube",
+          "provider_url": "https://www.youtube.com/",
+          "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+          "author_name": "Prismic",
+          "author_url": "https://www.youtube.com/c/Prismic",
+          "type": "video",
+          "height": 113,
+          "width": 200,
+          "version": "1.0",
+          "thumbnail_height": 360,
+          "thumbnail_width": 480,
+          "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+          "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+          "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+        },
+        "group_geopoint": {
+          "latitude": 37.3318683,
+          "longitude": -122.0324424
+        }
+      }
+    ],
+    "body": [
+      {
+        "slice_type": "first_option",
         "slice_label": null,
         "items": [
           {
-            "image": {
-              "dimensions": { "width": 2000, "height": 1333 },
-              "alt": "Example alt text",
+            "first_option_repeat_title": [
+              { "type": "heading1", "text": "Repeat Title", "spans": [] }
+            ],
+            "first_option_repeat_rich_text": [
+              { "type": "paragraph", "text": "Rich Text", "spans": [] }
+            ],
+            "first_option_repeat_image": {
+              "dimensions": { "width": 2048, "height": 1536 },
+              "alt": null,
               "copyright": null,
-              "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=2000&h=1333",
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
               "Mobile": {
-                "url": "https://images.prismic.io/gatsby-starter-ww%2F975fc7f0-6d9c-4034-a7de-0b46379ee05b_sean-pollock-203658-unsplash.jpg?auto=compress,format&rect=0,0,6000,3999&w=1000&h=667",
-                "dimensions": { "width": 1000, "height": 667 }
+                "dimensions": { "width": 400, "height": 400 },
+                "alt": null,
+                "copyright": null,
+                "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=257,0,1536,1536&w=400&h=400"
+              },
+              "Tablet": {
+                "dimensions": { "width": 800, "height": 800 },
+                "alt": null,
+                "copyright": null,
+                "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=255,0,1536,1536&w=800&h=800"
               }
             },
-            "caption": [
-              {
-                "type": "paragraph",
-                "text": "Example camption",
-                "spans": []
+            "first_option_repeat_content_relationship": {
+              "id": "YCiUyRUAACQAxfZK",
+              "type": "kitchen_sink",
+              "tags": [],
+              "slug": "home",
+              "lang": "en-us",
+              "uid": "home",
+              "link_type": "Document",
+              "isBroken": false
+            },
+            "first_option_repeat_link": {
+              "link_type": "Web",
+              "url": "https://prismic.io",
+              "target": "_blank"
+            },
+            "first_option_repeat_link_to_media": {
+              "link_type": "Media",
+              "name": "groovy.png",
+              "kind": "image",
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+              "size": "201892",
+              "height": "1536",
+              "width": "2048"
+            },
+            "first_option_repeat_date": "2021-02-13",
+            "first_option_repeat_timestamp": "2021-02-13T10:00:00+0000",
+            "first_option_repeat_color": "#000000",
+            "first_option_repeat_number": 1.0,
+            "first_option_repeat_key_text": "Key Text",
+            "first_option_repeat_select": "Option 1",
+            "first_option_repeat_boolean": true,
+            "first_option_repeat_embed": {
+              "provider_name": "YouTube",
+              "provider_url": "https://www.youtube.com/",
+              "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+              "author_name": "Prismic",
+              "author_url": "https://www.youtube.com/c/Prismic",
+              "type": "video",
+              "height": 113,
+              "width": 200,
+              "version": "1.0",
+              "thumbnail_height": 360,
+              "thumbnail_width": 480,
+              "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+              "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+              "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+            },
+            "first_option_repeat_geopoint": {
+              "latitude": 37.3318683,
+              "longitude": -122.0324424
+            }
+          },
+          {
+            "first_option_repeat_title": [
+              { "type": "heading1", "text": "Repeat Title 2", "spans": [] }
+            ],
+            "first_option_repeat_rich_text": [
+              { "type": "paragraph", "text": "Rich Text", "spans": [] }
+            ],
+            "first_option_repeat_image": {
+              "dimensions": { "width": 2048, "height": 1536 },
+              "alt": null,
+              "copyright": null,
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+              "Mobile": {
+                "dimensions": { "width": 400, "height": 400 },
+                "alt": null,
+                "copyright": null,
+                "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=257,0,1536,1536&w=400&h=400"
+              },
+              "Tablet": {
+                "dimensions": { "width": 800, "height": 800 },
+                "alt": null,
+                "copyright": null,
+                "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=255,0,1536,1536&w=800&h=800"
               }
-            ]
+            },
+            "first_option_repeat_content_relationship": {
+              "id": "YCiU1hUAACQAxfaH",
+              "type": "kitchen_sink",
+              "tags": [],
+              "slug": "about",
+              "lang": "en-us",
+              "uid": "about",
+              "link_type": "Document",
+              "isBroken": false
+            },
+            "first_option_repeat_link": {
+              "link_type": "Web",
+              "url": "https://prismic.io",
+              "target": "_blank"
+            },
+            "first_option_repeat_link_to_media": {
+              "link_type": "Media",
+              "name": "groovy.png",
+              "kind": "image",
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+              "size": "201892",
+              "height": "1536",
+              "width": "2048"
+            },
+            "first_option_repeat_date": "2021-02-13",
+            "first_option_repeat_timestamp": "2021-02-13T10:00:00+0000",
+            "first_option_repeat_color": "#000000",
+            "first_option_repeat_number": 2.0,
+            "first_option_repeat_key_text": "Key Text",
+            "first_option_repeat_select": "Option 1",
+            "first_option_repeat_boolean": true,
+            "first_option_repeat_embed": {
+              "provider_name": "YouTube",
+              "provider_url": "https://www.youtube.com/",
+              "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+              "author_name": "Prismic",
+              "author_url": "https://www.youtube.com/c/Prismic",
+              "type": "video",
+              "height": 113,
+              "width": 200,
+              "version": "1.0",
+              "thumbnail_height": 360,
+              "thumbnail_width": 480,
+              "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+              "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+              "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+            },
+            "first_option_repeat_geopoint": {
+              "latitude": 37.3318683,
+              "longitude": -122.0324424
+            }
           }
         ],
-        "primary": {}
+        "primary": {
+          "first_option_nonrepeat_title": [
+            {
+              "type": "heading1",
+              "text": "First Option Title",
+              "spans": []
+            }
+          ],
+          "first_option_nonrepeat_rich_text": [
+            { "type": "paragraph", "text": "Rich Text", "spans": [] }
+          ],
+          "first_option_nonrepeat_image": {
+            "dimensions": { "width": 2048, "height": 1536 },
+            "alt": null,
+            "copyright": null,
+            "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+            "Mobile": {
+              "dimensions": { "width": 400, "height": 400 },
+              "alt": null,
+              "copyright": null,
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=257,0,1536,1536&w=400&h=400"
+            },
+            "Tablet": {
+              "dimensions": { "width": 800, "height": 800 },
+              "alt": null,
+              "copyright": null,
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=255,0,1536,1536&w=800&h=800"
+            }
+          },
+          "first_option_nonrepeat_content_relationship": {
+            "id": "YCiU1hUAACQAxfaH",
+            "type": "kitchen_sink",
+            "tags": [],
+            "slug": "about",
+            "lang": "en-us",
+            "uid": "about",
+            "link_type": "Document",
+            "isBroken": false
+          },
+          "first_option_nonrepeat_link": {
+            "link_type": "Web",
+            "url": "https://prismic.io",
+            "target": "_blank"
+          },
+          "first_option_nonrepeat_link_to_media": {
+            "link_type": "Media",
+            "name": "groovy.png",
+            "kind": "image",
+            "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+            "size": "201892",
+            "height": "1536",
+            "width": "2048"
+          },
+          "first_option_nonrepeat_date": "2021-02-13",
+          "first_option_nonrepeat_timestamp": "2021-02-13T10:00:00+0000",
+          "first_option_nonrepeat_color": "#000000",
+          "first_option_nonrepeat_number": 1.0,
+          "first_option_nonrepeat_key_text": "Key Text",
+          "first_option_nonrepeat_select": "Option 1",
+          "first_option_nonrepeat_boolean": true,
+          "first_option_nonrepeat_embed": {
+            "provider_name": "YouTube",
+            "provider_url": "https://www.youtube.com/",
+            "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+            "author_name": "Prismic",
+            "author_url": "https://www.youtube.com/c/Prismic",
+            "type": "video",
+            "height": 113,
+            "width": 200,
+            "version": "1.0",
+            "thumbnail_height": 360,
+            "thumbnail_width": 480,
+            "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+            "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+            "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+          },
+          "first_option_nonrepeat_geopoint": {
+            "latitude": 37.33187179566676,
+            "longitude": -122.03244745731355
+          }
+        }
+      },
+      {
+        "slice_type": "second_option",
+        "slice_label": null,
+        "items": [
+          {
+            "second_option_repeat_title": [
+              { "type": "heading1", "text": "Repeat Title", "spans": [] }
+            ],
+            "second_option_repeat_rich_text": [
+              { "type": "paragraph", "text": "Rich Text", "spans": [] }
+            ],
+            "second_option_repeat_image": {
+              "dimensions": { "width": 2048, "height": 1536 },
+              "alt": null,
+              "copyright": null,
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+              "Mobile": {
+                "dimensions": { "width": 400, "height": 400 },
+                "alt": null,
+                "copyright": null,
+                "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=257,0,1536,1536&w=400&h=400"
+              },
+              "Tablet": {
+                "dimensions": { "width": 800, "height": 800 },
+                "alt": null,
+                "copyright": null,
+                "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=255,0,1536,1536&w=800&h=800"
+              }
+            },
+            "second_option_repeat_content_relationship": {
+              "id": "YCiU1hUAACQAxfaH",
+              "type": "kitchen_sink",
+              "tags": [],
+              "slug": "about",
+              "lang": "en-us",
+              "uid": "about",
+              "link_type": "Document",
+              "isBroken": false
+            },
+            "second_option_repeat_link": {
+              "link_type": "Web",
+              "url": "https://prismic.io",
+              "target": "_blank"
+            },
+            "second_option_repeat_link_to_media": {
+              "link_type": "Media",
+              "name": "groovy.png",
+              "kind": "image",
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+              "size": "201892",
+              "height": "1536",
+              "width": "2048"
+            },
+            "second_option_repeat_date": "2021-02-13",
+            "second_option_repeat_timestamp": "2021-02-13T10:00:00+0000",
+            "second_option_repeat_color": "#000000",
+            "second_option_repeat_number": 1.0,
+            "second_option_repeat_key_text": "Key Text",
+            "second_option_repeat_select": "Option 1",
+            "second_option_repeat_boolean": true,
+            "second_option_repeat_embed": {
+              "provider_name": "YouTube",
+              "provider_url": "https://www.youtube.com/",
+              "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+              "author_name": "Prismic",
+              "author_url": "https://www.youtube.com/c/Prismic",
+              "type": "video",
+              "height": 113,
+              "width": 200,
+              "version": "1.0",
+              "thumbnail_height": 360,
+              "thumbnail_width": 480,
+              "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+              "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+              "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+            },
+            "second_option_repeat_geopoint": {
+              "latitude": 37.3318683,
+              "longitude": -122.0324424
+            }
+          }
+        ],
+        "primary": {
+          "second_option_nonrepeat_title": [
+            {
+              "type": "heading1",
+              "text": "Second Option Title",
+              "spans": []
+            }
+          ],
+          "second_option_nonrepeat_rich_text": [
+            { "type": "paragraph", "text": "Rich Text", "spans": [] }
+          ],
+          "second_option_nonrepeat_image": {
+            "dimensions": { "width": 2048, "height": 1536 },
+            "alt": null,
+            "copyright": null,
+            "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+            "Mobile": {
+              "dimensions": { "width": 400, "height": 400 },
+              "alt": null,
+              "copyright": null,
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=257,0,1536,1536&w=400&h=400"
+            },
+            "Tablet": {
+              "dimensions": { "width": 800, "height": 800 },
+              "alt": null,
+              "copyright": null,
+              "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format&rect=255,0,1536,1536&w=800&h=800"
+            }
+          },
+          "second_option_nonrepeat_content_relationship": {
+            "id": "YCiU1hUAACQAxfaH",
+            "type": "kitchen_sink",
+            "tags": [],
+            "slug": "about",
+            "lang": "en-us",
+            "uid": "about",
+            "link_type": "Document",
+            "isBroken": false
+          },
+          "second_option_nonrepeat_link": {
+            "link_type": "Web",
+            "url": "https://prismic.io",
+            "target": "_blank"
+          },
+          "second_option_nonrepeat_link_to_media": {
+            "link_type": "Media",
+            "name": "groovy.png",
+            "kind": "image",
+            "url": "https://images.prismic.io/slicemachine-blank/26d81419-4d65-46b8-853e-8ea902e160c1_groovy.png?auto=compress,format",
+            "size": "201892",
+            "height": "1536",
+            "width": "2048"
+          },
+          "second_option_nonrepeat_date": "2021-02-13",
+          "second_option_nonrepeat_timestamp": "2021-02-13T10:00:00+0000",
+          "second_option_nonrepeat_color": "#000000",
+          "second_option_nonrepeat_number": 1.0,
+          "second_option_nonrepeat_key_text": "Key Text",
+          "second_option_nonrepeat_select": "Option 1",
+          "second_option_nonrepeat_boolean": true,
+          "second_option_nonrepeat_embed": {
+            "provider_name": "YouTube",
+            "provider_url": "https://www.youtube.com/",
+            "title": "What Is Gatsby.js, and Why Is It a Big Deal?",
+            "author_name": "Prismic",
+            "author_url": "https://www.youtube.com/c/Prismic",
+            "type": "video",
+            "height": 113,
+            "width": 200,
+            "version": "1.0",
+            "thumbnail_height": 360,
+            "thumbnail_width": 480,
+            "thumbnail_url": "https://i.ytimg.com/vi/2n4Feb3n46Q/hqdefault.jpg",
+            "html": "<iframe width=\"200\" height=\"113\" src=\"https://www.youtube.com/embed/2n4Feb3n46Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+            "embed_url": "https://www.youtube.com/watch?v=2n4Feb3n46Q"
+          },
+          "second_option_nonrepeat_geopoint": {
+            "latitude": 37.3318683,
+            "longitude": -122.0324424
+          }
+        }
       }
-    ]
+    ],
+    "second_tab_title": [],
+    "second_tab_rich_text": [],
+    "second_tab_image": { "Mobile": {}, "Tablet": {} },
+    "second_tab_content_relationship": { "link_type": "Document" },
+    "second_tab_link": { "link_type": "Any" },
+    "second_tab_link_to_media": { "link_type": "Media" },
+    "second_tab_date": null,
+    "second_tab_timestamp": null,
+    "second_tab_color": null,
+    "second_tab_number": null,
+    "second_tab_key_text": null,
+    "second_tab_select": "Option 1",
+    "second_tab_boolean": true,
+    "second_tab_embed": {},
+    "second_tab_geopoint": { "latitude": 0.0, "longitude": -0.703125 },
+    "second_tab_group": [
+      {
+        "second_tab_group_image": { "Mobile": {}, "Tablet": {} },
+        "second_tab_group_title": [],
+        "second_tab_group_rich_text": [],
+        "second_tab_group_content_relationship": {
+          "link_type": "Document"
+        },
+        "second_tab_group_link": { "link_type": "Any" },
+        "second_tab_group_link_to_media": { "link_type": "Media" },
+        "second_tab_group_date": null,
+        "second_tab_group_timestamp": null,
+        "second_tab_group_color": null,
+        "second_tab_group_number": null,
+        "second_tab_group_key_text": null,
+        "second_tab_group_select": "Option 1",
+        "second_tab_group_boolean": true,
+        "second_tab_group_embed": {},
+        "second_tab_group_geopoint": {
+          "latitude": 0.0,
+          "longitude": -0.703125
+        }
+      }
+    ],
+    "second_tab_body": []
   }
 }

@@ -37,7 +37,11 @@ const Page = (
         }}
       >
         <code>
-          {JSON.stringify(props.data.prismicPrefixPage.data.title, null, 2)}
+          {JSON.stringify(
+            props.data.prismicPrefixKitchenSink.data.title,
+            null,
+            2,
+          )}
         </code>
       </pre>
       <hr />
@@ -58,7 +62,7 @@ export default withPrismicPreview(Page, repoName, { linkResolver })
 
 export const query = graphql`
   query($uid: String!) {
-    prismicPrefixPage(uid: { eq: $uid }) {
+    prismicPrefixKitchenSink(uid: { eq: $uid }) {
       _previewable
       uid
       data {

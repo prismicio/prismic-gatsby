@@ -4,10 +4,9 @@
   "version": "4.0.0",
   "description": "Gatsby plugin for integrating client-side Prismic previews support",
   "license": "MIT",
-  "main": "./dist/gatsby-plugin-prismic-previews.js",
-  "module": "./dist/gatsby-plugin-prismic-previews.module.js",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "style": "./dist/gatsby-plugin-prismic-previews.css",
+  "style": "./dist/index.css",
   "files": [
     "dist",
     "src",
@@ -17,8 +16,8 @@
   ],
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "microbundle build src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts --tsconfig tsconfig.build.json --jsx React.createElement --jsxFragment React.Fragment",
-    "dev": "microbundle watch src/index.ts src/gatsby-node.ts src/gatsby-browser.ts src/gatsby-ssr.ts --tsconfig tsconfig.build.json --jsx React.createElement --jsxFragment React.Fragment",
+    "build": "NODE_ENV=production concurrently -p '[{time}-{name}]' -n 'esbuild,tsc' -c 'yellow,blue' 'node ./build.mjs' 'tsc -p ./tsconfig.build.json'",
+    "dev": "NODE_ENV=development concurrently -p '[{time}-{name}]' -n 'esbuild,tsc' -c 'yellow,blue' 'node ./build.mjs -w' 'tsc -w --preserveWatchOutput -p ./tsconfig.build.json'",
     "gen": "tcm src",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "jest",

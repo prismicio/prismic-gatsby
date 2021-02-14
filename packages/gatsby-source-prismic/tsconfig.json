@@ -4,5 +4,5 @@
     "rootDir": "./",
     "resolveJsonModule": true
   },
-  "include": ["src", "test", "types"]
+  "include": ["**/*.ts", "**/*.json"]
 }

@@ -4,16 +4,6 @@ import { createSchemaCustomization } from '../src/gatsby-node'
 import { gatsbyContext } from './__fixtures__/gatsbyContext'
 import { pluginOptions } from './__fixtures__/pluginOptions'
 
-// const util = await import('util')
-// console.log(
-//   util.inspect(
-//     gatsbyContext.actions.createTypes.mock.calls
-//       .filter((x) => /Thumbnail/.test(x[0].config.name))
-//       .map((x) => x[0].config),
-//     { depth: null, colors: true },
-//   ),
-// )
-
 const nodeHelpers = createNodeHelpers({
   typePrefix: `Prismic ${pluginOptions.typePrefix}`,
   fieldPrefix: 'Prismic',
@@ -51,18 +41,288 @@ test('creates type path nodes', async () => {
     page: 'Document',
     'page.data': 'DocumentData',
     'page.data.body': 'Slices',
-    'page.data.body.images': 'Slice',
-    'page.data.body.images.items.caption': 'StructuredText',
-    'page.data.body.images.items.image': 'Image',
-    'page.data.body.images.items.orientation': 'Boolean',
-    'page.data.body.text': 'Slice',
-    'page.data.body.text.primary.text': 'StructuredText',
-    'page.data.main': 'Slices',
-    'page.data.main.news_post': 'Slice',
-    'page.data.main.news_post.primary.published_on': 'Date',
-    'page.data.meta_description': 'Text',
-    'page.data.meta_title': 'Text',
-    'page.data.parent': 'Link',
+    'page.data.body.first_option': 'Slice',
+    'page.data.body.first_option.items.first_option_repeat_boolean': 'Boolean',
+    'page.data.body.first_option.items.first_option_repeat_color': 'Color',
+    'page.data.body.first_option.items.first_option_repeat_content_relationship':
+      'Link',
+    'page.data.body.first_option.items.first_option_repeat_date': 'Date',
+    'page.data.body.first_option.items.first_option_repeat_embed': 'Embed',
+    'page.data.body.first_option.items.first_option_repeat_geopoint':
+      'GeoPoint',
+    'page.data.body.first_option.items.first_option_repeat_image': 'Image',
+    'page.data.body.first_option.items.first_option_repeat_key_text': 'Text',
+    'page.data.body.first_option.items.first_option_repeat_link': 'Link',
+    'page.data.body.first_option.items.first_option_repeat_link_to_media':
+      'Link',
+    'page.data.body.first_option.items.first_option_repeat_number': 'Number',
+    'page.data.body.first_option.items.first_option_repeat_rich_text':
+      'StructuredText',
+    'page.data.body.first_option.items.first_option_repeat_select': 'Select',
+    'page.data.body.first_option.items.first_option_repeat_timestamp':
+      'Timestamp',
+    'page.data.body.first_option.items.first_option_repeat_title':
+      'StructuredText',
+    'page.data.body.first_option.primary.first_option_nonrepeat_boolean':
+      'Boolean',
+    'page.data.body.first_option.primary.first_option_nonrepeat_color': 'Color',
+    'page.data.body.first_option.primary.first_option_nonrepeat_content_relationship':
+      'Link',
+    'page.data.body.first_option.primary.first_option_nonrepeat_date': 'Date',
+    'page.data.body.first_option.primary.first_option_nonrepeat_embed': 'Embed',
+    'page.data.body.first_option.primary.first_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'page.data.body.first_option.primary.first_option_nonrepeat_image': 'Image',
+    'page.data.body.first_option.primary.first_option_nonrepeat_key_text':
+      'Text',
+    'page.data.body.first_option.primary.first_option_nonrepeat_link': 'Link',
+    'page.data.body.first_option.primary.first_option_nonrepeat_link_to_media':
+      'Link',
+    'page.data.body.first_option.primary.first_option_nonrepeat_number':
+      'Number',
+    'page.data.body.first_option.primary.first_option_nonrepeat_rich_text':
+      'StructuredText',
+    'page.data.body.first_option.primary.first_option_nonrepeat_select':
+      'Select',
+    'page.data.body.first_option.primary.first_option_nonrepeat_timestamp':
+      'Timestamp',
+    'page.data.body.first_option.primary.first_option_nonrepeat_title':
+      'StructuredText',
+    'page.data.body.second_option': 'Slice',
+    'page.data.body.second_option.items.second_option_repeat_boolean':
+      'Boolean',
+    'page.data.body.second_option.items.second_option_repeat_color': 'Color',
+    'page.data.body.second_option.items.second_option_repeat_content_relationship':
+      'Link',
+    'page.data.body.second_option.items.second_option_repeat_date': 'Date',
+    'page.data.body.second_option.items.second_option_repeat_embed': 'Embed',
+    'page.data.body.second_option.items.second_option_repeat_geopoint':
+      'GeoPoint',
+    'page.data.body.second_option.items.second_option_repeat_image': 'Image',
+    'page.data.body.second_option.items.second_option_repeat_key_text': 'Text',
+    'page.data.body.second_option.items.second_option_repeat_link': 'Link',
+    'page.data.body.second_option.items.second_option_repeat_link_to_media':
+      'Link',
+    'page.data.body.second_option.items.second_option_repeat_number': 'Number',
+    'page.data.body.second_option.items.second_option_repeat_rich_text':
+      'StructuredText',
+    'page.data.body.second_option.items.second_option_repeat_select': 'Select',
+    'page.data.body.second_option.items.second_option_repeat_timestamp':
+      'Timestamp',
+    'page.data.body.second_option.items.second_option_repeat_title':
+      'StructuredText',
+    'page.data.body.second_option.primary.second_option_nonrepeat_boolean':
+      'Boolean',
+    'page.data.body.second_option.primary.second_option_nonrepeat_color':
+      'Color',
+    'page.data.body.second_option.primary.second_option_nonrepeat_content_relationship':
+      'Link',
+    'page.data.body.second_option.primary.second_option_nonrepeat_date': 'Date',
+    'page.data.body.second_option.primary.second_option_nonrepeat_embed':
+      'Embed',
+    'page.data.body.second_option.primary.second_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'page.data.body.second_option.primary.second_option_nonrepeat_image':
+      'Image',
+    'page.data.body.second_option.primary.second_option_nonrepeat_key_text':
+      'Text',
+    'page.data.body.second_option.primary.second_option_nonrepeat_link': 'Link',
+    'page.data.body.second_option.primary.second_option_nonrepeat_link_to_media':
+      'Link',
+    'page.data.body.second_option.primary.second_option_nonrepeat_number':
+      'Number',
+    'page.data.body.second_option.primary.second_option_nonrepeat_rich_text':
+      'StructuredText',
+    'page.data.body.second_option.primary.second_option_nonrepeat_select':
+      'Select',
+    'page.data.body.second_option.primary.second_option_nonrepeat_timestamp':
+      'Timestamp',
+    'page.data.body.second_option.primary.second_option_nonrepeat_title':
+      'StructuredText',
+    'page.data.boolean': 'Boolean',
+    'page.data.color': 'Color',
+    'page.data.content_relationship': 'Link',
+    'page.data.date': 'Date',
+    'page.data.embed': 'Embed',
+    'page.data.geopoint': 'GeoPoint',
+    'page.data.group': 'Group',
+    'page.data.group.group_boolean': 'Boolean',
+    'page.data.group.group_color': 'Color',
+    'page.data.group.group_content_relationship': 'Link',
+    'page.data.group.group_date': 'Date',
+    'page.data.group.group_embed': 'Embed',
+    'page.data.group.group_geopoint': 'GeoPoint',
+    'page.data.group.group_image': 'Image',
+    'page.data.group.group_key_text': 'Text',
+    'page.data.group.group_link': 'Link',
+    'page.data.group.group_link_to_media': 'Link',
+    'page.data.group.group_number': 'Number',
+    'page.data.group.group_rich_text': 'StructuredText',
+    'page.data.group.group_select': 'Select',
+    'page.data.group.group_timestamp': 'Timestamp',
+    'page.data.group.group_title': 'StructuredText',
+    'page.data.image': 'Image',
+    'page.data.key_text': 'Text',
+    'page.data.link': 'Link',
+    'page.data.link_to_media': 'Link',
+    'page.data.number': 'Number',
+    'page.data.rich_text': 'StructuredText',
+    'page.data.second_tab_body': 'Slices',
+    'page.data.second_tab_body.second_tab_first_option': 'Slice',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_boolean':
+      'Boolean',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_color':
+      'Color',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_content_relationship':
+      'Link',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_date':
+      'Date',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_embed':
+      'Embed',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_geopoint':
+      'GeoPoint',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_image':
+      'Image',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_key_text':
+      'Text',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_link':
+      'Link',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_link_to_media':
+      'Link',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_number':
+      'Number',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_rich_text':
+      'StructuredText',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_select':
+      'Select',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_timestamp':
+      'Timestamp',
+    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_title':
+      'StructuredText',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_boolean':
+      'Boolean',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_color':
+      'Color',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_content_relationship':
+      'Link',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_date':
+      'Date',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_embed':
+      'Embed',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_image':
+      'Image',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_key_text':
+      'Text',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_link':
+      'Link',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_link_to_media':
+      'Link',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_number':
+      'Number',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_rich_text':
+      'StructuredText',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_select':
+      'Select',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_timestamp':
+      'Timestamp',
+    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_title':
+      'StructuredText',
+    'page.data.second_tab_body.second_tab_second_option': 'Slice',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_boolean':
+      'Boolean',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_color':
+      'Color',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_content_relationship':
+      'Link',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_date':
+      'Date',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_embed':
+      'Embed',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_geopoint':
+      'GeoPoint',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_image':
+      'Image',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_key_text':
+      'Text',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_link':
+      'Link',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_link_to_media':
+      'Link',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_number':
+      'Number',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_rich_text':
+      'StructuredText',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_select':
+      'Select',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_timestamp':
+      'Timestamp',
+    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_title':
+      'StructuredText',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_boolean':
+      'Boolean',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_color':
+      'Color',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_content_relationship':
+      'Link',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_date':
+      'Date',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_embed':
+      'Embed',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_image':
+      'Image',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_key_text':
+      'Text',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_link':
+      'Link',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_link_to_media':
+      'Link',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_number':
+      'Number',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_rich_text':
+      'StructuredText',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_select':
+      'Select',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_timestamp':
+      'Timestamp',
+    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_title':
+      'StructuredText',
+    'page.data.second_tab_boolean': 'Boolean',
+    'page.data.second_tab_color': 'Color',
+    'page.data.second_tab_content_relationship': 'Link',
+    'page.data.second_tab_date': 'Date',
+    'page.data.second_tab_embed': 'Embed',
+    'page.data.second_tab_geopoint': 'GeoPoint',
+    'page.data.second_tab_group': 'Group',
+    'page.data.second_tab_group.second_tab_group_boolean': 'Boolean',
+    'page.data.second_tab_group.second_tab_group_color': 'Color',
+    'page.data.second_tab_group.second_tab_group_content_relationship': 'Link',
+    'page.data.second_tab_group.second_tab_group_date': 'Date',
+    'page.data.second_tab_group.second_tab_group_embed': 'Embed',
+    'page.data.second_tab_group.second_tab_group_geopoint': 'GeoPoint',
+    'page.data.second_tab_group.second_tab_group_image': 'Image',
+    'page.data.second_tab_group.second_tab_group_key_text': 'Text',
+    'page.data.second_tab_group.second_tab_group_link': 'Link',
+    'page.data.second_tab_group.second_tab_group_link_to_media': 'Link',
+    'page.data.second_tab_group.second_tab_group_number': 'Number',
+    'page.data.second_tab_group.second_tab_group_rich_text': 'StructuredText',
+    'page.data.second_tab_group.second_tab_group_select': 'Select',
+    'page.data.second_tab_group.second_tab_group_timestamp': 'Timestamp',
+    'page.data.second_tab_group.second_tab_group_title': 'StructuredText',
+    'page.data.second_tab_image': 'Image',
+    'page.data.second_tab_key_text': 'Text',
+    'page.data.second_tab_link': 'Link',
+    'page.data.second_tab_link_to_media': 'Link',
+    'page.data.second_tab_number': 'Number',
+    'page.data.second_tab_rich_text': 'StructuredText',
+    'page.data.second_tab_select': 'Select',
+    'page.data.second_tab_timestamp': 'Timestamp',
+    'page.data.second_tab_title': 'StructuredText',
+    'page.data.select': 'Select',
+    'page.data.timestamp': 'Timestamp',
     'page.data.title': 'StructuredText',
   })
 })

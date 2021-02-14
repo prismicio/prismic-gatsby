@@ -4,7 +4,7 @@ import {
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
 } from '../../src/constants'
 import { PluginOptions, PrismicSchema } from '../../src/types'
-import schemaFixture from './schema.json'
+import kitchenSinkSchema from './kitchenSinkSchema.json'
 
 export const pluginOptions: PluginOptions = {
   repositoryName: 'qwerty',
@@ -12,7 +12,7 @@ export const pluginOptions: PluginOptions = {
   apiEndpoint: 'https://qwerty.cdn.prismic.io/api/v2',
   typePrefix: 'prefix',
   schemas: {
-    page: schemaFixture as PrismicSchema,
+    page: kitchenSinkSchema as PrismicSchema,
   },
   lang: DEFAULT_LANG,
   webhookSecret: 'secret',

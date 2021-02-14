@@ -11,7 +11,7 @@ const repoName = process.env.GATSBY_PRISMIC_REPOSITORY_NAME as string
 
 type PreviewPageProps = PageProps & WithPrismicPreviewResolverProps
 
-const PreviewPage = (props: PreviewPageProps) => {
+const PreviewPage = (props: PreviewPageProps): JSX.Element => {
   const propsStr = JSON.stringify(props, null, 2)
 
   return (
