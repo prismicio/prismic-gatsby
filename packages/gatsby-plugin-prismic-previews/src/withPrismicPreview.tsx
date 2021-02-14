@@ -4,9 +4,10 @@ import * as prismic from 'ts-prismic'
 import * as IOE from 'fp-ts/IOEither'
 import * as IO from 'fp-ts/IO'
 import { pipe } from 'fp-ts/function'
+import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
-import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
+import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
 import { getCookie } from './lib/getCookie'
 
 import { UnknownRecord } from './types'
@@ -47,8 +48,10 @@ type LocalState =
 const isValidToken = (repositoryName: string): IO.IO<boolean> =>
   pipe(
     getCookie(prismic.cookie.preview),
-    IOE.chain((token) =>
-      IOE.fromEither(validatePreviewTokenForRepository(repositoryName, token)),
+    IOE.chain((previewRef) =>
+      IOE.fromEither(
+        validatePreviewRefForRepository(repositoryName, previewRef),
+      ),
     ),
     IOE.getOrElse(() => IO.of(false as boolean)),
   )
@@ -85,8 +88,8 @@ export const withPrismicPreview = <
       switch (bootstrapState.state) {
         case 'FAILED': {
           if (
-            bootstrapState.error instanceof Response &&
-            bootstrapState.error.status === 401 &&
+            bootstrapState.error instanceof ky.HTTPError &&
+            bootstrapState.error.response.status === 401 &&
             contextState.pluginOptions.promptForAccessToken
           ) {
             // If we encountered a 401 status, we don't have the correct access

@@ -3,7 +3,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
-import axios from 'redaxios'
+import ky from 'ky'
 
 import { getCookie } from './getCookie'
 
@@ -24,8 +24,7 @@ const getMasterRef: RTE.ReaderTaskEither<GetRefEnv, Error, string> = pipe(
   RTE.bind('repository', (env) =>
     RTE.fromTaskEither(
       TE.tryCatch(
-        async () =>
-          (await axios(env.repositoryURL)).data as prismic.Response.Repository,
+        () => ky(env.repositoryURL).json<prismic.Response.Repository>(),
         (error) => error as Error,
       ),
     ),

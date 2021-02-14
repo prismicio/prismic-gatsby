@@ -6,12 +6,12 @@ import * as E from 'fp-ts/Either'
 import * as A from 'fp-ts/Array'
 import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
-import axios from 'redaxios'
+import ky from 'ky'
 
 import { BuildQueryParamsEnv, buildQueryParams } from './lib/buildQueryParams'
 import { getCookie } from './lib/getCookie'
 import { getURLSearchParam } from './lib/getURLSearchParam'
-// import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
+import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
 
 import { LinkResolver } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
@@ -103,25 +103,19 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
 
   // Only continue if this is a preview session, which is determined by the
   // presence of the Prismic preview cookie.
-  RTE.bindW('token', () =>
+  RTE.bindW('previewRef', () =>
     pipe(
       RTE.fromIOEither(getCookie(prismic.cookie.preview)),
-      RTE.mapLeft(
-        () => new Error('Not a preview session. No preview cookie detected.'),
-      ),
+      RTE.mapLeft(() => new Error('preview cookie not present')),
     ),
   ),
 
-  // TODO: Support new style ref in addition to old URL style:
-  //
-  // {%22_tracker%22:%22gjrM9Kx7%22%2C%22gatsby-source-prismic-v4.prismic.io%22:{%22preview%22:%22https://gatsby-source-prismic-v4.prismic.io/previews/YCiXchUAACMAxgIi?websitePreviewId=YCig0BUAACYAxiu-%22}}
-  //
-  // // Only continue if this preview session is for this repository.
-  // RTE.chainFirst((env) =>
-  //   RTE.fromEither(
-  //     validatePreviewTokenForRepository(env.repositoryName, env.token),
-  //   ),
-  // ),
+  // Only continue if this preview session is for this repository.
+  RTE.chainFirst((env) =>
+    RTE.fromEither(
+      validatePreviewRefForRepository(env.repositoryName, env.previewRef),
+    ),
+  ),
 
   // Start resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
@@ -131,7 +125,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
     RTE.of(
       prismic.buildQueryURL(
         env.apiEndpoint,
-        env.token,
+        env.previewRef,
         prismic.predicate.at('document.id', env.documentId),
         env.params,
       ),
@@ -140,7 +134,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
   RTE.bind('res', (env) =>
     RTE.fromTaskEither(
       TE.tryCatch(
-        async () => (await axios(env.url)).data as prismic.Response.Query,
+        () => ky(env.url).json<prismic.Response.Query>(),
         (error) => error as Error,
       ),
     ),

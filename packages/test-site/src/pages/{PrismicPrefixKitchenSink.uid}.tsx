@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { graphql, PageProps } from 'gatsby'
+import { graphql, PageProps, Link } from 'gatsby'
 import {
   usePrismicPreviewAccessToken,
   withPrismicPreview,
@@ -25,6 +25,15 @@ const Page = (
 
   return (
     <div>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          {' '}
+          <Link to="/about">About</Link>
+        </li>
+      </ul>
       <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
         <code>{props.prismicPreviewState}</code>
       </pre>

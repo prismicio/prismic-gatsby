@@ -17,6 +17,7 @@ await esbuild.build({
   ],
   outdir: path.resolve(__dirname, './dist'),
   bundle: true,
+  sourcemap: true,
   platform: 'node',
   target: 'node10.23',
   minify: process.env.NODE_ENV === 'production',

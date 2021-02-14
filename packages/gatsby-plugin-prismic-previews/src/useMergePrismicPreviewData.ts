@@ -15,6 +15,9 @@ import { PrismicContextState } from './context'
 const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
   nodeOrLeaf: unknown,
 ): unknown => {
+  // TODO: Need to traverse every property in the object. If it doesn't include
+  // _previewable, then we need to check every property inside for something
+  // that does.
   if (isPlainObject(nodeOrLeaf)) {
     const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
       | string

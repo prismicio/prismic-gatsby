@@ -116,6 +116,12 @@ const proxifyRecord = <T extends UnknownRecord>(path: string[], input: T) => (
       }
 
       switch (type) {
+        case gatsbyPrismic.PrismicSpecialType.DocumentData: {
+          const propValue = target[prop] as Record<string, unknown>
+
+          return proxifyRecord([...path, prop], propValue)(env)
+        }
+
         case gatsbyPrismic.PrismicFieldType.Link: {
           const propValue = target[prop] as gatsbyPrismic.PrismicAPILinkField
           const enhancedPropValue = {

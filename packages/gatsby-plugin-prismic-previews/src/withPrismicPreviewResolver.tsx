@@ -2,9 +2,10 @@ import * as React from 'react'
 import * as gatsby from 'gatsby'
 import * as E from 'fp-ts/Either'
 import { pipe } from 'fp-ts/function'
+import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
-import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
+import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 
 import {
@@ -62,7 +63,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
         getURLSearchParam('token'),
         E.fromOption(() => new Error('token URL parameter not present')),
         E.chain((token) =>
-          validatePreviewTokenForRepository(repositoryName, token),
+          validatePreviewRefForRepository(repositoryName, token),
         ),
         E.getOrElse(() => false),
       )
@@ -85,8 +86,8 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 
         case 'FAILED': {
           if (
-            resolverState.error instanceof Response &&
-            resolverState.error.status === 401 &&
+            resolverState.error instanceof ky.HTTPError &&
+            resolverState.error.response.status === 401 &&
             contextState.pluginOptions.promptForAccessToken
           ) {
             // If we encountered a 401 status, we don't have the correct access

@@ -13,7 +13,7 @@ const pkg = JSON.parse(
 const common = {
   outdir: path.resolve(__dirname, './dist'),
   bundle: true,
-  sourcemap: 'external',
+  sourcemap: true,
   minify: process.env.NODE_ENV === 'production',
   watch: isWatchMode,
   external: [

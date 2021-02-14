@@ -2,7 +2,7 @@ import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import { pipe } from 'fp-ts/function'
-import axios from 'redaxios'
+import ky from 'ky'
 
 import { QUERY_PAGE_SIZE } from '../constants'
 
@@ -32,7 +32,7 @@ export const aggregateQuery = (
     RTE.bind('res', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
-          async () => (await axios(scope.url)).data as prismic.Response.Query,
+          () => ky(scope.url).json<prismic.Response.Query>(),
           (error) => error as Error,
         ),
       ),

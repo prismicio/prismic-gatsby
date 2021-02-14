@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import * as prismic from 'ts-prismic'
+import * as cookie from 'es-cookie'
 import nock from 'nock'
 import 'cross-fetch/polyfill'
 
@@ -48,6 +49,8 @@ test('fails if documentId is not in URL', async () => {
   const options = { wrapper: Provider }
   const config = createConfig()
 
+  cookie.set(prismic.cookie.preview, 'token')
+
   const { result, waitForNextUpdate } = renderHook(
     () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
     options,
@@ -64,11 +67,11 @@ test('fails if documentId is not in URL', async () => {
   )
 })
 
-test('fails if token is not in URL', async () => {
+test('fails if token is not in cookies', async () => {
   window.history.replaceState(
     {},
     '',
-    createPreviewURL({ documentId: 'documentId' }),
+    createPreviewURL({ documentId: 'documentId', token: 'token' }),
   )
 
   const pluginOptions = createPluginOptions()
@@ -88,13 +91,14 @@ test('fails if token is not in URL', async () => {
 
   expect(result.current[0].state).toBe('FAILED')
   expect(result.current[0].error?.message).toMatch(
-    /token URL parameter not present/i,
+    /preview cookie not present/i,
   )
 })
 
 test('fails if token does not match repository', async () => {
   const pluginOptions = createPluginOptions()
   const token = encodeURIComponent(`https://no-match.prismic.io/previews/token`)
+  cookie.set(prismic.cookie.preview, token)
 
   window.history.replaceState(
     {},
@@ -145,6 +149,7 @@ test('resolves a path using the link resolver', async () => {
     })
 
   window.history.replaceState({}, '', createPreviewURL({ token, documentId }))
+  cookie.set(prismic.cookie.preview, token)
 
   const { result, waitForValueToChange } = renderHook(
     () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),

@@ -10,13 +10,16 @@ import { GLOBAL_TYPE_PREFIX } from 'gatsby-source-prismic'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import md5 from 'tiny-hashes/md5'
 
+import { BuildTypePathsStoreFilenameEnv } from './lib/buildTypePathsStoreFilename'
+import { fetchTypePathsStore } from './lib/fetchTypePaths'
 import { getCookie } from './lib/getCookie'
-import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
+import { proxifyDocumentNodeInput } from './lib/proxifyDocumentNodeInput'
 import {
   queryAllDocuments,
   QueryAllDocumentsEnv,
 } from './lib/queryAllDocuments'
-import { proxifyDocumentNodeInput } from './lib/proxifyDocumentNodeInput'
+import { serializePath } from './lib/serializePath'
+import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
 
 import {
   HTMLSerializer,
@@ -28,9 +31,6 @@ import {
 } from './types'
 import { PrismicContextActionType } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-import { serializePath } from './lib/serializePath'
-import { fetchTypePathsStore } from './lib/fetchTypePaths'
-import { BuildTypePathsStoreFilenameEnv } from './lib/buildTypePathsStoreFilename'
 
 export type UsePrismicPreviewBootstrapFn = () => void
 
@@ -123,16 +123,14 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   RTE.bindW('token', () =>
     pipe(
       RTE.fromIOEither(getCookie(prismic.cookie.preview)),
-      RTE.mapLeft(
-        () => new Error('Not a preview session. No preview cookie detected.'),
-      ),
+      RTE.mapLeft(() => new Error('preview cookie not present')),
     ),
   ),
 
   // Only continue if this preview session is for this repository.
   RTE.chainFirstW((env) =>
     RTE.fromEither(
-      validatePreviewTokenForRepository(env.repositoryName, env.token),
+      validatePreviewRefForRepository(env.repositoryName, env.token),
     ),
   ),
 
@@ -192,6 +190,7 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   ),
   RTE.chainFirst((env) => RTE.fromIO(env.appendNodes(env.nodes))),
   RTE.bindW('typePathsStore', () => fetchTypePathsStore),
+  RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
 
   // End bootstrap.
   RTE.chainFirst((env) => RTE.fromIO(env.bootstrapped)),

@@ -5462,9 +5462,9 @@ es6-weak-map@^2.0.3:
     es6-symbol "^3.1.1"
 
 esbuild@^0.8.45:
-  version "0.8.45"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.45.tgz#80d57b6b02ed20e05dc0164243b10fc60cf20fc0"
-  integrity sha512-AhR+h/Kat9QMssi0rSJIei0yR+dJ0DQ5aDqnZy4VLu9kOBHdJh8vDSE2XzUlwnm4umvMFnfQTELZlsH7Zmvksw==
+  version "0.8.46"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.46.tgz#8fc7230ce3019b12e2553399f0c03875a729c26b"
+  integrity sha512-xck9sXNCNmjDHCCfxTCyhKTiFuEBweh+IDAhMLOJI990v1Fzii6MyIkT1LbkvjgoVgPX2SK1kpi5eZVGNrl8yg==
 
 escalade@^3.1.1:
   version "3.1.1"
@@ -9254,6 +9254,11 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
+ky@^0.26.0:
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/ky/-/ky-0.26.0.tgz#031cce422d4c4c15e7ac5fa0cfc176ea74260bf5"
+  integrity sha512-j2YwAGYuD/XXoyzzUYn1N9NEGoAukkONMea2uLanMPWTqumkwme9eWgf2SjhRKNRb/60FDYStJYL582dbbt9Mw==
+
 language-subtag-registry@~0.3.2:
   version "0.3.21"
   resolved "https://registry.yarnpkg.com/language-subtag-registry/-/language-subtag-registry-0.3.21.tgz#04ac218bea46f04cb039084602c6da9e788dd45a"
@@ -12080,11 +12085,6 @@ recursive-readdir@2.2.1:
   integrity sha1-kO8jHQd4xc4JPJpI105cVCLROpk=
   dependencies:
     minimatch "3.0.3"
-
-redaxios@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/redaxios/-/redaxios-0.4.1.tgz#a46fd53b533ed76d8619d9e6d595b95543855195"
-  integrity sha512-+Jhh1j8/H0KBro+Hih/MrDEJ1PICaU10JA6iu5b3+uvgRI+5n2M7qpMNXq7eC/0fspP0tTq49ONXlGWFdRoNLg==
 
 redent@^1.0.0:
   version "1.0.0"
