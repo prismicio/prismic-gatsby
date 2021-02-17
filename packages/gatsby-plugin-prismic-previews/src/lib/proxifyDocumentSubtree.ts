@@ -4,6 +4,7 @@ import * as PrismicDOM from 'prismic-dom'
 import * as RE from 'fp-ts/ReaderEither'
 import * as E from 'fp-ts/Either'
 import * as O from 'fp-ts/Option'
+import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
 
 import {
@@ -50,6 +51,27 @@ const proxyGetProgram = <T extends UnknownRecord>(
           return proxifyDocumentSubtree2(
             env.propPath,
             env.propValue as UnknownRecord,
+          )
+        }
+
+        case gatsbyPrismic.PrismicFieldType.Group:
+        case gatsbyPrismic.PrismicFieldType.Slices: {
+          return pipe(
+            env.propValue,
+            RE.fromPredicate(
+              (propValue): propValue is UnknownRecord[] =>
+                Array.isArray(propValue),
+              () =>
+                new Error(
+                  'Prop value does not match type declared in type path',
+                ),
+            ),
+            RE.map(
+              A.map((propValueElement) =>
+                proxifyDocumentSubtree2(env.propPath, propValueElement),
+              ),
+            ),
+            RE.chainW(RE.sequenceArray),
           )
         }
 
