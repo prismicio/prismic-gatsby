@@ -49,7 +49,10 @@ const buildSliceChoiceType = (
           ? identity
           : R.insertAt(
               'items',
-              buildSchemaRecordType([...path, 'items'], schema.repeat),
+              buildSchemaRecordType([...path, 'items'], schema.repeat, [
+                ...path,
+                'item',
+              ]),
             ),
         R.sequence(RTE.readerTaskEither),
         RTE.chainFirst(

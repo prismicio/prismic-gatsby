@@ -814,3 +814,123 @@ describe('image fields', () => {
     expect(res).toBe(null)
   })
 })
+
+describe('slices', () => {
+  test('creates types for each slice choice', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, {
+      ...pluginOptions,
+      schemas: {
+        page: {
+          Main: {
+            slices: {
+              type: 'Slices',
+              config: {
+                choices: {
+                  foo: {
+                    type: 'Slice',
+                    repeat: {
+                      repeat_text: { type: 'Text' },
+                    },
+                    'non-repeat': {
+                      non_repeat_text: { type: 'Text' },
+                    },
+                  },
+                  bar: {
+                    type: 'Slice',
+                    repeat: {
+                      repeat_text: { type: 'Text' },
+                    },
+                    'non-repeat': {
+                      non_repeat_text: { type: 'Text' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'UNION',
+      config: {
+        name: 'PrismicPrefixPageDataSlicesSlicesType',
+        types: [
+          'PrismicPrefixPageDataSlicesBar',
+          'PrismicPrefixPageDataSlicesFoo',
+        ],
+        resolveType: expect.any(Function),
+      },
+    })
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixPageDataSlicesFoo',
+        fields: {
+          items: '[PrismicPrefixPageDataSlicesFooItem]',
+          primary: 'PrismicPrefixPageDataSlicesFooPrimary',
+          slice_type: 'String!',
+          slice_label: 'String',
+        },
+        extensions: { infer: false },
+      },
+    })
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixPageDataSlicesFooPrimary',
+        fields: {
+          non_repeat_text: 'String',
+        },
+      },
+    })
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixPageDataSlicesFooItem',
+        fields: {
+          repeat_text: 'String',
+        },
+      },
+    })
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixPageDataSlicesBar',
+        fields: {
+          items: '[PrismicPrefixPageDataSlicesBarItem]',
+          primary: 'PrismicPrefixPageDataSlicesBarPrimary',
+          slice_type: 'String!',
+          slice_label: 'String',
+        },
+        extensions: { infer: false },
+      },
+    })
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixPageDataSlicesBarPrimary',
+        fields: {
+          non_repeat_text: 'String',
+        },
+      },
+    })
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixPageDataSlicesBarItem',
+        fields: {
+          repeat_text: 'String',
+        },
+      },
+    })
+  })
+})

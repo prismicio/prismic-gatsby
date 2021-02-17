@@ -1,6 +1,9 @@
-// This file must export the individual Gatsby SSR APIs in order for Gatsby to
-// detect them. Compare this to the export method employed in
-// `gatsby-browser.js`.
+/**
+ * APIs exported from `gatsby-ssr.ts` must be re-exported manually. Gatsby will
+ * not detect the exports if the module is re-exported as a whole.
+ */
+
 const gatsbySSR = require('./dist/gatsby-ssr')
 
+exports.wrapRootElement = gatsbySSR.wrapRootElement
 exports.onRenderBody = gatsbySSR.onRenderBody
