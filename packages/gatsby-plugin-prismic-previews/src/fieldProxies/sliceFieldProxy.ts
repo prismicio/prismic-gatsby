@@ -5,8 +5,8 @@ import { pipe } from 'fp-ts/function'
 
 import {
   proxyDocumentSubtree,
-  ProxifyDocumentSubtreeEnv,
-} from '../lib/proxifyDocumentSubtree'
+  ProxyDocumentSubtreeEnv,
+} from '../lib/proxyDocumentSubtree'
 
 export const valueRefinement = (
   value: unknown,
@@ -16,9 +16,9 @@ export const valueRefinement = (
 export const proxyValue = (
   path: string[],
   fieldValue: gatsbyPrismic.PrismicAPISliceField,
-): RE.ReaderEither<ProxifyDocumentSubtreeEnv, Error, unknown> =>
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
-    RE.ask<ProxifyDocumentSubtreeEnv>(),
+    RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bind('primary', () =>
       proxyDocumentSubtree([...path, 'primary'], fieldValue.primary),
     ),

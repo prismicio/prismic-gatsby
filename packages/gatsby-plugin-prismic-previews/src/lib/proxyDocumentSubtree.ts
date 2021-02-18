@@ -23,7 +23,7 @@ import * as structuredTextFieldProxy from '../fieldProxies/structuredTextFieldPr
 import { sprintf } from './sprintf'
 import { serializePath } from './serializePath'
 
-export interface ProxifyDocumentSubtreeEnv {
+export interface ProxyDocumentSubtreeEnv {
   getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType | undefined
   getNode(id: string): PrismicAPIDocumentNodeInput | undefined
   linkResolver: LinkResolver
@@ -32,14 +32,13 @@ export interface ProxifyDocumentSubtreeEnv {
   imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
 }
 
-// TODO: Test if this works for arrays like Group and Slice fields.
 const proxyGetProgram = <T extends UnknownRecord>(
   path: string[],
   target: T,
   prop: string,
-): RE.ReaderEither<ProxifyDocumentSubtreeEnv, Error, unknown> =>
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
-    RE.ask<ProxifyDocumentSubtreeEnv>(),
+    RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bind('propPath', () => RE.of([...path, prop])),
     RE.bind('propValue', () => RE.of(target[prop as string])),
     RE.bindW('type', (env) =>
@@ -183,9 +182,9 @@ const proxyGetProgram = <T extends UnknownRecord>(
 export const proxyDocumentSubtree = (
   path: string[],
   input: unknown,
-): RE.ReaderEither<ProxifyDocumentSubtreeEnv, Error, unknown> =>
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
-    RE.ask<ProxifyDocumentSubtreeEnv>(),
+    RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.chainW((env) =>
       pipe(
         input,

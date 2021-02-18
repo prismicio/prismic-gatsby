@@ -5,8 +5,8 @@ import { pipe } from 'fp-ts/function'
 import { UnknownRecord } from '../types'
 import {
   proxyDocumentSubtree,
-  ProxifyDocumentSubtreeEnv,
-} from '../lib/proxifyDocumentSubtree'
+  ProxyDocumentSubtreeEnv,
+} from '../lib/proxyDocumentSubtree'
 
 export const valueRefinement = (value: unknown): value is UnknownRecord[] =>
   Array.isArray(value) &&
@@ -15,7 +15,7 @@ export const valueRefinement = (value: unknown): value is UnknownRecord[] =>
 export const proxyValue = (
   path: string[],
   fieldValue: UnknownRecord[],
-): RE.ReaderEither<ProxifyDocumentSubtreeEnv, Error, unknown> =>
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
     fieldValue,
     A.map((fieldValueElement) => proxyDocumentSubtree(path, fieldValueElement)),

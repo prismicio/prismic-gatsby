@@ -77,7 +77,7 @@ test('fails if not a preview session - cookie is not set', async () => {
   const state = result.current[0]
 
   expect(state.state).toBe('FAILED')
-  expect(state.error?.message).toMatch(/not a preview session/i)
+  expect(state.error?.message).toMatch(/preview cookie not present/i)
 })
 
 test('fails if not for this repository', async () => {

@@ -4,7 +4,7 @@ import * as RE from 'fp-ts/ReaderEither'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
 
-import { ProxifyDocumentSubtreeEnv } from '../lib/proxifyDocumentSubtree'
+import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 import { sprintf } from '../lib/sprintf'
 
 export const valueRefinement = (
@@ -19,12 +19,12 @@ export const valueRefinement = (
 export const proxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPIImageField,
 ): RE.ReaderEither<
-  ProxifyDocumentSubtreeEnv,
+  ProxyDocumentSubtreeEnv,
   Error,
   gatsbyPrismic.PrismicAPIImageField
 > =>
   pipe(
-    RE.ask<ProxifyDocumentSubtreeEnv>(),
+    RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bindW('url', () =>
       pipe(
         O.fromNullable(fieldValue.url),

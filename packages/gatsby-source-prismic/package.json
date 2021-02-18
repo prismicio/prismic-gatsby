@@ -47,8 +47,6 @@
   },
   "devDependencies": {
     "@types/prismic-dom": "^2.1.1",
-    "gatsby-image": "^2.11.0",
-    "gatsby-plugin-utils": "^0.9.0",
-    "nock": "^13.0.7"
+    "gatsby-image": "^2.11.0"
   }
 }

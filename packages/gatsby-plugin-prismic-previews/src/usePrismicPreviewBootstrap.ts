@@ -14,7 +14,7 @@ import md5 from 'tiny-hashes/md5'
 import { BuildTypePathsStoreFilenameEnv } from './lib/buildTypePathsStoreFilename'
 import { fetchTypePathsStore } from './lib/fetchTypePaths'
 import { getCookie } from './lib/getCookie'
-import { proxifyDocumentNodeInput } from './lib/proxifyDocumentNodeInput'
+import { proxyDocumentNodeInput } from './lib/proxyDocumentNodeInput'
 import {
   queryAllDocuments,
   QueryAllDocumentsEnv,
@@ -176,7 +176,7 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
             ) as PrismicAPIDocumentNodeInput,
         ),
       ),
-      RTE.map(A.map(proxifyDocumentNodeInput)),
+      RTE.map(A.map(proxyDocumentNodeInput)),
       RTE.map(A.sequence(RE.readerEither)),
       RTE.chainW(RTE.fromReaderEither),
     ),

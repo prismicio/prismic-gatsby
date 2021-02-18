@@ -3,7 +3,7 @@ import * as PrismicDOM from 'prismic-dom'
 import * as RE from 'fp-ts/ReaderEither'
 import { pipe } from 'fp-ts/function'
 
-import { ProxifyDocumentSubtreeEnv } from '../lib/proxifyDocumentSubtree'
+import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 
 export const valueRefinement = (
   value: unknown,
@@ -19,13 +19,9 @@ interface StructuredTextProxyValue {
 
 export const proxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPIStructuredTextField,
-): RE.ReaderEither<
-  ProxifyDocumentSubtreeEnv,
-  Error,
-  StructuredTextProxyValue
-> =>
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, StructuredTextProxyValue> =>
   pipe(
-    RE.ask<ProxifyDocumentSubtreeEnv>(),
+    RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bind('html', (env) =>
       RE.of(
         PrismicDOM.RichText.asHtml(

@@ -47,7 +47,7 @@ export const buildLinkFieldConfig: FieldConfigCreator = (path) =>
               source.type &&
               source.id &&
               !source.isBroken
-                ? deps.nodeHelpers.createNodeId(source.id)
+                ? deps.nodeHelpers.createNodeId(source.type, source.id)
                 : undefined,
             extensions: { link: {} },
           },

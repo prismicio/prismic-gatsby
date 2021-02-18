@@ -4,7 +4,7 @@ import * as RE from 'fp-ts/ReaderEither'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
 
-import { ProxifyDocumentSubtreeEnv } from '../lib/proxifyDocumentSubtree'
+import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 
 export const valueRefinement = (
   value: unknown,
@@ -14,12 +14,12 @@ export const valueRefinement = (
 export const proxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPILinkField,
 ): RE.ReaderEither<
-  ProxifyDocumentSubtreeEnv,
+  ProxyDocumentSubtreeEnv,
   Error,
   gatsbyPrismic.PrismicAPILinkField
 > =>
   pipe(
-    RE.ask<ProxifyDocumentSubtreeEnv>(),
+    RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bind('url', (env) =>
       RE.of(PrismicDOM.Link.url(fieldValue, env.linkResolver)),
     ),
