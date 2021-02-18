@@ -8,6 +8,8 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { Dependencies, FieldConfigCreator, PrismicFieldType } from '../types'
 
+// TODO: This field contains an ID field after normalization. We need to link
+// this ID to the node via the `link` extension.
 export const buildEmbedFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),

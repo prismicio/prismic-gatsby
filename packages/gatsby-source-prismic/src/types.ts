@@ -8,7 +8,10 @@ import { NodeHelpers } from 'gatsby-node-helpers'
 
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 
-type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<K, unknown>
+export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
+  K,
+  unknown
+>
 
 export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
