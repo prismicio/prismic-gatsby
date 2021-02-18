@@ -97,6 +97,22 @@ plugins: [
         // Your list of links
       ],
 
+      // Set a function to import documents with Primic predicates.
+      // Only documents matching your predicates will be sourced.
+      // For each predicate in the list, a request is made in parallel.
+      // The default behavior is a single request with an empty predicate to query all documents.
+      // See: https://prismic.io/docs/javascript/query-the-api/query-predicates-reference
+      //
+      // Example:
+      // This will only the import documents of the type 'bar' OR linked to the tag 'foo'
+      //
+      // fetchPredicates: Predicates => ([
+      //   Predicates.at(document.tags, ['foo']),
+      //   Predicates.at(document.type, 'bar')
+      // ]),
+      //      
+      fetchPredicates: Predicates => ([`[]`]),
+
       // Set an HTML serializer function used to process formatted content.
       // Fields with rich text formatting use this function to generate the
       // correct HTML.

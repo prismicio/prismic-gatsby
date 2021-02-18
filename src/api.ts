@@ -1,4 +1,4 @@
-import { getApi } from 'prismic-javascript'
+import { getApi, Predicates } from 'prismic-javascript'
 
 import { msg, chunk } from './utils'
 import { API_PAGE_SIZE } from './constants'
@@ -28,6 +28,7 @@ export const createClient = async (
 
 const pagedGet = async (
   client: PrismicResolvedApi,
+  query: string,
   queryOptions: QueryOptions,
   page: number,
   pageSize: number,
@@ -36,13 +37,18 @@ const pagedGet = async (
 ): Promise<PrismicDocument[]> => {
   reporter.verbose(msg(`fetching documents page ${page}`))
 
-  const response = await client.query([], { ...queryOptions, page, pageSize })
+  const response = await client.query(query, {
+    ...queryOptions,
+    page,
+    pageSize,
+  })
 
   for (const doc of response.results) documents.push(doc)
 
   if (page * pageSize < response.total_results_size)
     return await pagedGet(
       client,
+      query,
       queryOptions,
       page + 1,
       pageSize,
@@ -62,6 +68,7 @@ export const fetchAllDocuments = async (
     releaseID,
     accessToken,
     fetchLinks,
+    fetchPredicates = () => [`[]`],
     lang,
   } = pluginOptions
   const { reporter } = gatsbyContext
@@ -84,7 +91,14 @@ export const fetchAllDocuments = async (
   if (fetchLinks) queryOptions.fetchLinks = fetchLinks
   if (lang) queryOptions.lang = lang
 
-  return await pagedGet(client, queryOptions, 1, API_PAGE_SIZE, [], reporter)
+  const requests = fetchPredicates(Predicates).map((query) =>
+    pagedGet(client, query, queryOptions, 1, API_PAGE_SIZE, [], reporter),
+  )
+
+  const groupDocuments = await Promise.all(requests)
+  const documents = groupDocuments.reduce((acc, docs) => acc.concat(docs), [])
+
+  return documents
 }
 
 export async function fetchDocumentsByIds(

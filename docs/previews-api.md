@@ -127,4 +127,5 @@ Previews _will not_ function properly since `previewData` will not change
 
 ### Preview links
 
-Share links from Prismic Toolbar are currently unsupported. See [#276](https://github.com/angeloashmore/gatsby-source-prismic/issues/276).
+Share links from Prismic Toolbar are currently unsupported. See
+[#276](https://github.com/angeloashmore/gatsby-source-prismic/issues/276).

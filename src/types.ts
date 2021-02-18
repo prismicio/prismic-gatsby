@@ -6,6 +6,7 @@ import {
 } from 'gatsby'
 import { FixedObject, FluidObject } from 'gatsby-image'
 import { Document as PrismicDocument } from 'prismic-javascript/d.ts/documents'
+import PrismicPredicates from 'prismic-javascript/d.ts/Predicates'
 import * as PrismicDOM from 'prismic-dom'
 import { ImgixUrlParams } from 'gatsby-plugin-imgix'
 
@@ -359,6 +360,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   linkResolver?: PluginLinkResolver
   htmlSerializer?: PluginHTMLSerializer
   fetchLinks?: string[]
+  fetchPredicates?: (predicates: typeof PrismicPredicates) => string[]
   schemas: Schemas
   lang?: string
   shouldDownloadImage?: ShouldDownloadImage
