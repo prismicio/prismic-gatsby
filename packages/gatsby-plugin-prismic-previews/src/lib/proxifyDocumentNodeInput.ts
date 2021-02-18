@@ -1,14 +1,15 @@
+import * as RE from 'fp-ts/ReaderEither'
+
 import { PrismicAPIDocumentNodeInput } from '../types'
 
 import {
-  proxifyDocumentSubtree,
+  proxyDocumentSubtree,
   ProxifyDocumentSubtreeEnv,
 } from './proxifyDocumentSubtree'
 
 export type ProxifyDocumentNodeInputEnv = ProxifyDocumentSubtreeEnv
 
-// TODO: Refactor to use ReaderTaskEither
 export const proxifyDocumentNodeInput = <T extends PrismicAPIDocumentNodeInput>(
   nodeInput: T,
-) => (env: ProxifyDocumentSubtreeEnv): T =>
-  proxifyDocumentSubtree([nodeInput.type], nodeInput)(env)
+): RE.ReaderEither<ProxifyDocumentNodeInputEnv, Error, unknown> =>
+  proxyDocumentSubtree([nodeInput.type], nodeInput)

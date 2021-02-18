@@ -29,3 +29,6 @@ export const TYPE_PATHS_MISSING_NODE_MSG = `Type paths for this repository could
 
 export const TYPE_PATHS_MISSING_BROWSER_MSG =
   'The type paths store for this repository could not be found.'
+
+export const FIELD_VALUE_TYPE_PATH_MISMATCH_MSG =
+  'Field value does not match the type declared in its type path: %s'

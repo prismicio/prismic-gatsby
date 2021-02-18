@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as RE from 'fp-ts/ReaderEither'
 import * as E from 'fp-ts/Either'
 import * as IO from 'fp-ts/IO'
 import * as A from 'fp-ts/Array'
@@ -97,7 +98,7 @@ interface UsePrismicPreviewBootstrapProgramEnv
   isBootstrapped: boolean
   beginBootstrapping: IO.IO<void>
   bootstrapped: IO.IO<void>
-  appendNodes(nodes: PrismicAPIDocumentNodeInput[]): IO.IO<void>
+  appendNodes(nodes: unknown[]): IO.IO<void>
   appendTypePaths(typePathsStore: TypePathsStore): IO.IO<void>
   createNodeId(input: string): string
   createContentDigest(input: string | UnknownRecord): string
@@ -149,6 +150,8 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   // Start bootstrap.
   RTE.chainFirst((env) => RTE.fromIO(env.beginBootstrapping)),
 
+  RTE.bindW('typePathsStore', () => fetchTypePathsStore),
+  RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
   RTE.bind('nodeHelpers', (env) =>
     RTE.of(
       // These node helpers must match node helpers from `gatsby-source-prismic`.
@@ -173,24 +176,12 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
             ) as PrismicAPIDocumentNodeInput,
         ),
       ),
-      // TODO: Clean up once proxifyDocumentNodeInput is refactored.
-      RTE.map(
-        A.map((nodeInput) =>
-          proxifyDocumentNodeInput(nodeInput)({
-            getTypePath: env.getTypePath,
-            getNode: env.getNode,
-            linkResolver: env.linkResolver,
-            htmlSerializer: env.htmlSerializer,
-            imageImgixParams: env.imageImgixParams,
-            imagePlaceholderImgixParams: env.imagePlaceholderImgixParams,
-          }),
-        ),
-      ),
+      RTE.map(A.map(proxifyDocumentNodeInput)),
+      RTE.map(A.sequence(RE.readerEither)),
+      RTE.chainW(RTE.fromReaderEither),
     ),
   ),
   RTE.chainFirst((env) => RTE.fromIO(env.appendNodes(env.nodes))),
-  RTE.bindW('typePathsStore', () => fetchTypePathsStore),
-  RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
 
   // End bootstrap.
   RTE.chainFirst((env) => RTE.fromIO(env.bootstrapped)),
@@ -234,7 +225,7 @@ export const usePrismicPreviewBootstrap = (
             type: PrismicContextActionType.Bootstrapped,
           })
         },
-        appendNodes: (nodes: PrismicAPIDocumentNodeInput[]) => () =>
+        appendNodes: (nodes: unknown[]) => () =>
           contextDispatch({
             type: PrismicContextActionType.AppendNodes,
             payload: nodes,

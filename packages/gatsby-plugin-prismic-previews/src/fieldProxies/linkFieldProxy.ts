@@ -6,14 +6,12 @@ import { pipe } from 'fp-ts/function'
 
 import { ProxifyDocumentSubtreeEnv } from '../lib/proxifyDocumentSubtree'
 
-export const linkFieldValueRefinement = (
-  propValue: unknown,
-): propValue is gatsbyPrismic.PrismicAPILinkField =>
-  typeof propValue === 'object' &&
-  propValue !== null &&
-  'link_type' in propValue
+export const valueRefinement = (
+  value: unknown,
+): value is gatsbyPrismic.PrismicAPILinkField =>
+  typeof value === 'object' && value !== null && 'link_type' in value
 
-export const getProxiedLinkFieldValue = (
+export const proxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPILinkField,
 ): RE.ReaderEither<
   ProxifyDocumentSubtreeEnv,

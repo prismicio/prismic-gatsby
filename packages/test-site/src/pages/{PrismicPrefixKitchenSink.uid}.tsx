@@ -14,9 +14,9 @@ const Page = (
   props: PageProps<Record<string, any>> &
     WithPrismicPreviewProps<Record<string, any>>,
 ): JSX.Element => {
-  const propsStr = JSON.stringify(props, null, 2)
+  // const propsStr = JSON.stringify(props, null, 2)
 
-  const [accessToken] = usePrismicPreviewAccessToken(repoName)
+  // const [accessToken] = usePrismicPreviewAccessToken(repoName)
 
   // const [state] = usePrismicPreviewContext(repoName)
   // const [token] = usePrismicPreviewAccessToken(repoName)
@@ -38,6 +38,10 @@ const Page = (
         <code>{props.prismicPreviewState}</code>
       </pre>
       <hr />
+      <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
+        <code>isPrismicPreview: {props.isPrismicPreview.toString()}</code>
+      </pre>
+      <hr />
       <pre
         style={{
           backgroundColor: 'lightgray',
@@ -47,7 +51,8 @@ const Page = (
       >
         <code>
           {JSON.stringify(
-            props.data.prismicPrefixKitchenSink.data.title,
+            props.data.prismicPrefixKitchenSink.data.body[0].primary
+              .first_option_nonrepeat_title.html,
             null,
             2,
           )}
@@ -61,8 +66,26 @@ const Page = (
           overflow: 'auto',
         }}
       >
+        <code>
+          {JSON.stringify(
+            props.data.prismicPrefixKitchenSink.data.title.html,
+            null,
+            2,
+          )}
+        </code>
+      </pre>
+      <hr />
+      {/*
+      <pre
+        style={{
+          backgroundColor: 'lightgray',
+          padding: '2rem',
+          overflow: 'auto',
+        }}
+      >
         <code>{propsStr}</code>
       </pre>
+      */}
     </div>
   )
 }
@@ -76,7 +99,16 @@ export const query = graphql`
       uid
       data {
         title {
-          text
+          html
+        }
+        body {
+          ... on PrismicPrefixKitchenSinkDataBodyFirstOption {
+            primary {
+              first_option_nonrepeat_title {
+                html
+              }
+            }
+          }
         }
       }
     }

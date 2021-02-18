@@ -72,7 +72,7 @@ export type PrismicContextAction =
     }
   | {
       type: PrismicContextActionType.AppendNodes
-      payload: PrismicAPIDocumentNodeInput[]
+      payload: unknown[]
     }
   | {
       type: PrismicContextActionType.AppendTypePaths
@@ -86,17 +86,28 @@ export type PrismicContextAction =
       payload: { path: string; documentId: string }
     }
 
+const isPrismicAPIDocumentNodeInput = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any,
+): value is PrismicAPIDocumentNodeInput =>
+  typeof value === 'object' && 'prismicId' in value
+
 export const contextReducer = (
   state: PrismicContextState,
   action: PrismicContextAction,
 ): PrismicContextState => {
   switch (action.type) {
     case PrismicContextActionType.AppendNodes: {
-      const nodesMap = action.payload.reduce((acc, node) => {
-        acc[node.prismicId] = node
+      const nodesMap = action.payload.reduce(
+        (acc: PrismicContextState['nodes'], node) => {
+          if (isPrismicAPIDocumentNodeInput(node)) {
+            acc[node.prismicId] = node
+          }
 
-        return acc
-      }, {} as PrismicContextState['nodes'])
+          return acc
+        },
+        {},
+      )
 
       return {
         ...state,

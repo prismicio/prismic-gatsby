@@ -22,15 +22,18 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
     const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
       | string
       | undefined
-    if (!previewableValue) {
-      return nodeOrLeaf
+    if (previewableValue && nodes[previewableValue]) {
+      return nodes[previewableValue]
     }
 
-    // TODO: previewableValue is directly from Prismic (e.g. "XjfuYy307S8fn").
-    // Our node store is indexed by an MD5 version of that since we use the
-    // `node.id` value.
-    // Solution: Use the document's ID to index the node store.
-    return nodes[previewableValue] ?? nodeOrLeaf
+    // We didn't find a previewable field, so continue to iterate through all
+    // properties to find it.
+    const newNode = {} as typeof nodeOrLeaf
+    for (const key in nodeOrLeaf) {
+      newNode[key] = findAndReplacePreviewables(nodes)(nodeOrLeaf[key])
+    }
+
+    return newNode
   }
 
   // Iterate all elements in the node to find the previewable value.
@@ -94,7 +97,7 @@ const traverseAndReplace = <TStaticData extends UnknownRecord>(
     nodes,
     O.fromPredicate((nodes) => !R.isEmpty(nodes)),
     O.map(() => staticData),
-    O.map(R.map(findAndReplacePreviewables(nodes))),
+    O.map(findAndReplacePreviewables(nodes)),
     O.fold(
       () => ({ data: staticData, isPreview: false as boolean }),
       (data) => ({ data: data as TStaticData, isPreview: true }),

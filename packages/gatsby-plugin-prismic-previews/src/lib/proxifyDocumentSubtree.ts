@@ -1,10 +1,7 @@
 import * as gatsbyPrismic from 'gatsby-source-prismic'
-import * as gatsbyImgix from 'gatsby-plugin-imgix'
-import * as PrismicDOM from 'prismic-dom'
 import * as RE from 'fp-ts/ReaderEither'
 import * as E from 'fp-ts/Either'
 import * as O from 'fp-ts/Option'
-import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
 
 import {
@@ -14,10 +11,17 @@ import {
   PrismicAPIDocumentNodeInput,
   UnknownRecord,
 } from '../types'
-import {
-  getProxiedLinkFieldValue,
-  linkFieldValueRefinement,
-} from '../fieldProxies/getProxiedLinkFieldValue'
+import { FIELD_VALUE_TYPE_PATH_MISMATCH_MSG } from '../constants'
+
+import * as groupFieldProxy from '../fieldProxies/groupFieldProxy'
+import * as imageFieldProxy from '../fieldProxies/imageFieldProxy'
+import * as linkFieldProxy from '../fieldProxies/linkFieldProxy'
+import * as sliceFieldProxy from '../fieldProxies/sliceFieldProxy'
+import * as slicesFieldProxy from '../fieldProxies/slicesFieldProxy'
+import * as structuredTextFieldProxy from '../fieldProxies/structuredTextFieldProxy'
+
+import { sprintf } from './sprintf'
+import { serializePath } from './serializePath'
 
 export interface ProxifyDocumentSubtreeEnv {
   getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType | undefined
@@ -33,45 +37,83 @@ const proxyGetProgram = <T extends UnknownRecord>(
   path: string[],
   target: T,
   prop: string,
-  receiver: unknown,
 ): RE.ReaderEither<ProxifyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
     RE.ask<ProxifyDocumentSubtreeEnv>(),
-    RE.bindW('type', (env) =>
-      pipe(
-        O.fromNullable(env.getTypePath([...path, prop as string])),
-        RE.fromOption(() => new Error('No type for path')),
-      ),
-    ),
     RE.bind('propPath', () => RE.of([...path, prop])),
     RE.bind('propValue', () => RE.of(target[prop as string])),
+    RE.bindW('type', (env) =>
+      pipe(
+        O.fromNullable(env.getTypePath(env.propPath)),
+        RE.fromOption(
+          () => new Error(`No type for path: ${serializePath(env.propPath)}`),
+        ),
+      ),
+    ),
     RE.chain((env) => {
       switch (env.type) {
         case gatsbyPrismic.PrismicSpecialType.DocumentData: {
-          return proxifyDocumentSubtree2(
-            env.propPath,
-            env.propValue as UnknownRecord,
+          return pipe(
+            env.propValue,
+            RE.fromPredicate(
+              (propValue): propValue is UnknownRecord =>
+                typeof propValue === 'object' && propValue !== null,
+              () =>
+                new Error(
+                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
+                ),
+            ),
+            RE.chainW((propValue) =>
+              proxyDocumentSubtree(env.propPath, propValue),
+            ),
           )
         }
 
-        case gatsbyPrismic.PrismicFieldType.Group:
+        case gatsbyPrismic.PrismicFieldType.Group: {
+          return pipe(
+            env.propValue,
+            RE.fromPredicate(
+              groupFieldProxy.valueRefinement,
+              () =>
+                new Error(
+                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
+                ),
+            ),
+            RE.chain((propValue) =>
+              groupFieldProxy.proxyValue(env.propPath, propValue),
+            ),
+          )
+        }
+
         case gatsbyPrismic.PrismicFieldType.Slices: {
           return pipe(
             env.propValue,
             RE.fromPredicate(
-              (propValue): propValue is UnknownRecord[] =>
-                Array.isArray(propValue),
+              slicesFieldProxy.valueRefinement,
               () =>
                 new Error(
-                  'Prop value does not match type declared in type path',
+                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
                 ),
             ),
-            RE.map(
-              A.map((propValueElement) =>
-                proxifyDocumentSubtree2(env.propPath, propValueElement),
-              ),
+            RE.chain((propValue) =>
+              slicesFieldProxy.proxyValue(env.propPath, propValue),
             ),
-            RE.chainW(RE.sequenceArray),
+          )
+        }
+
+        case gatsbyPrismic.PrismicFieldType.Slice: {
+          return pipe(
+            env.propValue,
+            RE.fromPredicate(
+              sliceFieldProxy.valueRefinement,
+              () =>
+                new Error(
+                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
+                ),
+            ),
+            RE.chain((propValue) =>
+              sliceFieldProxy.proxyValue(env.propPath, propValue),
+            ),
           )
         }
 
@@ -79,13 +121,41 @@ const proxyGetProgram = <T extends UnknownRecord>(
           return pipe(
             env.propValue,
             RE.fromPredicate(
-              linkFieldValueRefinement,
+              linkFieldProxy.valueRefinement,
               () =>
                 new Error(
-                  'Prop value does not match type declared in type path',
+                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
                 ),
             ),
-            RE.chain(getProxiedLinkFieldValue),
+            RE.chain(linkFieldProxy.proxyValue),
+          )
+        }
+
+        case gatsbyPrismic.PrismicFieldType.Image: {
+          return pipe(
+            env.propValue,
+            RE.fromPredicate(
+              imageFieldProxy.valueRefinement,
+              () =>
+                new Error(
+                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
+                ),
+            ),
+            RE.chain(imageFieldProxy.proxyValue),
+          )
+        }
+
+        case gatsbyPrismic.PrismicFieldType.StructuredText: {
+          return pipe(
+            env.propValue,
+            RE.fromPredicate(
+              structuredTextFieldProxy.valueRefinement,
+              () =>
+                new Error(
+                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
+                ),
+            ),
+            RE.chain(structuredTextFieldProxy.proxyValue),
           )
         }
 
@@ -98,179 +168,48 @@ const proxyGetProgram = <T extends UnknownRecord>(
         case gatsbyPrismic.PrismicFieldType.Select:
         case gatsbyPrismic.PrismicFieldType.Text:
         case gatsbyPrismic.PrismicFieldType.Timestamp:
-        case gatsbyPrismic.PrismicFieldType.UID:
+        case gatsbyPrismic.PrismicFieldType.UID: {
+          return RE.of(env.propValue)
+        }
+
         default: {
           return RE.throwError(new Error('No proxy handler for field type'))
         }
       }
     }),
-    RE.orElse(() => Reflect.get(target, prop, receiver)),
+    RE.orElse(() => proxyDocumentSubtree([...path, prop], target[prop])),
   )
 
-export const proxifyDocumentSubtree2 = <T extends UnknownRecord>(
+export const proxyDocumentSubtree = (
   path: string[],
-  input: T,
-): RE.ReaderEither<ProxifyDocumentSubtreeEnv, never, T> =>
+  input: unknown,
+): RE.ReaderEither<ProxifyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
     RE.ask<ProxifyDocumentSubtreeEnv>(),
-    RE.map(
-      (env) =>
-        new Proxy(input, {
-          get: (target, prop, receiver): unknown =>
-            pipe(
-              RE.of(prop),
-              RE.filterOrElseW(
-                (prop): prop is string => typeof prop === 'string',
-                () => new Error('Unsupported prop type'),
-              ),
-              RE.chainW((prop) =>
-                proxyGetProgram(path, target, prop, receiver),
-              ),
-              (program) => program(env),
-              E.getOrElse(() => Reflect.get(target, prop, receiver)),
-            ),
-        }),
+    RE.chainW((env) =>
+      pipe(
+        input,
+        RE.fromPredicate(
+          (input): input is UnknownRecord =>
+            typeof input === 'object' && input !== null,
+          () => new Error('Target is an unsupported type'),
+        ),
+        RE.map(
+          (input) =>
+            new Proxy(input, {
+              get: (target, prop, receiver): unknown =>
+                pipe(
+                  RE.of(prop),
+                  RE.filterOrElseW(
+                    (prop): prop is string => typeof prop === 'string',
+                    () => new Error('Unsupported prop type'),
+                  ),
+                  RE.chainW((prop) => proxyGetProgram(path, target, prop)),
+                  (program) => program(env),
+                  E.getOrElse(() => Reflect.get(target, prop, receiver)),
+                ),
+            }),
+        ),
+      ),
     ),
   )
-
-// TODO: Refactor to use ReaderTaskEither
-export const proxifyDocumentSubtree = <T extends UnknownRecord>(
-  path: string[],
-  input: T,
-) => (env: ProxifyDocumentSubtreeEnv): T =>
-  new Proxy(input, {
-    get(target, prop, receiver): unknown {
-      if (typeof prop !== 'string') {
-        return Reflect.get(target, prop, receiver)
-      }
-
-      const type = env.getTypePath([...path, prop])
-      if (!type) {
-        return Reflect.get(target, prop, receiver)
-      }
-
-      switch (type) {
-        case gatsbyPrismic.PrismicSpecialType.DocumentData: {
-          const propValue = target[prop] as Record<string, unknown>
-
-          return proxifyDocumentSubtree([...path, prop], propValue)(env)
-        }
-
-        case gatsbyPrismic.PrismicFieldType.Link: {
-          const propValue = target[prop] as gatsbyPrismic.PrismicAPILinkField
-          const enhancedPropValue = {
-            ...propValue,
-            url: PrismicDOM.Link.url(propValue, env.linkResolver),
-            raw: propValue,
-          }
-
-          return new Proxy(enhancedPropValue, {
-            get(
-              target,
-              prop: keyof typeof propValue | 'document',
-              receiver,
-            ): unknown {
-              switch (prop) {
-                case 'document': {
-                  if (propValue.link_type === 'Document' && propValue.id) {
-                    const linkedDocument = env.getNode(propValue.id)
-                    if (linkedDocument) {
-                      return linkedDocument
-                    }
-                  }
-
-                  return Reflect.get(target, prop, receiver)
-                }
-              }
-
-              return Reflect.get(target, prop, receiver)
-            },
-          })
-        }
-
-        // TODO: Handle thumbnails
-        case gatsbyPrismic.PrismicFieldType.Image: {
-          const propValue = target[prop] as gatsbyPrismic.PrismicAPIImageField
-
-          const url = propValue.url
-          const sourceWidth = propValue.dimensions?.width
-          const sourceHeight = propValue.dimensions?.height
-
-          if (!url || !sourceWidth || !sourceHeight) {
-            return propValue
-          }
-
-          const args = {
-            imgixParams: env.imageImgixParams,
-            placeholderImgixParams: env.imagePlaceholderImgixParams,
-          }
-
-          const fixed = gatsbyImgix.buildImgixFixed({
-            url,
-            sourceWidth,
-            sourceHeight,
-            args,
-          })
-
-          const fluid = gatsbyImgix.buildImgixFluid({
-            url,
-            sourceWidth,
-            sourceHeight,
-            args,
-          })
-
-          return { ...propValue, fixed, fluid }
-        }
-
-        case gatsbyPrismic.PrismicFieldType.StructuredText: {
-          const propValue = target[
-            prop
-          ] as gatsbyPrismic.PrismicAPIStructuredTextField
-
-          return {
-            html: PrismicDOM.RichText.asHtml(
-              propValue,
-              env.linkResolver,
-              env.htmlSerializer,
-            ),
-            text: PrismicDOM.RichText.asText(propValue),
-            raw: propValue,
-          }
-        }
-
-        case gatsbyPrismic.PrismicFieldType.Group:
-        case gatsbyPrismic.PrismicFieldType.Slices: {
-          const propValue = target[prop] as UnknownRecord[]
-
-          return propValue.map((el) =>
-            proxifyDocumentSubtree([...path, prop], el)(env),
-          )
-        }
-
-        case gatsbyPrismic.PrismicFieldType.Slice: {
-          const propValue = target[prop] as gatsbyPrismic.PrismicAPISliceField[]
-
-          return propValue.map((el) => ({
-            primary: proxifyDocumentSubtree([...path, 'primary'], el)(env),
-            items: propValue.map((item) =>
-              proxifyDocumentSubtree([...path, 'items'], item)(env),
-            ),
-          }))
-        }
-
-        case gatsbyPrismic.PrismicFieldType.Boolean:
-        case gatsbyPrismic.PrismicFieldType.Color:
-        case gatsbyPrismic.PrismicFieldType.Date:
-        case gatsbyPrismic.PrismicFieldType.Embed:
-        case gatsbyPrismic.PrismicFieldType.GeoPoint:
-        case gatsbyPrismic.PrismicFieldType.Number:
-        case gatsbyPrismic.PrismicFieldType.Select:
-        case gatsbyPrismic.PrismicFieldType.Text:
-        case gatsbyPrismic.PrismicFieldType.Timestamp:
-        case gatsbyPrismic.PrismicFieldType.UID:
-        default: {
-          return Reflect.get(target, prop, receiver)
-        }
-      }
-    },
-  })

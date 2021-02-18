@@ -13,7 +13,6 @@ const isObjectPreviewRefForRepository = (repositoryName: string) => (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   input: any,
 ): input is ObjectPreviewRef =>
-  '_tracker' in input &&
   `${repositoryName}.prismic.io` in input &&
   'preview' in input[`${repositoryName}.prismic.io`]
 
