@@ -31,4 +31,8 @@ export const buildUnknownFieldConfig: FieldConfigCreator = (
     RTE.chain(() => buildInferredNodeType(path)),
     RTE.chainFirst(createType),
     RTE.map(getTypeName),
+    RTE.map((type) => ({
+      type,
+      extensions: { link: {} },
+    })),
   )

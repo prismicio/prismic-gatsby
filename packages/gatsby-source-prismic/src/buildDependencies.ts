@@ -28,6 +28,7 @@ export const buildDependencies = (
   touchNode: gatsbyContext.actions.touchNode,
   deleteNode: gatsbyContext.actions.deleteNode,
   createNodeId: gatsbyContext.createNodeId,
+  createContentDigest: gatsbyContext.createContentDigest,
   reporter: gatsbyContext.reporter,
   reportInfo: gatsbyContext.reporter.info,
   reportWarning: gatsbyContext.reporter.warn,

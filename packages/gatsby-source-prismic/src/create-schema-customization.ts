@@ -19,6 +19,7 @@ import { buildTypePathType } from './builders/buildTypePathType'
 
 import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
+import { buildEmbedType } from './builders/buildEmbedType'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
@@ -37,6 +38,7 @@ export const createBaseTypes: RTE.ReaderTaskEither<
     pipe(
       [
         buildGeoPointType,
+        buildEmbedType,
         buildImageDimensionsType,
         buildImageThumbnailType,
         buildLinkTypeEnumType,
