@@ -1,5 +1,6 @@
 import nock from 'nock'
 
+import { createSchemaCustomization } from '../src/create-schema-customization'
 import { sourceNodes } from '../src/source-nodes'
 import { gatsbyContext, nodes } from './__fixtures__/gatsbyContext'
 import { pluginOptions } from './__fixtures__/pluginOptions'
@@ -89,4 +90,58 @@ test('uses apiEndpoint plugin option if provided', async () => {
   await sourceNodes(gatsbyContext, options)
 
   // We're expecting this to *not* throw.
+})
+
+describe('data normalization', () => {
+  test('embed fields are normalized to inferred nodes', async () => {
+    const doc = { ...mockDocument, id: nodes[0].prismicId }
+
+    nock(origin)
+      .get('/api/v2/documents/search')
+      .query({
+        access_token: pluginOptions.accessToken,
+        ref: 'master',
+        lang: '*',
+        page: 1,
+        pageSize: 100,
+      })
+      .reply(200, {
+        total_pages: 1,
+        results: [doc],
+      })
+
+    // Need to run `createSchemaCustomization` to populate type paths. It should
+    // be safer to run the actual function rather than mock it to ensure changes
+    // to `createSchemaCustomization` are still compatible with this
+    // functionality.
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await sourceNodes(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createNode).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prismicId: doc.id,
+        data: expect.objectContaining({
+          embed: expect.any(String),
+        }),
+      }),
+    )
+
+    expect(gatsbyContext.actions.createNode).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ...doc.data.embed,
+        internal: expect.objectContaining({
+          type: 'PrismicPrefixEmbedType',
+        }),
+      }),
+    )
+  })
+
+  test.skip('unknown fields are normalized to inferred nodes', async () => {
+    // TODO: Add an unknown field, such as an integration field, to
+    // mockDocument. Then we can test using the same method as the embed field
+    // above.
+  })
 })

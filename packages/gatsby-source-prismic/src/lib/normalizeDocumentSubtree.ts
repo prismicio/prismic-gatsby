@@ -30,7 +30,7 @@ const unknownRecordArrayValueRefinement = (
   Array.isArray(value) && value.every(unknownRecordRefinement)
 
 const embedValueRefinement = (value: unknown): value is PrismicAPIEmbedField =>
-  unknownRecordRefinement(value) && 'url' in value
+  unknownRecordRefinement(value) && 'embed_url' in value
 
 const sliceValueRefinement = (value: unknown): value is PrismicAPISliceField =>
   unknownRecordRefinement(value) && 'slice_type' in value
@@ -55,7 +55,7 @@ export const normalizeDocumentSubtree = (
     RTE.ask<Dependencies>(),
     RTE.bind('typePath', () => getTypePath(path)),
     RTE.bind('type', (env) => RTE.of(env.typePath.type)),
-    RTE.map((env) => {
+    RTE.chain((env) => {
       switch (env.typePath.type) {
         case PrismicSpecialType.Document:
         case PrismicSpecialType.DocumentData: {
@@ -133,9 +133,9 @@ export const normalizeDocumentSubtree = (
                 ),
             ),
             RTE.bindTo('value'),
-            RTE.bind('url', (scope) =>
+            RTE.bind('id', (scope) =>
               pipe(
-                R.lookup('url', scope.value),
+                R.lookup('embed_url', scope.value),
                 RTE.fromOption(
                   () => new Error('Embed URL field does not exist'),
                 ),
@@ -143,18 +143,13 @@ export const normalizeDocumentSubtree = (
                   (url): url is string => typeof url === 'string',
                   () => new Error('Embed URL field is not a string'),
                 ),
+                RTE.map(env.nodeHelpers.createNodeId),
               ),
             ),
-            RTE.bind('id', (scope) =>
-              RTE.of(env.nodeHelpers.createNodeId(scope.url)),
-            ),
-            RTE.bind('type', () =>
+            RTE.chainFirstW((scope) =>
               // This type name matches the method used in
               // `buildEmbedFieldConfig`.
-              RTE.of(env.nodeHelpers.createTypeName('EmbedType')),
-            ),
-            RTE.chainFirstW((scope) =>
-              createNodeOfType({ ...scope.value, id: scope.id }, scope.type),
+              createNodeOfType({ ...scope.value, id: scope.id }, 'EmbedType'),
             ),
             RTE.map((scope) => scope.id),
           )

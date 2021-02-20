@@ -38,296 +38,322 @@ test('creates type path nodes', async () => {
     }, {} as Record<string, string>)
 
   expect(calls).toEqual({
-    page: 'Document',
-    'page.data': 'DocumentData',
-    'page.data.body': 'Slices',
-    'page.data.body.first_option': 'Slice',
-    'page.data.body.first_option.items.first_option_repeat_boolean': 'Boolean',
-    'page.data.body.first_option.items.first_option_repeat_color': 'Color',
-    'page.data.body.first_option.items.first_option_repeat_content_relationship':
-      'Link',
-    'page.data.body.first_option.items.first_option_repeat_date': 'Date',
-    'page.data.body.first_option.items.first_option_repeat_embed': 'Embed',
-    'page.data.body.first_option.items.first_option_repeat_geopoint':
-      'GeoPoint',
-    'page.data.body.first_option.items.first_option_repeat_image': 'Image',
-    'page.data.body.first_option.items.first_option_repeat_key_text': 'Text',
-    'page.data.body.first_option.items.first_option_repeat_link': 'Link',
-    'page.data.body.first_option.items.first_option_repeat_link_to_media':
-      'Link',
-    'page.data.body.first_option.items.first_option_repeat_number': 'Number',
-    'page.data.body.first_option.items.first_option_repeat_rich_text':
-      'StructuredText',
-    'page.data.body.first_option.items.first_option_repeat_select': 'Select',
-    'page.data.body.first_option.items.first_option_repeat_timestamp':
-      'Timestamp',
-    'page.data.body.first_option.items.first_option_repeat_title':
-      'StructuredText',
-    'page.data.body.first_option.primary.first_option_nonrepeat_boolean':
+    kitchen_sink: 'Document',
+    'kitchen_sink.data': 'DocumentData',
+    'kitchen_sink.data.body': 'Slices',
+    'kitchen_sink.data.body.first_option': 'Slice',
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_boolean':
       'Boolean',
-    'page.data.body.first_option.primary.first_option_nonrepeat_color': 'Color',
-    'page.data.body.first_option.primary.first_option_nonrepeat_content_relationship':
-      'Link',
-    'page.data.body.first_option.primary.first_option_nonrepeat_date': 'Date',
-    'page.data.body.first_option.primary.first_option_nonrepeat_embed': 'Embed',
-    'page.data.body.first_option.primary.first_option_nonrepeat_geopoint':
-      'GeoPoint',
-    'page.data.body.first_option.primary.first_option_nonrepeat_image': 'Image',
-    'page.data.body.first_option.primary.first_option_nonrepeat_key_text':
-      'Text',
-    'page.data.body.first_option.primary.first_option_nonrepeat_link': 'Link',
-    'page.data.body.first_option.primary.first_option_nonrepeat_link_to_media':
-      'Link',
-    'page.data.body.first_option.primary.first_option_nonrepeat_number':
-      'Number',
-    'page.data.body.first_option.primary.first_option_nonrepeat_rich_text':
-      'StructuredText',
-    'page.data.body.first_option.primary.first_option_nonrepeat_select':
-      'Select',
-    'page.data.body.first_option.primary.first_option_nonrepeat_timestamp':
-      'Timestamp',
-    'page.data.body.first_option.primary.first_option_nonrepeat_title':
-      'StructuredText',
-    'page.data.body.second_option': 'Slice',
-    'page.data.body.second_option.items.second_option_repeat_boolean':
-      'Boolean',
-    'page.data.body.second_option.items.second_option_repeat_color': 'Color',
-    'page.data.body.second_option.items.second_option_repeat_content_relationship':
-      'Link',
-    'page.data.body.second_option.items.second_option_repeat_date': 'Date',
-    'page.data.body.second_option.items.second_option_repeat_embed': 'Embed',
-    'page.data.body.second_option.items.second_option_repeat_geopoint':
-      'GeoPoint',
-    'page.data.body.second_option.items.second_option_repeat_image': 'Image',
-    'page.data.body.second_option.items.second_option_repeat_key_text': 'Text',
-    'page.data.body.second_option.items.second_option_repeat_link': 'Link',
-    'page.data.body.second_option.items.second_option_repeat_link_to_media':
-      'Link',
-    'page.data.body.second_option.items.second_option_repeat_number': 'Number',
-    'page.data.body.second_option.items.second_option_repeat_rich_text':
-      'StructuredText',
-    'page.data.body.second_option.items.second_option_repeat_select': 'Select',
-    'page.data.body.second_option.items.second_option_repeat_timestamp':
-      'Timestamp',
-    'page.data.body.second_option.items.second_option_repeat_title':
-      'StructuredText',
-    'page.data.body.second_option.primary.second_option_nonrepeat_boolean':
-      'Boolean',
-    'page.data.body.second_option.primary.second_option_nonrepeat_color':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_color':
       'Color',
-    'page.data.body.second_option.primary.second_option_nonrepeat_content_relationship':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_content_relationship':
       'Link',
-    'page.data.body.second_option.primary.second_option_nonrepeat_date': 'Date',
-    'page.data.body.second_option.primary.second_option_nonrepeat_embed':
-      'Embed',
-    'page.data.body.second_option.primary.second_option_nonrepeat_geopoint':
-      'GeoPoint',
-    'page.data.body.second_option.primary.second_option_nonrepeat_image':
-      'Image',
-    'page.data.body.second_option.primary.second_option_nonrepeat_key_text':
-      'Text',
-    'page.data.body.second_option.primary.second_option_nonrepeat_link': 'Link',
-    'page.data.body.second_option.primary.second_option_nonrepeat_link_to_media':
-      'Link',
-    'page.data.body.second_option.primary.second_option_nonrepeat_number':
-      'Number',
-    'page.data.body.second_option.primary.second_option_nonrepeat_rich_text':
-      'StructuredText',
-    'page.data.body.second_option.primary.second_option_nonrepeat_select':
-      'Select',
-    'page.data.body.second_option.primary.second_option_nonrepeat_timestamp':
-      'Timestamp',
-    'page.data.body.second_option.primary.second_option_nonrepeat_title':
-      'StructuredText',
-    'page.data.boolean': 'Boolean',
-    'page.data.color': 'Color',
-    'page.data.content_relationship': 'Link',
-    'page.data.date': 'Date',
-    'page.data.embed': 'Embed',
-    'page.data.geopoint': 'GeoPoint',
-    'page.data.group': 'Group',
-    'page.data.group.group_boolean': 'Boolean',
-    'page.data.group.group_color': 'Color',
-    'page.data.group.group_content_relationship': 'Link',
-    'page.data.group.group_date': 'Date',
-    'page.data.group.group_embed': 'Embed',
-    'page.data.group.group_geopoint': 'GeoPoint',
-    'page.data.group.group_image': 'Image',
-    'page.data.group.group_key_text': 'Text',
-    'page.data.group.group_link': 'Link',
-    'page.data.group.group_link_to_media': 'Link',
-    'page.data.group.group_number': 'Number',
-    'page.data.group.group_rich_text': 'StructuredText',
-    'page.data.group.group_select': 'Select',
-    'page.data.group.group_timestamp': 'Timestamp',
-    'page.data.group.group_title': 'StructuredText',
-    'page.data.image': 'Image',
-    'page.data.key_text': 'Text',
-    'page.data.link': 'Link',
-    'page.data.link_to_media': 'Link',
-    'page.data.number': 'Number',
-    'page.data.rich_text': 'StructuredText',
-    'page.data.second_tab_body': 'Slices',
-    'page.data.second_tab_body.second_tab_first_option': 'Slice',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_boolean':
-      'Boolean',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_color':
-      'Color',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_content_relationship':
-      'Link',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_date':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_date':
       'Date',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_embed':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_embed':
       'Embed',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_geopoint':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_geopoint':
       'GeoPoint',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_image':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_image':
       'Image',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_key_text':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_key_text':
       'Text',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_link':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_link':
       'Link',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_link_to_media':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_link_to_media':
       'Link',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_number':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_number':
       'Number',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_rich_text':
-      'StructuredText',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_select':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_select':
       'Select',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_timestamp':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_timestamp':
       'Timestamp',
-    'page.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_title':
-      'StructuredText',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_boolean':
+    'kitchen_sink.data.body.first_option.items.first_option_repeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_boolean':
       'Boolean',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_color':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_color':
       'Color',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_content_relationship':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_content_relationship':
       'Link',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_date':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_date':
       'Date',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_embed':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_embed':
       'Embed',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_geopoint':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_geopoint':
       'GeoPoint',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_image':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_image':
       'Image',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_key_text':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_key_text':
       'Text',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_link':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_link':
       'Link',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_link_to_media':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_link_to_media':
       'Link',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_number':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_number':
       'Number',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_rich_text':
-      'StructuredText',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_select':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_select':
       'Select',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_timestamp':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_timestamp':
       'Timestamp',
-    'page.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_title':
-      'StructuredText',
-    'page.data.second_tab_body.second_tab_second_option': 'Slice',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_boolean':
+    'kitchen_sink.data.body.first_option.primary.first_option_nonrepeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.body.second_option': 'Slice',
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_boolean':
       'Boolean',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_color':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_color':
       'Color',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_content_relationship':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_content_relationship':
       'Link',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_date':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_date':
       'Date',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_embed':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_embed':
       'Embed',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_geopoint':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_geopoint':
       'GeoPoint',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_image':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_image':
       'Image',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_key_text':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_key_text':
       'Text',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_link':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_link':
       'Link',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_link_to_media':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_link_to_media':
       'Link',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_number':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_number':
       'Number',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_rich_text':
-      'StructuredText',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_select':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_select':
       'Select',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_timestamp':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_timestamp':
       'Timestamp',
-    'page.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_title':
-      'StructuredText',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_boolean':
+    'kitchen_sink.data.body.second_option.items.second_option_repeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_boolean':
       'Boolean',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_color':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_color':
       'Color',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_content_relationship':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_content_relationship':
       'Link',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_date':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_date':
       'Date',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_embed':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_embed':
       'Embed',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_geopoint':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_geopoint':
       'GeoPoint',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_image':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_image':
       'Image',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_key_text':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_key_text':
       'Text',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_link':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_link':
       'Link',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_link_to_media':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_link_to_media':
       'Link',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_number':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_number':
       'Number',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_rich_text':
-      'StructuredText',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_select':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_select':
       'Select',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_timestamp':
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_timestamp':
       'Timestamp',
-    'page.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_title':
-      'StructuredText',
-    'page.data.second_tab_boolean': 'Boolean',
-    'page.data.second_tab_color': 'Color',
-    'page.data.second_tab_content_relationship': 'Link',
-    'page.data.second_tab_date': 'Date',
-    'page.data.second_tab_embed': 'Embed',
-    'page.data.second_tab_geopoint': 'GeoPoint',
-    'page.data.second_tab_group': 'Group',
-    'page.data.second_tab_group.second_tab_group_boolean': 'Boolean',
-    'page.data.second_tab_group.second_tab_group_color': 'Color',
-    'page.data.second_tab_group.second_tab_group_content_relationship': 'Link',
-    'page.data.second_tab_group.second_tab_group_date': 'Date',
-    'page.data.second_tab_group.second_tab_group_embed': 'Embed',
-    'page.data.second_tab_group.second_tab_group_geopoint': 'GeoPoint',
-    'page.data.second_tab_group.second_tab_group_image': 'Image',
-    'page.data.second_tab_group.second_tab_group_key_text': 'Text',
-    'page.data.second_tab_group.second_tab_group_link': 'Link',
-    'page.data.second_tab_group.second_tab_group_link_to_media': 'Link',
-    'page.data.second_tab_group.second_tab_group_number': 'Number',
-    'page.data.second_tab_group.second_tab_group_rich_text': 'StructuredText',
-    'page.data.second_tab_group.second_tab_group_select': 'Select',
-    'page.data.second_tab_group.second_tab_group_timestamp': 'Timestamp',
-    'page.data.second_tab_group.second_tab_group_title': 'StructuredText',
-    'page.data.second_tab_image': 'Image',
-    'page.data.second_tab_key_text': 'Text',
-    'page.data.second_tab_link': 'Link',
-    'page.data.second_tab_link_to_media': 'Link',
-    'page.data.second_tab_number': 'Number',
-    'page.data.second_tab_rich_text': 'StructuredText',
-    'page.data.second_tab_select': 'Select',
-    'page.data.second_tab_timestamp': 'Timestamp',
-    'page.data.second_tab_title': 'StructuredText',
-    'page.data.select': 'Select',
-    'page.data.timestamp': 'Timestamp',
-    'page.data.title': 'StructuredText',
+    'kitchen_sink.data.body.second_option.primary.second_option_nonrepeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.boolean': 'Boolean',
+    'kitchen_sink.data.color': 'Color',
+    'kitchen_sink.data.content_relationship': 'Link',
+    'kitchen_sink.data.date': 'Date',
+    'kitchen_sink.data.embed': 'Embed',
+    'kitchen_sink.data.geopoint': 'GeoPoint',
+    'kitchen_sink.data.group': 'Group',
+    'kitchen_sink.data.group.group_boolean': 'Boolean',
+    'kitchen_sink.data.group.group_color': 'Color',
+    'kitchen_sink.data.group.group_content_relationship': 'Link',
+    'kitchen_sink.data.group.group_date': 'Date',
+    'kitchen_sink.data.group.group_embed': 'Embed',
+    'kitchen_sink.data.group.group_geopoint': 'GeoPoint',
+    'kitchen_sink.data.group.group_image': 'Image',
+    'kitchen_sink.data.group.group_key_text': 'Text',
+    'kitchen_sink.data.group.group_link': 'Link',
+    'kitchen_sink.data.group.group_link_to_media': 'Link',
+    'kitchen_sink.data.group.group_number': 'Number',
+    'kitchen_sink.data.group.group_rich_text': 'GeoPoint',
+    'kitchen_sink.data.group.group_select': 'Select',
+    'kitchen_sink.data.group.group_timestamp': 'Timestamp',
+    'kitchen_sink.data.group.group_title': 'GeoPoint',
+    'kitchen_sink.data.image': 'Image',
+    'kitchen_sink.data.key_text': 'Text',
+    'kitchen_sink.data.link': 'Link',
+    'kitchen_sink.data.link_to_media': 'Link',
+    'kitchen_sink.data.number': 'Number',
+    'kitchen_sink.data.rich_text': 'GeoPoint',
+    'kitchen_sink.data.second_tab_body': 'Slices',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option': 'Slice',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_color':
+      'Color',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_date':
+      'Date',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_embed':
+      'Embed',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_image':
+      'Image',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_key_text':
+      'Text',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_link':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_number':
+      'Number',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_select':
+      'Select',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.items.second_tab_first_option_repeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_color':
+      'Color',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_date':
+      'Date',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_embed':
+      'Embed',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_image':
+      'Image',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_key_text':
+      'Text',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_link':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_number':
+      'Number',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_select':
+      'Select',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.second_tab_body.second_tab_first_option.primary.second_tab_first_option_nonrepeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option': 'Slice',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_color':
+      'Color',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_date':
+      'Date',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_embed':
+      'Embed',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_image':
+      'Image',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_key_text':
+      'Text',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_link':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_number':
+      'Number',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_select':
+      'Select',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.items.second_tab_second_option_repeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_color':
+      'Color',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_date':
+      'Date',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_embed':
+      'Embed',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_image':
+      'Image',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_key_text':
+      'Text',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_link':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_number':
+      'Number',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_rich_text':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_select':
+      'Select',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.second_tab_body.second_tab_second_option.primary.second_tab_second_option_nonrepeat_title':
+      'GeoPoint',
+    'kitchen_sink.data.second_tab_boolean': 'Boolean',
+    'kitchen_sink.data.second_tab_color': 'Color',
+    'kitchen_sink.data.second_tab_content_relationship': 'Link',
+    'kitchen_sink.data.second_tab_date': 'Date',
+    'kitchen_sink.data.second_tab_embed': 'Embed',
+    'kitchen_sink.data.second_tab_geopoint': 'GeoPoint',
+    'kitchen_sink.data.second_tab_group': 'Group',
+    'kitchen_sink.data.second_tab_group.second_tab_group_boolean': 'Boolean',
+    'kitchen_sink.data.second_tab_group.second_tab_group_color': 'Color',
+    'kitchen_sink.data.second_tab_group.second_tab_group_content_relationship':
+      'Link',
+    'kitchen_sink.data.second_tab_group.second_tab_group_date': 'Date',
+    'kitchen_sink.data.second_tab_group.second_tab_group_embed': 'Embed',
+    'kitchen_sink.data.second_tab_group.second_tab_group_geopoint': 'GeoPoint',
+    'kitchen_sink.data.second_tab_group.second_tab_group_image': 'Image',
+    'kitchen_sink.data.second_tab_group.second_tab_group_key_text': 'Text',
+    'kitchen_sink.data.second_tab_group.second_tab_group_link': 'Link',
+    'kitchen_sink.data.second_tab_group.second_tab_group_link_to_media': 'Link',
+    'kitchen_sink.data.second_tab_group.second_tab_group_number': 'Number',
+    'kitchen_sink.data.second_tab_group.second_tab_group_rich_text': 'GeoPoint',
+    'kitchen_sink.data.second_tab_group.second_tab_group_select': 'Select',
+    'kitchen_sink.data.second_tab_group.second_tab_group_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.second_tab_group.second_tab_group_title': 'GeoPoint',
+    'kitchen_sink.data.second_tab_image': 'Image',
+    'kitchen_sink.data.second_tab_key_text': 'Text',
+    'kitchen_sink.data.second_tab_link': 'Link',
+    'kitchen_sink.data.second_tab_link_to_media': 'Link',
+    'kitchen_sink.data.second_tab_number': 'Number',
+    'kitchen_sink.data.second_tab_rich_text': 'GeoPoint',
+    'kitchen_sink.data.second_tab_select': 'Select',
+    'kitchen_sink.data.second_tab_timestamp': 'Timestamp',
+    'kitchen_sink.data.second_tab_title': 'GeoPoint',
+    'kitchen_sink.data.select': 'Select',
+    'kitchen_sink.data.timestamp': 'Timestamp',
+    'kitchen_sink.data.title': 'GeoPoint',
   })
 })
 
-describe('shared global types', () => {
+describe('shared types', () => {
   test('creates link types enum type', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -373,6 +399,50 @@ describe('shared global types', () => {
     )
   })
 
+  test('creates structured text type', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'OBJECT',
+        config: {
+          name: 'PrismicPrefixStructuredTextType',
+          fields: {
+            text: expect.objectContaining({
+              type: 'String',
+              resolve: expect.any(Function),
+            }),
+            html: expect.objectContaining({
+              type: 'String',
+              resolve: expect.any(Function),
+            }),
+            raw: expect.objectContaining({
+              type: 'JSON',
+              resolve: expect.any(Function),
+            }),
+          },
+        },
+      }),
+    )
+  })
+
+  test('creates embed type', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'OBJECT',
+        config: {
+          name: 'PrismicPrefixEmbedType',
+          interfaces: ['Node'],
+          extensions: { infer: true },
+        },
+      }),
+    )
+  })
+
   test('create image thumbnail type', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -413,7 +483,7 @@ describe('document', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             uid: { type: 'UID' },
             foo: { type: 'Text' },
@@ -425,11 +495,11 @@ describe('document', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPage',
+        name: 'PrismicPrefixKitchenSink',
         fields: {
           uid: 'String!',
           prismicId: 'ID!',
-          data: 'PrismicPrefixPageDataType',
+          data: 'PrismicPrefixKitchenSinkDataType',
           dataRaw: { type: 'JSON!', resolve: expect.any(Function) },
           first_publication_date: {
             type: 'Date!',
@@ -456,19 +526,20 @@ describe('document', () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-    const call = findCreateTypesCall('PrismicPrefixPage')
+    const call = findCreateTypesCall('PrismicPrefixKitchenSink')
     const doc = { id: 'id', data: { foo: 'bar' } }
     const node = nodeHelpers.createNodeFactory('type')(doc)
     const resolver = call.config.fields.dataRaw.resolve
+    const res = await resolver(node)
 
-    expect(resolver(node)).toBe(doc.data)
+    expect(res).toEqual(doc.data)
   })
 
   test('url field resolves using linkResolver', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-    const call = findCreateTypesCall('PrismicPrefixPage')
+    const call = findCreateTypesCall('PrismicPrefixKitchenSink')
     const node = nodeHelpers.createNodeFactory('type')({ id: 'id' })
     const resolver = call.config.fields.url.resolve
 
@@ -479,7 +550,7 @@ describe('document', () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-    const call = findCreateTypesCall('PrismicPrefixPage')
+    const call = findCreateTypesCall('PrismicPrefixKitchenSink')
     const resolver = call.config.fields._previewable.resolve
     const node = nodeHelpers.createNodeFactory('type')({ id: 'id' })
 
@@ -491,7 +562,7 @@ describe('document', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             uid: { type: 'UID' },
             boolean: { type: 'Boolean' },
@@ -527,19 +598,19 @@ describe('document', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataType',
+        name: 'PrismicPrefixKitchenSinkDataType',
         fields: {
           boolean: 'Boolean',
           color: 'String',
           date: { type: 'Date', extensions: { dateformat: {} } },
-          embed: 'PrismicEmbedType',
+          embed: { type: 'PrismicPrefixEmbedType', extensions: { link: {} } },
           geo_point: 'PrismicGeoPointType',
-          group: '[PrismicPrefixPageDataGroup]',
-          image: 'PrismicPrefixPageDataImageImageType',
+          group: '[PrismicPrefixKitchenSinkDataGroup]',
+          image: 'PrismicPrefixKitchenSinkDataImageImageType',
           link: 'PrismicPrefixLinkType',
           number: 'Float',
           select: 'String',
-          slices: '[PrismicPrefixPageDataSlicesSlicesType]',
+          slices: '[PrismicPrefixKitchenSinkDataSlicesSlicesType]',
           structured_text: 'PrismicPrefixStructuredTextType',
           text: 'String',
           timestamp: { type: 'Date', extensions: { dateformat: {} } },
@@ -555,7 +626,7 @@ describe('link fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'Link' },
           },
@@ -601,7 +672,7 @@ describe('link fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'Link' },
           },
@@ -622,7 +693,7 @@ describe('link fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'Link' },
           },
@@ -643,7 +714,7 @@ describe('link fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'Link' },
           },
@@ -661,12 +732,12 @@ describe('link fields', () => {
 })
 
 describe('structured text fields', () => {
-  test('creates structured text type', async () => {
+  test('text field resolves to text', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'StructuredText' },
           },
@@ -674,19 +745,51 @@ describe('structured text fields', () => {
       },
     })
 
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
-      expect.objectContaining({
-        kind: 'OBJECT',
-        config: {
-          name: 'PrismicPrefixStructuredTextType',
-          fields: {
-            text: { type: 'String', resolve: expect.any(Function) },
-            html: { type: 'String', resolve: expect.any(Function) },
-            raw: { type: 'JSON', resolve: expect.any(Function) },
-          },
-        },
-      }),
-    )
+    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+    const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
+    const resolver = call.config.fields.text.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe('Rich Text')
+  })
+
+  test('html field resolves to html text', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, {
+      ...pluginOptions,
+      htmlSerializer: undefined,
+    })
+
+    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+    const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
+    const resolver = call.config.fields.html.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe('<p>Rich Text</p>')
+  })
+
+  test('html field uses htmlSerializer if provided', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+    const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
+    const resolver = call.config.fields.html.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe('htmlSerializer')
+  })
+
+  test('raw field resolves to raw value', async () => {
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+    const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
+    const resolver = call.config.fields.raw.resolve
+    const res = await resolver(field)
+
+    expect(res).toEqual(field)
   })
 })
 
@@ -696,7 +799,7 @@ describe('image fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'Image' },
           },
@@ -707,7 +810,7 @@ describe('image fields', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataFooImageType',
+        name: 'PrismicPrefixKitchenSinkDataFooImageType',
         fields: expect.objectContaining({
           alt: 'String',
           copyright: 'String',
@@ -738,7 +841,7 @@ describe('image fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: {
               type: 'Image',
@@ -754,9 +857,9 @@ describe('image fields', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: expect.objectContaining({
-        name: 'PrismicPrefixPageDataFooImageType',
+        name: 'PrismicPrefixKitchenSinkDataFooImageType',
         fields: expect.objectContaining({
-          thumbnails: 'PrismicPrefixPageDataFooImageThumbnailsType',
+          thumbnails: 'PrismicPrefixKitchenSinkDataFooImageThumbnailsType',
         }),
       }),
     })
@@ -764,7 +867,7 @@ describe('image fields', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataFooImageThumbnailsType',
+        name: 'PrismicPrefixKitchenSinkDataFooImageThumbnailsType',
         fields: {
           Mobile: 'PrismicPrefixImageThumbnailType',
         },
@@ -777,7 +880,7 @@ describe('image fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'Image' },
           },
@@ -785,7 +888,7 @@ describe('image fields', () => {
       },
     })
 
-    const call = findCreateTypesCall('PrismicPrefixPageDataFooImageType')
+    const call = findCreateTypesCall('PrismicPrefixKitchenSinkDataFooImageType')
     const field = { url: 'url' }
     const resolver = call.config.fields.localFile.resolve
     const res = await resolver(field)
@@ -798,7 +901,7 @@ describe('image fields', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             foo: { type: 'Image' },
           },
@@ -806,7 +909,7 @@ describe('image fields', () => {
       },
     })
 
-    const call = findCreateTypesCall('PrismicPrefixPageDataFooImageType')
+    const call = findCreateTypesCall('PrismicPrefixKitchenSinkDataFooImageType')
     const field = { url: null }
     const resolver = call.config.fields.localFile.resolve
     const res = await resolver(field)
@@ -821,7 +924,7 @@ describe('slices', () => {
     await createSchemaCustomization(gatsbyContext, {
       ...pluginOptions,
       schemas: {
-        page: {
+        kitchen_sink: {
           Main: {
             slices: {
               type: 'Slices',
@@ -856,10 +959,10 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'UNION',
       config: {
-        name: 'PrismicPrefixPageDataSlicesSlicesType',
+        name: 'PrismicPrefixKitchenSinkDataSlicesSlicesType',
         types: [
-          'PrismicPrefixPageDataSlicesBar',
-          'PrismicPrefixPageDataSlicesFoo',
+          'PrismicPrefixKitchenSinkDataSlicesBar',
+          'PrismicPrefixKitchenSinkDataSlicesFoo',
         ],
         resolveType: expect.any(Function),
       },
@@ -868,10 +971,10 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataSlicesFoo',
+        name: 'PrismicPrefixKitchenSinkDataSlicesFoo',
         fields: {
-          items: '[PrismicPrefixPageDataSlicesFooItem]',
-          primary: 'PrismicPrefixPageDataSlicesFooPrimary',
+          items: '[PrismicPrefixKitchenSinkDataSlicesFooItem]',
+          primary: 'PrismicPrefixKitchenSinkDataSlicesFooPrimary',
           slice_type: 'String!',
           slice_label: 'String',
         },
@@ -882,7 +985,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataSlicesFooPrimary',
+        name: 'PrismicPrefixKitchenSinkDataSlicesFooPrimary',
         fields: {
           non_repeat_text: 'String',
         },
@@ -892,7 +995,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataSlicesFooItem',
+        name: 'PrismicPrefixKitchenSinkDataSlicesFooItem',
         fields: {
           repeat_text: 'String',
         },
@@ -902,10 +1005,10 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataSlicesBar',
+        name: 'PrismicPrefixKitchenSinkDataSlicesBar',
         fields: {
-          items: '[PrismicPrefixPageDataSlicesBarItem]',
-          primary: 'PrismicPrefixPageDataSlicesBarPrimary',
+          items: '[PrismicPrefixKitchenSinkDataSlicesBarItem]',
+          primary: 'PrismicPrefixKitchenSinkDataSlicesBarPrimary',
           slice_type: 'String!',
           slice_label: 'String',
         },
@@ -916,7 +1019,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataSlicesBarPrimary',
+        name: 'PrismicPrefixKitchenSinkDataSlicesBarPrimary',
         fields: {
           non_repeat_text: 'String',
         },
@@ -926,7 +1029,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixPageDataSlicesBarItem',
+        name: 'PrismicPrefixKitchenSinkDataSlicesBarItem',
         fields: {
           repeat_text: 'String',
         },

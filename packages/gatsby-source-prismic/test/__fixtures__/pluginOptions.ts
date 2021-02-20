@@ -12,7 +12,7 @@ export const pluginOptions: PluginOptions = {
   apiEndpoint: 'https://qwerty.cdn.prismic.io/api/v2',
   typePrefix: 'prefix',
   schemas: {
-    page: kitchenSinkSchema as PrismicSchema,
+    kitchen_sink: kitchenSinkSchema as PrismicSchema,
   },
   lang: DEFAULT_LANG,
   webhookSecret: 'secret',

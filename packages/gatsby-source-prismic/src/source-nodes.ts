@@ -26,10 +26,8 @@ const sourceNodesProgram: RTE.ReaderTaskEither<
       constVoid,
     ),
   ),
-  RTE.fold(
-    () => sourceNodesForAllDocuments,
-    () => onWebhook,
-  ),
+  RTE.chainW(() => onWebhook),
+  RTE.orElse(() => sourceNodesForAllDocuments),
 )
 
 /**

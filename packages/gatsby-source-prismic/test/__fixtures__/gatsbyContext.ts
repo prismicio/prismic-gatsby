@@ -1,3 +1,5 @@
+import * as gatsby from 'gatsby'
+
 import { pluginOptions } from './pluginOptions'
 
 export const nodes = [
@@ -20,10 +22,18 @@ const createCache = () => {
   }
 }
 
+const nodeStore = new Map()
+
 export const gatsbyContext = {
   actions: {
-    createNode: jest.fn(),
-    deleteNode: jest.fn(),
+    createNode: jest
+      .fn()
+      .mockImplementation((input: gatsby.NodeInput) =>
+        nodeStore.set(input.id, input),
+      ),
+    deleteNode: jest
+      .fn()
+      .mockImplementation((id: string) => nodeStore.delete(id)),
     createTypes: jest.fn(),
     touchNode: jest.fn(),
   },
@@ -42,10 +52,8 @@ export const gatsbyContext = {
       config,
     })),
   },
-  getNode: jest
-    .fn()
-    .mockImplementation((id) => nodes.find((node) => node.id === id)),
-  getNodes: jest.fn().mockReturnValue(nodes),
+  getNode: jest.fn().mockImplementation((id: string) => nodeStore.get(id)),
+  getNodes: jest.fn().mockImplementation(() => [...nodeStore.values()]),
   createNodeId: jest.fn().mockImplementation((x) => x),
   createContentDigest: jest.fn().mockReturnValue('createContentDigest'),
 }

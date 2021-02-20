@@ -21,7 +21,7 @@ beforeEach(() => {
     .get('/api/v2')
     .query({ access_token: pluginOptions.accessToken })
     .reply(200, {
-      types: { page: 'Page' },
+      types: { kitchen_sink: 'Kitchen Sink' },
       refs: [
         { id: 'master', ref: 'master', isMasterRef: true },
         {
@@ -40,6 +40,8 @@ describe('any webhook', () => {
   }
 
   test('touches all nodes to prevent garbage collection', async () => {
+    nodes.forEach((node) => unknownCtx.actions.createNode(node))
+
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(unknownCtx, pluginOptions)
 

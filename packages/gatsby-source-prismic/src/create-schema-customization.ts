@@ -10,16 +10,17 @@ import { createCustomType } from './lib/createCustomType'
 import { createTypes } from './lib/createTypes'
 import { throwError } from './lib/throwError'
 
+import { buildEmbedType } from './builders/buildEmbedType'
 import { buildGeoPointType } from './builders/buildGeoPointType'
 import { buildImageDimensionsType } from './builders/buildImageDimensionsType'
 import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
 import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
 import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
+import { buildStructuredTextType } from './builders/buildStructuredTextType'
 import { buildTypePathType } from './builders/buildTypePathType'
 
 import { Dependencies, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
-import { buildEmbedType } from './builders/buildEmbedType'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
@@ -37,11 +38,12 @@ export const createBaseTypes: RTE.ReaderTaskEither<
   RTE.bind('baseTypes', () =>
     pipe(
       [
-        buildGeoPointType,
         buildEmbedType,
+        buildGeoPointType,
         buildImageDimensionsType,
         buildImageThumbnailType,
         buildLinkTypeEnumType,
+        buildStructuredTextType,
         buildTypePathType,
       ],
       A.sequence(RTE.readerTaskEither),
