@@ -19,6 +19,7 @@ import { buildTextFieldConfig } from '../builders/buildTextFieldConfig'
 import { buildTimestampFieldConfig } from '../builders/buildTimestampFieldConfig'
 import { buildUIDFieldConfig } from '../builders/buildUIDFieldConfig'
 import { buildUnknownFieldConfig } from '../builders/buildUnknownFieldConfig'
+import { buildIntegrationFieldConfig } from '../builders/buildIntegrationFieldConfig'
 
 export const toFieldConfig = (
   path: string[],
@@ -55,6 +56,10 @@ export const toFieldConfig = (
 
     case PrismicFieldType.Image: {
       return buildImageFieldConfig(path, schema)
+    }
+
+    case PrismicFieldType.IntegrationField: {
+      return buildIntegrationFieldConfig(path, schema)
     }
 
     case PrismicFieldType.Link: {

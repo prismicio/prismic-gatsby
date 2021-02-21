@@ -6,7 +6,6 @@ import { buildNamedInferredNodeType } from '../lib/buildNamedInferredNodeType'
 
 import { Dependencies } from '../types'
 
-// TODO: Update tests
 export const buildEmbedType: RTE.ReaderTaskEither<
   Dependencies,
   never,

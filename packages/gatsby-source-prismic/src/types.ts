@@ -105,17 +105,18 @@ export enum PrismicFieldType {
   Date = 'Date',
   Embed = 'Embed',
   GeoPoint = 'GeoPoint',
+  Group = 'Group',
   Image = 'Image',
+  IntegrationField = 'IntegrationFields', // Prismic uses the plural version
   Link = 'Link',
   Number = 'Number',
   Select = 'Select',
+  Slice = 'Slice',
+  Slices = 'Slices',
   StructuredText = 'StructuredText',
   Text = 'Text',
   Timestamp = 'Timestamp',
   UID = 'UID',
-  Group = 'Group',
-  Slice = 'Slice',
-  Slices = 'Slices',
 }
 
 interface PrismicSchemaStandardField {

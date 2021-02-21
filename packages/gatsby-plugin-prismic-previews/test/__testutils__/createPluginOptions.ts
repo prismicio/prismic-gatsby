@@ -1,9 +1,11 @@
+import * as prismic from 'ts-prismic'
+
 import { PluginOptions } from '../../src'
 
 export const createPluginOptions = (): PluginOptions => ({
   repositoryName: 'qwerty',
   accessToken: 'accessToken',
-  apiEndpoint: 'https://qwerty.cdn.prismic.io/api/v2',
+  apiEndpoint: prismic.defaultEndpoint('qwerty'),
   typePrefix: 'prefix',
   lang: '*',
   toolbar: 'new',

@@ -14,12 +14,14 @@ import { Dependencies } from '../types'
  */
 export function createNodeOfType(
   record: IdentifiableRecord,
-  type: string,
+  type: string | string[],
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.NodeInput> {
   return RTE.asks((deps) =>
     pipe(
       record,
-      deps.nodeHelpers.createNodeFactory(type),
+      deps.nodeHelpers.createNodeFactory(
+        ...(Array.isArray(type) ? type : [type]),
+      ),
       I.chainFirst(deps.createNode),
     ),
   )

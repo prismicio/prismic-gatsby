@@ -3,6 +3,7 @@ import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
+import { Stringable } from 'gatsby-node-helpers'
 
 import {
   Dependencies,
@@ -34,6 +35,17 @@ const embedValueRefinement = (value: unknown): value is PrismicAPIEmbedField =>
 
 const sliceValueRefinement = (value: unknown): value is PrismicAPISliceField =>
   unknownRecordRefinement(value) && 'slice_type' in value
+
+const stringableRefinement = (value: unknown): value is Stringable =>
+  (typeof value === 'boolean' ||
+    typeof value === 'number' ||
+    typeof value === 'bigint' ||
+    typeof value === 'string' ||
+    typeof value === 'symbol' ||
+    typeof value === 'function' ||
+    typeof value === 'object') &&
+  value != null &&
+  Boolean(value.toString)
 
 const normalizeDocumentRecord = (
   path: string[],
@@ -146,16 +158,16 @@ export const normalizeDocumentSubtree = (
                 RTE.map(env.nodeHelpers.createNodeId),
               ),
             ),
-            RTE.chainFirstW((scope) =>
+            RTE.chainW((scope) =>
               // This type name matches the method used in
               // `buildEmbedFieldConfig`.
               createNodeOfType({ ...scope.value, id: scope.id }, 'EmbedType'),
             ),
-            RTE.map((scope) => scope.id),
+            RTE.map((node) => node.id),
           )
         }
 
-        case PrismicSpecialType.Unknown: {
+        case PrismicFieldType.IntegrationField: {
           return pipe(
             value,
             RTE.fromPredicate(
@@ -167,21 +179,18 @@ export const normalizeDocumentSubtree = (
               pipe(
                 scope.value,
                 R.lookup('id'),
-                O.getOrElseW(() =>
-                  env.nodeHelpers.createNodeId(path.toString()),
-                ),
-                (id) => RTE.of(String(id)),
+                O.filter(stringableRefinement),
+                O.getOrElseW(() => env.createContentDigest(scope.value)),
+                (id) => RTE.of(id),
               ),
             ),
-            RTE.bind('type', () =>
-              // This type name matches the method used in
-              // `buildInferredNodeType` by `buildUnknownFieldConfig`.
-              RTE.of(env.nodeHelpers.createTypeName(...path)),
+            RTE.chainW((scope) =>
+              createNodeOfType({ ...scope.value, id: scope.id }, [
+                ...path,
+                'IntegrationType',
+              ]),
             ),
-            RTE.chainFirstW((scope) =>
-              createNodeOfType({ ...scope.value, id: scope.id }, scope.type),
-            ),
-            RTE.map((scope) => scope.id),
+            RTE.map((node) => node.id),
           )
         }
 
@@ -197,6 +206,7 @@ export const normalizeDocumentSubtree = (
         case PrismicFieldType.Text:
         case PrismicFieldType.Timestamp:
         case PrismicFieldType.UID:
+        case PrismicSpecialType.Unknown:
         default: {
           return RTE.throwError(
             new Error('Normalization not necessary for this value.'),

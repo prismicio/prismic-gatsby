@@ -1,8 +1,11 @@
 import { createNodeHelpers } from 'gatsby-node-helpers'
+import { PrismicFieldType } from '../src'
 
 import { createSchemaCustomization } from '../src/gatsby-node'
 import { gatsbyContext } from './__fixtures__/gatsbyContext'
 import { pluginOptions } from './__fixtures__/pluginOptions'
+import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { createPluginOptions } from './__testutils__/createPluginOptions'
 
 const nodeHelpers = createNodeHelpers({
   typePrefix: `Prismic ${pluginOptions.typePrefix}`,
@@ -1035,5 +1038,120 @@ describe('slices', () => {
         },
       },
     })
+  })
+})
+
+describe('integration fields', () => {
+  test('uses inferred type with link extension', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          integration: { type: PrismicFieldType.IntegrationField, config: {} },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixFooDataType',
+        fields: {
+          integration: {
+            type: 'PrismicPrefixFooDataIntegrationIntegrationType',
+            extensions: { link: {} },
+          },
+        },
+      },
+    })
+  })
+
+  test('creates inferred type using path', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          integration: { type: PrismicFieldType.IntegrationField, config: {} },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixFooDataIntegrationIntegrationType',
+        interfaces: ['Node'],
+        extensions: { infer: true },
+      },
+    })
+  })
+})
+
+describe('unknown fields', () => {
+  test('uses JSON type', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          unknown: {
+            // @ts-expect-error - We purposely want to use a type outside the enum of know types.
+            type: 'unknown',
+            config: {},
+          },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: {
+        name: 'PrismicPrefixFooDataType',
+        fields: {
+          unknown: {
+            type: 'JSON',
+            resolve: expect.any(Function),
+          },
+        },
+      },
+    })
+  })
+
+  test('prints message about unknown type', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          unknown: {
+            // @ts-expect-error - We purposely want to use a type outside the enum of know types.
+            type: 'unknown',
+            config: {},
+          },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.reporter?.info).toBeCalledWith(
+      expect.stringMatching(/unknown field type "unknown"/),
+    )
   })
 })

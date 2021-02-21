@@ -6560,10 +6560,10 @@ gatsby-link@^2.11.0:
     "@types/reach__router" "^1.3.7"
     prop-types "^15.7.2"
 
-gatsby-node-helpers@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/gatsby-node-helpers/-/gatsby-node-helpers-1.0.3.tgz#bf87fc301de90ed9806bbea74325acb7606887b9"
-  integrity sha512-qIBK7V77A0gpHz20H8T4dWn2gc0CJPqM3mUYeOFRTPcUgBbVKczehyrrtSlmgq+NOcqKrA+vbEkNjzx11+Equg==
+gatsby-node-helpers@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/gatsby-node-helpers/-/gatsby-node-helpers-1.1.0.tgz#44a6c74fc011b6f0fdef91efa68710695223c2d5"
+  integrity sha512-tO6WyUvLM0JA70+Z1K+iqn+dwD3kQRgjXfnNrgFFlv1UItKG7vWtxqSMLC79btHnms0KRr3Tq+zoJJUrr+z3yg==
   dependencies:
     camel-case "^4.1.2"
     pascal-case "^3.1.2"
@@ -13886,10 +13886,10 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-ts-prismic@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/ts-prismic/-/ts-prismic-0.2.2.tgz#936ea471e012371a14766014e2d91d6f38a11868"
-  integrity sha512-Kdt5DPp5M1QlHEbg3DBD8eyy5mqgsB4dDuCHdo8JIkXZeIhCvMADFUtlwAg4JwWHePgSTmEip4xeZQ17dLlB9Q==
+ts-prismic@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ts-prismic/-/ts-prismic-0.3.0.tgz#bceb7c491a7a1c653f8f426af5ad4420645cb0d3"
+  integrity sha512-umTeoQazqE8ruDtS8n9tIOefnV6fx4A7aTUmV8F+Ur+rzJ69toZCO3WuGk4868db5y6bMnNk1SbW54DM29hkRw==
   dependencies:
     type-fest "^0.20.2"
 
