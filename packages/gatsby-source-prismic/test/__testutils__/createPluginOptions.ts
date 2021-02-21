@@ -5,18 +5,14 @@ import {
   DEFAULT_LANG,
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
 } from '../../src/constants'
-import { PluginOptions, PrismicSchema } from '../../src/types'
-
-import kitchenSinkSchema from '../__fixtures__/kitchenSinkSchema.json'
+import { PluginOptions } from '../../src/types'
 
 export const createPluginOptions = (): PluginOptions => ({
   repositoryName: 'qwerty',
   accessToken: 'accessToken',
   apiEndpoint: prismic.defaultEndpoint('qwerty'),
   typePrefix: 'prefix',
-  schemas: {
-    kitchen_sink: kitchenSinkSchema as PrismicSchema,
-  },
+  schemas: {},
   lang: DEFAULT_LANG,
   webhookSecret: 'secret',
   imageImgixParams: DEFAULT_IMGIX_PARAMS,

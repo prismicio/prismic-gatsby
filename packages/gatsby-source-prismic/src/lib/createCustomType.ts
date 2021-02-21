@@ -1,4 +1,5 @@
 import * as gatsby from 'gatsby'
+import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
@@ -30,77 +31,108 @@ const collectFields = (
     S.fold(S.getObjectSemigroup<Record<string, PrismicSchemaField>>())({}),
   )
 
+const buildDataFieldConfigMap = (
+  customTypeName: string,
+  fields: Record<string, PrismicSchemaField>,
+): RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gqlc.ComposeFieldConfigMap<PrismicAPIDocumentNode, unknown> | undefined
+> =>
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.filterOrElse(
+      () => !R.isEmpty(fields),
+      () => new Error('No data fields in schema'),
+    ),
+    RTE.chainFirstW(() =>
+      createTypePath([customTypeName, 'data'], PrismicSpecialType.DocumentData),
+    ),
+    RTE.bindW('fieldConfigMap', () =>
+      buildFieldConfigMap([customTypeName, 'data'], fields),
+    ),
+    RTE.chainW((scope) =>
+      buildObjectType({
+        name: scope.nodeHelpers.createTypeName(customTypeName, 'DataType'),
+        fields: scope.fieldConfigMap,
+      }),
+    ),
+    RTE.chainFirstW(createType),
+    RTE.map(getTypeName),
+    RTE.map((typeName) => ({
+      data: typeName,
+      dataRaw: {
+        type: 'JSON!',
+        resolve: (source: PrismicAPIDocumentNode) => source.data,
+      },
+    })),
+    // We will be spreading the return value of this function into the
+    // document's config map, so we can return undefined as an empty value.
+    // Leaving it as an E.left would have stopped the custom type from being
+    // created.
+    RTE.orElse(() =>
+      RTE.of(
+        undefined as
+          | gqlc.ComposeFieldConfigMap<PrismicAPIDocumentNode, unknown>
+          | undefined,
+      ),
+    ),
+  )
+
 export const createCustomType = (
   name: string,
   schema: PrismicSchema,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
+    RTE.bind('fields', () => RTE.of(collectFields(schema))),
+    RTE.bind('partitionedFields', (scope) =>
       pipe(
-        schema,
-        collectFields,
-        (record) => buildFieldConfigMap([name, 'data'], record),
-        RTE.map(
-          R.partitionWithIndex((i) => PRISMIC_API_NON_DATA_FIELDS.includes(i)),
-        ),
-        RTE.chainFirst(() =>
-          createTypePath([name, 'data'], PrismicSpecialType.DocumentData),
-        ),
-        RTE.bind('data', (fields) =>
-          pipe(
-            buildObjectType({
-              name: deps.nodeHelpers.createTypeName(name, 'DataType'),
-              fields: fields.left,
-            }),
-            RTE.chainFirst(createType),
-            RTE.map(getTypeName),
-          ),
-        ),
-        RTE.chain((fields) =>
-          buildObjectType({
-            name: deps.nodeHelpers.createTypeName(name),
-            fields: {
-              ...fields.right,
-              // Need to type cast the property name so TypeScript can
-              // statically analize the object keys.
-              [deps.nodeHelpers.createFieldName('id') as 'id']: 'ID!',
-              data: fields.data,
-              dataRaw: {
-                type: 'JSON!',
-                resolve: (source: PrismicAPIDocumentNode) => source.data,
-              },
-              first_publication_date: {
-                type: 'Date!',
-                extensions: { dateformat: {} },
-              },
-              href: 'String!',
-              lang: 'String!',
-              last_publication_date: {
-                type: 'Date!',
-                extensions: { dateformat: {} },
-              },
-              tags: '[String!]!',
-              type: 'String!',
-              url: {
-                type: 'String',
-                resolve: (source: PrismicAPIDocumentNode) =>
-                  deps.pluginOptions.linkResolver?.(source),
-              },
-              [PREVIEWABLE_NODE_ID_FIELD]: {
-                type: 'ID!',
-                resolve: (source: PrismicAPIDocumentNode) =>
-                  source[deps.nodeHelpers.createFieldName('id')],
-              },
-            },
-            interfaces: ['Node'],
-            extensions: { infer: false },
-          }),
-        ),
-        RTE.chainFirst(createType),
-        RTE.chainFirst(() =>
-          createTypePath([name], PrismicSpecialType.Document),
-        ),
+        scope.fields,
+        R.partitionWithIndex((i) => PRISMIC_API_NON_DATA_FIELDS.includes(i)),
+        (partitionedFields) => RTE.of(partitionedFields),
       ),
     ),
+    RTE.bind('rootFieldConfigMap', (scope) =>
+      buildFieldConfigMap([name], scope.partitionedFields.right),
+    ),
+    RTE.bind('dataFieldConfigMap', (scope) =>
+      pipe(buildDataFieldConfigMap(name, scope.partitionedFields.left)),
+    ),
+    RTE.chain((scope) =>
+      buildObjectType({
+        name: scope.nodeHelpers.createTypeName(name),
+        fields: {
+          ...scope.rootFieldConfigMap,
+          ...scope.dataFieldConfigMap,
+          [scope.nodeHelpers.createFieldName('id') as 'id']: 'ID!',
+          first_publication_date: {
+            type: 'Date!',
+            extensions: { dateformat: {} },
+          },
+          href: 'String!',
+          lang: 'String!',
+          last_publication_date: {
+            type: 'Date!',
+            extensions: { dateformat: {} },
+          },
+          tags: '[String!]!',
+          type: 'String!',
+          url: {
+            type: 'String',
+            resolve: (source: PrismicAPIDocumentNode) =>
+              scope.pluginOptions.linkResolver?.(source),
+          },
+          [PREVIEWABLE_NODE_ID_FIELD]: {
+            type: 'ID!',
+            resolve: (source: PrismicAPIDocumentNode) =>
+              source[scope.nodeHelpers.createFieldName('id')],
+          },
+        },
+        interfaces: ['Node'],
+        extensions: { infer: false },
+      }),
+    ),
+    RTE.chainFirst(createType),
+    RTE.chainFirst(() => createTypePath([name], PrismicSpecialType.Document)),
   )

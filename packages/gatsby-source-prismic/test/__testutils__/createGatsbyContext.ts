@@ -18,7 +18,10 @@ const createCache = () => {
 }
 
 export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
+  // These properties are listed here to appease tests that expect them to be
+  // present. Add other properties only as needed.
   actions: Partial<gatsby.NodePluginArgs['actions']>
+  reporter: Partial<gatsby.NodePluginArgs['reporter']>
 } => {
   const nodeStore = new Map()
   const cache = createCache()

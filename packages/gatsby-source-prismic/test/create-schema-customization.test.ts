@@ -1,27 +1,10 @@
-import { createNodeHelpers } from 'gatsby-node-helpers'
-import { PrismicFieldType } from '../src'
-
+import { PrismicFieldType, PrismicSchema } from '../src'
 import { createSchemaCustomization } from '../src/gatsby-node'
-import { gatsbyContext as gatsbyContextOrig } from './__fixtures__/gatsbyContext'
-import { pluginOptions as pluginOptionsOrig } from './__fixtures__/pluginOptions'
+
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { createNodeHelpers } from './__testutils__/createNodeHelpers'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-
-const nodeHelpers = createNodeHelpers({
-  typePrefix: `Prismic ${pluginOptionsOrig.typePrefix}`,
-  fieldPrefix: 'Prismic',
-  createNodeId: gatsbyContextOrig.createNodeId,
-  createContentDigest: gatsbyContextOrig.createContentDigest,
-})
-
-const findCreateTypesCallOrig = (
-  name: string,
-  gatsbyCtx: typeof gatsbyContextOrig = gatsbyContextOrig,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any =>
-  gatsbyCtx.actions.createTypes.mock.calls.find(
-    (call) => call[0].config.name === name,
-  )[0]
+import kitchenSinkSchema from './__fixtures__/kitchenSinkSchema.json'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const findCreateTypesCall = (name: string, createTypes: jest.Mock): any =>
@@ -29,14 +12,20 @@ const findCreateTypesCall = (name: string, createTypes: jest.Mock): any =>
 
 beforeEach(() => {
   jest.clearAllMocks()
-  gatsbyContextOrig.cache.clear()
 })
 
 test('creates type path nodes', async () => {
-  // @ts-expect-error - Partial gatsbyContext provided
-  await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions()
 
-  const calls = gatsbyContextOrig.actions.createNode.mock.calls
+  pluginOptions.schemas = {
+    kitchen_sink: kitchenSinkSchema as PrismicSchema,
+  }
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+  const calls = (gatsbyContext.actions.createNode as jest.Mock).mock.calls
     .filter((call) => call[0].internal.type === 'PrismicPrefixTypePathType')
     .reduce((acc, call) => {
       acc[call[0].path.join('.')] = call[0].type
@@ -362,28 +351,24 @@ test('creates type path nodes', async () => {
 
 describe('document', () => {
   test('includes base fields', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContextOrig, {
-      ...pluginOptionsOrig,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            uid: { type: 'UID' },
-            foo: { type: 'Text' },
-          },
-        },
-      },
-    })
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    expect(gatsbyContextOrig.actions.createTypes).toBeCalledWith({
+    pluginOptions.schemas = {
+      foo: {
+        Main: {},
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSink',
+        name: 'PrismicPrefixFoo',
         fields: {
-          uid: 'String!',
           prismicId: 'ID!',
-          data: 'PrismicPrefixKitchenSinkDataType',
-          dataRaw: { type: 'JSON!', resolve: expect.any(Function) },
           first_publication_date: {
             type: 'Date!',
             extensions: { dateformat: {} },
@@ -396,8 +381,14 @@ describe('document', () => {
           },
           tags: '[String!]!',
           type: 'String!',
-          url: { type: 'String', resolve: expect.any(Function) },
-          _previewable: { type: 'ID!', resolve: expect.any(Function) },
+          url: {
+            type: 'String',
+            resolve: expect.any(Function),
+          },
+          _previewable: {
+            type: 'ID!',
+            resolve: expect.any(Function),
+          },
         },
         interfaces: ['Node'],
         extensions: { infer: false },
@@ -405,13 +396,85 @@ describe('document', () => {
     })
   })
 
-  test('dataRaw field resolves to raw data object', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
+  test('includes UID field if included in the schema', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const call = findCreateTypesCallOrig('PrismicPrefixKitchenSink')
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          uid: { type: PrismicFieldType.UID, config: {} },
+          foo: { type: PrismicFieldType.Text, config: {} },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: expect.objectContaining({
+        name: 'PrismicPrefixFoo',
+        fields: expect.objectContaining({
+          uid: 'String!',
+        }),
+      }),
+    })
+  })
+
+  test('includes data fields if the schema contains fields', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          foo: { type: PrismicFieldType.Text, config: {} },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+      kind: 'OBJECT',
+      config: expect.objectContaining({
+        name: 'PrismicPrefixFoo',
+        fields: expect.objectContaining({
+          data: 'PrismicPrefixFooDataType',
+          dataRaw: {
+            type: 'JSON!',
+            resolve: expect.any(Function),
+          },
+        }),
+      }),
+    })
+  })
+
+  test('dataRaw field resolves to raw data object', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          foo: { type: PrismicFieldType.Text, config: {} },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixFoo',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const doc = { id: 'id', data: { foo: 'bar' } }
-    const node = nodeHelpers.createNodeFactory('type')(doc)
+    const nodeHelpers = createNodeHelpers(gatsbyContext, pluginOptions)
+    const node = nodeHelpers.createNodeFactory('foo')(doc)
     const resolver = call.config.fields.dataRaw.resolve
     const res = await resolver(node)
 
@@ -419,81 +482,119 @@ describe('document', () => {
   })
 
   test('url field resolves using linkResolver', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const call = findCreateTypesCallOrig('PrismicPrefixKitchenSink')
-    const node = nodeHelpers.createNodeFactory('type')({ id: 'id' })
+    pluginOptions.schemas = {
+      foo: {
+        Main: {},
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixFoo',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
+    const nodeHelpers = createNodeHelpers(gatsbyContext, pluginOptions)
+    const node = nodeHelpers.createNodeFactory('foo')({ id: 'id' })
     const resolver = call.config.fields.url.resolve
 
     expect(resolver(node)).toBe('linkResolver')
   })
 
   test('_previewable field resolves to Prismic ID', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const call = findCreateTypesCallOrig('PrismicPrefixKitchenSink')
+    pluginOptions.schemas = {
+      foo: {
+        Main: {},
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixFoo',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const resolver = call.config.fields._previewable.resolve
-    const node = nodeHelpers.createNodeFactory('type')({ id: 'id' })
+    const nodeHelpers = createNodeHelpers(gatsbyContext, pluginOptions)
+    const node = nodeHelpers.createNodeFactory('foo')({ id: 'id' })
 
     expect(resolver(node)).toBe(node.prismicId)
   })
 
   test('data field type includes all data fields', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContextOrig, {
-      ...pluginOptionsOrig,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            uid: { type: 'UID' },
-            boolean: { type: 'Boolean' },
-            color: { type: 'Color' },
-            date: { type: 'Date' },
-            embed: { type: 'Embed' },
-            geo_point: { type: 'GeoPoint' },
-            image: { type: 'Image' },
-            link: { type: 'Link' },
-            number: { type: 'Number' },
-            select: { type: 'Select' },
-            structured_text: { type: 'StructuredText' },
-            text: { type: 'Text' },
-            timestamp: { type: 'Timestamp' },
-            group: { type: 'Group', config: { fields: { foo: 'Text' } } },
-            slices: {
-              type: 'Slices',
-              config: {
-                choices: {
-                  foo: {
-                    type: 'Slice',
-                    repeat: {},
-                    'non-repeat': {},
-                  },
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          uid: { type: PrismicFieldType.UID, config: {} },
+          boolean: { type: PrismicFieldType.Boolean, config: {} },
+          color: { type: PrismicFieldType.Color, config: {} },
+          date: { type: PrismicFieldType.Date, config: {} },
+          embed: { type: PrismicFieldType.Embed, config: {} },
+          geo_point: { type: PrismicFieldType.GeoPoint, config: {} },
+          image: { type: PrismicFieldType.Image, config: {} },
+          link: { type: PrismicFieldType.Link, config: {} },
+          number: { type: PrismicFieldType.Number, config: {} },
+          select: { type: PrismicFieldType.Select, config: {} },
+          structured_text: {
+            type: PrismicFieldType.StructuredText,
+            config: {},
+          },
+          text: { type: PrismicFieldType.Text, config: {} },
+          timestamp: { type: PrismicFieldType.Timestamp, config: {} },
+          group: {
+            type: PrismicFieldType.Group,
+            config: {
+              fields: {
+                foo: { type: PrismicFieldType.Text, config: {} },
+              },
+            },
+          },
+          slices: {
+            type: PrismicFieldType.Slices,
+            config: {
+              choices: {
+                foo: {
+                  type: PrismicFieldType.Slice,
+                  repeat: {},
+                  'non-repeat': {},
                 },
               },
             },
           },
         },
       },
-    })
+    }
 
-    expect(gatsbyContextOrig.actions.createTypes).toBeCalledWith({
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataType',
+        name: 'PrismicPrefixFooDataType',
         fields: {
           boolean: 'Boolean',
           color: 'String',
           date: { type: 'Date', extensions: { dateformat: {} } },
           embed: { type: 'PrismicPrefixEmbedType', extensions: { link: {} } },
           geo_point: 'PrismicGeoPointType',
-          group: '[PrismicPrefixKitchenSinkDataGroup]',
-          image: 'PrismicPrefixKitchenSinkDataImageImageType',
+          group: '[PrismicPrefixFooDataGroup]',
+          image: 'PrismicPrefixFooDataImageImageType',
           link: 'PrismicPrefixLinkType',
           number: 'Float',
           select: 'String',
-          slices: '[PrismicPrefixKitchenSinkDataSlicesSlicesType]',
+          slices: '[PrismicPrefixFooDataSlicesSlicesType]',
           structured_text: 'PrismicPrefixStructuredTextType',
           text: 'String',
           timestamp: { type: 'Date', extensions: { dateformat: {} } },

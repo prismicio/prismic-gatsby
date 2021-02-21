@@ -1,17 +1,24 @@
 import nock from 'nock'
 
 import { sourceNodes } from '../src/source-nodes'
-import { gatsbyContext, nodes } from './__fixtures__/gatsbyContext'
-import { pluginOptions } from './__fixtures__/pluginOptions'
+import {
+  gatsbyContext as gatsbyContextOrig,
+  nodes,
+} from './__fixtures__/gatsbyContext'
+import { pluginOptions as pluginOptionsOrig } from './__fixtures__/pluginOptions'
 import * as webhooks from './__fixtures__/webhooks'
 import mockDocument from './__fixtures__/document.json'
+import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { createPluginOptions } from './__testutils__/createPluginOptions'
+import { createNodeHelpers } from './__testutils__/createNodeHelpers'
+import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 
 const testTriggerCtx = {
-  ...gatsbyContext,
+  ...gatsbyContextOrig,
   webhookBody: webhooks.testTrigger,
 }
 
-const url = new URL(pluginOptions.apiEndpoint)
+const url = new URL(pluginOptionsOrig.apiEndpoint)
 const origin = url.origin
 
 beforeEach(() => {
@@ -19,7 +26,7 @@ beforeEach(() => {
 
   nock(origin)
     .get('/api/v2')
-    .query({ access_token: pluginOptions.accessToken })
+    .query({ access_token: pluginOptionsOrig.accessToken })
     .reply(200, {
       types: { kitchen_sink: 'Kitchen Sink' },
       refs: [
@@ -34,96 +41,124 @@ beforeEach(() => {
 })
 
 describe('any webhook', () => {
-  const unknownCtx = {
-    ...gatsbyContext,
-    webhookBody: webhooks.unknown,
-  }
-
   test('touches all nodes to prevent garbage collection', async () => {
-    nodes.forEach((node) => unknownCtx.actions.createNode(node))
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+    const nodeHelpers = createNodeHelpers(gatsbyContext, pluginOptions)
+
+    gatsbyContext.webhookBody = webhooks.unknown
+
+    const docs = [createPrismicAPIDocument(), createPrismicAPIDocument()]
+    const nodes = docs.map((doc) =>
+      nodeHelpers.createNodeFactory(doc.type)(doc),
+    )
+    nodes.forEach((node) => gatsbyContext.actions.createNode?.(node))
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(unknownCtx, pluginOptions)
+    await sourceNodes(gatsbyContext, pluginOptions)
 
-    expect(gatsbyContext.actions.touchNode).toHaveBeenCalledTimes(nodes.length)
+    for (const node of nodes) {
+      expect(gatsbyContext.actions.touchNode).toHaveBeenCalledWith({
+        nodeId: node.id,
+      })
+    }
   })
 
   test('ignores unknown webhooks', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    gatsbyContext.webhookBody = webhooks.unknown
+
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(unknownCtx, pluginOptions)
+    await sourceNodes(gatsbyContext, pluginOptions)
 
     expect(gatsbyContext.reporter.info).not.toHaveBeenCalled()
     expect(gatsbyContext.reporter.warn).not.toHaveBeenCalled()
   })
 
   test('accepts webhooks without a secret if plugin options does not include a secret', async () => {
-    const ctx = {
-      ...testTriggerCtx,
-      webhookBody: { ...testTriggerCtx.webhookBody },
-    }
-    ctx.webhookBody.secret = null
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const options = { ...pluginOptions }
-    delete options.webhookSecret
+    gatsbyContext.webhookBody = {
+      ...webhooks.testTrigger,
+      secret: undefined,
+    }
+
+    delete pluginOptions.webhookSecret
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(ctx, options)
+    await sourceNodes(gatsbyContext, pluginOptions)
 
-    const matcher = expect.stringMatching(/success/i)
-    expect(gatsbyContext.reporter.info).toHaveBeenCalledWith(matcher)
+    expect(gatsbyContext.reporter.info).toHaveBeenCalledWith(
+      expect.stringMatching(/success/i),
+    )
   })
 
   test('rejects webhooks with an invalid secret', async () => {
-    const ctx = {
-      ...testTriggerCtx,
-      webhookBody: { ...testTriggerCtx.webhookBody },
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    gatsbyContext.webhookBody = {
+      ...webhooks.testTrigger,
+      secret: 'invalid-secret',
     }
-    ctx.webhookBody.secret = 'invalid-secret'
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(ctx, pluginOptions)
+    await sourceNodes(gatsbyContext, pluginOptions)
 
-    const matcher = expect.stringMatching(/secret did not match/i)
-    expect(gatsbyContext.reporter.warn).toHaveBeenCalledWith(matcher)
+    expect(gatsbyContext.reporter.warn).toHaveBeenCalledWith(
+      expect.stringMatching(/secret did not match/i),
+    )
   })
 })
 
 describe('test-trigger', () => {
   test('reports success message', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(testTriggerCtx, pluginOptions)
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const matcher = expect.stringMatching(/success/i)
-    expect(gatsbyContext.reporter.info).toHaveBeenCalledWith(matcher)
+    gatsbyContext.webhookBody = webhooks.testTrigger
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await sourceNodes(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.reporter.info).toHaveBeenCalledWith(
+      expect.stringMatching(/success/i),
+    )
   })
 })
 
 describe('api-update', () => {
   const apiUpdateDocAdditionCtx = {
-    ...gatsbyContext,
+    ...gatsbyContextOrig,
     webhookBody: webhooks.apiUpdateDocAddition,
   }
 
   const apiUpdateDocDeletionCtx = {
-    ...gatsbyContext,
+    ...gatsbyContextOrig,
     webhookBody: webhooks.apiUpdateDocDeletion,
   }
 
   const apiUpdateReleaseDocAdditionCtx = {
-    ...gatsbyContext,
+    ...gatsbyContextOrig,
     webhookBody: webhooks.apiUpdateReleaseDocAddition,
   }
 
   const apiUpdateReleaseDocDeletionCtx = {
-    ...gatsbyContext,
+    ...gatsbyContextOrig,
     webhookBody: webhooks.apiUpdateReleaseDocDeletion,
   }
 
+  // TODO: Continue refactoring these tests to use the create* helpers.
+  // Will also need to update nock calls to use getURLOrigin and ts-prismic.
+  // See the sourcesNodes tests
   test('reports received message', async () => {
     nock(origin)
       .get('/api/v2/documents/search')
       .query({
-        access_token: pluginOptions.accessToken,
+        access_token: pluginOptionsOrig.accessToken,
         ref: 'master',
         lang: '*',
         page: 1,
@@ -136,17 +171,17 @@ describe('api-update', () => {
       })
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(apiUpdateDocAdditionCtx, pluginOptions)
+    await sourceNodes(apiUpdateDocAdditionCtx, pluginOptionsOrig)
 
     const matcher = expect.stringMatching(/received/i)
-    expect(gatsbyContext.reporter.info).toHaveBeenCalledWith(matcher)
+    expect(gatsbyContextOrig.reporter.info).toHaveBeenCalledWith(matcher)
   })
 
   test('doc addition creates/updates node', async () => {
     nock(origin)
       .get('/api/v2/documents/search')
       .query({
-        access_token: pluginOptions.accessToken,
+        access_token: pluginOptionsOrig.accessToken,
         ref: 'master',
         lang: '*',
         page: 1,
@@ -159,9 +194,9 @@ describe('api-update', () => {
       })
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(apiUpdateDocAdditionCtx, pluginOptions)
+    await sourceNodes(apiUpdateDocAdditionCtx, pluginOptionsOrig)
 
-    expect(gatsbyContext.actions.createNode).toHaveBeenCalledWith(
+    expect(gatsbyContextOrig.actions.createNode).toHaveBeenCalledWith(
       expect.objectContaining({
         prismicId: webhooks.apiUpdateDocAddition.documents[0],
       }),
@@ -172,7 +207,7 @@ describe('api-update', () => {
     nock(origin)
       .get('/api/v2/documents/search')
       .query({
-        access_token: pluginOptions.accessToken,
+        access_token: pluginOptionsOrig.accessToken,
         ref: 'master',
         lang: '*',
         page: 1,
@@ -185,22 +220,22 @@ describe('api-update', () => {
       })
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(apiUpdateDocDeletionCtx, pluginOptions)
+    await sourceNodes(apiUpdateDocDeletionCtx, pluginOptionsOrig)
 
-    expect(gatsbyContext.actions.deleteNode).toHaveBeenCalledWith(
+    expect(gatsbyContextOrig.actions.deleteNode).toHaveBeenCalledWith(
       expect.objectContaining({ node: nodes[0] }),
     )
   })
 
   test('release doc addition creates/updates node if plugin options release ID matches', async () => {
-    const options = { ...pluginOptions }
+    const options = { ...pluginOptionsOrig }
     options.releaseID =
       webhooks.apiUpdateReleaseDocAddition.releases.update?.[0]?.id
 
     nock(origin)
       .get('/api/v2/documents/search')
       .query({
-        access_token: pluginOptions.accessToken,
+        access_token: pluginOptionsOrig.accessToken,
         ref: 'XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8',
         lang: '*',
         page: 1,
@@ -215,7 +250,7 @@ describe('api-update', () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateReleaseDocAdditionCtx, options)
 
-    expect(gatsbyContext.actions.createNode).toHaveBeenCalledWith(
+    expect(gatsbyContextOrig.actions.createNode).toHaveBeenCalledWith(
       expect.objectContaining({
         prismicId:
           webhooks.apiUpdateReleaseDocAddition.releases.update?.[0]
@@ -228,7 +263,7 @@ describe('api-update', () => {
     nock(origin)
       .get('/api/v2/documents/search')
       .query({
-        access_token: pluginOptions.accessToken,
+        access_token: pluginOptionsOrig.accessToken,
         ref: 'master',
         lang: '*',
         page: 1,
@@ -241,20 +276,20 @@ describe('api-update', () => {
       })
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(apiUpdateReleaseDocAdditionCtx, pluginOptions)
+    await sourceNodes(apiUpdateReleaseDocAdditionCtx, pluginOptionsOrig)
 
-    expect(gatsbyContext.actions.createNode).not.toHaveBeenCalled()
+    expect(gatsbyContextOrig.actions.createNode).not.toHaveBeenCalled()
   })
 
   test('release doc deletion deletes node if plugin options release ID matches', async () => {
-    const options = { ...pluginOptions }
+    const options = { ...pluginOptionsOrig }
     options.releaseID =
       webhooks.apiUpdateReleaseDocDeletion.releases.update?.[0]?.id
 
     nock(origin)
       .get('/api/v2/documents/search')
       .query({
-        access_token: pluginOptions.accessToken,
+        access_token: pluginOptionsOrig.accessToken,
         ref: 'XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8',
         lang: '*',
         page: 1,
@@ -269,7 +304,7 @@ describe('api-update', () => {
     // @ts-expect-error - Partial gatsbyContext provided
     await sourceNodes(apiUpdateReleaseDocDeletionCtx, options)
 
-    expect(gatsbyContext.actions.deleteNode).toHaveBeenCalledWith(
+    expect(gatsbyContextOrig.actions.deleteNode).toHaveBeenCalledWith(
       expect.objectContaining({ node: nodes[0] }),
     )
   })
@@ -278,7 +313,7 @@ describe('api-update', () => {
     nock(origin)
       .get('/api/v2/documents/search')
       .query({
-        access_token: pluginOptions.accessToken,
+        access_token: pluginOptionsOrig.accessToken,
         ref: 'master',
         lang: '*',
         page: 1,
@@ -291,8 +326,8 @@ describe('api-update', () => {
       })
 
     // @ts-expect-error - Partial gatsbyContext provided
-    await sourceNodes(apiUpdateReleaseDocDeletionCtx, pluginOptions)
+    await sourceNodes(apiUpdateReleaseDocDeletionCtx, pluginOptionsOrig)
 
-    expect(gatsbyContext.actions.deleteNode).not.toHaveBeenCalled()
+    expect(gatsbyContextOrig.actions.deleteNode).not.toHaveBeenCalled()
   })
 })
