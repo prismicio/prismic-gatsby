@@ -15,6 +15,7 @@ import { buildGeoPointType } from './builders/buildGeoPointType'
 import { buildImageDimensionsType } from './builders/buildImageDimensionsType'
 import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
 import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
+import { buildLinkType } from './builders/buildLinkType'
 import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
 import { buildStructuredTextType } from './builders/buildStructuredTextType'
 import { buildTypePathType } from './builders/buildTypePathType'
@@ -42,6 +43,7 @@ export const createBaseTypes: RTE.ReaderTaskEither<
         buildGeoPointType,
         buildImageDimensionsType,
         buildImageThumbnailType,
+        buildLinkType,
         buildLinkTypeEnumType,
         buildStructuredTextType,
         buildTypePathType,

@@ -167,7 +167,7 @@ export const normalizeDocumentSubtree = (
           )
         }
 
-        case PrismicFieldType.IntegrationField: {
+        case PrismicFieldType.IntegrationFields: {
           return pipe(
             value,
             RTE.fromPredicate(

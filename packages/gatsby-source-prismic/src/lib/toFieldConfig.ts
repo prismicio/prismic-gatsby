@@ -58,7 +58,7 @@ export const toFieldConfig = (
       return buildImageFieldConfig(path, schema)
     }
 
-    case PrismicFieldType.IntegrationField: {
+    case PrismicFieldType.IntegrationFields: {
       return buildIntegrationFieldConfig(path, schema)
     }
 

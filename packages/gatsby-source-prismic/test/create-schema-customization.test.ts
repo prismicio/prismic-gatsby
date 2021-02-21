@@ -2,37 +2,41 @@ import { createNodeHelpers } from 'gatsby-node-helpers'
 import { PrismicFieldType } from '../src'
 
 import { createSchemaCustomization } from '../src/gatsby-node'
-import { gatsbyContext } from './__fixtures__/gatsbyContext'
-import { pluginOptions } from './__fixtures__/pluginOptions'
+import { gatsbyContext as gatsbyContextOrig } from './__fixtures__/gatsbyContext'
+import { pluginOptions as pluginOptionsOrig } from './__fixtures__/pluginOptions'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 
 const nodeHelpers = createNodeHelpers({
-  typePrefix: `Prismic ${pluginOptions.typePrefix}`,
+  typePrefix: `Prismic ${pluginOptionsOrig.typePrefix}`,
   fieldPrefix: 'Prismic',
-  createNodeId: gatsbyContext.createNodeId,
-  createContentDigest: gatsbyContext.createContentDigest,
+  createNodeId: gatsbyContextOrig.createNodeId,
+  createContentDigest: gatsbyContextOrig.createContentDigest,
 })
 
-const findCreateTypesCall = (
+const findCreateTypesCallOrig = (
   name: string,
-  gatsbyCtx: typeof gatsbyContext = gatsbyContext,
+  gatsbyCtx: typeof gatsbyContextOrig = gatsbyContextOrig,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any =>
   gatsbyCtx.actions.createTypes.mock.calls.find(
     (call) => call[0].config.name === name,
   )[0]
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const findCreateTypesCall = (name: string, createTypes: jest.Mock): any =>
+  createTypes.mock.calls.find((call) => call[0].config.name === name)[0]
+
 beforeEach(() => {
   jest.clearAllMocks()
-  gatsbyContext.cache.clear()
+  gatsbyContextOrig.cache.clear()
 })
 
 test('creates type path nodes', async () => {
   // @ts-expect-error - Partial gatsbyContext provided
-  await createSchemaCustomization(gatsbyContext, pluginOptions)
+  await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
 
-  const calls = gatsbyContext.actions.createNode.mock.calls
+  const calls = gatsbyContextOrig.actions.createNode.mock.calls
     .filter((call) => call[0].internal.type === 'PrismicPrefixTypePathType')
     .reduce((acc, call) => {
       acc[call[0].path.join('.')] = call[0].type
@@ -356,135 +360,11 @@ test('creates type path nodes', async () => {
   })
 })
 
-describe('shared types', () => {
-  test('creates link types enum type', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
-
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
-      expect.objectContaining({
-        kind: 'ENUM',
-        config: {
-          name: 'PrismicLinkTypeEnum',
-          values: { Any: {}, Document: {}, Media: {}, Web: {} },
-        },
-      }),
-    )
-  })
-
-  test('creates image dimensions type', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
-
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
-      expect.objectContaining({
-        kind: 'OBJECT',
-        config: {
-          name: 'PrismicImageDimensionsType',
-          fields: { width: 'Int!', height: 'Int!' },
-        },
-      }),
-    )
-  })
-
-  test('creates geopoint type', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
-
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
-      expect.objectContaining({
-        kind: 'OBJECT',
-        config: {
-          name: 'PrismicGeoPointType',
-          fields: { longitude: 'Int!', latitude: 'Int!' },
-        },
-      }),
-    )
-  })
-
-  test('creates structured text type', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
-
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
-      expect.objectContaining({
-        kind: 'OBJECT',
-        config: {
-          name: 'PrismicPrefixStructuredTextType',
-          fields: {
-            text: expect.objectContaining({
-              type: 'String',
-              resolve: expect.any(Function),
-            }),
-            html: expect.objectContaining({
-              type: 'String',
-              resolve: expect.any(Function),
-            }),
-            raw: expect.objectContaining({
-              type: 'JSON',
-              resolve: expect.any(Function),
-            }),
-          },
-        },
-      }),
-    )
-  })
-
-  test('creates embed type', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
-
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
-      expect.objectContaining({
-        kind: 'OBJECT',
-        config: {
-          name: 'PrismicPrefixEmbedType',
-          interfaces: ['Node'],
-          extensions: { infer: true },
-        },
-      }),
-    )
-  })
-
-  test('create image thumbnail type', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
-
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
-      kind: 'OBJECT',
-      config: {
-        name: 'PrismicPrefixImageThumbnailType',
-        fields: {
-          alt: 'String',
-          copyright: 'String',
-          dimensions: 'PrismicImageDimensionsType',
-          url: expect.objectContaining({
-            type: expect.anything(),
-            resolve: expect.any(Function),
-          }),
-          fixed: expect.objectContaining({
-            type: expect.anything(),
-            resolve: expect.any(Function),
-          }),
-          fluid: expect.objectContaining({
-            type: expect.anything(),
-            resolve: expect.any(Function),
-          }),
-          localFile: {
-            type: 'File',
-            resolve: expect.any(Function),
-          },
-        },
-      },
-    })
-  })
-})
-
 describe('document', () => {
   test('includes base fields', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
+    await createSchemaCustomization(gatsbyContextOrig, {
+      ...pluginOptionsOrig,
       schemas: {
         kitchen_sink: {
           Main: {
@@ -495,7 +375,7 @@ describe('document', () => {
       },
     })
 
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+    expect(gatsbyContextOrig.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
         name: 'PrismicPrefixKitchenSink',
@@ -527,9 +407,9 @@ describe('document', () => {
 
   test('dataRaw field resolves to raw data object', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
+    await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
 
-    const call = findCreateTypesCall('PrismicPrefixKitchenSink')
+    const call = findCreateTypesCallOrig('PrismicPrefixKitchenSink')
     const doc = { id: 'id', data: { foo: 'bar' } }
     const node = nodeHelpers.createNodeFactory('type')(doc)
     const resolver = call.config.fields.dataRaw.resolve
@@ -540,9 +420,9 @@ describe('document', () => {
 
   test('url field resolves using linkResolver', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
+    await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
 
-    const call = findCreateTypesCall('PrismicPrefixKitchenSink')
+    const call = findCreateTypesCallOrig('PrismicPrefixKitchenSink')
     const node = nodeHelpers.createNodeFactory('type')({ id: 'id' })
     const resolver = call.config.fields.url.resolve
 
@@ -551,9 +431,9 @@ describe('document', () => {
 
   test('_previewable field resolves to Prismic ID', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, pluginOptions)
+    await createSchemaCustomization(gatsbyContextOrig, pluginOptionsOrig)
 
-    const call = findCreateTypesCall('PrismicPrefixKitchenSink')
+    const call = findCreateTypesCallOrig('PrismicPrefixKitchenSink')
     const resolver = call.config.fields._previewable.resolve
     const node = nodeHelpers.createNodeFactory('type')({ id: 'id' })
 
@@ -562,8 +442,8 @@ describe('document', () => {
 
   test('data field type includes all data fields', async () => {
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
+    await createSchemaCustomization(gatsbyContextOrig, {
+      ...pluginOptionsOrig,
       schemas: {
         kitchen_sink: {
           Main: {
@@ -598,7 +478,7 @@ describe('document', () => {
       },
     })
 
-    expect(gatsbyContext.actions.createTypes).toBeCalledWith({
+    expect(gatsbyContextOrig.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
         name: 'PrismicPrefixKitchenSinkDataType',
@@ -623,19 +503,64 @@ describe('document', () => {
   })
 })
 
-describe('link fields', () => {
-  test('creates link type', async () => {
+describe('geopoint fields', () => {
+  test('creates base type', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'Link' },
-          },
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'OBJECT',
+        config: {
+          name: 'PrismicGeoPointType',
+          fields: { longitude: 'Int!', latitude: 'Int!' },
         },
-      },
-    })
+      }),
+    )
+  })
+})
+
+describe('embed fields', () => {
+  test('creates base type', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'OBJECT',
+        config: {
+          name: 'PrismicPrefixEmbedType',
+          interfaces: ['Node'],
+          extensions: { infer: true },
+        },
+      }),
+    )
+  })
+})
+
+describe('link fields', () => {
+  test('creates base types', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'ENUM',
+        config: {
+          name: 'PrismicLinkTypeEnum',
+          values: { Any: {}, Document: {}, Media: {}, Web: {} },
+        },
+      }),
+    )
 
     expect(gatsbyContext.actions.createTypes).toBeCalledWith(
       expect.objectContaining({
@@ -645,7 +570,10 @@ describe('link fields', () => {
           fields: {
             link_type: 'PrismicLinkTypeEnum',
             isBroken: 'Boolean',
-            url: { type: 'String', resolve: expect.any(Function) },
+            url: {
+              type: 'String',
+              resolve: expect.any(Function),
+            },
             target: 'String',
             size: 'Int',
             id: 'ID',
@@ -663,27 +591,91 @@ describe('link fields', () => {
               type: 'File',
               resolve: expect.any(Function),
             },
-            raw: { type: 'JSON', resolve: expect.any(Function) },
+            raw: {
+              type: 'JSON',
+              resolve: expect.any(Function),
+            },
           },
         },
       }),
     )
   })
 
-  test('localFile field resolves to remote node if link type is Media and url is present', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'Link' },
-          },
-        },
-      },
-    })
+  test('document field resolves to linked node ID if link type is Document and document is present', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const call = findCreateTypesCall('PrismicPrefixLinkType')
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixLinkType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
+    const field = {
+      link_type: 'Document',
+      type: 'foo',
+      id: 'id',
+      isBroken: false,
+    }
+    const resolver = call.config.fields.document.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe(`Prismic prefix ${field.type} ${field.id}`)
+  })
+
+  test('document field resolves to null if link type is Document and isBroken is true', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixLinkType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
+    const field = {
+      link_type: 'Document',
+      type: 'foo',
+      id: 'id',
+      isBroken: true,
+    }
+    const resolver = call.config.fields.document.resolve
+    const res = await resolver(field)
+
+    expect(res).toBeNull()
+  })
+
+  test('document field resolves to null if link type is not Document', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixLinkType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
+    const field = { link_type: 'Media', url: 'url' }
+    const resolver = call.config.fields.document.resolve
+    const res = await resolver(field)
+
+    expect(res).toBeNull()
+  })
+
+  test('localFile field resolves to remote node if link type is Media and url is present', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixLinkType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = { url: 'url', link_type: 'Media' }
     const resolver = call.config.fields.localFile.resolve
     const res = await resolver(field)
@@ -692,63 +684,85 @@ describe('link fields', () => {
   })
 
   test('localFile field resolves to null if link type is Media and url is not present', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'Link' },
-          },
-        },
-      },
-    })
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const call = findCreateTypesCall('PrismicPrefixLinkType')
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixLinkType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = { url: null, link_type: 'Media' }
     const resolver = call.config.fields.localFile.resolve
     const res = await resolver(field)
 
-    expect(res).toBe(null)
+    expect(res).toBeNull()
   })
 
   test('localFile field resolves to null if link type is not Media', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'Link' },
-          },
-        },
-      },
-    })
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const call = findCreateTypesCall('PrismicPrefixLinkType')
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixLinkType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = { url: 'url', link_type: 'Document' }
     const resolver = call.config.fields.localFile.resolve
     const res = await resolver(field)
 
-    expect(res).toBe(null)
+    expect(res).toBeNull()
   })
 })
 
 describe('structured text fields', () => {
-  test('text field resolves to text', async () => {
+  test('creates base type', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'StructuredText' },
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'OBJECT',
+        config: {
+          name: 'PrismicPrefixStructuredTextType',
+          fields: {
+            text: expect.objectContaining({
+              type: 'String',
+              resolve: expect.any(Function),
+            }),
+            html: expect.objectContaining({
+              type: 'String',
+              resolve: expect.any(Function),
+            }),
+            raw: expect.objectContaining({
+              type: 'JSON',
+              resolve: expect.any(Function),
+            }),
           },
         },
-      },
-    })
+      }),
+    )
+  })
 
-    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+  test('text field resolves to text', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixStructuredTextType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
     const resolver = call.config.fields.text.resolve
     const res = await resolver(field)
@@ -757,13 +771,18 @@ describe('structured text fields', () => {
   })
 
   test('html field resolves to html text', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      htmlSerializer: undefined,
-    })
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
 
-    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+    delete pluginOptions.htmlSerializer
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixStructuredTextType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
     const resolver = call.config.fields.html.resolve
     const res = await resolver(field)
@@ -772,10 +791,16 @@ describe('structured text fields', () => {
   })
 
   test('html field uses htmlSerializer if provided', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+    const call = findCreateTypesCall(
+      'PrismicPrefixStructuredTextType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
     const resolver = call.config.fields.html.resolve
     const res = await resolver(field)
@@ -784,10 +809,16 @@ describe('structured text fields', () => {
   })
 
   test('raw field resolves to raw value', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
 
-    const call = findCreateTypesCall('PrismicPrefixStructuredTextType')
+    const call = findCreateTypesCall(
+      'PrismicPrefixStructuredTextType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
     const resolver = call.config.fields.raw.resolve
     const res = await resolver(field)
@@ -797,23 +828,73 @@ describe('structured text fields', () => {
 })
 
 describe('image fields', () => {
-  test('creates field-specific image type', async () => {
+  test('creates base types', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
     // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'Image' },
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'OBJECT',
+        config: {
+          name: 'PrismicImageDimensionsType',
+          fields: { width: 'Int!', height: 'Int!' },
+        },
+      }),
+    )
+
+    expect(gatsbyContext.actions.createTypes).toBeCalledWith(
+      expect.objectContaining({
+        kind: 'OBJECT',
+        config: {
+          name: 'PrismicPrefixImageThumbnailType',
+          fields: {
+            alt: 'String',
+            copyright: 'String',
+            dimensions: 'PrismicImageDimensionsType',
+            url: expect.objectContaining({
+              type: expect.anything(),
+              resolve: expect.any(Function),
+            }),
+            fixed: expect.objectContaining({
+              type: expect.anything(),
+              resolve: expect.any(Function),
+            }),
+            fluid: expect.objectContaining({
+              type: expect.anything(),
+              resolve: expect.any(Function),
+            }),
+            localFile: {
+              type: 'File',
+              resolve: expect.any(Function),
+            },
           },
         },
+      }),
+    )
+  })
+
+  test('creates field-specific image type', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          image: { type: PrismicFieldType.Image, config: {} },
+        },
       },
-    })
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
 
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataFooImageType',
+        name: 'PrismicPrefixFooDataImageImageType',
         fields: expect.objectContaining({
           alt: 'String',
           copyright: 'String',
@@ -840,29 +921,31 @@ describe('image fields', () => {
   })
 
   test('creates field-specific thumbnail types', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: {
-              type: 'Image',
-              config: {
-                thumbnails: [{ name: 'Mobile', width: '1000' }],
-              },
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          image: {
+            type: PrismicFieldType.Image,
+            config: {
+              thumbnails: [{ name: 'Mobile', width: 1000 }],
             },
           },
         },
       },
-    })
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
 
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: expect.objectContaining({
-        name: 'PrismicPrefixKitchenSinkDataFooImageType',
+        name: 'PrismicPrefixFooDataImageImageType',
         fields: expect.objectContaining({
-          thumbnails: 'PrismicPrefixKitchenSinkDataFooImageThumbnailsType',
+          thumbnails: 'PrismicPrefixFooDataImageImageThumbnailsType',
         }),
       }),
     })
@@ -870,7 +953,7 @@ describe('image fields', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataFooImageThumbnailsType',
+        name: 'PrismicPrefixFooDataImageImageThumbnailsType',
         fields: {
           Mobile: 'PrismicPrefixImageThumbnailType',
         },
@@ -879,19 +962,24 @@ describe('image fields', () => {
   })
 
   test('localFile field resolves to remote node if image is present', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'Image' },
-          },
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          image: { type: PrismicFieldType.Image, config: {} },
         },
       },
-    })
+    }
 
-    const call = findCreateTypesCall('PrismicPrefixKitchenSinkDataFooImageType')
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixFooDataImageImageType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = { url: 'url' }
     const resolver = call.config.fields.localFile.resolve
     const res = await resolver(field)
@@ -900,19 +988,24 @@ describe('image fields', () => {
   })
 
   test('localFile field resolves to null if image is not present', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            foo: { type: 'Image' },
-          },
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          image: { type: PrismicFieldType.Image, config: {} },
         },
       },
-    })
+    }
 
-    const call = findCreateTypesCall('PrismicPrefixKitchenSinkDataFooImageType')
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixFooDataImageImageType',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
     const field = { url: null }
     const resolver = call.config.fields.localFile.resolve
     const res = await resolver(field)
@@ -923,32 +1016,43 @@ describe('image fields', () => {
 
 describe('slices', () => {
   test('creates types for each slice choice', async () => {
-    // @ts-expect-error - Partial gatsbyContext provided
-    await createSchemaCustomization(gatsbyContext, {
-      ...pluginOptions,
-      schemas: {
-        kitchen_sink: {
-          Main: {
-            slices: {
-              type: 'Slices',
-              config: {
-                choices: {
-                  foo: {
-                    type: 'Slice',
-                    repeat: {
-                      repeat_text: { type: 'Text' },
-                    },
-                    'non-repeat': {
-                      non_repeat_text: { type: 'Text' },
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          slices: {
+            type: PrismicFieldType.Slices,
+            config: {
+              choices: {
+                foo: {
+                  type: PrismicFieldType.Slice,
+                  repeat: {
+                    repeat_text: {
+                      type: PrismicFieldType.Text,
+                      config: {},
                     },
                   },
-                  bar: {
-                    type: 'Slice',
-                    repeat: {
-                      repeat_text: { type: 'Text' },
+                  'non-repeat': {
+                    non_repeat_text: {
+                      type: PrismicFieldType.Text,
+                      config: {},
                     },
-                    'non-repeat': {
-                      non_repeat_text: { type: 'Text' },
+                  },
+                },
+                bar: {
+                  type: PrismicFieldType.Slice,
+                  repeat: {
+                    repeat_text: {
+                      type: PrismicFieldType.Text,
+                      config: {},
+                    },
+                  },
+                  'non-repeat': {
+                    non_repeat_text: {
+                      type: PrismicFieldType.Text,
+                      config: {},
                     },
                   },
                 },
@@ -957,15 +1061,18 @@ describe('slices', () => {
           },
         },
       },
-    })
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
 
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'UNION',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataSlicesSlicesType',
+        name: 'PrismicPrefixFooDataSlicesSlicesType',
         types: [
-          'PrismicPrefixKitchenSinkDataSlicesBar',
-          'PrismicPrefixKitchenSinkDataSlicesFoo',
+          'PrismicPrefixFooDataSlicesBar',
+          'PrismicPrefixFooDataSlicesFoo',
         ],
         resolveType: expect.any(Function),
       },
@@ -974,10 +1081,10 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataSlicesFoo',
+        name: 'PrismicPrefixFooDataSlicesFoo',
         fields: {
-          items: '[PrismicPrefixKitchenSinkDataSlicesFooItem]',
-          primary: 'PrismicPrefixKitchenSinkDataSlicesFooPrimary',
+          items: '[PrismicPrefixFooDataSlicesFooItem]',
+          primary: 'PrismicPrefixFooDataSlicesFooPrimary',
           slice_type: 'String!',
           slice_label: 'String',
         },
@@ -988,7 +1095,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataSlicesFooPrimary',
+        name: 'PrismicPrefixFooDataSlicesFooPrimary',
         fields: {
           non_repeat_text: 'String',
         },
@@ -998,7 +1105,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataSlicesFooItem',
+        name: 'PrismicPrefixFooDataSlicesFooItem',
         fields: {
           repeat_text: 'String',
         },
@@ -1008,10 +1115,10 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataSlicesBar',
+        name: 'PrismicPrefixFooDataSlicesBar',
         fields: {
-          items: '[PrismicPrefixKitchenSinkDataSlicesBarItem]',
-          primary: 'PrismicPrefixKitchenSinkDataSlicesBarPrimary',
+          items: '[PrismicPrefixFooDataSlicesBarItem]',
+          primary: 'PrismicPrefixFooDataSlicesBarPrimary',
           slice_type: 'String!',
           slice_label: 'String',
         },
@@ -1022,7 +1129,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataSlicesBarPrimary',
+        name: 'PrismicPrefixFooDataSlicesBarPrimary',
         fields: {
           non_repeat_text: 'String',
         },
@@ -1032,7 +1139,7 @@ describe('slices', () => {
     expect(gatsbyContext.actions.createTypes).toBeCalledWith({
       kind: 'OBJECT',
       config: {
-        name: 'PrismicPrefixKitchenSinkDataSlicesBarItem',
+        name: 'PrismicPrefixFooDataSlicesBarItem',
         fields: {
           repeat_text: 'String',
         },
@@ -1049,7 +1156,7 @@ describe('integration fields', () => {
     pluginOptions.schemas = {
       foo: {
         Main: {
-          integration: { type: PrismicFieldType.IntegrationField, config: {} },
+          integration: { type: PrismicFieldType.IntegrationFields, config: {} },
         },
       },
     }
@@ -1078,7 +1185,7 @@ describe('integration fields', () => {
     pluginOptions.schemas = {
       foo: {
         Main: {
-          integration: { type: PrismicFieldType.IntegrationField, config: {} },
+          integration: { type: PrismicFieldType.IntegrationFields, config: {} },
         },
       },
     }

@@ -107,7 +107,7 @@ export enum PrismicFieldType {
   GeoPoint = 'GeoPoint',
   Group = 'Group',
   Image = 'Image',
-  IntegrationField = 'IntegrationFields', // Prismic uses the plural version
+  IntegrationFields = 'IntegrationFields',
   Link = 'Link',
   Number = 'Number',
   Select = 'Select',

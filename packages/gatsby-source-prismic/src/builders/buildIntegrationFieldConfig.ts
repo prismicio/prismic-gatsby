@@ -14,7 +14,7 @@ export const buildIntegrationFieldConfig: FieldConfigCreator = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
-      createTypePath(path, PrismicFieldType.IntegrationField),
+      createTypePath(path, PrismicFieldType.IntegrationFields),
     ),
     RTE.chain(() => buildInferredNodeType([...path, 'IntegrationType'])),
     RTE.chainFirst(createType),

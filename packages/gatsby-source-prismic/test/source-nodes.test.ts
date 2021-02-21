@@ -1,15 +1,14 @@
 import nock from 'nock'
 
+import { PluginOptions, PrismicFieldType } from '../src'
 import { createSchemaCustomization } from '../src/create-schema-customization'
 import { sourceNodes } from '../src/source-nodes'
-import { pluginOptions as pluginOptionsOrig } from './__fixtures__/pluginOptions'
-import { PluginOptions, PrismicFieldType } from '../src'
 
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { getURLOrigin } from './__testutils__/getURLOrigin'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
+import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { getURLOrigin } from './__testutils__/getURLOrigin'
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -31,8 +30,8 @@ const nockRepositoryEndpoint = (
           isMasterRef: true,
         },
         {
-          id: 'XyfxIPl3p7YAQ7Mg',
-          ref: 'XyghHfl3p3ACRIZH~Xyfw_Pl3p90AQ7J8',
+          id: 'release',
+          ref: 'release',
           isMasterRef: false,
         },
       ],
@@ -48,7 +47,7 @@ test('creates nodes', async () => {
   nock(pluginOptions.apiEndpoint)
     .get('/documents/search')
     .query({
-      access_token: pluginOptionsOrig.accessToken,
+      access_token: pluginOptions.accessToken,
       ref: 'master',
       lang: '*',
       page: 1,
@@ -77,7 +76,7 @@ test('uses apiEndpoint plugin option if provided', async () => {
   nock(pluginOptions.apiEndpoint)
     .get('/documents/search')
     .query({
-      access_token: pluginOptionsOrig.accessToken,
+      access_token: pluginOptions.accessToken,
       ref: 'master',
       lang: '*',
       page: 1,
@@ -185,7 +184,7 @@ describe('data normalization', () => {
     pluginOptions.schemas = {
       foo: {
         Main: {
-          integration: { type: PrismicFieldType.IntegrationField, config: {} },
+          integration: { type: PrismicFieldType.IntegrationFields, config: {} },
         },
       },
     }
