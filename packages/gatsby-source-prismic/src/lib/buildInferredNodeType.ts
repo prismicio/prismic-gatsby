@@ -21,6 +21,6 @@ export const buildInferredNodeType = (
   path: string[],
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
-    RTE.asks((deps: Dependencies) => deps.nodeHelpers.createTypeName(...path)),
+    RTE.asks((deps: Dependencies) => deps.nodeHelpers.createTypeName(path)),
     RTE.chain(buildNamedInferredNodeType),
   )

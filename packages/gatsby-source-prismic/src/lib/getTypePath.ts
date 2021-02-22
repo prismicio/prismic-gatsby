@@ -11,7 +11,7 @@ export const getTypePath = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('nodeId', (scope) =>
-      RTE.of(scope.nodeHelpers.createNodeId('TypePathType', path.toString())),
+      RTE.of(scope.nodeHelpers.createNodeId(['TypePathType', path.toString()])),
     ),
     RTE.chain((scope) =>
       RTE.fromIO(() => scope.getNode(scope.nodeId) as TypePathNode),

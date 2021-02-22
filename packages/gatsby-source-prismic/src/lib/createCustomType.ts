@@ -53,7 +53,7 @@ const buildDataFieldConfigMap = (
     ),
     RTE.chainW((scope) =>
       buildObjectType({
-        name: scope.nodeHelpers.createTypeName(customTypeName, 'DataType'),
+        name: scope.nodeHelpers.createTypeName([customTypeName, 'DataType']),
         fields: scope.fieldConfigMap,
       }),
     ),
@@ -97,7 +97,7 @@ export const createCustomType = (
       buildFieldConfigMap([name], scope.partitionedFields.right),
     ),
     RTE.bind('dataFieldConfigMap', (scope) =>
-      pipe(buildDataFieldConfigMap(name, scope.partitionedFields.left)),
+      buildDataFieldConfigMap(name, scope.partitionedFields.left),
     ),
     RTE.chain((scope) =>
       buildObjectType({

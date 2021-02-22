@@ -42,7 +42,7 @@ export const buildLinkType: RTE.ReaderTaskEither<
             source.type &&
             source.id &&
             !source.isBroken
-              ? deps.nodeHelpers.createNodeId(source.type, source.id)
+              ? deps.nodeHelpers.createNodeId(source.id)
               : null,
           extensions: { link: {} },
         },

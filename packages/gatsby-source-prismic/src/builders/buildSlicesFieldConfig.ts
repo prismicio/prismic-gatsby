@@ -70,7 +70,7 @@ const buildSliceChoiceType = (
         ),
         RTE.chain((fields) =>
           buildObjectType({
-            name: deps.nodeHelpers.createTypeName(...path),
+            name: deps.nodeHelpers.createTypeName(path),
             fields: {
               ...fields,
               slice_type: 'String!',
@@ -114,10 +114,10 @@ export const buildSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField
         RTE.map(A.map(getTypeName)),
         RTE.chain((types) =>
           buildUnionType({
-            name: deps.nodeHelpers.createTypeName(...path, 'SlicesType'),
+            name: deps.nodeHelpers.createTypeName([...path, 'SlicesType']),
             types,
             resolveType: (source: PrismicAPISliceField) =>
-              deps.nodeHelpers.createTypeName(...path, source.slice_type),
+              deps.nodeHelpers.createTypeName([...path, source.slice_type]),
           }),
         ),
         RTE.chainFirst(createType),

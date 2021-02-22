@@ -6560,10 +6560,10 @@ gatsby-link@^2.11.0:
     "@types/reach__router" "^1.3.7"
     prop-types "^15.7.2"
 
-gatsby-node-helpers@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/gatsby-node-helpers/-/gatsby-node-helpers-1.1.0.tgz#44a6c74fc011b6f0fdef91efa68710695223c2d5"
-  integrity sha512-tO6WyUvLM0JA70+Z1K+iqn+dwD3kQRgjXfnNrgFFlv1UItKG7vWtxqSMLC79btHnms0KRr3Tq+zoJJUrr+z3yg==
+gatsby-node-helpers@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/gatsby-node-helpers/-/gatsby-node-helpers-1.2.1.tgz#9d21adcaa2e02baa67d4bdf16a3bb27a3a84d553"
+  integrity sha512-fYNQhp7/3sBUkb9QR31CZm6XChN2A78npow/PNglx5U1Sv8Zmd07Io8Mc2K7UO2hUCCSuAmgkSqlqq71NupdQA==
   dependencies:
     camel-case "^4.1.2"
     pascal-case "^3.1.2"

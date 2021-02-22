@@ -12,11 +12,6 @@ import {
   PrismicSpecialType,
 } from '../types'
 
-// TODO: Convert this to a JSON field. Continue to print the message.
-// This was originally intended for Integration fields but the schemas provide
-// enough information for integration fields to be handled in a more correct
-// way.
-// TODO: Add test
 export const buildUnknownFieldConfig: FieldConfigCreator = (
   path: string[],
   schema: PrismicSchemaField,

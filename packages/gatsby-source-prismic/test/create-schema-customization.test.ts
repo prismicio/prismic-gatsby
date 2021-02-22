@@ -722,7 +722,7 @@ describe('link fields', () => {
     const resolver = call.config.fields.document.resolve
     const res = await resolver(field)
 
-    expect(res).toBe(`Prismic prefix ${field.type} ${field.id}`)
+    expect(res).toBe(`Prismic prefix ${field.id}`)
   })
 
   test('document field resolves to null if link type is Document and isBroken is true', async () => {

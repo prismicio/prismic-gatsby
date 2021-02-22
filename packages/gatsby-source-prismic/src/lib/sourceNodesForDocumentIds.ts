@@ -3,7 +3,7 @@ import { constVoid, pipe } from 'fp-ts/function'
 
 import { Dependencies } from '../types'
 
-import { createNodes } from './createNodes'
+import { createGloballyUniqueNodes } from './createGloballyUniqueNodes'
 import { queryDocumentsByIds } from './queryDocumentsByIds'
 
 /**
@@ -18,6 +18,6 @@ export const sourceNodesForDocumentIds = (
 ): RTE.ReaderTaskEither<Dependencies, Error, void> =>
   pipe(
     queryDocumentsByIds(documentIds),
-    RTE.chainW(createNodes),
+    RTE.chainW(createGloballyUniqueNodes),
     RTE.map(constVoid),
   )

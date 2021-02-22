@@ -1,6 +1,6 @@
 import nock from 'nock'
 
-import { PluginOptions, PrismicFieldType } from '../src'
+import { PrismicFieldType } from '../src'
 import { createSchemaCustomization } from '../src/create-schema-customization'
 import { sourceNodes } from '../src/source-nodes'
 
@@ -8,35 +8,11 @@ import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
-import { getURLOrigin } from './__testutils__/getURLOrigin'
+import { nockRepositoryEndpoint } from './__testutils__/nockRepositoryEndpoint'
 
 beforeEach(() => {
   jest.clearAllMocks()
 })
-
-const nockRepositoryEndpoint = (
-  pluginOptions: PluginOptions,
-  path = '/api/v2',
-): void => {
-  nock(getURLOrigin(pluginOptions.apiEndpoint))
-    .get(path)
-    .query({ access_token: pluginOptions.accessToken })
-    .reply(200, {
-      types: { page: 'Page' },
-      refs: [
-        {
-          id: 'master',
-          ref: 'master',
-          isMasterRef: true,
-        },
-        {
-          id: 'release',
-          ref: 'release',
-          isMasterRef: false,
-        },
-      ],
-    })
-}
 
 test('creates nodes', async () => {
   const gatsbyContext = createGatsbyContext()

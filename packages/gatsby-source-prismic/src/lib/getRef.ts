@@ -33,10 +33,7 @@ export const getRef: RTE.ReaderTaskEither<Dependencies, Error, string> = pipe(
   RTE.bind('repository', (scope) =>
     RTE.fromTaskEither(
       TE.tryCatch(
-        () =>
-          got(
-            scope.repositoryURL,
-          ).json() as Promise<prismic.Response.Repository>,
+        () => got(scope.repositoryURL).json<prismic.Response.Repository>(),
         (error) => error as Error,
       ),
     ),

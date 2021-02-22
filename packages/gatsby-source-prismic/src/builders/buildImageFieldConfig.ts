@@ -38,7 +38,10 @@ const createThumbnailsType = (
     ),
     RTE.chain((scope) =>
       buildObjectType({
-        name: scope.nodeHelpers.createTypeName(...path, 'ImageThumbnailsType'),
+        name: scope.nodeHelpers.createTypeName([
+          ...path,
+          'ImageThumbnailsType',
+        ]),
         fields: scope.fields,
       }),
     ),
@@ -61,7 +64,7 @@ export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> 
     RTE.bind('baseFields', () => buildImageBaseFieldConfigMap),
     RTE.chain((scope) =>
       buildObjectType({
-        name: scope.nodeHelpers.createTypeName(...path, 'ImageType'),
+        name: scope.nodeHelpers.createTypeName([...path, 'ImageType']),
         fields: scope.thumbnailsTypeName
           ? { ...scope.baseFields, thumbnails: scope.thumbnailsTypeName }
           : scope.baseFields,
