@@ -8,6 +8,6 @@ import { Dependencies, FieldConfigCreator, PrismicFieldType } from '../types'
 export const buildStructuredTextFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.GeoPoint)),
+    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.StructuredText)),
     RTE.map((deps) => deps.nodeHelpers.createTypeName('StructuredTextType')),
   )
