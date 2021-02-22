@@ -38,7 +38,7 @@
     "gatsby-plugin-imgix": "^0.9.0",
     "gatsby-source-filesystem": "^2.11.0",
     "got": "^11.8.1",
-    "prismic-dom": "^2.2.4",
+    "prismic-dom": "^2.2.5",
     "tiny-hashes": "^1.0.1",
     "ts-prismic": "^0.3.0"
   },
