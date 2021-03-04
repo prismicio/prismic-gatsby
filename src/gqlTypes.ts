@@ -190,6 +190,8 @@ export const types = gql`
     media_id: ID
     "A description for the resource."
     description: String
+    "The ID of a video. from viemo"
+    video_id: ID
   }
 
   "Dimensions for images."
