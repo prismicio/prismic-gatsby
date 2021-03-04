@@ -8,7 +8,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * add video_id to oembed for issue [#286](https://github.com/angeloashmore/gatsby-source-prismic/issues/286) ([#324](https://github.com/angeloashmore/gatsby-source-prismic/issues/324)) ([4c19d9d](https://github.com/angeloashmore/gatsby-source-prismic/commit/4c19d9d8e17bda9ce7ca2e3fa7900de399acffcf))
-* remove vimeo from `video_id` field description ([d00c2e0](https://github.com/angeloashmore/gatsby-source-prismic/commit/d00c2e0505cbc4b1a78127dd33d8a91455b7071e))
 
 ### [3.3.3](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.2...v3.3.3) (2021-02-02)
 
