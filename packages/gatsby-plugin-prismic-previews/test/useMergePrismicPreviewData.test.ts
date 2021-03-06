@@ -47,6 +47,11 @@ declare global {
   }
 }
 
+// This global variable is used by Gatsby's `withAssetPrefix` to build a URL
+// using the site's domain.
+//
+// A site would set this variable using the `siteMetadata.siteUrl` property in
+// its `gatsby-config.js`.
 window.__BASE_PATH__ = 'https://example.com'
 
 beforeEach(() => {
@@ -99,23 +104,8 @@ test('merges data only where `_previewable` field matches', async () => {
       pageSize: 100,
     })
     .reply(200, {
-      total_pages: 2,
-      results: queryResults.slice(0, 2),
-    })
-
-  nock(new URL(pluginOptions.apiEndpoint).origin)
-    .get('/api/v2/documents/search')
-    .query({
-      ref: token,
-      access_token: pluginOptions.accessToken,
-      lang: pluginOptions.lang,
-      graphQuery: pluginOptions.graphQuery,
-      page: 2,
-      pageSize: 100,
-    })
-    .reply(200, {
-      total_pages: 2,
-      results: queryResults.slice(2),
+      total_pages: 1,
+      results: queryResults,
     })
 
   nock(window.__BASE_PATH__)

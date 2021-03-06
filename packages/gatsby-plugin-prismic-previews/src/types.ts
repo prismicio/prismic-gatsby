@@ -21,7 +21,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
 
 export type TypePathsStore = Record<string, gatsbyPrismic.PrismicTypePathType>
 
-export interface PrismicAPIDocumentNodeInput<TData = unknown>
+export interface PrismicAPIDocumentNodeInput<TData = Record<string, unknown>>
   extends prismic.Document<TData>,
     gatsby.NodeInput {
   prismicId: string

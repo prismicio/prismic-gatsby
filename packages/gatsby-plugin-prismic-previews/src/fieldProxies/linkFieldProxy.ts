@@ -2,7 +2,7 @@ import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as PrismicDOM from 'prismic-dom'
 import * as RE from 'fp-ts/ReaderEither'
 import * as O from 'fp-ts/Option'
-import { pipe } from 'fp-ts/function'
+import { constNull, pipe } from 'fp-ts/function'
 
 import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 
@@ -23,30 +23,25 @@ export const proxyValue = (
     RE.bind('url', (env) =>
       RE.of(PrismicDOM.Link.url(fieldValue, env.linkResolver)),
     ),
-    RE.bind('enhancedFieldValue', (env) =>
-      RE.of({
-        ...fieldValue,
-        url: env.url,
-        raw: fieldValue,
-      }),
-    ),
-    RE.map(
-      (env) =>
-        new Proxy(env.enhancedFieldValue, {
-          get: (target, prop, receiver): unknown =>
-            pipe(
-              prop,
-              O.fromPredicate(
-                (prop) =>
-                  prop === 'document' &&
-                  fieldValue.link_type === 'Document' &&
-                  typeof fieldValue.id === 'string',
-              ),
-              O.chain(() =>
-                O.fromNullable(env.getNode(fieldValue.id as string)),
-              ),
-              O.getOrElse(() => Reflect.get(target, prop, receiver)),
-            ),
-        }),
-    ),
+    RE.map((env) => ({
+      ...fieldValue,
+      url: env.url,
+      raw: fieldValue,
+      // A getter is used here to avoid an infinite loop if documents have
+      // circular references in link fields. This effectively makes the
+      // `document` field lazy.
+      get document() {
+        return pipe(
+          fieldValue.id,
+          O.fromPredicate(
+            (id): id is string =>
+              fieldValue.link_type === 'Document' &&
+              !fieldValue.isBroken &&
+              typeof id === 'string',
+          ),
+          O.chain((id) => O.fromNullable(env.getNode(id))),
+          O.getOrElseW(constNull),
+        )
+      },
+    })),
   )

@@ -5,6 +5,7 @@ import * as RE from 'fp-ts/ReaderEither'
 import * as E from 'fp-ts/Either'
 import * as IO from 'fp-ts/IO'
 import * as A from 'fp-ts/Array'
+import * as R from 'fp-ts/Record'
 import { constVoid, pipe } from 'fp-ts/function'
 import { createNodeHelpers } from 'gatsby-node-helpers'
 import { GLOBAL_TYPE_PREFIX } from 'gatsby-source-prismic'
@@ -30,7 +31,7 @@ import {
   TypePathsStore,
   UnknownRecord,
 } from './types'
-import { PrismicContextActionType } from './context'
+import { PrismicContextActionType, PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 
 export type UsePrismicPreviewBootstrapFn = () => void
@@ -105,12 +106,68 @@ interface UsePrismicPreviewBootstrapProgramEnv
 
   // Proxify node env
   getNode(id: string): PrismicAPIDocumentNodeInput | undefined
-  getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType
+  getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType | undefined
   linkResolver: LinkResolver
   htmlSerializer?: HTMLSerializer
   imageImgixParams: PluginOptions['imageImgixParams']
   imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
 }
+
+// interface DetectPreviewSessionEnv {
+//   repositoryName: string
+//   isBootstrapped: boolean
+// }
+
+// const detectIfBootstrapNeeded: RTE.ReaderTaskEither<
+//   UsePrismicPreviewBootstrapProgramEnv,
+//   Error,
+//   void
+// > = pipe(
+//   RTE.ask<DetectPreviewSessionEnv>(),
+//   // Only continue if this is a preview session, which is determined by the
+//   // presence of the Prismic preview cookie.
+//   RTE.bindW('token', () =>
+//     pipe(
+//       RTE.fromIOEither(getCookie(prismic.cookie.preview)),
+//       RTE.mapLeft(() => new Error('preview cookie not present')),
+//     ),
+//   ),
+
+//   // Only continue if this preview session is for this repository.
+//   RTE.chainFirstW((env) =>
+//     RTE.fromEither(
+//       validatePreviewRefForRepository(env.repositoryName, env.token),
+//     ),
+//   ),
+
+//   // TODO: wrap these errors in the reporter format
+//   // Only bootstrap once.
+//   RTE.chainW(
+//     RTE.fromPredicate(
+//       (env) => !env.isBootstrapped,
+//       (env) =>
+//         new Error(
+//           `Cannot bootstrap a repository that has already been bootstrapped: ${env.repositoryName}`,
+//         ),
+//     ),
+//   ),
+
+//   RTE.map(constVoid),
+// )
+
+// interface PopulateTypePathsEnv {
+//   appendTypePaths(typePathsStore: TypePathsStore): IO.IO<void>
+// }
+
+// const populateTypePaths: RTE.ReaderTaskEither<
+//   PopulateTypePathsEnv,
+//   Error,
+//   void
+// > = pipe(
+//   RTE.ask<PopulateTypePathsEnv>(),
+//   RTE.bindW('typePathsStore', () => fetchTypePathsStore),
+//   RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
+// )
 
 const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   UsePrismicPreviewBootstrapProgramEnv,
@@ -152,6 +209,7 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
 
   RTE.bindW('typePathsStore', () => fetchTypePathsStore),
   RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
+
   RTE.bind('nodeHelpers', (env) =>
     RTE.of(
       // These node helpers must match node helpers from `gatsby-source-prismic`.
@@ -198,6 +256,14 @@ export const usePrismicPreviewBootstrap = (
   repositoryName: string,
   config: UsePrismicPreviewBootstrapConfig,
 ): readonly [UsePrismicPreviewBootstrapState, UsePrismicPreviewBootstrapFn] => {
+  // A ref to the latest contextState is setup specifically for getTypePath
+  // which is populated during the program's runtime. Since
+  // contextState.typePaths is empty at all times during the program's run due
+  // to closures, we need to opt out of the closure and use a ref.
+  //
+  // If you have a better idea how to handle this, please share!
+  const contextStateRef = React.useRef<PrismicContextState>()
+
   const [contextState, contextDispatch] = usePrismicPreviewContext(
     repositoryName,
   )
@@ -206,6 +272,12 @@ export const usePrismicPreviewBootstrap = (
     contextState.isBootstrapped,
     buildInitialLocalState,
   )
+
+  // We need to update the ref anytime contextState changes to ensure lazy
+  // functions get the latest data.
+  React.useEffect(() => {
+    contextStateRef.current = contextState
+  }, [contextState])
 
   const bootstrapPreview = React.useCallback(async (): Promise<void> => {
     pipe(
@@ -244,14 +316,21 @@ export const usePrismicPreviewBootstrap = (
         createNodeId: (input: string) => md5(input),
         createContentDigest: (input: string | UnknownRecord) =>
           md5(JSON.stringify(input)),
-        getNode: (id: string) => contextState.nodes[id],
+        // We use the ref to ensure we can access nodes populated during the
+        // same run as the population occurs. This means we don't need to wait
+        // for the next render to access nodes.
+        getNode: (id: string) => contextStateRef.current?.nodes[id],
+        // We use the ref to ensure we can access type paths populated during
+        // the same run as the population occurs. This means we don't need to
+        // wait for the next render to access type paths.
         getTypePath: (path: string[]) =>
-          contextState.typePaths[serializePath(path)],
+          contextStateRef.current?.typePaths[serializePath(path)],
         linkResolver: config.linkResolver,
         htmlSerializer: config.htmlSerializer,
         imageImgixParams: contextState.pluginOptions.imageImgixParams,
         imagePlaceholderImgixParams:
           contextState.pluginOptions.imagePlaceholderImgixParams,
+        hasTypePaths: !R.isEmpty(contextState.typePaths),
       }),
       E.fold(
         (error) =>
