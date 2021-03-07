@@ -7,8 +7,10 @@ import { pipe } from 'fp-ts/function'
 import { Dependencies, PrismicAPIImageField } from '../types'
 
 const resolveUrl = (source: PrismicAPIImageField): string | null => source.url
+
 const resolveWidth = (source: PrismicAPIImageField): number | undefined =>
   source.dimensions?.width
+
 const resolveHeight = (source: PrismicAPIImageField): number | undefined =>
   source.dimensions?.height
 

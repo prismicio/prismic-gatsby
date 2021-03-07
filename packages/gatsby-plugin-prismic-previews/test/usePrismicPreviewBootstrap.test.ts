@@ -306,6 +306,8 @@ test('fails if already bootstrapped', async () => {
   )
 })
 
+// Opting out of defining a return type here since this is just a test.
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const performPreview = async (
   pluginOptions: PluginOptions,
   config: UsePrismicPreviewBootstrapConfig,
@@ -427,13 +429,24 @@ describe('field proxies', () => {
     const pluginOptions = createPluginOptions()
     const config = createConfig()
 
-    // TODO: Add thumbnails
     const doc = createPrismicAPIDocument({
       image: {
         dimensions: { width: 400, height: 300 },
         alt: 'alt',
         copyright: 'copyright',
         url: 'https://example.com/image.jpg',
+        Thumb1: {
+          dimensions: { width: 400, height: 300 },
+          alt: 'alt',
+          copyright: 'copyright',
+          url: 'https://example.com/thumb1.jpg',
+        },
+        Thumb2: {
+          dimensions: { width: 400, height: 300 },
+          alt: 'alt',
+          copyright: 'copyright',
+          url: 'https://example.com/thumb2.jpg',
+        },
       },
     })
     const queryResults = [doc]
@@ -446,25 +459,54 @@ describe('field proxies', () => {
 
     const node = result.current.context[0].nodes[doc.id]
 
-    expect(node.data.image).toEqual({
-      ...doc.data.image,
-      fixed: {
-        width: expect.any(Number),
-        height: expect.any(Number),
-        src: expect.any(String),
-        srcSet: expect.any(String),
-        base64: expect.any(String),
-        srcWebp: expect.any(String),
-        srcSetWebp: expect.any(String),
+    const fixedFields = {
+      width: expect.any(Number),
+      height: expect.any(Number),
+      src: expect.any(String),
+      srcSet: expect.any(String),
+      base64: expect.any(String),
+      srcWebp: expect.any(String),
+      srcSetWebp: expect.any(String),
+    }
+
+    const fluidFields = {
+      aspectRatio: expect.any(Number),
+      src: expect.any(String),
+      srcSet: expect.any(String),
+      sizes: expect.any(String),
+      base64: expect.any(String),
+      srcWebp: expect.any(String),
+      srcSetWebp: expect.any(String),
+    }
+
+    const localFileFields = {
+      childImageSharp: {
+        fixed: fixedFields,
+        fluid: fluidFields,
       },
-      fluid: {
-        aspectRatio: expect.any(Number),
-        src: expect.any(String),
-        srcSet: expect.any(String),
-        sizes: expect.any(String),
-        base64: expect.any(String),
-        srcWebp: expect.any(String),
-        srcSetWebp: expect.any(String),
+    }
+
+    expect(node.data.image).toEqual({
+      dimensions: doc.data.image.dimensions,
+      alt: doc.data.image.alt,
+      copyright: doc.data.image.copyright,
+      url: doc.data.image.url,
+      fixed: fixedFields,
+      fluid: fluidFields,
+      localFile: localFileFields,
+      thumbnails: {
+        Thumb1: {
+          ...doc.data.image.Thumb1,
+          fixed: fixedFields,
+          fluid: fluidFields,
+          localFile: localFileFields,
+        },
+        Thumb2: {
+          ...doc.data.image.Thumb2,
+          fixed: fixedFields,
+          fluid: fluidFields,
+          localFile: localFileFields,
+        },
       },
     })
   })

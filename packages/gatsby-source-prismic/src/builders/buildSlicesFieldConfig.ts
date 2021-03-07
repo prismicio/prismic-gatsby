@@ -78,7 +78,7 @@ const buildSliceChoiceType = (
               slice_label: 'String',
               id: {
                 type: 'ID!',
-                resolve: (source: UnknownRecord) =>
+                resolve: (source: UnknownRecord): string =>
                   deps.nodeHelpers.createNodeId([
                     ...path,
                     deps.createContentDigest(source),

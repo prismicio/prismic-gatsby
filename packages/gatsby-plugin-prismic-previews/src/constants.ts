@@ -4,6 +4,20 @@ export const VERSION = '4.0.0'
 
 export const GLOBAL_TYPE_PREFIX = 'Prismic'
 
+/**
+ * Prismic API document fields returned for image fields that are **not**
+ * thumbnails.
+ *
+ * These fields are filtered out from the API response to extract the field's
+ * thumbnails. The API includes thumbnails adjacent to these fields.
+ */
+export const PRISMIC_API_IMAGE_FIELDS = [
+  'alt',
+  'copyright',
+  'dimensions',
+  'url',
+]
+
 export const DEFAULT_TOOLBAR = 'new'
 
 export const DEFAULT_PROMPT_FOR_ACCESS_TOKEN = true
