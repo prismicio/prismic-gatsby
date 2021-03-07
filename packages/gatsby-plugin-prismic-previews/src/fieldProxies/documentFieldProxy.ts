@@ -12,14 +12,26 @@ import {
 export const valueRefinement = (value: unknown): value is prismic.Document =>
   typeof value === 'object' && value !== null
 
+// TODO: If a document does not define data fields, we shouldn't process its
+// data field because it doesn't exist.
 export const proxyValue = (
   path: string[],
   fieldValue: prismic.Document,
 ): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
-    proxyDocumentSubtree([...path, 'data'], fieldValue.data),
-    RE.map((data) => ({
+    RE.ask<ProxyDocumentSubtreeEnv>(),
+    RE.bind('data', () =>
+      proxyDocumentSubtree([...path, 'data'], fieldValue.data),
+    ),
+    RE.bind('url', (env) =>
+      // This doesn't use `prismic-dom`'s `Link.url` function because this
+      // isn't a link. The `Link.url` function includes a check for
+      // link-specific fields which produces unwanted results.
+      RE.of(env.linkResolver(fieldValue)),
+    ),
+    RE.map((env) => ({
       ...fieldValue,
-      data,
+      url: env.url,
+      data: env.data,
     })),
   )

@@ -24,6 +24,7 @@ import { ModalAccessToken } from './components/ModalAccessToken'
 import { ModalError } from './components/ModalError'
 
 export interface WithPrismicPreviewResolverProps {
+  isPrismicPreview: boolean
   resolvePrismicPreview: UsePrismicPreviewResolverFn
   prismicPreviewState: UsePrismicPreviewResolverState['state']
   prismicPreviewPath: UsePrismicPreviewResolverState['path']
@@ -40,6 +41,7 @@ type LocalState =
   | 'PROMPT_FOR_ACCESS_TOKEN'
   | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
   | 'DISPLAY_ERROR'
+  | 'NOT_PREVIEW'
 
 export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
   WrappedComponent: React.ComponentType<TProps>,
@@ -57,6 +59,11 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
 
+    const isPreview =
+      resolverState.state === 'INIT' && localState === 'IDLE'
+        ? null
+        : resolverState.state !== 'INIT' && localState !== 'NOT_PREVIEW'
+
     // Begin resolving on page entry if the preview token is for this repository.
     React.useEffect(() => {
       const isValidToken = pipe(
@@ -70,6 +77,8 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 
       if (isValidToken) {
         resolvePreview()
+      } else {
+        setLocalState('NOT_PREVIEW')
       }
     }, [resolvePreview])
 
@@ -154,6 +163,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       <>
         <WrappedComponent
           {...props}
+          isPrismicPreview={isPreview}
           resolvePrismicPreview={resolvePreview}
           prismicPreviewState={resolverState.state}
           prismicPreviewPath={resolverState.path}

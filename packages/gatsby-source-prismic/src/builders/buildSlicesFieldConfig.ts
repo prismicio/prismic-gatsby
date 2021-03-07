@@ -74,8 +74,6 @@ const buildSliceChoiceType = (
             name: deps.nodeHelpers.createTypeName(path),
             fields: {
               ...fields,
-              slice_type: 'String!',
-              slice_label: 'String',
               id: {
                 type: 'ID!',
                 resolve: (source: UnknownRecord): string =>
@@ -84,7 +82,10 @@ const buildSliceChoiceType = (
                     deps.createContentDigest(source),
                   ]),
               },
+              slice_type: 'String!',
+              slice_label: 'String',
             },
+            interfaces: [deps.globalNodeHelpers.createTypeName('SliceType')],
             extensions: { infer: false },
           }),
         ),

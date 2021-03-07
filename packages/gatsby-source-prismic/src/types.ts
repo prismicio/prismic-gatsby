@@ -30,6 +30,7 @@ export interface Dependencies {
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']
   buildUnionType: gatsby.NodePluginSchema['buildUnionType']
   buildEnumType: gatsby.NodePluginSchema['buildEnumType']
+  buildInterfaceType: gatsby.NodePluginSchema['buildInterfaceType']
   getNode: gatsby.SourceNodesArgs['getNode']
   getNodes: gatsby.SourceNodesArgs['getNodes']
   touchNode: gatsby.Actions['touchNode']

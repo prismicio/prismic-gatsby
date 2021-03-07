@@ -17,6 +17,7 @@ import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
 import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
 import { buildLinkType } from './builders/buildLinkType'
 import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
+import { buildSliceInterface } from './builders/buildSliceInterface'
 import { buildStructuredTextType } from './builders/buildStructuredTextType'
 import { buildTypePathType } from './builders/buildTypePathType'
 
@@ -45,6 +46,7 @@ export const createBaseTypes: RTE.ReaderTaskEither<
         buildImageThumbnailType,
         buildLinkType,
         buildLinkTypeEnumType,
+        buildSliceInterface,
         buildStructuredTextType,
         buildTypePathType,
       ],

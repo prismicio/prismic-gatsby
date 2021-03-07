@@ -22,7 +22,7 @@ import {
 } from '../src'
 
 const createConfig = (): UsePrismicPreviewBootstrapConfig => ({
-  linkResolver: (doc): string => `/${doc.id}`,
+  linkResolver: (doc): string => `/${doc.uid}`,
 })
 
 const nodeHelpers = createNodeHelpers({
@@ -122,12 +122,16 @@ test('fetches all repository documents and bootstraps context', async () => {
     createPrismicAPIDocument(),
     createPrismicAPIDocument(),
   ]
-  const queryResultsNodes = queryResults.map(
-    (doc) =>
-      nodeHelpers.createNodeFactory(doc.type)(
-        doc,
-      ) as PrismicAPIDocumentNodeInput,
-  )
+  const queryResultsNodes = queryResults.map((doc) => {
+    const node = nodeHelpers.createNodeFactory(doc.type)(
+      doc,
+    ) as PrismicAPIDocumentNodeInput
+
+    return {
+      ...node,
+      url: config.linkResolver(doc),
+    }
+  })
 
   // We're setting up two nocks here to test pagination functionality. We need
   // to make sure the hook will fetch all documents in a repository, not just
@@ -368,6 +372,23 @@ const performPreview = async (
 }
 
 describe('field proxies', () => {
+  test('document', async () => {
+    const pluginOptions = createPluginOptions()
+    const config = createConfig()
+
+    const doc = createPrismicAPIDocument()
+    const queryResults = [doc]
+
+    const result = await performPreview(pluginOptions, config, queryResults, {
+      type: gatsbyPrismic.PrismicSpecialType.Document,
+      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+    })
+
+    const node = result.current.context[0].nodes[doc.id]
+
+    expect(node.url).toEqual(config.linkResolver(doc))
+  })
+
   test('structured text', async () => {
     const pluginOptions = createPluginOptions()
     const config = createConfig()
@@ -399,30 +420,41 @@ describe('field proxies', () => {
 
     const linkedDoc = createPrismicAPIDocument()
     const doc = createPrismicAPIDocument({
-      link: { link_type: 'Document', id: linkedDoc.id },
+      doc_link: { link_type: 'Document', id: linkedDoc.id },
+      media_link: { link_type: 'Media', url: 'https://example.com/image.jpg' },
     })
     const queryResults = [doc, linkedDoc]
 
     const result = await performPreview(pluginOptions, config, queryResults, {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
-      'type.data.link': gatsbyPrismic.PrismicFieldType.Link,
+      'type.data.doc_link': gatsbyPrismic.PrismicFieldType.Link,
+      'type.data.media_link': gatsbyPrismic.PrismicFieldType.Link,
     })
 
     const node = result.current.context[0].nodes[doc.id]
     const linkedNode = result.current.context[0].nodes[linkedDoc.id]
 
-    expect(node.data.link).toEqual({
-      ...doc.data.link,
+    expect(node.data.doc_link).toEqual({
+      ...doc.data.doc_link,
       url: config.linkResolver(linkedDoc),
-      raw: doc.data.link,
+      localFile: null,
+      raw: doc.data.doc_link,
     })
 
     // We must test the document field separately since it is only accessible
     // via the Proxy handler. This field doesn't actually exist in the object.
-    expect((node.data.link as Record<string, unknown>).document).toBe(
+    expect((node.data.doc_link as Record<string, unknown>).document).toBe(
       linkedNode,
     )
+
+    expect(node.data.media_link).toEqual({
+      ...doc.data.media_link,
+      localFile: {
+        publicURL: doc.data.media_link.url,
+      },
+      raw: doc.data.media_link,
+    })
   })
 
   test('image', async () => {

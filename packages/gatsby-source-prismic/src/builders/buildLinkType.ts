@@ -22,7 +22,7 @@ export const buildLinkType: RTE.ReaderTaskEither<
         isBroken: 'Boolean',
         url: {
           type: 'String',
-          resolve: (source: PrismicAPILinkField) =>
+          resolve: (source: PrismicAPILinkField): string | undefined =>
             source.link_type === 'Document'
               ? PrismicDOM.Link.url(source, deps.pluginOptions.linkResolver)
               : source.url,
@@ -37,7 +37,7 @@ export const buildLinkType: RTE.ReaderTaskEither<
         uid: 'String',
         document: {
           type: deps.nodeHelpers.createTypeName('AllDocumentTypes'),
-          resolve: (source: PrismicAPILinkField) =>
+          resolve: (source: PrismicAPILinkField): string | null =>
             source.link_type === 'Document' &&
             source.type &&
             source.id &&
@@ -48,7 +48,9 @@ export const buildLinkType: RTE.ReaderTaskEither<
         },
         localFile: {
           type: 'File',
-          resolve: async (source: PrismicAPILinkField) =>
+          resolve: async (
+            source: PrismicAPILinkField,
+          ): Promise<gatsbyFs.FileSystemNode | null> =>
             source.url && source.link_type === 'Media'
               ? await gatsbyFs.createRemoteFileNode({
                   url: source.url,

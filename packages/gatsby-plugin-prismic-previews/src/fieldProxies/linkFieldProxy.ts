@@ -40,6 +40,12 @@ export const proxyValue = (
       RE.of({
         ...fieldValue,
         url: env.url,
+        localFile:
+          fieldValue.link_type === 'Media'
+            ? {
+                publicURL: env.url,
+              }
+            : null,
         raw: fieldValue,
       }),
     ),

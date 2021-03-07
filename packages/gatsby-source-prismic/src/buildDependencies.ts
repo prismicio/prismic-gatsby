@@ -35,6 +35,7 @@ export const buildDependencies = (
   buildUnionType: gatsbyContext.schema.buildUnionType,
   buildObjectType: gatsbyContext.schema.buildObjectType,
   buildEnumType: gatsbyContext.schema.buildEnumType,
+  buildInterfaceType: gatsbyContext.schema.buildInterfaceType,
   getNode: gatsbyContext.getNode,
   getNodes: gatsbyContext.getNodes,
   schema: gatsbyContext.schema,

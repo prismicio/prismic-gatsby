@@ -1195,6 +1195,7 @@ describe('slices', () => {
             resolve: expect.any(Function),
           }),
         },
+        interfaces: ['PrismicSliceType'],
         extensions: { infer: false },
       },
     })
@@ -1233,6 +1234,7 @@ describe('slices', () => {
             resolve: expect.any(Function),
           }),
         },
+        interfaces: ['PrismicSliceType'],
         extensions: { infer: false },
       },
     })
