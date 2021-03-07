@@ -106,6 +106,9 @@ export const withPrismicPreview = <
             // configured to not prompt for the access token or we have the wrong
             // token).
             setLocalState('DISPLAY_ERROR')
+
+            // Show the full error and stack trace in the console.
+            console.error(bootstrapState.error)
           }
 
           break

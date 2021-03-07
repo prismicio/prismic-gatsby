@@ -5,9 +5,8 @@ import * as RE from 'fp-ts/ReaderEither'
 import * as E from 'fp-ts/Either'
 import * as IO from 'fp-ts/IO'
 import * as A from 'fp-ts/Array'
-import * as R from 'fp-ts/Record'
 import { constVoid, pipe } from 'fp-ts/function'
-import { createNodeHelpers } from 'gatsby-node-helpers'
+import { createNodeHelpers, NodeHelpers } from 'gatsby-node-helpers'
 import { GLOBAL_TYPE_PREFIX } from 'gatsby-source-prismic'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import md5 from 'tiny-hashes/md5'
@@ -101,8 +100,8 @@ interface UsePrismicPreviewBootstrapProgramEnv
   bootstrapped: IO.IO<void>
   appendNodes(nodes: unknown[]): IO.IO<void>
   appendTypePaths(typePathsStore: TypePathsStore): IO.IO<void>
-  createNodeId(input: string): string
   createContentDigest(input: string | UnknownRecord): string
+  nodeHelpers: NodeHelpers
 
   // Proxify node env
   getNode(id: string): PrismicAPIDocumentNodeInput | undefined
@@ -112,62 +111,6 @@ interface UsePrismicPreviewBootstrapProgramEnv
   imageImgixParams: PluginOptions['imageImgixParams']
   imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
 }
-
-// interface DetectPreviewSessionEnv {
-//   repositoryName: string
-//   isBootstrapped: boolean
-// }
-
-// const detectIfBootstrapNeeded: RTE.ReaderTaskEither<
-//   UsePrismicPreviewBootstrapProgramEnv,
-//   Error,
-//   void
-// > = pipe(
-//   RTE.ask<DetectPreviewSessionEnv>(),
-//   // Only continue if this is a preview session, which is determined by the
-//   // presence of the Prismic preview cookie.
-//   RTE.bindW('token', () =>
-//     pipe(
-//       RTE.fromIOEither(getCookie(prismic.cookie.preview)),
-//       RTE.mapLeft(() => new Error('preview cookie not present')),
-//     ),
-//   ),
-
-//   // Only continue if this preview session is for this repository.
-//   RTE.chainFirstW((env) =>
-//     RTE.fromEither(
-//       validatePreviewRefForRepository(env.repositoryName, env.token),
-//     ),
-//   ),
-
-//   // TODO: wrap these errors in the reporter format
-//   // Only bootstrap once.
-//   RTE.chainW(
-//     RTE.fromPredicate(
-//       (env) => !env.isBootstrapped,
-//       (env) =>
-//         new Error(
-//           `Cannot bootstrap a repository that has already been bootstrapped: ${env.repositoryName}`,
-//         ),
-//     ),
-//   ),
-
-//   RTE.map(constVoid),
-// )
-
-// interface PopulateTypePathsEnv {
-//   appendTypePaths(typePathsStore: TypePathsStore): IO.IO<void>
-// }
-
-// const populateTypePaths: RTE.ReaderTaskEither<
-//   PopulateTypePathsEnv,
-//   Error,
-//   void
-// > = pipe(
-//   RTE.ask<PopulateTypePathsEnv>(),
-//   RTE.bindW('typePathsStore', () => fetchTypePathsStore),
-//   RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
-// )
 
 const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   UsePrismicPreviewBootstrapProgramEnv,
@@ -210,19 +153,6 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   RTE.bindW('typePathsStore', () => fetchTypePathsStore),
   RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
 
-  RTE.bind('nodeHelpers', (env) =>
-    RTE.of(
-      // These node helpers must match node helpers from `gatsby-source-prismic`.
-      createNodeHelpers({
-        typePrefix: [GLOBAL_TYPE_PREFIX, env.typePrefix]
-          .filter(Boolean)
-          .join(' '),
-        fieldPrefix: GLOBAL_TYPE_PREFIX,
-        createNodeId: env.createNodeId,
-        createContentDigest: env.createContentDigest,
-      }),
-    ),
-  ),
   RTE.bindW('nodes', (env) =>
     pipe(
       queryAllDocuments,
@@ -313,9 +243,6 @@ export const usePrismicPreviewBootstrap = (
         graphQuery: contextState.pluginOptions.graphQuery,
         fetchLinks: contextState.pluginOptions.fetchLinks,
         lang: contextState.pluginOptions.lang,
-        createNodeId: (input: string) => md5(input),
-        createContentDigest: (input: string | UnknownRecord) =>
-          md5(JSON.stringify(input)),
         // We use the ref to ensure we can access nodes populated during the
         // same run as the population occurs. This means we don't need to wait
         // for the next render to access nodes.
@@ -330,7 +257,20 @@ export const usePrismicPreviewBootstrap = (
         imageImgixParams: contextState.pluginOptions.imageImgixParams,
         imagePlaceholderImgixParams:
           contextState.pluginOptions.imagePlaceholderImgixParams,
-        hasTypePaths: !R.isEmpty(contextState.typePaths),
+        createContentDigest: (input: string | UnknownRecord) =>
+          md5(JSON.stringify(input)),
+        nodeHelpers: createNodeHelpers({
+          typePrefix: [
+            GLOBAL_TYPE_PREFIX,
+            contextState.pluginOptions.typePrefix,
+          ]
+            .filter(Boolean)
+            .join(' '),
+          fieldPrefix: GLOBAL_TYPE_PREFIX,
+          createNodeId: (input: string) => md5(input),
+          createContentDigest: (input: string | UnknownRecord) =>
+            md5(JSON.stringify(input)),
+        }),
       }),
       E.fold(
         (error) =>
@@ -345,7 +285,8 @@ export const usePrismicPreviewBootstrap = (
     repositoryName,
     config.linkResolver,
     config.htmlSerializer,
-    contextState,
+    contextState.isBootstrapped,
+    contextState.pluginOptions,
     contextDispatch,
   ])
 

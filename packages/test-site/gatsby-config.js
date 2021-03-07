@@ -12,6 +12,7 @@ module.exports = {
         typePrefix: 'prefix',
         schemas: {
           kitchen_sink: require('./schemas/kitchen_sink.json'),
+          test: {},
         },
       },
     },

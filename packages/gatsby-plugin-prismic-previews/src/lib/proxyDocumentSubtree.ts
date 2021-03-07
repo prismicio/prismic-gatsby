@@ -1,18 +1,20 @@
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as RE from 'fp-ts/ReaderEither'
 import * as O from 'fp-ts/Option'
-import { pipe } from 'fp-ts/function'
+import { pipe, Refinement } from 'fp-ts/function'
+import { NodeHelpers } from 'gatsby-node-helpers'
 
 import {
   HTMLSerializer,
   LinkResolver,
   PluginOptions,
   PrismicAPIDocumentNodeInput,
+  UnknownRecord,
 } from '../types'
 import { FIELD_VALUE_TYPE_PATH_MISMATCH_MSG } from '../constants'
 
-import * as documentFieldProxy from '../fieldProxies/documentFieldProxy'
 import * as documentDataFieldProxy from '../fieldProxies/documentDataFieldProxy'
+import * as documentFieldProxy from '../fieldProxies/documentFieldProxy'
 import * as groupFieldProxy from '../fieldProxies/groupFieldProxy'
 import * as imageFieldProxy from '../fieldProxies/imageFieldProxy'
 import * as linkFieldProxy from '../fieldProxies/linkFieldProxy'
@@ -23,6 +25,15 @@ import * as structuredTextFieldProxy from '../fieldProxies/structuredTextFieldPr
 import { sprintf } from './sprintf'
 import { serializePath } from './serializePath'
 
+const refineValue = <A, B extends A>(
+  refinement: Refinement<A, B>,
+  intendedType: gatsbyPrismic.PrismicTypePathType,
+) =>
+  RE.fromPredicate(
+    refinement,
+    () => new Error(sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, intendedType)),
+  )
+
 export interface ProxyDocumentSubtreeEnv {
   getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType | undefined
   getNode(id: string): PrismicAPIDocumentNodeInput | undefined
@@ -30,6 +41,8 @@ export interface ProxyDocumentSubtreeEnv {
   htmlSerializer?: HTMLSerializer
   imageImgixParams: PluginOptions['imageImgixParams']
   imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
+  nodeHelpers: NodeHelpers
+  createContentDigest(input: string | UnknownRecord): string
 }
 
 export const proxyDocumentSubtree = (
@@ -51,13 +64,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicSpecialType.Document: {
           return pipe(
             value,
-            RE.fromPredicate(
-              documentFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(documentFieldProxy.valueRefinement, env.type),
             RE.chainW((value) => documentFieldProxy.proxyValue(path, value)),
           )
         }
@@ -65,13 +72,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicSpecialType.DocumentData: {
           return pipe(
             value,
-            RE.fromPredicate(
-              documentDataFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(documentDataFieldProxy.valueRefinement, env.type),
             RE.chainW((value) =>
               documentDataFieldProxy.proxyValue(path, value),
             ),
@@ -81,13 +82,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Group: {
           return pipe(
             value,
-            RE.fromPredicate(
-              groupFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(groupFieldProxy.valueRefinement, env.type),
             RE.chain((value) => groupFieldProxy.proxyValue(path, value)),
           )
         }
@@ -95,13 +90,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Slices: {
           return pipe(
             value,
-            RE.fromPredicate(
-              slicesFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(slicesFieldProxy.valueRefinement, env.type),
             RE.chain((value) => slicesFieldProxy.proxyValue(path, value)),
           )
         }
@@ -109,13 +98,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Slice: {
           return pipe(
             value,
-            RE.fromPredicate(
-              sliceFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(sliceFieldProxy.valueRefinement, env.type),
             RE.chain((value) => sliceFieldProxy.proxyValue(path, value)),
           )
         }
@@ -123,13 +106,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Link: {
           return pipe(
             value,
-            RE.fromPredicate(
-              linkFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(linkFieldProxy.valueRefinement, env.type),
             RE.chain(linkFieldProxy.proxyValue),
           )
         }
@@ -137,13 +114,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Image: {
           return pipe(
             value,
-            RE.fromPredicate(
-              imageFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(imageFieldProxy.valueRefinement, env.type),
             RE.chain(imageFieldProxy.proxyValue),
           )
         }
@@ -151,13 +122,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.StructuredText: {
           return pipe(
             value,
-            RE.fromPredicate(
-              structuredTextFieldProxy.valueRefinement,
-              () =>
-                new Error(
-                  sprintf(FIELD_VALUE_TYPE_PATH_MISMATCH_MSG, env.type),
-                ),
-            ),
+            refineValue(structuredTextFieldProxy.valueRefinement, env.type),
             RE.chain(structuredTextFieldProxy.proxyValue),
           )
         }

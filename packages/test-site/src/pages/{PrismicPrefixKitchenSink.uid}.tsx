@@ -68,6 +68,23 @@ const Page = (
       >
         <code>
           {JSON.stringify(
+            props.data.prismicPrefixKitchenSink.data.body[0].primary
+              .first_option_nonrepeat_content_relationship.document,
+            null,
+            2,
+          )}
+        </code>
+      </pre>
+      <hr />
+      <pre
+        style={{
+          backgroundColor: 'lightgray',
+          padding: '2rem',
+          overflow: 'auto',
+        }}
+      >
+        <code>
+          {JSON.stringify(
             props.data.prismicPrefixKitchenSink.data.title.html,
             null,
             2,
@@ -106,6 +123,13 @@ export const query = graphql`
             primary {
               first_option_nonrepeat_title {
                 html
+              }
+              first_option_nonrepeat_content_relationship {
+                document {
+                  ... on PrismicPrefixKitchenSink {
+                    uid
+                  }
+                }
               }
             }
           }

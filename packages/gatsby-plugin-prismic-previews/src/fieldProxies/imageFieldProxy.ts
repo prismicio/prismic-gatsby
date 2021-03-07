@@ -10,10 +10,11 @@ import { sprintf } from '../lib/sprintf'
 export const valueRefinement = (
   value: unknown,
 ): value is gatsbyPrismic.PrismicAPIImageField =>
-  typeof value === 'object' &&
-  value !== null &&
-  'url' in value &&
-  'dimensions' in value
+  typeof value === 'object' && value !== null
+// TODO: These values may not exist in the API response if a value was never
+// set. Only empty thumbnail fields will be present in that situation.
+// && 'url' in value &&
+// 'dimensions' in value
 
 // TODO: Support image thumbnails
 export const proxyValue = (
@@ -74,4 +75,6 @@ export const proxyValue = (
       fixed: env.fixed,
       fluid: env.fluid,
     })),
+    // If data is missing, we fall back to the original field value.
+    RE.orElse(() => RE.of(fieldValue)),
   )

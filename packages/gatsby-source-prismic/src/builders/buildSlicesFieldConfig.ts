@@ -20,6 +20,7 @@ import {
   PrismicAPISliceField,
   PrismicFieldType,
   PrismicSchemaSlicesField,
+  UnknownRecord,
 } from '../types'
 
 const buildSliceChoiceType = (
@@ -75,6 +76,14 @@ const buildSliceChoiceType = (
               ...fields,
               slice_type: 'String!',
               slice_label: 'String',
+              id: {
+                type: 'ID!',
+                resolve: (source: UnknownRecord) =>
+                  deps.nodeHelpers.createNodeId([
+                    ...path,
+                    deps.createContentDigest(source),
+                  ]),
+              },
             },
             extensions: { infer: false },
           }),

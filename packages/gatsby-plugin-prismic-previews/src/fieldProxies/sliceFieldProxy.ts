@@ -44,8 +44,17 @@ export const proxyValue = (
         A.sequence(RE.readerEither),
       ),
     ),
+    RE.bind('id', (env) =>
+      RE.of(
+        env.nodeHelpers.createNodeId([
+          ...path,
+          env.createContentDigest(fieldValue),
+        ]),
+      ),
+    ),
     RE.map((env) => ({
       ...fieldValue,
+      id: env.id,
       primary: env.primary,
       items: env.items,
     })),

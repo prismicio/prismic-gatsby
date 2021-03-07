@@ -2,9 +2,10 @@ import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as PrismicDOM from 'prismic-dom'
 import * as RE from 'fp-ts/ReaderEither'
 import * as O from 'fp-ts/Option'
-import { constNull, pipe } from 'fp-ts/function'
+import { pipe } from 'fp-ts/function'
 
 import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
+import { createGetProxy } from '../lib/createGetProxy'
 
 export const valueRefinement = (
   value: unknown,
@@ -21,27 +22,44 @@ export const proxyValue = (
   pipe(
     RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bind('url', (env) =>
-      RE.of(PrismicDOM.Link.url(fieldValue, env.linkResolver)),
+      pipe(
+        fieldValue,
+        O.fromPredicate(
+          (fieldValue) =>
+            fieldValue.link_type === 'Document' &&
+            typeof fieldValue.id === 'string',
+        ),
+        O.map((fieldValue) =>
+          PrismicDOM.Link.url(fieldValue, env.linkResolver),
+        ),
+        O.getOrElseW(() => fieldValue.url),
+        (url) => RE.of(url),
+      ),
     ),
-    RE.map((env) => ({
-      ...fieldValue,
-      url: env.url,
-      raw: fieldValue,
-      // A getter is used here to avoid an infinite loop if documents have
+    RE.bind('enhancedFieldValue', (env) =>
+      RE.of({
+        ...fieldValue,
+        url: env.url,
+        raw: fieldValue,
+      }),
+    ),
+    RE.map((env) =>
+      // A Proxy is used here to avoid an infinite loop if documents have
       // circular references in link fields. This effectively makes the
       // `document` field lazy.
-      get document() {
-        return pipe(
+      createGetProxy(env.enhancedFieldValue, (target, prop, receiver) =>
+        pipe(
           fieldValue.id,
           O.fromPredicate(
             (id): id is string =>
+              prop === 'document' &&
               fieldValue.link_type === 'Document' &&
               !fieldValue.isBroken &&
               typeof id === 'string',
           ),
           O.chain((id) => O.fromNullable(env.getNode(id))),
-          O.getOrElseW(constNull),
-        )
-      },
-    })),
+          O.getOrElseW(() => Reflect.get(target, prop, receiver)),
+        ),
+      ),
+    ),
   )

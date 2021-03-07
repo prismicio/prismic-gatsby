@@ -873,7 +873,7 @@ describe('structured text fields', () => {
     expect(res).toBe('Rich Text')
   })
 
-  test('html field resolves to html text', async () => {
+  test('html field resolves to html', async () => {
     const gatsbyContext = createGatsbyContext()
     const pluginOptions = createPluginOptions()
 
@@ -1190,6 +1190,10 @@ describe('slices', () => {
           primary: 'PrismicPrefixFooDataSlicesFooPrimary',
           slice_type: 'String!',
           slice_label: 'String',
+          id: expect.objectContaining({
+            type: 'ID!',
+            resolve: expect.any(Function),
+          }),
         },
         extensions: { infer: false },
       },
@@ -1224,6 +1228,10 @@ describe('slices', () => {
           primary: 'PrismicPrefixFooDataSlicesBarPrimary',
           slice_type: 'String!',
           slice_label: 'String',
+          id: expect.objectContaining({
+            type: 'ID!',
+            resolve: expect.any(Function),
+          }),
         },
         extensions: { infer: false },
       },
@@ -1248,6 +1256,58 @@ describe('slices', () => {
         },
       },
     })
+  })
+
+  test('id field resolves to a unique id', async () => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions()
+
+    pluginOptions.schemas = {
+      foo: {
+        Main: {
+          slices: {
+            type: PrismicFieldType.Slices,
+            config: {
+              choices: {
+                foo: {
+                  type: PrismicFieldType.Slice,
+                  repeat: {
+                    repeat_text: {
+                      type: PrismicFieldType.Text,
+                      config: {},
+                    },
+                  },
+                  'non-repeat': {
+                    non_repeat_text: {
+                      type: PrismicFieldType.Text,
+                      config: {},
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+    const call = findCreateTypesCall(
+      'PrismicPrefixFooDataSlicesFoo',
+      gatsbyContext.actions.createTypes as jest.Mock,
+    )
+    const field = {
+      primary: {
+        non_repeat_text: [{ type: 'paragraph', text: 'Rich Text', spans: [] }],
+      },
+      items: [],
+    }
+    const resolver = call.config.fields.id.resolve
+    const res = await resolver(field)
+
+    expect(res).toBe('Prismic prefix foo data slices foo createContentDigest')
   })
 })
 

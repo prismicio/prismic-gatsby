@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import { createNodeHelpers } from 'gatsby-node-helpers'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as cookie from 'es-cookie'
 import md5 from 'tiny-hashes/md5'
@@ -110,7 +111,13 @@ test('merges data only where `_previewable` field matches', async () => {
 
   nock(window.__BASE_PATH__)
     .get('/static/9e387d94c04ebf0e369948edd9c66d2b.json')
-    .reply(200, '{}')
+    .reply(
+      200,
+      JSON.stringify({
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      }),
+    )
 
   // Need to use the query results nodes rather than new documents to ensure
   // the IDs match.

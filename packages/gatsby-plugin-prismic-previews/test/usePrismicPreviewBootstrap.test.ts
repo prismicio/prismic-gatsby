@@ -165,7 +165,13 @@ test('fetches all repository documents and bootstraps context', async () => {
 
   nock(window.__BASE_PATH__)
     .get('/static/9e387d94c04ebf0e369948edd9c66d2b.json')
-    .reply(200, '{}')
+    .reply(
+      200,
+      JSON.stringify({
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      }),
+    )
 
   const { result, waitForValueToChange } = renderHook(
     () => {
@@ -253,7 +259,13 @@ test('fails if already bootstrapped', async () => {
 
   nock(window.__BASE_PATH__)
     .get('/static/9e387d94c04ebf0e369948edd9c66d2b.json')
-    .reply(200, '{}')
+    .reply(
+      200,
+      JSON.stringify({
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      }),
+    )
 
   const { result, waitForValueToChange } = renderHook(
     () => {
@@ -401,9 +413,14 @@ describe('field proxies', () => {
     expect(node.data.link).toEqual({
       ...doc.data.link,
       url: config.linkResolver(linkedDoc),
-      document: linkedNode,
       raw: doc.data.link,
     })
+
+    // We must test the document field separately since it is only accessible
+    // via the Proxy handler. This field doesn't actually exist in the object.
+    expect((node.data.link as Record<string, unknown>).document).toBe(
+      linkedNode,
+    )
   })
 
   test('image', async () => {
@@ -527,11 +544,12 @@ describe('field proxies', () => {
 
     const node = result.current.context[0].nodes[doc.id]
 
-    // // @ts-expect-error tmp
-    // console.log(node.data.slices[0].primary)
-
+    // The `id` values will change if the content of the slices changes. It's
+    // okay to update this value in the test as needed, but ensure the values
+    // are unique between all slices in the array.
     expect(node.data.slices).toEqual([
       {
+        id: '95a74515ba477142af5ef01d6325b04b',
         slice_type: 'foo',
         primary: {
           structured_text: {
@@ -543,6 +561,7 @@ describe('field proxies', () => {
         items: [],
       },
       {
+        id: 'e07c44a80a6a422612456328100ceed9',
         slice_type: 'bar',
         primary: {},
         items: [
