@@ -11,7 +11,7 @@ export const usePrismicPreviewContext = (
     getPrismicContext(repositoryName),
     O.fold(() => {
       throw new Error(
-        `Could not find a React Context for repository "${repositoryName}"`,
+        `Could not find a React Context for repository "${repositoryName}". Ensure that gatsby-plugin-prismic-previews is configured in gatsby-node.js for the repository.`,
       )
     }, React.useContext),
   )
