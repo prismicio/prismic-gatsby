@@ -43,6 +43,16 @@ await esbuild.build({
   format: 'esm',
   target: 'es6',
   define: {
-    'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
+    // We do NOT want `process.env.NODE_ENV` to be replaced with its value at
+    // plugin-build time. We want to preserve the value to allow Gatsby's build
+    // time to replace this.
+    //
+    // In the context of this plugin, `process.env.NODE_ENV` tells us if the
+    // user accessing the site using Gatsby in development mode or the built
+    // production version.
+    //
+    // Unfortunately esbuild will print a warning. If you know how to remove the
+    // warning while not replacing the value, please open an issue or PR!
+    // 'process.env.NODE_ENV': '"process.env.NODE_ENV"',
   },
 })

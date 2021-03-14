@@ -21,8 +21,6 @@ const HomePage = ({
   const [state] = usePrismicPreviewContext(repoName)
   const [token] = usePrismicPreviewAccessToken(repoName)
 
-  console.log({ state, token })
-
   return (
     <div>
       <ul>

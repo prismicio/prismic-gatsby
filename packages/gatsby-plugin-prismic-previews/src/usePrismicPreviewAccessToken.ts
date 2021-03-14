@@ -41,14 +41,14 @@ export const usePrismicPreviewAccessToken = (
     ): void => {
       contextDispatch({
         type: PrismicContextActionType.SetAccessToken,
-        payload: accessToken,
+        payload: { repositoryName, accessToken },
       })
 
       if (remember) {
         setCookie(cookieName, accessToken)()
       }
     },
-    [cookieName, contextDispatch],
+    [cookieName, contextDispatch, repositoryName],
   )
 
   /**

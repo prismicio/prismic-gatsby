@@ -10,11 +10,11 @@ import { camelCase } from './lib/camelCase'
 
 import { UnknownRecord } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-import { PrismicContextState } from './context'
+import { PrismicContextRepositoryState } from './context'
 
-const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
-  nodeOrLeaf: unknown,
-): unknown => {
+const findAndReplacePreviewables = (
+  nodes: PrismicContextRepositoryState['nodes'],
+) => (nodeOrLeaf: unknown): unknown => {
   // TODO: Need to traverse every property in the object. If it doesn't include
   // _previewable, then we need to check every property inside for something
   // that does.
@@ -60,7 +60,7 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
  */
 const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  node: ValueOf<PrismicContextState['nodes']>,
+  node: ValueOf<PrismicContextRepositoryState['nodes']>,
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
     O.fromNullable(node),
@@ -91,7 +91,7 @@ const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
  */
 const traverseAndReplace = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  nodes: PrismicContextState['nodes'],
+  nodes: PrismicContextRepositoryState['nodes'],
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
     nodes,

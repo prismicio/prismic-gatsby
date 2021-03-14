@@ -1,12 +1,13 @@
 import * as React from 'react'
-import * as Rr from 'fp-ts/Reader'
-import * as R from 'fp-ts/Record'
-import * as O from 'fp-ts/Option'
 import * as IOE from 'fp-ts/IOEither'
 import * as IO from 'fp-ts/IO'
+import * as R from 'fp-ts/Record'
 import { pipe } from 'fp-ts/function'
 
-import { COOKIE_ACCESS_TOKEN_NAME, WINDOW_CONTEXTS_KEY } from './constants'
+import {
+  COOKIE_ACCESS_TOKEN_NAME,
+  WINDOW_PLUGIN_OPTIONS_KEY,
+} from './constants'
 import {
   PluginOptions,
   PrismicAPIDocumentNodeInput,
@@ -15,39 +16,63 @@ import {
 import { getCookie } from './lib/getCookie'
 import { sprintf } from './lib/sprintf'
 
-declare global {
-  interface Window {
-    [WINDOW_CONTEXTS_KEY]: Record<string, PrismicContext>
-  }
-}
-
-/**
- * Shared global record holding all contexts in memory. This object holds a
- * React Context instance for each Prismic repository in `gatsby-config.js`
- * that supports previews.
- */
 if (typeof window !== 'undefined') {
-  window[WINDOW_CONTEXTS_KEY] = {}
+  window[WINDOW_PLUGIN_OPTIONS_KEY] = {}
 }
 
 /**
- * Returns a PrismicContext value for the requested repository. The return
- * value is wrapped in an `Option`, which may be empty if a context does not
- * exist for the repository.
+ * Populate a plugin options' `accessToken` value with one stored in a persisted
+ * cookie, if available. If an access token already exists in the plugin
+ * options, that token takes priority.
  */
-export const getPrismicContext = (
-  repositoryName: string,
-): O.Option<PrismicContext> =>
-  pipe(window[WINDOW_CONTEXTS_KEY], R.lookup(repositoryName))
+const populateAccessToken = (
+  pluginOptions: PluginOptions,
+): IO.IO<PluginOptions> =>
+  pipe(
+    IOE.Do,
+    IOE.chain(
+      IOE.fromPredicate(
+        () => pluginOptions.accessToken == null,
+        () => new Error('Access token is already populated'),
+      ),
+    ),
+    IOE.bind('cookieName', () =>
+      IOE.of(sprintf(COOKIE_ACCESS_TOKEN_NAME, pluginOptions.repositoryName)),
+    ),
+    IOE.bindW('accessToken', (scope) => getCookie(scope.cookieName)),
+    IOE.map((scope) => ({ ...pluginOptions, accessToken: scope.accessToken })),
+    IOE.getOrElse(() => IO.of(pluginOptions)),
+  )
 
-export type PrismicContext = React.Context<PrismicContextValue>
+const initRepositoryState = (
+  pluginOptions: PluginOptions,
+): IO.IO<PrismicContextRepositoryState> =>
+  pipe(
+    populateAccessToken(pluginOptions),
+    IO.map((pluginOptions) => ({
+      pluginOptions,
+      repositoryName: pluginOptions.repositoryName,
+      nodes: {},
+      typePaths: {},
+      rootNodeMap: {},
+      isBootstrapped: false,
+    })),
+  )
+
+const isPrismicAPIDocumentNodeInput = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any,
+): value is PrismicAPIDocumentNodeInput =>
+  typeof value === 'object' && 'prismicId' in value
 
 export type PrismicContextValue = readonly [
   PrismicContextState,
   React.Dispatch<PrismicContextAction>,
 ]
 
-export interface PrismicContextState {
+export type PrismicContextState = Record<string, PrismicContextRepositoryState>
+
+export interface PrismicContextRepositoryState {
   repositoryName: string
   pluginOptions: PluginOptions
   /** Record of Prismic document nodes keyed by their `prismicId` field. */
@@ -68,38 +93,35 @@ export enum PrismicContextActionType {
 export type PrismicContextAction =
   | {
       type: PrismicContextActionType.SetAccessToken
-      payload: string
+      payload: { repositoryName: string; accessToken: string }
     }
   | {
       type: PrismicContextActionType.AppendNodes
-      payload: unknown[]
+      payload: { repositoryName: string; nodes: unknown[] }
     }
   | {
       type: PrismicContextActionType.AppendTypePaths
-      payload: TypePathsStore
+      payload: { repositoryName: string; typePaths: TypePathsStore }
     }
   | {
       type: PrismicContextActionType.Bootstrapped
+      payload: { repositoryName: string }
     }
   | {
       type: PrismicContextActionType.CreateRootNodeRelationship
-      payload: { path: string; documentId: string }
+      payload: { repositoryName: string; path: string; documentId: string }
     }
-
-const isPrismicAPIDocumentNodeInput = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any,
-): value is PrismicAPIDocumentNodeInput =>
-  typeof value === 'object' && 'prismicId' in value
 
 export const contextReducer = (
   state: PrismicContextState,
   action: PrismicContextAction,
 ): PrismicContextState => {
+  const repositoryName = action.payload.repositoryName
+
   switch (action.type) {
     case PrismicContextActionType.AppendNodes: {
-      const nodesMap = action.payload.reduce(
-        (acc: PrismicContextState['nodes'], node) => {
+      const nodesMap = action.payload.nodes.reduce(
+        (acc: PrismicContextRepositoryState['nodes'], node) => {
           if (isPrismicAPIDocumentNodeInput(node)) {
             acc[node.prismicId] = node
           }
@@ -111,9 +133,12 @@ export const contextReducer = (
 
       return {
         ...state,
-        nodes: {
-          ...state.nodes,
-          ...nodesMap,
+        [repositoryName]: {
+          ...state[repositoryName],
+          nodes: {
+            ...state[repositoryName].nodes,
+            ...nodesMap,
+          },
         },
       }
     }
@@ -121,9 +146,12 @@ export const contextReducer = (
     case PrismicContextActionType.AppendTypePaths: {
       return {
         ...state,
-        typePaths: {
-          ...state.typePaths,
-          ...action.payload,
+        [repositoryName]: {
+          ...state[repositoryName],
+          typePaths: {
+            ...state[repositoryName].typePaths,
+            ...action.payload.typePaths,
+          },
         },
       }
     }
@@ -131,9 +159,12 @@ export const contextReducer = (
     case PrismicContextActionType.SetAccessToken: {
       return {
         ...state,
-        pluginOptions: {
-          ...state.pluginOptions,
-          accessToken: action.payload,
+        [repositoryName]: {
+          ...state[repositoryName],
+          pluginOptions: {
+            ...state[repositoryName].pluginOptions,
+            accessToken: action.payload.accessToken,
+          },
         },
       }
     }
@@ -141,9 +172,12 @@ export const contextReducer = (
     case PrismicContextActionType.CreateRootNodeRelationship: {
       return {
         ...state,
-        rootNodeMap: {
-          ...state.rootNodeMap,
-          [action.payload.path]: action.payload.documentId,
+        [repositoryName]: {
+          ...state[repositoryName],
+          rootNodeMap: {
+            ...state[repositoryName].rootNodeMap,
+            [action.payload.path]: action.payload.documentId,
+          },
         },
       }
     }
@@ -151,90 +185,43 @@ export const contextReducer = (
     case PrismicContextActionType.Bootstrapped: {
       return {
         ...state,
-        isBootstrapped: true,
+        [repositoryName]: {
+          ...state[repositoryName],
+          isBootstrapped: true,
+        },
       }
     }
   }
 }
 
-export interface CreatePrismicContextEnv {
-  pluginOptions: PluginOptions
-}
-
-// Populate a plugin options' `accessToken` value with one stored in a persisted
-// cookie, if available. If an access token already exists in the plugin
-// options, that token takes priority.
-const populateAccessToken = (
-  pluginOptions: PluginOptions,
-): IO.IO<PluginOptions> =>
+const createInitialState = (): IO.IO<PrismicContextState> =>
   pipe(
-    IOE.Do,
-    IOE.chain(
-      IOE.fromPredicate(
-        () => pluginOptions.accessToken == null,
-        () => new Error('Access token is already populated'),
-      ),
-    ),
-    IOE.bind('cookieName', () =>
-      IOE.of(sprintf(COOKIE_ACCESS_TOKEN_NAME, pluginOptions.repositoryName)),
-    ),
-    IOE.bindW('accessToken', (scope) => getCookie(scope.cookieName)),
-    IOE.map((scope) => ({ ...pluginOptions, accessToken: scope.accessToken })),
-    IOE.getOrElse(() => IO.of(pluginOptions)),
+    typeof window === 'undefined' ? {} : window[WINDOW_PLUGIN_OPTIONS_KEY],
+    R.map(initRepositoryState),
+    R.sequence(IO.io),
   )
 
-const buildInitialState: Rr.Reader<
-  CreatePrismicContextEnv,
-  PrismicContextState
-> = pipe(
-  Rr.asks((env: CreatePrismicContextEnv) => ({
-    repositoryName: env.pluginOptions.repositoryName,
-    pluginOptions: env.pluginOptions,
-    nodes: {},
-    typePaths: {},
-    rootNodeMap: {},
-    isBootstrapped: false,
-  })),
-  Rr.map((state) => ({
-    ...state,
-    pluginOptions: populateAccessToken(state.pluginOptions)(),
-  })),
-)
+const defaultInitialState: PrismicContextState = {}
+const defaultContextValue: PrismicContextValue = [
+  defaultInitialState,
+  () => void 0,
+]
+
+export const PrismicContext = React.createContext(defaultContextValue)
 
 export type PrismicProviderProps = {
   children?: React.ReactNode
 }
 
-export const createPrismicContext: Rr.Reader<
-  CreatePrismicContextEnv,
-  React.ComponentType<PrismicProviderProps>
-> = pipe(
-  Rr.ask<CreatePrismicContextEnv>(),
-  Rr.bind('initialState', () => buildInitialState),
-  Rr.bind('defaultValue', (env) =>
-    Rr.of([
-      env.initialState,
-      (_: PrismicContextAction): void => void 0,
-    ] as const),
-  ),
-  Rr.bind('context', (env) => Rr.of(React.createContext(env.defaultValue))),
-  Rr.chainFirst((env) =>
-    Rr.of(
-      (env.context.displayName = `PrismicPreview(${env.pluginOptions.repositoryName})`),
-    ),
-  ),
-  Rr.chainFirst((env) =>
-    Rr.of(
-      (window[WINDOW_CONTEXTS_KEY][env.pluginOptions.repositoryName] =
-        env.context),
-    ),
-  ),
-  Rr.map((env) => (props: PrismicProviderProps): JSX.Element => {
-    const Context = env.context
-    const reducerTuple = React.useReducer(contextReducer, env.initialState)
+export const PrismicPreviewProvider = ({
+  children,
+}: PrismicProviderProps): JSX.Element => {
+  const initialState = createInitialState()()
+  const reducerTuple = React.useReducer(contextReducer, initialState)
 
-    return (
-      <Context.Provider value={reducerTuple}>{props.children}</Context.Provider>
-    )
-  }),
-)
+  return (
+    <PrismicContext.Provider value={reducerTuple}>
+      {children}
+    </PrismicContext.Provider>
+  )
+}

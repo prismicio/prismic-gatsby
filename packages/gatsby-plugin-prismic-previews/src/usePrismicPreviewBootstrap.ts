@@ -30,7 +30,10 @@ import {
   TypePathsStore,
   UnknownRecord,
 } from './types'
-import { PrismicContextActionType, PrismicContextState } from './context'
+import {
+  PrismicContextActionType,
+  PrismicContextRepositoryState,
+} from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 
 export type UsePrismicPreviewBootstrapFn = () => void
@@ -192,7 +195,7 @@ export const usePrismicPreviewBootstrap = (
   // to closures, we need to opt out of the closure and use a ref.
   //
   // If you have a better idea how to handle this, please share!
-  const contextStateRef = React.useRef<PrismicContextState>()
+  const contextStateRef = React.useRef<PrismicContextRepositoryState>()
 
   const [contextState, contextDispatch] = usePrismicPreviewContext(
     repositoryName,
@@ -225,17 +228,18 @@ export const usePrismicPreviewBootstrap = (
           })
           contextDispatch({
             type: PrismicContextActionType.Bootstrapped,
+            payload: { repositoryName },
           })
         },
         appendNodes: (nodes: unknown[]) => () =>
           contextDispatch({
             type: PrismicContextActionType.AppendNodes,
-            payload: nodes,
+            payload: { repositoryName, nodes },
           }),
         appendTypePaths: (typePathsStore: TypePathsStore) => () =>
           contextDispatch({
             type: PrismicContextActionType.AppendTypePaths,
-            payload: typePathsStore,
+            payload: { repositoryName, typePaths: typePathsStore },
           }),
         isBootstrapped: contextState.isBootstrapped,
         apiEndpoint: contextState.pluginOptions.apiEndpoint,
