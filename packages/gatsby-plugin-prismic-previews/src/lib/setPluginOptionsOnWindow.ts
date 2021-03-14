@@ -3,6 +3,10 @@ import * as IO from 'fp-ts/IO'
 import { WINDOW_PLUGIN_OPTIONS_KEY } from '../constants'
 import { PluginOptions } from '../types'
 
+// This store is primary just used during testing. During the SSR build of a
+// Gatsby site, this function is not called.
+export const ssrPluginOptionsStore = {}
+
 declare global {
   interface Window {
     [WINDOW_PLUGIN_OPTIONS_KEY]: Record<string, PluginOptions>
@@ -12,8 +16,13 @@ declare global {
 export const setPluginOptionsOnWindow = (
   pluginOptions: PluginOptions,
 ): IO.IO<void> => () => {
-  window[WINDOW_PLUGIN_OPTIONS_KEY] = {
-    ...window[WINDOW_PLUGIN_OPTIONS_KEY],
-    [pluginOptions.repositoryName]: pluginOptions,
+  if (typeof window === 'undefined') {
+    Object.assign(ssrPluginOptionsStore, {
+      [pluginOptions.repositoryName]: pluginOptions,
+    })
+  } else {
+    Object.assign({}, window[WINDOW_PLUGIN_OPTIONS_KEY], {
+      [pluginOptions.repositoryName]: pluginOptions,
+    })
   }
 }

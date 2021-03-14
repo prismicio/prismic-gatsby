@@ -15,6 +15,7 @@ import {
 } from './types'
 import { getCookie } from './lib/getCookie'
 import { sprintf } from './lib/sprintf'
+import { ssrPluginOptionsStore } from './lib/setPluginOptionsOnWindow'
 
 if (typeof window !== 'undefined') {
   window[WINDOW_PLUGIN_OPTIONS_KEY] = {}
@@ -196,7 +197,9 @@ export const contextReducer = (
 
 const createInitialState = (): IO.IO<PrismicContextState> =>
   pipe(
-    typeof window === 'undefined' ? {} : window[WINDOW_PLUGIN_OPTIONS_KEY],
+    typeof window === 'undefined'
+      ? ssrPluginOptionsStore
+      : window[WINDOW_PLUGIN_OPTIONS_KEY],
     R.map(initRepositoryState),
     R.sequence(IO.io),
   )
@@ -210,12 +213,15 @@ const defaultContextValue: PrismicContextValue = [
 export const PrismicContext = React.createContext(defaultContextValue)
 
 export type PrismicProviderProps = {
+  // initialState?: PrismicContextState
   children?: React.ReactNode
 }
 
 export const PrismicPreviewProvider = ({
+  // initialState,
   children,
 }: PrismicProviderProps): JSX.Element => {
+  // const resolvedInitialState = initialState ?? createInitialState()()
   const initialState = createInitialState()()
   const reducerTuple = React.useReducer(contextReducer, initialState)
 
