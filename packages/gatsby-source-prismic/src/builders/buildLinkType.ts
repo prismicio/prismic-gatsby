@@ -52,7 +52,7 @@ export const buildLinkType: RTE.ReaderTaskEither<
             source: PrismicAPILinkField,
           ): Promise<gatsbyFs.FileSystemNode | null> =>
             source.url && source.link_type === 'Media'
-              ? await gatsbyFs.createRemoteFileNode({
+              ? await deps.createRemoteFileNode({
                   url: source.url,
                   store: deps.store,
                   cache: deps.cache,

@@ -54,4 +54,5 @@ export const buildDependencies = (
     createNodeId: gatsbyContext.createNodeId,
     createContentDigest: gatsbyContext.createContentDigest,
   }),
+  createRemoteFileNode: pluginOptions.createRemoteFileNode,
 })

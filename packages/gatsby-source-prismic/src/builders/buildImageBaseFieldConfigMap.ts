@@ -62,7 +62,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
         source: PrismicAPIImageField,
       ): Promise<gatsbyFs.FileSystemNode | null> =>
         source.url
-          ? await gatsbyFs.createRemoteFileNode({
+          ? await deps.createRemoteFileNode({
               url: source.url,
               store: deps.store,
               cache: deps.cache,

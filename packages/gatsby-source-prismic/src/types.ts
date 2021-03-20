@@ -1,4 +1,5 @@
 import * as gatsby from 'gatsby'
+import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as gatsbyImgix from 'gatsby-plugin-imgix'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
@@ -47,6 +48,7 @@ export interface Dependencies {
   nodeHelpers: NodeHelpers
   pluginOptions: PluginOptions
   webhookBody?: unknown
+  createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
 }
 
 export interface PluginOptions extends gatsby.PluginOptions {
@@ -65,6 +67,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   typePrefix?: string
   webhookSecret?: string
   plugins: []
+  createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
 }
 
 export type FieldConfigCreator<

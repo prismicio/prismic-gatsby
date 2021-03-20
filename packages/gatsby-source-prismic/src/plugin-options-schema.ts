@@ -1,4 +1,5 @@
 import * as gatsby from 'gatsby'
+import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
@@ -120,6 +121,9 @@ export const pluginOptionsSchema: NonNullable<
     ),
     typePrefix: Joi.string(),
     webhookSecret: Joi.string(),
+    createRemoteFileNode: Joi.function().default(
+      () => gatsbyFs.createRemoteFileNode,
+    ),
   })
     .oxor('fetchLinks', 'graphQuery')
     .external(async (pluginOptions: PluginOptions) =>

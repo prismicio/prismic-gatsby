@@ -1,28 +1,36 @@
-import nock from 'nock'
+import * as msw from 'msw'
+import * as mswNode from 'msw/node'
 
 import { PluginOptions } from '../../src'
-
-import { getURLOrigin } from './getURLOrigin'
+import { resolveAPIURL } from './resolveURL'
 
 export const nockRepositoryEndpoint = (
+  server: mswNode.SetupServerApi,
   pluginOptions: PluginOptions,
   path = '/api/v2',
-): nock.Scope =>
-  nock(getURLOrigin(pluginOptions.apiEndpoint))
-    .get(path)
-    .query({ access_token: pluginOptions.accessToken })
-    .reply(200, {
-      types: { foo: 'Foo' },
-      refs: [
-        {
-          id: 'master',
-          ref: 'master',
-          isMasterRef: true,
-        },
-        {
-          id: 'release',
-          ref: 'release',
-          isMasterRef: false,
-        },
-      ],
-    })
+): void =>
+  server.use(
+    msw.rest.get(
+      resolveAPIURL(pluginOptions.apiEndpoint, path),
+      (req, res, ctx) =>
+        req.url.searchParams.get('access_token') === pluginOptions.accessToken
+          ? res(
+              ctx.json({
+                types: { foo: 'Foo' },
+                refs: [
+                  {
+                    id: 'master',
+                    ref: 'master',
+                    isMasterRef: true,
+                  },
+                  {
+                    id: 'release',
+                    ref: 'release',
+                    isMasterRef: false,
+                  },
+                ],
+              }),
+            )
+          : res(ctx.status(401)),
+    ),
+  )

@@ -1,5 +1,7 @@
 module.exports = {
-  preset: 'ts-jest',
+  transform: {
+    '^.+\\.tsx?$': 'esbuild-jest',
+  },
   modulePathIgnorePatterns: ['dist/'],
   transformIgnorePatterns: ['/node_modules/(?!(ky))'],
 }

@@ -17,7 +17,7 @@
     "build": "NODE_ENV=production concurrently -p '[{name}]' -n 'esbuild,    tsc' -c 'yellow.dim,blue.dim' 'node ./build.mjs' 'tsc -p ./tsconfig.build.json'",
     "dev": "NODE_ENV=development concurrently -p '[{name}]' -n 'esbuild,    tsc' -c 'yellow.dim,blue.dim' 'node ./build.mjs -w' 'tsc -w --preserveWatchOutput -p ./tsconfig.build.json'",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
-    "test": "jest",
+    "test": "ava test/**/*.ava.test.ts",
     "prepare": "yarn build",
     "release": "standard-version"
   },
@@ -48,5 +48,14 @@
   "devDependencies": {
     "@types/prismic-dom": "^2.1.1",
     "gatsby-image": "^2.11.0"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-eager/register"
+    ],
+    "verbose": true
   }
 }

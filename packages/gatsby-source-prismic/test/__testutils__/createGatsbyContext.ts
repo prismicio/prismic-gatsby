@@ -1,3 +1,4 @@
+import * as sinon from 'sinon'
 import * as gatsby from 'gatsby'
 import { PartialDeep } from 'type-fest'
 
@@ -5,14 +6,8 @@ const createCache = () => {
   const cache = new Map()
 
   return {
-    get: jest
-      .fn()
-      .mockImplementation((key: string) => Promise.resolve(cache.get(key))),
-    set: jest
-      .fn()
-      .mockImplementation(<T>(key: string, value: T) =>
-        Promise.resolve(cache.set(key, value)),
-      ),
+    get: (key: string) => Promise.resolve(cache.get(key)),
+    set: <T>(key: string, value: T) => Promise.resolve(cache.set(key, value)),
     clear: () => cache.clear(),
   }
 }
@@ -28,35 +23,39 @@ export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
 
   return {
     actions: {
-      createNode: jest
-        .fn()
-        .mockImplementation((input: gatsby.NodeInput) =>
-          nodeStore.set(input.id, input),
-        ),
-      deleteNode: jest
-        .fn()
-        .mockImplementation((id: string) => nodeStore.delete(id)),
-      createTypes: jest.fn(),
-      touchNode: jest.fn(),
+      createNode: sinon
+        .stub()
+        .callsFake((input: gatsby.NodeInput) => nodeStore.set(input.id, input)),
+      deleteNode: sinon.stub().callsFake((id: string) => nodeStore.delete(id)),
+      createTypes: sinon.stub(),
+      touchNode: sinon.stub(),
     },
     reporter: {
-      info: jest.fn(),
-      warn: jest.fn(),
+      info: sinon.stub(),
+      warn: sinon.stub(),
     },
     cache,
     schema: {
-      buildUnionType: jest.fn((config) => ({ kind: 'UNION', config })),
-      buildObjectType: jest.fn((config) => ({ kind: 'OBJECT', config })),
-      buildEnumType: jest.fn((config) => ({ kind: 'ENUM', config })),
-      buildInterfaceType: jest.fn((config) => ({ kind: 'INTERFACE', config })),
-      buildInputObjectType: jest.fn((config) => ({
+      buildUnionType: sinon
+        .stub()
+        .callsFake((config) => ({ kind: 'UNION', config })),
+      buildObjectType: sinon
+        .stub()
+        .callsFake((config) => ({ kind: 'OBJECT', config })),
+      buildEnumType: sinon
+        .stub()
+        .callsFake((config) => ({ kind: 'ENUM', config })),
+      buildInterfaceType: sinon
+        .stub()
+        .callsFake((config) => ({ kind: 'INTERFACE', config })),
+      buildInputObjectType: sinon.stub().callsFake((config) => ({
         kind: 'INPUT_OBJECT',
         config,
       })),
     },
-    getNode: jest.fn().mockImplementation((id: string) => nodeStore.get(id)),
-    getNodes: jest.fn().mockImplementation(() => [...nodeStore.values()]),
-    createNodeId: jest.fn().mockImplementation((x) => x),
-    createContentDigest: jest.fn().mockReturnValue('createContentDigest'),
+    getNode: sinon.stub().callsFake((id: string) => nodeStore.get(id)),
+    getNodes: sinon.stub().callsFake(() => [...nodeStore.values()]),
+    createNodeId: sinon.stub().callsFake((x) => x),
+    createContentDigest: sinon.stub().returns('createContentDigest'),
   }
 }
