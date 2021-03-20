@@ -1,6 +1,7 @@
 import * as React from 'react'
 
-import styles from './Root.module.css'
+// import styles from './Root.module.css'
+const styles: Record<string, never> = {}
 
 type RootProps = {
   children?: React.ReactNode

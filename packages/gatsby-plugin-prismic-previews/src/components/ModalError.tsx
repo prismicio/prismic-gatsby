@@ -5,7 +5,8 @@ import { VERSION } from '../constants'
 import { Modal } from './Modal'
 import { Button } from './Button'
 
-import styles from './ModalError.module.css'
+// import styles from './ModalError.module.css'
+const styles: Record<string, never> = {}
 
 type ModalProps = {
   repositoryName: string

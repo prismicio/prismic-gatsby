@@ -1,8 +1,9 @@
+import test from 'ava'
 import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
 
-import { pluginOptionsSchema } from '../src/plugin-options-schema'
+import { pluginOptionsSchema } from '../dist/gatsby-node'
 
-test('passes on valid options', async () => {
+test('passes on valid options', async (t) => {
   const pluginOptions = {
     repositoryName: 'string',
     accessToken: 'string',
@@ -14,22 +15,23 @@ test('passes on valid options', async () => {
     imagePlaceholderImgixParams: { q: 100 },
     typePrefix: 'string',
     toolbar: 'new',
+    writeTypePathsToFilesystem: () => void 0,
   }
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
-  expect(res.isValid).toBe(true)
-  expect(res.errors).toEqual([])
+  t.true(res.isValid)
+  t.deepEqual(res.errors, [])
 })
 
-test('fails on missing options', async () => {
+test('fails on missing options', async (t) => {
   const pluginOptions = {}
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
-  expect(res.isValid).toBe(false)
-  expect(res.errors).toEqual(['"repositoryName" is required'])
+  t.false(res.isValid)
+  t.deepEqual(res.errors, ['"repositoryName" is required'])
 })
 
-test('fails on invalid options', async () => {
+test('fails on invalid options', async (t) => {
   const pluginOptions = {
     repositoryName: Symbol(),
     accessToken: Symbol(),
@@ -41,11 +43,12 @@ test('fails on invalid options', async () => {
     imagePlaceholderImgixParams: Symbol(),
     typePrefix: Symbol(),
     toolbar: Symbol(),
+    writeTypePathsToFilesystem: Symbol(),
   }
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
-  expect(res.isValid).toBe(false)
-  expect(res.errors).toEqual([
+  t.false(res.isValid)
+  t.deepEqual(res.errors, [
     '"repositoryName" must be a string',
     '"accessToken" must be a string',
     '"promptForAccessToken" must be a boolean',
@@ -57,10 +60,11 @@ test('fails on invalid options', async () => {
     '"typePrefix" must be a string',
     '"toolbar" must be one of [new, legacy]',
     '"toolbar" must be a string',
+    '"writeTypePathsToFilesystem" must be of type function',
   ])
 })
 
-test('allows only one of qraphQuery or fetchLinks', async () => {
+test('allows only one of qraphQuery or fetchLinks', async (t) => {
   const pluginOptions = {
     repositoryName: 'qwerty',
     graphQuery: 'string',
@@ -68,8 +72,8 @@ test('allows only one of qraphQuery or fetchLinks', async () => {
   }
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
-  expect(res.isValid).toBe(false)
-  expect(res.errors).toEqual([
+  t.false(res.isValid)
+  t.deepEqual(res.errors, [
     '"value" contains a conflict between optional exclusive peers [fetchLinks, graphQuery]',
   ])
 })

@@ -1,7 +1,8 @@
 import * as React from 'react'
 import VisuallyHidden from '@reach/visually-hidden'
 
-import styles from './Modal.module.css'
+// import styles from './Modal.module.css'
+const styles: Record<string, never> = {}
 
 const CloseSVG = (props: React.SVGProps<SVGSVGElement>): JSX.Element => (
   <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" {...props}>

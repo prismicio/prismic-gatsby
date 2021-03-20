@@ -1,3 +1,4 @@
+import * as sinon from 'sinon'
 import * as prismic from 'ts-prismic'
 
 import { PluginOptions } from '../../src'
@@ -13,4 +14,5 @@ export const createPluginOptions = (): PluginOptions => ({
   imagePlaceholderImgixParams: { w: 10 },
   graphQuery: 'graphQuery',
   plugins: [],
+  writeTypePathsToFilesystem: sinon.stub(),
 })

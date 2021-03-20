@@ -17,6 +17,14 @@ export interface PluginOptions extends gatsby.PluginOptions {
   typePrefix?: string
   toolbar: 'new' | 'legacy'
   plugins: []
+  writeTypePathsToFilesystem: (
+    args: WriteTypePathsToFilesystemArgs,
+  ) => void | Promise<void>
+}
+
+export type WriteTypePathsToFilesystemArgs = {
+  publicPath: string
+  serializedTypePaths: string
 }
 
 export type TypePathsStore = Record<string, gatsbyPrismic.PrismicTypePathType>

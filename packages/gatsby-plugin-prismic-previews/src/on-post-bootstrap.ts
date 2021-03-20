@@ -1,8 +1,8 @@
 import * as gatsby from 'gatsby'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as path from 'path'
-import * as fs from 'fs'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as TE from 'fp-ts/TaskEither'
 import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import { constVoid, pipe } from 'fp-ts/function'
@@ -29,6 +29,7 @@ interface OnPostBootstrapProgramEnv
   getNodesByType: gatsby.NodePluginArgs['getNodesByType']
   repositoryName: string
   nodeHelpers: NodeHelpers
+  writeTypePathsToFilesystem: PluginOptions['writeTypePathsToFilesystem']
 }
 
 const onPostBootstrapProgram: RTE.ReaderTaskEither<
@@ -58,7 +59,18 @@ const onPostBootstrapProgram: RTE.ReaderTaskEither<
     RTE.of(path.join('public', 'static', env.filename)),
   ),
   RTE.chainFirst((env) =>
-    RTE.fromIO(() => fs.writeFileSync(env.publicPath, env.serializedTypePaths)),
+    RTE.fromTaskEither(
+      TE.tryCatch(
+        () =>
+          Promise.resolve(
+            env.writeTypePathsToFilesystem({
+              publicPath: env.publicPath,
+              serializedTypePaths: env.serializedTypePaths,
+            }),
+          ),
+        (error) => error as Error,
+      ),
+    ),
   ),
   RTE.chainFirstW((env) =>
     reportVerbose(sprintf(WROTE_TYPE_PATHS_TO_FS_MSG, env.publicPath)),
@@ -84,6 +96,7 @@ export const onPostBootstrap: NonNullable<
       createNodeId: gatsbyContext.createNodeId,
       createContentDigest: gatsbyContext.createContentDigest,
     }),
+    writeTypePathsToFilesystem: pluginOptions.writeTypePathsToFilesystem,
   }).then(
     E.fold(
       (error) =>

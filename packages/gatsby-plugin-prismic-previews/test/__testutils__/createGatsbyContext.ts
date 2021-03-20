@@ -1,11 +1,12 @@
+import * as sinon from 'sinon'
 import * as gatsby from 'gatsby'
 import { PartialDeep } from 'type-fest'
 
 export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> => ({
-  createNodeId: jest.fn().mockImplementation((x) => x),
-  createContentDigest: jest.fn().mockReturnValue('createContentDigest'),
-  getNodesByType: jest.fn(),
+  createNodeId: sinon.stub().callsFake((x) => x),
+  createContentDigest: sinon.stub().returns('createContentDigest'),
+  getNodesByType: sinon.stub(),
   reporter: {
-    verbose: jest.fn(),
+    verbose: sinon.stub(),
   },
 })

@@ -1,11 +1,13 @@
 import * as React from 'react'
 import VisuallyHidden from '@reach/visually-hidden'
 
+import { usePrismicPreviewAccessToken } from '../usePrismicPreviewAccessToken'
+
 import { Modal } from './Modal'
 import { Button } from './Button'
 
-import styles from './ModalAccessToken.module.css'
-import { usePrismicPreviewAccessToken } from '../usePrismicPreviewAccessToken'
+// import styles from './ModalAccessToken.module.css'
+const styles: Record<string, never> = {}
 
 const PRISMIC_DOCS_GENERATING_AN_ACCESS_TOKEN =
   'https://user-guides.prismic.io/en/articles/1036153-generating-an-access-token'

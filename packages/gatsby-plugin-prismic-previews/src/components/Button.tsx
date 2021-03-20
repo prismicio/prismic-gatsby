@@ -1,6 +1,7 @@
 import * as React from 'react'
 
-import styles from './Button.module.css'
+// import styles from './Button.module.css'
+const styles: Record<string, never> = {}
 
 type ButtonProps = {
   variant: 'purple' | 'white' | 'whiteOutline'
