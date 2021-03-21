@@ -17,7 +17,7 @@
     "build": "NODE_ENV=production concurrently -p '[{name}]' -n 'esbuild,    tsc' -c 'yellow.dim,blue.dim' 'node ./build.mjs' 'tsc -p ./tsconfig.build.json'",
     "dev": "NODE_ENV=development concurrently -p '[{name}]' -n 'esbuild,    tsc' -c 'yellow.dim,blue.dim' 'node ./build.mjs -w' 'tsc -w --preserveWatchOutput -p ./tsconfig.build.json'",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
-    "test": "ava test/**/*.ava.test.ts",
+    "test": "ava",
     "prepare": "yarn build",
     "release": "standard-version"
   },

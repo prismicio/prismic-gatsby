@@ -20,7 +20,7 @@
     "dev": "NODE_ENV=development concurrently -p '[{name}]' -n 'esbuild,    tsc' -c 'yellow.dim,blue.dim' 'node ./build.mjs -w' 'tsc -w --preserveWatchOutput -p ./tsconfig.build.json'",
     "gen": "tcm src",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
-    "test": "ava test/**/*.ava.test.{ts,tsx}",
+    "test": "ava",
     "prepare": "yarn build",
     "release": "standard-version"
   },
@@ -55,11 +55,9 @@
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^5.0.3",
-    "@types/jsdom": "^16.2.7",
     "browser-env": "^3.3.0",
     "cross-fetch": "^3.0.6",
     "identity-obj-proxy": "^3.0.0",
-    "jsdom": "^16.5.1",
     "react-test-renderer": "^17.0.1",
     "source-map-explorer": "^2.5.2",
     "type-fest": "^0.21.1",
