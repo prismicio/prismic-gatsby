@@ -1,5 +1,5 @@
-export const resolveURL = (apiEndpoint: string, to: string): string => {
-  const resolvedUrl = new URL(to, new URL(apiEndpoint + '/', 'resolve://'))
+export const resolveURL = (from: string, to: string): string => {
+  const resolvedUrl = new URL(to, new URL(from + '/', 'resolve://'))
 
   if (resolvedUrl.protocol === 'resolve:') {
     // `from` is a relative URL.

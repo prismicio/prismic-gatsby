@@ -1,21 +1,17 @@
+import * as ava from 'ava'
 import * as sinon from 'sinon'
 import * as prismic from 'ts-prismic'
+import * as crypto from 'crypto'
 
 import { PluginOptions } from '../../src'
 
-let i = 0
-
-export const createPluginOptions = (): PluginOptions => {
-  const repositoryName = 'qwerty'
-  const apiEndpoint = prismic.defaultEndpoint(`${repositoryName}-${i}`)
-
-  // Increment i to ensure the next call will create a unique apiEndpoint value.
-  i = i + 1
+export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
+  const repositoryName = crypto.createHash('md5').update(t.title).digest('hex')
 
   return {
     repositoryName,
     accessToken: 'accessToken',
-    apiEndpoint,
+    apiEndpoint: prismic.defaultEndpoint(repositoryName),
     typePrefix: 'prefix',
     lang: '*',
     toolbar: 'new',

@@ -1,5 +1,4 @@
 import test, { ExecutionContext } from 'ava'
-import * as msw from 'msw'
 import * as mswNode from 'msw/node'
 import * as sinon from 'sinon'
 import * as gatsby from 'gatsby'
@@ -10,13 +9,14 @@ import { renderHook, act } from '@testing-library/react-hooks'
 import browserEnv from 'browser-env'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
+import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPreviewToken } from './__testutils__/createPreviewToken'
+import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
 import { polyfillKy } from './__testutils__/polyfillKy'
-import { resolveURL } from './__testutils__/resolveURL'
 
 import {
   PluginOptions,
@@ -34,11 +34,8 @@ const createConfig = (): UsePrismicPreviewBootstrapConfig => ({
 const server = mswNode.setupServer()
 test.before(() => {
   polyfillKy()
-
-  server.listen({ onUnhandledRequest: 'error' })
-
   browserEnv(['window', 'document'])
-
+  server.listen({ onUnhandledRequest: 'error' })
   globalThis.__PATH_PREFIX__ = 'https://example.com'
 })
 test.beforeEach(() => {
@@ -56,36 +53,14 @@ const performPreview = async (
   pluginOptions: PluginOptions,
   config: UsePrismicPreviewBootstrapConfig,
   queryResponse: prismic.Response.Query,
+  typePathsFilename: string,
   typePaths: Record<string, gatsbyPrismic.PrismicTypePathType>,
 ) => {
-  const token = createPreviewToken(pluginOptions.repositoryName)
-  cookie.set(prismic.cookie.preview, token)
+  const ref = createPreviewRef(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, ref)
 
-  server.use(
-    msw.rest.get(
-      resolveURL(pluginOptions.apiEndpoint, './documents/search'),
-      (req, res, ctx) =>
-        req.url.searchParams.get('access_token') ===
-          pluginOptions.accessToken &&
-        req.url.searchParams.get('ref') === token &&
-        req.url.searchParams.get('lang') === pluginOptions.lang &&
-        req.url.searchParams.get('graphQuery') === pluginOptions.graphQuery &&
-        req.url.searchParams.get('page') === '1' &&
-        req.url.searchParams.get('pageSize') === '100'
-          ? res(ctx.json(queryResponse))
-          : res(ctx.status(401)),
-    ),
-  )
-
-  server.use(
-    msw.rest.get(
-      resolveURL(
-        globalThis.__PATH_PREFIX__,
-        '/static/9e387d94c04ebf0e369948edd9c66d2b.json',
-      ),
-      (_req, res, ctx) => res(ctx.json(typePaths)),
-    ),
-  )
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse, { ref }))
+  server.use(createTypePathsMockedRequest(typePathsFilename, typePaths))
 
   await onClientEntry(gatsbyContext, pluginOptions)
   const { result, waitForValueToChange } = renderHook(
@@ -100,11 +75,11 @@ const performPreview = async (
     },
     { wrapper: PrismicPreviewProvider },
   )
-  const bootstrapPreview = result.current.bootstrap[1]
 
   t.true(result.current.bootstrap[0].state === 'INIT')
 
   act(() => {
+    const [, bootstrapPreview] = result.current.bootstrap
     bootstrapPreview()
   })
 
@@ -119,7 +94,7 @@ const performPreview = async (
 
 test.serial('document', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   const doc = createPrismicAPIDocument()
@@ -132,6 +107,7 @@ test.serial('document', async (t) => {
     pluginOptions,
     config,
     queryResponse,
+    '8fc72c0f6a5f7e677994a88a89c7c333.json',
     {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
@@ -145,7 +121,7 @@ test.serial('document', async (t) => {
 
 test.serial('structured text', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   const doc = createPrismicAPIDocument({
@@ -160,6 +136,7 @@ test.serial('structured text', async (t) => {
     pluginOptions,
     config,
     queryResponse,
+    '954379fb96a66a39a27fd9f39a34d214.json',
     {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
@@ -179,7 +156,7 @@ test.serial('structured text', async (t) => {
 
 test.serial('link', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   const linkedDoc = createPrismicAPIDocument()
@@ -196,6 +173,7 @@ test.serial('link', async (t) => {
     pluginOptions,
     config,
     queryResponse,
+    '7426ae6d263497631ef63844cc225cac.json',
     {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
@@ -231,7 +209,7 @@ test.serial('link', async (t) => {
 
 test.serial('image', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   const doc = createPrismicAPIDocument({
@@ -263,6 +241,7 @@ test.serial('image', async (t) => {
     pluginOptions,
     config,
     queryResponse,
+    '74f723ca5fab771b7a6273d8da3c5d77.json',
     {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
@@ -331,7 +310,7 @@ test.serial('image', async (t) => {
 
 test.serial('group', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   const doc = createPrismicAPIDocument({
@@ -349,6 +328,7 @@ test.serial('group', async (t) => {
     pluginOptions,
     config,
     queryResponse,
+    '8c94ede38e3b7d86b3779926fbf93d29.json',
     {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
@@ -380,7 +360,7 @@ test.serial('group', async (t) => {
 
 test.serial('slices', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   const doc = createPrismicAPIDocument({
@@ -407,6 +387,7 @@ test.serial('slices', async (t) => {
     pluginOptions,
     config,
     queryResponse,
+    '8701c50f7225950d72eecd7d6fff402d.json',
     {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,

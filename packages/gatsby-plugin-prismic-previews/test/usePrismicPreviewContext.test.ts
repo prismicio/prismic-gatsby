@@ -32,7 +32,7 @@ test.serial('throws if context does not exist for repository', async (t) => {
 
 test.serial('returns context for repository', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -56,7 +56,7 @@ test.serial(
   'initial state contains access token if persisted in cookie',
   async (t) => {
     const gatsbyContext = createGatsbyContext()
-    const pluginOptions = createPluginOptions()
+    const pluginOptions = createPluginOptions(t)
     pluginOptions.accessToken = undefined
 
     const persistedAccessToken = 'persistedAccessToken'
@@ -83,7 +83,7 @@ test.serial(
 
 test.serial('SetAccessToken action sets the access token', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -111,7 +111,7 @@ test.serial('SetAccessToken action sets the access token', async (t) => {
 
 test.serial('AppendNodes action adds nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -145,7 +145,7 @@ test.serial(
   'Bootstrapped action marks repository as bootstrapped',
   async (t) => {
     const gatsbyContext = createGatsbyContext()
-    const pluginOptions = createPluginOptions()
+    const pluginOptions = createPluginOptions(t)
 
     // @ts-expect-error - Partial gatsbyContext provided
     await onClientEntry(gatsbyContext, pluginOptions)

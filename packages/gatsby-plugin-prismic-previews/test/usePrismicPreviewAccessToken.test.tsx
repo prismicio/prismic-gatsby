@@ -18,7 +18,7 @@ test.beforeEach(() => {
 
 test.serial('returns the current access token', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -32,7 +32,7 @@ test.serial('returns the current access token', async (t) => {
 
 test.serial('access token is empty if not set', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   pluginOptions.accessToken = undefined
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -47,7 +47,7 @@ test.serial('access token is empty if not set', async (t) => {
 
 test.serial('set function sets access token in context', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   pluginOptions.accessToken = undefined
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -69,7 +69,7 @@ test.serial('set function sets access token in context', async (t) => {
 
 test.serial('set function sets access token cookie by default', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   pluginOptions.accessToken = undefined
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -93,7 +93,7 @@ test.serial('set function sets access token cookie by default', async (t) => {
 
 test.serial('set function does not set cookie if remember=false', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   pluginOptions.accessToken = undefined
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -118,7 +118,7 @@ test.serial('set function does not set cookie if remember=false', async (t) => {
 test.serial(
   'remove function removes access token cookie if it is set',
   async (t) => {
-    const pluginOptions = createPluginOptions()
+    const pluginOptions = createPluginOptions(t)
     const gatsbyContext = createGatsbyContext()
     pluginOptions.accessToken = undefined
 

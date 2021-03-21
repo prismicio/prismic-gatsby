@@ -1,5 +1,4 @@
 import test from 'ava'
-import * as msw from 'msw'
 import * as mswNode from 'msw/node'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
@@ -10,13 +9,14 @@ import md5 from 'tiny-hashes/md5'
 import browserEnv from 'browser-env'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
+import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPreviewToken } from './__testutils__/createPreviewToken'
+import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
 import { polyfillKy } from './__testutils__/polyfillKy'
-import { resolveURL } from './__testutils__/resolveURL'
 
 import {
   PrismicAPIDocumentNodeInput,
@@ -51,11 +51,8 @@ const nodeHelpers = createNodeHelpers({
 const server = mswNode.setupServer()
 test.before(() => {
   polyfillKy()
-
-  server.listen({ onUnhandledRequest: 'error' })
-
   browserEnv(['window', 'document'])
-
+  server.listen({ onUnhandledRequest: 'error' })
   globalThis.__PATH_PREFIX__ = 'https://example.com'
 })
 test.beforeEach(() => {
@@ -66,7 +63,7 @@ test.after(() => {
 })
 
 test.serial('does not merge if no preview data is available', async (t) => {
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const gatsbyContext = createGatsbyContext()
   const staticData = createStaticData()
 
@@ -84,13 +81,13 @@ test.serial('does not merge if no preview data is available', async (t) => {
 test.serial(
   'merges data only where `_previewable` field matches',
   async (t) => {
-    const pluginOptions = createPluginOptions()
+    const pluginOptions = createPluginOptions(t)
     const gatsbyContext = createGatsbyContext()
     const config = createConfig()
     const queryResponse = createPrismicAPIQueryResponse()
 
-    const token = createPreviewToken(pluginOptions.repositoryName)
-    cookie.set(prismic.cookie.preview, token)
+    const ref = createPreviewRef(pluginOptions.repositoryName)
+    cookie.set(prismic.cookie.preview, ref)
 
     const queryResponseNodes = queryResponse.results.map(
       (doc) =>
@@ -100,35 +97,13 @@ test.serial(
     )
 
     server.use(
-      msw.rest.get(
-        resolveURL(pluginOptions.apiEndpoint, './documents/search'),
-        (req, res, ctx) =>
-          req.url.searchParams.get('access_token') ===
-            pluginOptions.accessToken &&
-          req.url.searchParams.get('ref') === token &&
-          req.url.searchParams.get('lang') === pluginOptions.lang &&
-          req.url.searchParams.get('graphQuery') === pluginOptions.graphQuery &&
-          req.url.searchParams.get('page') === '1' &&
-          req.url.searchParams.get('pageSize') === '100'
-            ? res(ctx.json(queryResponse))
-            : res(ctx.status(401)),
-      ),
+      createAPIQueryMockedRequest(pluginOptions, queryResponse, { ref }),
     )
-
     server.use(
-      msw.rest.get(
-        resolveURL(
-          globalThis.__PATH_PREFIX__,
-          '/static/9e387d94c04ebf0e369948edd9c66d2b.json',
-        ),
-        (_req, res, ctx) =>
-          res(
-            ctx.json({
-              type: gatsbyPrismic.PrismicSpecialType.Document,
-              'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
-            }),
-          ),
-      ),
+      createTypePathsMockedRequest('d26c1607b46a831c5d238303c3cbf489.json', {
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      }),
     )
 
     // Need to use the query results nodes rather than new documents to ensure
@@ -161,9 +136,9 @@ test.serial(
       },
       { wrapper: PrismicPreviewProvider },
     )
-    const bootstrapPreview = result.current.bootstrap[1]
 
     act(() => {
+      const [, bootstrapPreview] = result.current.bootstrap
       bootstrapPreview()
     })
 
@@ -181,6 +156,6 @@ test.serial(
   },
 )
 
-// // test('recursively merges data', () => {})
+test.todo('recursively merges data')
 
-// // test('allows skipping', () => {})
+test.todo('allows skipping')

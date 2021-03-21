@@ -1,4 +1,5 @@
 import * as ava from 'ava'
+import * as sinon from 'sinon'
 import * as prismic from 'ts-prismic'
 import * as crypto from 'crypto'
 
@@ -25,8 +26,8 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
     linkResolver: () => 'linkResolver',
     htmlSerializer: () => 'htmlSerializer',
     plugins: [],
-    createRemoteFileNode: () =>
-      // @ts-expect-error - Partial FileSystemNode
-      Promise.resolve({ id: 'remoteFileNodeId' }),
+    createRemoteFileNode: sinon
+      .stub()
+      .resolves(Promise.resolve({ id: 'remoteFileNodeId' })),
   }
 }

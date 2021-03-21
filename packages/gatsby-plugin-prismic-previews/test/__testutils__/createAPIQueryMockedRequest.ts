@@ -3,18 +3,7 @@ import * as prismic from 'ts-prismic'
 
 import { PluginOptions } from '../../src'
 
-const resolveURL = (apiEndpoint: string, to: string): string => {
-  const resolvedUrl = new URL(to, new URL(apiEndpoint + '/', 'resolve://'))
-
-  if (resolvedUrl.protocol === 'resolve:') {
-    // `from` is a relative URL.
-    const { pathname, search, hash } = resolvedUrl
-
-    return pathname + search + hash
-  }
-
-  return resolvedUrl.toString()
-}
+import { resolveURL } from './resolveURL'
 
 interface APIQueryParams extends prismic.QueryParams {
   accessToken?: string
@@ -39,11 +28,15 @@ export const createAPIQueryMockedRequest = (
         access_token: searchParams.accessToken ?? pluginOptions.accessToken,
       }
 
-      const searchParamsMatch = Object.keys(resolvedSearchParams).every(
-        (key) =>
-          req.url.searchParams.get(key) ===
-          resolvedSearchParams[key as keyof APIQueryParams]?.toString(),
-      )
+      const searchParamsMatch = Object.keys(resolvedSearchParams)
+        .filter(
+          (key) => resolvedSearchParams[key as keyof APIQueryParams] != null,
+        )
+        .every(
+          (key) =>
+            req.url.searchParams.get(key) ===
+            resolvedSearchParams[key as keyof APIQueryParams]?.toString(),
+        )
 
       if (searchParamsMatch) {
         return res(ctx.json(queryResponse))

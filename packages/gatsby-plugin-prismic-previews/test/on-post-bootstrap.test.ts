@@ -8,7 +8,7 @@ import { onPostBootstrap } from '../src/gatsby-node'
 
 test('saves serialized typepaths to filesystem', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   const typePaths = [
     { path: ['foo'], type: 'foo' },

@@ -12,8 +12,9 @@ import browserEnv from 'browser-env'
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPreviewToken } from './__testutils__/createPreviewToken'
+import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
 import { polyfillKy } from './__testutils__/polyfillKy'
 import { resolveURL } from './__testutils__/resolveURL'
 
@@ -40,11 +41,8 @@ const nodeHelpers = createNodeHelpers({
 const server = mswNode.setupServer()
 test.before(() => {
   polyfillKy()
-
-  server.listen({ onUnhandledRequest: 'error' })
-
   browserEnv(['window', 'document'])
-
+  server.listen({ onUnhandledRequest: 'error' })
   globalThis.__PATH_PREFIX__ = 'https://example.com'
 })
 test.beforeEach(() => {
@@ -56,7 +54,7 @@ test.after(() => {
 
 test.serial('initial state', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -73,7 +71,7 @@ test.serial('initial state', async (t) => {
 
 test.serial('fails if not a preview session - cookie is not set', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -82,9 +80,9 @@ test.serial('fails if not a preview session - cookie is not set', async (t) => {
     () => usePrismicPreviewBootstrap(pluginOptions.repositoryName, config),
     { wrapper: PrismicPreviewProvider },
   )
-  const bootstrapPreview = result.current[1]
 
   act(() => {
+    const [, bootstrapPreview] = result.current
     bootstrapPreview()
   })
 
@@ -101,11 +99,11 @@ test.serial('fails if not a preview session - cookie is not set', async (t) => {
 
 test.serial('fails if not for this repository', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const config = createConfig()
 
-  const token = createPreviewToken('not-this-repository')
-  cookie.set(prismic.cookie.preview, token)
+  const ref = createPreviewRef('not-this-repository')
+  cookie.set(prismic.cookie.preview, ref)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -113,9 +111,9 @@ test.serial('fails if not for this repository', async (t) => {
     () => usePrismicPreviewBootstrap(pluginOptions.repositoryName, config),
     { wrapper: PrismicPreviewProvider },
   )
-  const bootstrapPreview = result.current[1]
 
   act(() => {
+    const [, bootstrapPreview] = result.current
     bootstrapPreview()
   })
 
@@ -134,7 +132,7 @@ test.serial(
   'fetches all repository documents and bootstraps context',
   async (t) => {
     const gatsbyContext = createGatsbyContext()
-    const pluginOptions = createPluginOptions()
+    const pluginOptions = createPluginOptions(t)
     const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
       page: 1,
       total_pages: 2,
@@ -145,8 +143,8 @@ test.serial(
     })
     const config = createConfig()
 
-    const token = createPreviewToken(pluginOptions.repositoryName)
-    cookie.set(prismic.cookie.preview, token)
+    const ref = createPreviewRef(pluginOptions.repositoryName)
+    cookie.set(prismic.cookie.preview, ref)
 
     const queryResponsePage1Nodes = queryResponsePage1.results.map((doc) => {
       const node = nodeHelpers.createNodeFactory(doc.type)(
@@ -181,7 +179,7 @@ test.serial(
           if (
             req.url.searchParams.get('access_token') ===
               pluginOptions.accessToken &&
-            req.url.searchParams.get('ref') === token &&
+            req.url.searchParams.get('ref') === ref &&
             req.url.searchParams.get('lang') === pluginOptions.lang &&
             req.url.searchParams.get('graphQuery') ===
               pluginOptions.graphQuery &&
@@ -203,19 +201,10 @@ test.serial(
     )
 
     server.use(
-      msw.rest.get(
-        resolveURL(
-          globalThis.__PATH_PREFIX__,
-          '/static/9e387d94c04ebf0e369948edd9c66d2b.json',
-        ),
-        (_req, res, ctx) =>
-          res(
-            ctx.json({
-              type: gatsbyPrismic.PrismicSpecialType.Document,
-              'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
-            }),
-          ),
-      ),
+      createTypePathsMockedRequest('fa7e36097b060b84eb14d0df1009fa58.json', {
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      }),
     )
 
     // @ts-expect-error - Partial gatsbyContext provided
@@ -232,11 +221,11 @@ test.serial(
       },
       { wrapper: PrismicPreviewProvider },
     )
-    const bootstrapPreview = result.current.bootstrap[1]
 
     t.true(result.current.bootstrap[0].state === 'INIT')
 
     act(() => {
+      const [, bootstrapPreview] = result.current.bootstrap
       bootstrapPreview()
     })
 
@@ -258,7 +247,7 @@ test.serial(
 
 test.serial('fails if already bootstrapped', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
     page: 1,
     total_pages: 2,
@@ -269,8 +258,8 @@ test.serial('fails if already bootstrapped', async (t) => {
   })
   const config = createConfig()
 
-  const token = createPreviewToken(pluginOptions.repositoryName)
-  cookie.set(prismic.cookie.preview, token)
+  const ref = createPreviewRef(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, ref)
 
   // We're testing pagination functionality here. We need to make sure the hook
   // will fetch all documents in a repository, not just the first page of
@@ -283,7 +272,7 @@ test.serial('fails if already bootstrapped', async (t) => {
         if (
           req.url.searchParams.get('access_token') ===
             pluginOptions.accessToken &&
-          req.url.searchParams.get('ref') === token &&
+          req.url.searchParams.get('ref') === ref &&
           req.url.searchParams.get('lang') === pluginOptions.lang &&
           req.url.searchParams.get('graphQuery') === pluginOptions.graphQuery &&
           req.url.searchParams.get('pageSize') === '100'
@@ -304,19 +293,10 @@ test.serial('fails if already bootstrapped', async (t) => {
   )
 
   server.use(
-    msw.rest.get(
-      resolveURL(
-        globalThis.__PATH_PREFIX__,
-        '/static/9e387d94c04ebf0e369948edd9c66d2b.json',
-      ),
-      (_req, res, ctx) =>
-        res(
-          ctx.json({
-            type: gatsbyPrismic.PrismicSpecialType.Document,
-            'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
-          }),
-        ),
-    ),
+    createTypePathsMockedRequest('dc161c24076d1389d05e2e60aafa3a3f.json', {
+      type: gatsbyPrismic.PrismicSpecialType.Document,
+      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+    }),
   )
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -338,7 +318,8 @@ test.serial('fails if already bootstrapped', async (t) => {
 
   // Bootstrap the first time.
   act(() => {
-    result.current.bootstrap[1]()
+    const [, bootstrapPreview] = result.current.bootstrap
+    bootstrapPreview()
   })
 
   await waitForValueToChange(() => result.current.bootstrap[0].state)
