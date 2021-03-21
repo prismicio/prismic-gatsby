@@ -13,7 +13,7 @@ import { Dependencies } from '../types'
  * @return Return value of the environment's `buildInterfaceType` function.
  */
 export const buildInterfaceType = <TSource, TContext>(
-  config: gqlc.ComposeInterfaceTypeConfig<TSource, TContext>,
+  config: gqlc.InterfaceTypeComposerAsObjectDefinition<TSource, TContext>,
 ): RTE.ReaderTaskEither<
   Dependencies,
   never,

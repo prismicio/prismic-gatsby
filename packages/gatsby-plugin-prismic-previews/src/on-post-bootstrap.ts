@@ -39,7 +39,7 @@ const onPostBootstrapProgram: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<OnPostBootstrapProgramEnv>(),
   RTE.bind('nodes', (env) =>
-    RTE.of(
+    RTE.right(
       env.getNodesByType(
         env.nodeHelpers.createTypeName('TypePathType'),
       ) as gatsbyPrismic.TypePathNode[],
@@ -52,11 +52,11 @@ const onPostBootstrapProgram: RTE.ReaderTaskEither<
     ),
   ),
   RTE.bind('serializedTypePaths', (env) =>
-    RTE.of(serializeTypePathNodes(env.nodes)),
+    RTE.right(serializeTypePathNodes(env.nodes)),
   ),
   RTE.bindW('filename', () => buildTypePathsStoreFilename),
   RTE.bind('publicPath', (env) =>
-    RTE.of(path.join('public', 'static', env.filename)),
+    RTE.right(path.join('public', 'static', env.filename)),
   ),
   RTE.chainFirst((env) =>
     RTE.fromTaskEither(

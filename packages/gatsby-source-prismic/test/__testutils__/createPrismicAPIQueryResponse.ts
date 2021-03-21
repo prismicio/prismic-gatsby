@@ -1,4 +1,5 @@
 import * as prismic from 'ts-prismic'
+
 import { createPrismicAPIDocument } from './createPrismicAPIDocument'
 
 export const createPrismicAPIQueryResponse = (

@@ -10,8 +10,8 @@ import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
-import { nockRepositoryEndpoint } from './__testutils__/nockRepositoryEndpoint'
 import { resolveAPIURL } from './__testutils__/resolveURL'
+import { setupRepositoryEndpointMock } from './__testutils__/setupRepositoryEndpointMock'
 
 const server = mswNode.setupServer()
 test.before(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -22,7 +22,7 @@ test('creates nodes', async (t) => {
   const pluginOptions = createPluginOptions()
   const queryResponse = createPrismicAPIQueryResponse()
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -57,7 +57,7 @@ test('uses apiEndpoint plugin option if provided', async (t) => {
 
   pluginOptions.apiEndpoint = 'https://example.com'
 
-  nockRepositoryEndpoint(server, pluginOptions, '/')
+  setupRepositoryEndpointMock(server, pluginOptions, '/')
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -101,7 +101,7 @@ test('embed fields are normalized to inferred nodes', async (t) => {
     },
   }
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -180,7 +180,7 @@ test('integration fields are normalized to inferred nodes', async (t) => {
     },
   }
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),

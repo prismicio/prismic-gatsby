@@ -9,7 +9,4 @@ import { deleteNode } from './deleteNode'
  *
  * @see gatsby-source-prismic/lib/deleteNode.ts
  */
-export const deleteNodes = flow(
-  A.map(deleteNode),
-  A.sequence(RTE.readerTaskEither),
-)
+export const deleteNodes = flow(A.map(deleteNode), RTE.sequenceArray)

@@ -1,5 +1,4 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as A from 'fp-ts/Array'
 import { pipe, constVoid } from 'fp-ts/function'
 
 import { Dependencies } from '../types'
@@ -15,10 +14,4 @@ export const touchAllNodes = (): RTE.ReaderTaskEither<
   Dependencies,
   never,
   void
-> =>
-  pipe(
-    getAllNodes(),
-    RTE.map(A.map((node) => node.id)),
-    RTE.chain(touchNodes),
-    RTE.map(constVoid),
-  )
+> => pipe(getAllNodes(), RTE.chain(touchNodes), RTE.map(constVoid))

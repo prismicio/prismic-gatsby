@@ -9,4 +9,4 @@ import { getNode } from './getNode'
  *
  * @see gatsby-source-prismic/lib/getNode.ts
  */
-export const getNodes = flow(A.map(getNode), A.sequence(RTE.readerTaskEither))
+export const getNodes = flow(A.map(getNode), RTE.sequenceArray)

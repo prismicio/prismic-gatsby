@@ -11,5 +11,5 @@ import { normalizeDocument } from './normalizeDocument'
  */
 export const normalizeDocuments = flow(
   A.map(normalizeDocument),
-  A.sequence(RTE.readerTaskEither),
+  RTE.sequenceArray,
 )

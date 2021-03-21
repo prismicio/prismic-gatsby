@@ -27,7 +27,7 @@ export const toFieldConfig = (
 ): RTE.ReaderTaskEither<
   Dependencies,
   never,
-  gqlc.ComposeFieldConfig<unknown, unknown>
+  gqlc.ObjectTypeComposerFieldConfigDefinition<unknown, unknown>
 > => {
   switch (schema.type) {
     case PrismicFieldType.Boolean: {

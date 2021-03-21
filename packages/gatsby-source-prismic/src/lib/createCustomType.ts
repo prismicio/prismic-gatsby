@@ -37,7 +37,11 @@ const buildDataFieldConfigMap = (
 ): RTE.ReaderTaskEither<
   Dependencies,
   never,
-  gqlc.ComposeFieldConfigMap<PrismicAPIDocumentNode, unknown> | undefined
+  | gqlc.ObjectTypeComposerFieldConfigMapDefinition<
+      PrismicAPIDocumentNode,
+      unknown
+    >
+  | undefined
 > =>
   pipe(
     RTE.ask<Dependencies>(),
@@ -71,9 +75,12 @@ const buildDataFieldConfigMap = (
     // Leaving it as an E.left would have stopped the custom type from being
     // created.
     RTE.orElse(() =>
-      RTE.of(
+      RTE.right(
         undefined as
-          | gqlc.ComposeFieldConfigMap<PrismicAPIDocumentNode, unknown>
+          | gqlc.ObjectTypeComposerFieldConfigMapDefinition<
+              PrismicAPIDocumentNode,
+              unknown
+            >
           | undefined,
       ),
     ),
@@ -85,12 +92,12 @@ export const createCustomType = (
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.bind('fields', () => RTE.of(collectFields(schema))),
+    RTE.bind('fields', () => RTE.right(collectFields(schema))),
     RTE.bind('partitionedFields', (scope) =>
       pipe(
         scope.fields,
         R.partitionWithIndex((i) => PRISMIC_API_NON_DATA_FIELDS.includes(i)),
-        (partitionedFields) => RTE.of(partitionedFields),
+        (partitionedFields) => RTE.right(partitionedFields),
       ),
     ),
     RTE.bind('rootFieldConfigMap', (scope) =>

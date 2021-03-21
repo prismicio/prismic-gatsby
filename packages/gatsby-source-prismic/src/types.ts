@@ -9,6 +9,10 @@ import { NodeHelpers } from 'gatsby-node-helpers'
 
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
 
+export type Mutable<T> = {
+  -readonly [P in keyof T]: T[P]
+}
+
 export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
   K,
   unknown
@@ -78,7 +82,7 @@ export type FieldConfigCreator<
 ) => RTE.ReaderTaskEither<
   Dependencies,
   never,
-  gqlc.ComposeFieldConfig<unknown, unknown>
+  gqlc.ObjectTypeComposerFieldConfigDefinition<unknown, unknown>
 >
 
 export interface PrismicSchema {

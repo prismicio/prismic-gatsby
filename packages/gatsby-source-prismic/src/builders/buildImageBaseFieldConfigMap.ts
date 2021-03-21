@@ -17,7 +17,7 @@ const resolveHeight = (source: PrismicAPIImageField): number | undefined =>
 export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
   Dependencies,
   never,
-  gqlc.ComposeFieldConfigMap<PrismicAPIImageField, unknown>
+  gqlc.ObjectTypeComposerFieldConfigMapDefinition<PrismicAPIImageField, unknown>
 > = pipe(
   RTE.asks((deps) => ({
     alt: 'String',

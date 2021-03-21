@@ -13,5 +13,5 @@ import { createGloballyUniqueNode } from './createGloballyUniqueNode'
  */
 export const createGloballyUniqueNodes = flow(
   A.map(createGloballyUniqueNode),
-  A.sequence(RTE.readerTaskEither),
+  RTE.sequenceArray,
 )

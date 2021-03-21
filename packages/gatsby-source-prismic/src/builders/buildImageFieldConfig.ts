@@ -25,7 +25,7 @@ const createThumbnailsType = (
 ): RTE.ReaderTaskEither<Dependencies, never, string> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.bind('thumbnails', () => RTE.of(schema.config?.thumbnails ?? [])),
+    RTE.bind('thumbnails', () => RTE.right(schema.config?.thumbnails ?? [])),
     RTE.bind('fields', (scope) =>
       pipe(
         R.fromFoldableMap(
@@ -33,7 +33,7 @@ const createThumbnailsType = (
           A.array,
         )(scope.thumbnails, (thumbnail) => [thumbnail.name, thumbnail]),
         R.map(() => scope.nodeHelpers.createTypeName('ImageThumbnailType')),
-        (fields) => RTE.of(fields),
+        (fields) => RTE.right(fields),
       ),
     ),
     RTE.chain((scope) =>
@@ -58,7 +58,7 @@ export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> 
     RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Image)),
     RTE.bind('thumbnailsTypeName', () =>
       A.isEmpty(schema.config?.thumbnails ?? [])
-        ? RTE.of(undefined)
+        ? RTE.right(undefined)
         : createThumbnailsType(path, schema),
     ),
     RTE.bind('baseFields', () => buildImageBaseFieldConfigMap),

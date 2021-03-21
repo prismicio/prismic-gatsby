@@ -23,7 +23,7 @@ export const buildFieldConfigMap = (
 ): RTE.ReaderTaskEither<
   Dependencies,
   never,
-  gqlc.ComposeFieldConfigMap<unknown, unknown>
+  gqlc.ObjectTypeComposerFieldConfigMapDefinition<unknown, unknown>
 > =>
   pipe(
     fieldSchemas,

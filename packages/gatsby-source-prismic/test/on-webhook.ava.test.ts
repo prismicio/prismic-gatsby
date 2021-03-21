@@ -28,9 +28,7 @@ test('touches all nodes to prevent garbage collection', async (t) => {
 
   t.true(
     nodes.every((node) =>
-      (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith({
-        nodeId: node.id,
-      }),
+      (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(node),
     ),
   )
 })

@@ -21,7 +21,7 @@ import { buildSliceInterface } from './builders/buildSliceInterface'
 import { buildStructuredTextType } from './builders/buildStructuredTextType'
 import { buildTypePathType } from './builders/buildTypePathType'
 
-import { Dependencies, PluginOptions } from './types'
+import { Dependencies, Mutable, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
@@ -50,12 +50,15 @@ export const createBaseTypes: RTE.ReaderTaskEither<
         buildStructuredTextType,
         buildTypePathType,
       ],
-      A.sequence(RTE.readerTaskEither),
+      RTE.sequenceArray,
     ),
   ),
   RTE.bind('imgixTypes', () => buildImgixImageTypes),
   RTE.map((scope) =>
-    GatsbyGraphQLTypeM.concat(scope.baseTypes, scope.imgixTypes),
+    GatsbyGraphQLTypeM.concat(
+      scope.baseTypes as Mutable<typeof scope.baseTypes>,
+      scope.imgixTypes,
+    ),
   ),
   RTE.chain(createTypes),
   RTE.map(constVoid),

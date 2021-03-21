@@ -13,6 +13,6 @@ import { Dependencies } from '../types'
  * @return Return value of the environment's `buildUnionType` function.
  */
 export const buildUnionType = <TSource, TContext>(
-  config: gqlc.ComposeUnionTypeConfig<TSource, TContext>,
+  config: gqlc.UnionTypeComposerAsObjectDefinition<TSource, TContext>,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLUnionType> =>
   RTE.asks((deps) => deps.buildUnionType(config))

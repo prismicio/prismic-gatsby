@@ -15,8 +15,8 @@ import { createWebhookAPIUpdateDocAddition } from './__testutils__/createWebhook
 import { createWebhookAPIUpdateDocDeletion } from './__testutils__/createWebhookAPIUpdateDocDeletion'
 import { createWebhookAPIUpdateReleaseDocAddition } from './__testutils__/createWebhookAPIUpdateReleaseDocAddition'
 import { createWebhookAPIUpdateReleaseDocDeletion } from './__testutils__/createWebhookAPIUpdateReleaseDocDeletion'
-import { nockRepositoryEndpoint } from './__testutils__/nockRepositoryEndpoint'
 import { resolveAPIURL } from './__testutils__/resolveURL'
+import { setupRepositoryEndpointMock } from './__testutils__/setupRepositoryEndpointMock'
 
 const server = mswn.setupServer()
 test.before(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -30,7 +30,7 @@ test('reports received message', async (t) => {
 
   gatsbyContext.webhookBody = webhookBody
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -66,7 +66,7 @@ test('doc addition creates/updates node', async (t) => {
 
   gatsbyContext.webhookBody = webhookBody
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -115,7 +115,7 @@ test('doc deletion deletes node', async (t) => {
   )
   nodes.forEach((node) => gatsbyContext.actions.createNode?.(node))
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -141,7 +141,7 @@ test('doc deletion deletes node', async (t) => {
       .slice(1)
       .every((doc) =>
         (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-          sinon.match.hasNested('node.prismicId', doc.id),
+          sinon.match.has('prismicId', doc.id),
         ),
       ),
   )
@@ -160,7 +160,7 @@ test('release doc addition creates/updates node if plugin options release ID mat
   gatsbyContext.webhookBody = webhookBody
   pluginOptions.releaseID = webhookBodyReleaseUpdate.id
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -203,7 +203,7 @@ test('release doc addition does nothing if plugin options release ID does not ma
 
   gatsbyContext.webhookBody = webhookBody
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -249,7 +249,7 @@ test('release doc deletion deletes node if plugin options release ID matches', a
   )
   nodes.forEach((node) => gatsbyContext.actions.createNode?.(node))
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
@@ -278,7 +278,7 @@ test('release doc deletion deletes node if plugin options release ID matches', a
       .slice(1)
       .every((doc) =>
         (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-          sinon.match.hasNested('node.prismicId', doc.id),
+          sinon.match.has('prismicId', doc.id),
         ),
       ),
   )
@@ -294,7 +294,7 @@ test('release doc deletion does nothing if plugin options release ID does not ma
 
   gatsbyContext.webhookBody = webhookBody
 
-  nockRepositoryEndpoint(server, pluginOptions)
+  setupRepositoryEndpointMock(server, pluginOptions)
   server.use(
     msw.rest.get(
       resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),

@@ -19,7 +19,7 @@ export interface GetRefEnv {
 const getMasterRef: RTE.ReaderTaskEither<GetRefEnv, Error, string> = pipe(
   RTE.ask<GetRefEnv>(),
   RTE.bind('repositoryURL', (env) =>
-    RTE.of(prismic.buildRepositoryURL(env.apiEndpoint, env.accessToken)),
+    RTE.right(prismic.buildRepositoryURL(env.apiEndpoint, env.accessToken)),
   ),
   RTE.bind('repository', (env) =>
     RTE.fromTaskEither(

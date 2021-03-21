@@ -4,6 +4,10 @@ import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as PrismicDOM from 'prismic-dom'
 
+export type Mutable<T> = {
+  -readonly [P in keyof T]: T[P]
+}
+
 export interface PluginOptions extends gatsby.PluginOptions {
   repositoryName: string
   accessToken?: string

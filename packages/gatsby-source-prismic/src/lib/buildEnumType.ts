@@ -12,6 +12,6 @@ import { Dependencies } from '../types'
  * @return Return value of the environment's `buildEnumType` function.
  */
 export const buildEnumType = (
-  config: gqlc.ComposeEnumTypeConfig,
+  config: gqlc.EnumTypeComposerAsObjectDefinition,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLEnumType> =>
   RTE.asks((deps) => deps.buildEnumType(config))

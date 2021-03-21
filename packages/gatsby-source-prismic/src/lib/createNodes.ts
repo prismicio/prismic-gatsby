@@ -9,7 +9,4 @@ import { createNode } from './createNode'
  *
  * @see gatsby-source-prismic/lib/createNode.ts
  */
-export const createNodes = flow(
-  A.map(createNode),
-  A.sequence(RTE.readerTaskEither),
-)
+export const createNodes = flow(A.map(createNode), RTE.sequenceArray)

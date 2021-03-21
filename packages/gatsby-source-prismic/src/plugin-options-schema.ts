@@ -41,7 +41,7 @@ const externalValidationProgram = (
   pipe(
     RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
     RTE.bind('repositoryURL', (deps) =>
-      RTE.of(
+      RTE.right(
         prismic.buildRepositoryURL(
           deps.pluginOptions.apiEndpoint,
           deps.pluginOptions.accessToken,
@@ -65,14 +65,14 @@ const externalValidationProgram = (
       ),
     ),
     RTE.bind('schemaTypes', (scope) =>
-      pipe(scope.pluginOptions.schemas, R.keys, (types) => RTE.of(types)),
+      pipe(scope.pluginOptions.schemas, R.keys, (types) => RTE.right(types)),
     ),
     RTE.bind('missingSchemas', (scope) =>
       pipe(
         scope.repository.types,
         R.keys,
         A.difference(Eq.eqString)(scope.schemaTypes),
-        (missingSchemas) => RTE.of(missingSchemas),
+        (missingSchemas) => RTE.right(missingSchemas),
       ),
     ),
     RTE.chainW(

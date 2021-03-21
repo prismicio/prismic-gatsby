@@ -11,16 +11,16 @@ export const getTypePath = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('nodeId', (scope) =>
-      RTE.of(scope.nodeHelpers.createNodeId(['TypePathType', path.toString()])),
+      RTE.right(
+        scope.nodeHelpers.createNodeId(['TypePathType', path.toString()]),
+      ),
     ),
     RTE.chain((scope) =>
       RTE.fromIO(() => scope.getNode(scope.nodeId) as TypePathNode),
     ),
-    RTE.chainW(
-      RTE.fromPredicate(
-        (result) => result != null,
-        () =>
-          new Error(`Could not find a type path for path: "${dotPath(path)}"`),
-      ),
+    RTE.filterOrElse(
+      (result) => result != null,
+      () =>
+        new Error(`Could not find a type path for path: "${dotPath(path)}"`),
     ),
   )

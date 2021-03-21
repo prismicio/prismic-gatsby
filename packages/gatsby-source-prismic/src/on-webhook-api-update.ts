@@ -67,7 +67,7 @@ export const onWebhookApiUpdate = (
       pipe(
         scope.documentsToUpdate,
         A.map((document) => document.id),
-        (ids) => RTE.of(ids),
+        (ids) => RTE.right(ids),
       ),
     ),
     // Documents that have been deleted are included in the `documents` field,
@@ -81,7 +81,7 @@ export const onWebhookApiUpdate = (
       pipe(
         scope.documentIds,
         A.difference(Eq.eqString)(scope.documentIdsToUpdate),
-        (ids) => RTE.of(ids),
+        (ids) => RTE.right(ids),
       ),
     ),
     RTE.chainFirstW((scope) =>

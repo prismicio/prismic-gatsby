@@ -9,7 +9,4 @@ import { createType } from './createType'
  *
  * @see gatsby-source-prismic/lib/registerType.ts
  */
-export const createTypes = flow(
-  A.map(createType),
-  A.sequence(RTE.readerTaskEither),
-)
+export const createTypes = flow(A.map(createType), RTE.sequenceArray)

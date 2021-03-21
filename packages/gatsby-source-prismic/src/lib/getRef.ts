@@ -23,7 +23,7 @@ import { Dependencies } from '../types'
 export const getRef: RTE.ReaderTaskEither<Dependencies, Error, string> = pipe(
   RTE.ask<Dependencies>(),
   RTE.bind('repositoryURL', (deps) =>
-    RTE.of(
+    RTE.right(
       prismic.buildRepositoryURL(
         deps.pluginOptions.apiEndpoint,
         deps.pluginOptions.accessToken,

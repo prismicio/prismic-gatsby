@@ -40,7 +40,7 @@ const onPrismicWebhook = (
             }
 
             // This webhook is unsupported or does not pertain to this plugin.
-            return RTE.of(void 0)
+            return RTE.right(void 0)
           },
         ),
       ),
@@ -65,7 +65,7 @@ export const onWebhook: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
       O.fromPredicate(
         isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
       ),
-      O.fold(() => RTE.of(void 0), onPrismicWebhook),
+      O.fold(() => RTE.right(void 0), onPrismicWebhook),
     ),
   ),
   RTE.chainW(touchAllNodes),

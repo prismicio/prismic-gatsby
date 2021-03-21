@@ -122,7 +122,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
 
   RTE.bindW('params', () => buildQueryParams),
   RTE.bind('url', (env) =>
-    RTE.of(
+    RTE.right(
       prismic.buildQueryURL(
         env.apiEndpoint,
         env.previewRef,
@@ -145,7 +145,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
       RTE.fromOption(() => new Error('Document could not be found.')),
     ),
   ),
-  RTE.bind('path', (env) => RTE.of(env.linkResolver(env.document))),
+  RTE.bind('path', (env) => RTE.right(env.linkResolver(env.document))),
 
   // End resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.resolved(env.path))),

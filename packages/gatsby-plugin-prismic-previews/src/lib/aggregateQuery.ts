@@ -21,7 +21,7 @@ export const aggregateQuery = (
     RTE.bindW('ref', () => getRef),
     RTE.bindW('params', () => buildQueryParams),
     RTE.bind('url', (scope) =>
-      RTE.of(
+      RTE.right(
         prismic.buildQueryURL(scope.apiEndpoint, scope.ref, predicates, {
           ...scope.params,
           page,
@@ -38,11 +38,11 @@ export const aggregateQuery = (
       ),
     ),
     RTE.bind('aggregateResults', (scope) =>
-      RTE.of([...docs, ...scope.res.results]),
+      RTE.right([...docs, ...scope.res.results]),
     ),
     RTE.chain((scope) =>
       page < scope.res.total_pages
         ? aggregateQuery(predicates, page + 1, scope.aggregateResults)
-        : RTE.of(scope.aggregateResults),
+        : RTE.right(scope.aggregateResults),
     ),
   )

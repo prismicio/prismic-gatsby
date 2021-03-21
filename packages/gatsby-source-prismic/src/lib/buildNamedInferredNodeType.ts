@@ -19,5 +19,6 @@ export const buildNamedInferredNodeType = (
   buildObjectType({
     name,
     interfaces: ['Node'],
+    fields: {},
     extensions: { infer: true },
   })

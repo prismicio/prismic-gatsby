@@ -4,7 +4,7 @@ import * as mswNode from 'msw/node'
 import { PluginOptions } from '../../src'
 import { resolveAPIURL } from './resolveURL'
 
-export const nockRepositoryEndpoint = (
+export const setupRepositoryEndpointMock = (
   server: mswNode.SetupServerApi,
   pluginOptions: PluginOptions,
   path = '/api/v2',

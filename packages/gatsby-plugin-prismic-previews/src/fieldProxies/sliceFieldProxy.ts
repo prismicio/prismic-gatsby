@@ -41,7 +41,7 @@ export const proxyValue = (
             R.sequence(RE.readerEither),
           ),
         ),
-        A.sequence(RE.readerEither),
+        RE.sequenceArray,
       ),
     ),
     RE.bind('id', (env) =>

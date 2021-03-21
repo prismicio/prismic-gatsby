@@ -9,7 +9,4 @@ import { touchNode } from './touchNode'
  *
  * @see gatsby-source-prismic/lib/touchNode.ts
  */
-export const touchNodes = flow(
-  A.map(touchNode),
-  A.sequence(RTE.readerTaskEither),
-)
+export const touchNodes = flow(A.map(touchNode), RTE.sequenceArray)

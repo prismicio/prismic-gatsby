@@ -31,5 +31,5 @@ export const proxyValue = (
         fieldValueElement,
       ),
     ),
-    A.sequence(RE.readerEither),
+    RE.sequenceArray,
   )

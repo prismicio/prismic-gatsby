@@ -29,6 +29,7 @@ import {
   PrismicAPIDocumentNodeInput,
   TypePathsStore,
   UnknownRecord,
+  Mutable,
 } from './types'
 import {
   PrismicContextActionType,
@@ -168,11 +169,13 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
         ),
       ),
       RTE.map(A.map(proxyDocumentNodeInput)),
-      RTE.map(A.sequence(RE.readerEither)),
+      RTE.map(RE.sequenceArray),
       RTE.chainW(RTE.fromReaderEither),
     ),
   ),
-  RTE.chainFirst((env) => RTE.fromIO(env.appendNodes(env.nodes))),
+  RTE.chainFirst((env) =>
+    RTE.fromIO(env.appendNodes(env.nodes as Mutable<typeof env.nodes>)),
+  ),
 
   // End bootstrap.
   RTE.chainFirst((env) => RTE.fromIO(env.bootstrapped)),

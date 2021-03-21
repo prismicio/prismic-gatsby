@@ -66,7 +66,7 @@ export const normalizeDocumentSubtree = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('typePath', () => getTypePath(path)),
-    RTE.bind('type', (env) => RTE.of(env.typePath.type)),
+    RTE.bind('type', (env) => RTE.right(env.typePath.type)),
     RTE.chain((env) => {
       switch (env.typePath.type) {
         case PrismicSpecialType.Document:
@@ -96,7 +96,7 @@ export const normalizeDocumentSubtree = (
                 ),
             ),
             RTE.map(A.map((item) => normalizeDocumentRecord(path, item))),
-            RTE.chainW(A.sequence(RTE.readerTaskEither)),
+            RTE.chainW(RTE.sequenceArray),
           )
         }
 
@@ -123,7 +123,7 @@ export const normalizeDocumentSubtree = (
                 A.map((item) =>
                   normalizeDocumentRecord([...path, 'items'], item),
                 ),
-                A.sequence(RTE.readerTaskEither),
+                RTE.sequenceArray,
               ),
             ),
             RTE.map((scope) => ({
@@ -181,7 +181,7 @@ export const normalizeDocumentSubtree = (
                 R.lookup('id'),
                 O.filter(stringableRefinement),
                 O.getOrElseW(() => env.createContentDigest(scope.value)),
-                (id) => RTE.of(id),
+                (id) => RTE.right(id),
               ),
             ),
             RTE.chainW((scope) =>
@@ -216,5 +216,5 @@ export const normalizeDocumentSubtree = (
     }),
     // If a normalizer fails or no normalizer exists for the subtree, keep the
     // subtree as is.
-    RTE.orElse(() => RTE.of(value)),
+    RTE.orElse(() => RTE.right(value)),
   )

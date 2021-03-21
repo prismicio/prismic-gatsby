@@ -2,7 +2,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as A from 'fp-ts/Array'
 import { pipe, constVoid } from 'fp-ts/function'
 
-import { Dependencies } from '../types'
+import { Dependencies, Mutable } from '../types'
 
 import { getNodes } from './getNodes'
 import { deleteNodes } from './deleteNodes'
@@ -23,7 +23,7 @@ export const deleteNodesForDocumentIds = (
         documentIds,
         A.map(deps.nodeHelpers.createNodeId),
         getNodes,
-        RTE.chain(deleteNodes),
+        RTE.chain((nodes) => deleteNodes(nodes as Mutable<typeof nodes>)),
         RTE.map(constVoid),
       ),
     ),

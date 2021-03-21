@@ -1,6 +1,5 @@
 import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as A from 'fp-ts/Array'
 import { pipe, constVoid } from 'fp-ts/function'
 
 import { setPrismicWindowEndpoint } from './lib/setPrismicWindowEndpoint'
@@ -32,7 +31,7 @@ export const setupLegacyToolbar: RTE.ReaderTaskEither<
   ),
   RTE.map(constVoid),
   // We don't care if this fails.
-  RTE.orElse(() => RTE.of(void 0 as void)),
+  RTE.orElse(() => RTE.right(void 0 as void)),
 )
 
 export const setWindowPluginOptions: RTE.ReaderTaskEither<
@@ -52,7 +51,7 @@ export const setWindowPluginOptions: RTE.ReaderTaskEither<
   ),
   RTE.map(constVoid),
   // We don't care if this fails.
-  RTE.orElse(() => RTE.of(void 0 as void)),
+  RTE.orElse(() => RTE.right(void 0 as void)),
 )
 
 export const onClientEntryProgram: RTE.ReaderTaskEither<
@@ -61,7 +60,7 @@ export const onClientEntryProgram: RTE.ReaderTaskEither<
   void
 > = pipe(
   [setupLegacyToolbar, setWindowPluginOptions],
-  A.sequence(RTE.readerTaskEither),
+  RTE.sequenceArray,
   RTE.map(constVoid),
 )
 

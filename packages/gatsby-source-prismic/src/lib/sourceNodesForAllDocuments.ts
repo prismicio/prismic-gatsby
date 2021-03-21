@@ -1,7 +1,7 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe, constVoid } from 'fp-ts/function'
 
-import { Dependencies } from '../types'
+import { Dependencies, Mutable } from '../types'
 
 import { createGloballyUniqueNodes } from './createGloballyUniqueNodes'
 import { normalizeDocuments } from './normalizeDocuments'
@@ -18,6 +18,6 @@ export const sourceNodesForAllDocuments: RTE.ReaderTaskEither<
 > = pipe(
   queryAllDocuments,
   RTE.chainW(normalizeDocuments),
-  RTE.chainW(createGloballyUniqueNodes),
+  RTE.chainW((docs) => createGloballyUniqueNodes(docs as Mutable<typeof docs>)),
   RTE.map(constVoid),
 )
