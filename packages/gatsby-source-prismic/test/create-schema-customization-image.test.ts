@@ -1,16 +1,16 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { PrismicFieldType } from '../src'
-import { createSchemaCustomization } from '../src/gatsby-node'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { findCreateTypesCall } from './__testutils__/findCreateTypesCall'
 
+import { PrismicFieldType } from '../src'
+import { createSchemaCustomization } from '../src/gatsby-node'
+
 test('creates base types', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -60,7 +60,7 @@ test('creates base types', async (t) => {
 
 test('creates field-specific image type', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -106,7 +106,7 @@ test('creates field-specific image type', async (t) => {
 
 test('creates field-specific thumbnail types', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -151,7 +151,7 @@ test('creates field-specific thumbnail types', async (t) => {
 
 test('localFile field resolves to remote node if image is present', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -177,7 +177,7 @@ test('localFile field resolves to remote node if image is present', async (t) =>
 
 test('localFile field resolves to null if image is not present', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {

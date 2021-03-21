@@ -4,10 +4,9 @@ import * as mswn from 'msw/node'
 import * as prismic from 'ts-prismic'
 import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
 
-import { pluginOptionsSchema } from '../src/plugin-options-schema'
-
 import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
-import { resolveAPIURL } from './__testutils__/resolveURL'
+
+import { pluginOptionsSchema } from '../src/plugin-options-schema'
 
 const server = mswn.setupServer()
 test.before(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -122,7 +121,7 @@ test('checks that all schemas are provided', async (t) => {
   const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
 
   server.use(
-    msw.rest.get(resolveAPIURL(apiEndpoint, '/api/v2'), (_req, res, ctx) =>
+    msw.rest.get(apiEndpoint, (_req, res, ctx) =>
       res(
         ctx.json({
           types: { page: 'Page', blogPost: 'Blog Post' },

@@ -1,41 +1,50 @@
 import test from 'ava'
 import * as sinon from 'sinon'
+import * as mswNode from 'msw/node'
 
-import { sourceNodes } from '../src/source-nodes'
-
+import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
-import { createNodeHelpers } from './__testutils__/createNodeHelpers'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
+import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { createWebhookTestTrigger } from './__testutils__/createWebhookTestTrigger'
 import { createWebhookUnknown } from './__testutils__/createWebhookUnknown'
 
+import { sourceNodes } from '../src/source-nodes'
+
+const server = mswNode.setupServer()
+test.before(() => server.listen({ onUnhandledRequest: 'error' }))
+test.after(() => server.close())
+
 test('touches all nodes to prevent garbage collection', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
+  const queryResponse = createPrismicAPIQueryResponse()
   const webhookBody = createWebhookUnknown()
-  const nodeHelpers = createNodeHelpers(gatsbyContext, pluginOptions)
 
-  gatsbyContext.webhookBody = webhookBody
-
-  // Populate the node store with some nodes.
-  const docs = [createPrismicAPIDocument(), createPrismicAPIDocument()]
-  const nodes = docs.map((doc) => nodeHelpers.createNodeFactory(doc.type)(doc))
-  nodes.forEach((node) => gatsbyContext.actions.createNode?.(node))
+  server.use(createAPIRepositoryMockedRequest(pluginOptions))
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
-  t.true(
-    nodes.every((node) =>
-      (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(node),
-    ),
-  )
+  gatsbyContext.webhookBody = webhookBody
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await sourceNodes(gatsbyContext, pluginOptions)
+
+  for (const doc of queryResponse.results) {
+    t.true(
+      (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+        sinon.match({ prismicId: doc.id }),
+      ),
+    )
+  }
 })
 
 test('ignores unknown webhooks', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const webhookBody = createWebhookUnknown()
 
   gatsbyContext.webhookBody = webhookBody
@@ -49,8 +58,8 @@ test('ignores unknown webhooks', async (t) => {
 
 test('accepts webhooks without a secret if plugin options does not include a secret', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
-  const webhookBody = createWebhookTestTrigger()
+  const pluginOptions = createPluginOptions(t)
+  const webhookBody = createWebhookTestTrigger(pluginOptions)
 
   gatsbyContext.webhookBody = { ...webhookBody, secret: undefined }
   delete pluginOptions.webhookSecret
@@ -67,10 +76,11 @@ test('accepts webhooks without a secret if plugin options does not include a sec
 
 test('rejects webhooks with an invalid secret', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
-  const webhookBody = createWebhookTestTrigger()
+  const pluginOptions = createPluginOptions(t)
+  const webhookBody = createWebhookTestTrigger(pluginOptions)
+  webhookBody.secret = 'invalid-secret'
 
-  gatsbyContext.webhookBody = { ...webhookBody, secret: 'invalid-secret' }
+  gatsbyContext.webhookBody = webhookBody
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)

@@ -1,15 +1,15 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { createSchemaCustomization } from '../src/gatsby-node'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { findCreateTypesCall } from './__testutils__/findCreateTypesCall'
 
+import { createSchemaCustomization } from '../src/gatsby-node'
+
 test('creates base types', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -65,7 +65,7 @@ test('creates base types', async (t) => {
 
 test('document field resolves to linked node ID if link type is Document and document is present', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -88,7 +88,7 @@ test('document field resolves to linked node ID if link type is Document and doc
 
 test('document field resolves to null if link type is Document and isBroken is true', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -111,7 +111,7 @@ test('document field resolves to null if link type is Document and isBroken is t
 
 test('document field resolves to null if link type is not Document', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -129,7 +129,7 @@ test('document field resolves to null if link type is not Document', async (t) =
 
 test('localFile field resolves to remote node if link type is Media and url is present', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -147,7 +147,7 @@ test('localFile field resolves to remote node if link type is Media and url is p
 
 test('localFile field resolves to null if link type is Media and url is not present', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -165,7 +165,7 @@ test('localFile field resolves to null if link type is Media and url is not pres
 
 test('localFile field resolves to null if link type is not Media', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)

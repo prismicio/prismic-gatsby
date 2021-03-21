@@ -1,17 +1,16 @@
 import test from 'ava'
-import * as msw from 'msw'
+import * as sinon from 'sinon'
 import * as mswNode from 'msw/node'
 
-import { PrismicFieldType } from '../src'
-import { createSchemaCustomization } from '../src/create-schema-customization'
-import { sourceNodes } from '../src/source-nodes'
-
+import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
-import { resolveAPIURL } from './__testutils__/resolveURL'
-import { setupRepositoryEndpointMock } from './__testutils__/setupRepositoryEndpointMock'
+
+import { PrismicFieldType } from '../src'
+import { createSchemaCustomization, sourceNodes } from '../src/gatsby-node'
 
 const server = mswNode.setupServer()
 test.before(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -19,59 +18,33 @@ test.after(() => server.close())
 
 test('creates nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const queryResponse = createPrismicAPIQueryResponse()
 
-  setupRepositoryEndpointMock(server, pluginOptions)
-  server.use(
-    msw.rest.get(
-      resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
-      (req, res, ctx) =>
-        req.url.searchParams.get('access_token') ===
-          pluginOptions.accessToken &&
-        req.url.searchParams.get('ref') === 'master' &&
-        req.url.searchParams.get('lang') === '*' &&
-        req.url.searchParams.get('page') === '1' &&
-        req.url.searchParams.get('pageSize') === '100'
-          ? res(ctx.json(queryResponse))
-          : res(ctx.status(401)),
-    ),
-  )
+  server.use(createAPIRepositoryMockedRequest(pluginOptions))
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
-  const createdNodes = gatsbyContext.getNodes?.() ?? []
-
-  t.true(
-    queryResponse.results.every((doc) =>
-      createdNodes.some((node) => node.prismicId === doc.id),
-    ),
-  )
+  for (const doc of queryResponse.results) {
+    t.true(
+      (gatsbyContext.actions.createNode as sinon.SinonStub).calledWith(
+        sinon.match({ prismicId: doc.id }),
+      ),
+    )
+  }
 })
 
 test('uses apiEndpoint plugin option if provided', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const queryResponse = createPrismicAPIQueryResponse()
 
   pluginOptions.apiEndpoint = 'https://example.com'
 
-  setupRepositoryEndpointMock(server, pluginOptions, '/')
-  server.use(
-    msw.rest.get(
-      resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
-      (req, res, ctx) =>
-        req.url.searchParams.get('access_token') ===
-          pluginOptions.accessToken &&
-        req.url.searchParams.get('ref') === 'master' &&
-        req.url.searchParams.get('lang') === '*' &&
-        req.url.searchParams.get('page') === '1' &&
-        req.url.searchParams.get('pageSize') === '100'
-          ? res(ctx.json(queryResponse))
-          : res(ctx.status(401)),
-    ),
-  )
+  server.use(createAPIRepositoryMockedRequest(pluginOptions))
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
@@ -81,75 +54,61 @@ test('uses apiEndpoint plugin option if provided', async (t) => {
 
 test('embed fields are normalized to inferred nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
-  const queryResponse = createPrismicAPIQueryResponse([
-    createPrismicAPIDocument({
-      data: {
-        embed: {
-          embed_url: 'https://youtube.com',
-        },
+  const pluginOptions = createPluginOptions(t)
+  const doc = createPrismicAPIDocument({
+    data: {
+      embed: {
+        embed_url: 'https://youtube.com',
       },
-      type: 'foo',
-    }),
-  ])
+    },
+  })
+  const queryResponse = createPrismicAPIQueryResponse([doc])
 
   pluginOptions.schemas = {
-    foo: {
+    type: {
       Main: {
         embed: { type: PrismicFieldType.Embed, config: {} },
       },
     },
   }
 
-  setupRepositoryEndpointMock(server, pluginOptions)
-  server.use(
-    msw.rest.get(
-      resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
-      (req, res, ctx) =>
-        req.url.searchParams.get('access_token') ===
-          pluginOptions.accessToken &&
-        req.url.searchParams.get('ref') === 'master' &&
-        req.url.searchParams.get('lang') === '*' &&
-        req.url.searchParams.get('page') === '1' &&
-        req.url.searchParams.get('pageSize') === '100'
-          ? res(ctx.json(queryResponse))
-          : res(ctx.status(401)),
-    ),
-  )
+  server.use(createAPIRepositoryMockedRequest(pluginOptions))
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
 
-  // Need to run `createSchemaCustomization` to populate type paths. It should
-  // be safer to run the actual function rather than mock it to ensure changes
-  // to `createSchemaCustomization` are still compatible with this
-  // functionality.
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
-  const doc = queryResponse.results[0]
-  const nodes = gatsbyContext.getNodes?.() ?? []
+  const createNodeStub = gatsbyContext.actions.createNode as sinon.SinonStub
 
   t.true(
-    nodes.some(
-      (node) =>
-        node.prismicId === doc.id &&
-        typeof (node.data as Record<string, unknown>).embed === 'string',
+    createNodeStub.calledWith(
+      sinon.match({
+        prismicId: doc.id,
+        data: {
+          embed: sinon.match.string,
+        },
+      }),
     ),
   )
 
   t.true(
-    nodes.some(
-      (node) =>
-        (node.data as Record<string, unknown>)?.embed_url ===
-          doc.data.embed_url && node.internal.type === 'PrismicPrefixEmbedType',
+    createNodeStub.calledWith(
+      sinon.match({
+        embed_url: doc.data.embed.embed_url,
+        internal: sinon.match({
+          type: 'PrismicPrefixEmbedType',
+        }),
+      }),
     ),
   )
 })
 
 test('integration fields are normalized to inferred nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
   const docWithIntegrationId = createPrismicAPIDocument({
     data: {
       integration: {
@@ -180,65 +139,51 @@ test('integration fields are normalized to inferred nodes', async (t) => {
     },
   }
 
-  setupRepositoryEndpointMock(server, pluginOptions)
-  server.use(
-    msw.rest.get(
-      resolveAPIURL(pluginOptions.apiEndpoint, './documents/search'),
-      (req, res, ctx) =>
-        req.url.searchParams.get('access_token') ===
-          pluginOptions.accessToken &&
-        req.url.searchParams.get('ref') === 'master' &&
-        req.url.searchParams.get('lang') === '*' &&
-        req.url.searchParams.get('page') === '1' &&
-        req.url.searchParams.get('pageSize') === '100'
-          ? res(ctx.json(queryResponse))
-          : res(ctx.status(401)),
-    ),
-  )
+  server.use(createAPIRepositoryMockedRequest(pluginOptions))
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
 
-  // Need to run `createSchemaCustomization` to populate type paths. It should
-  // be safer to run the actual function rather than mock it to ensure changes
-  // to `createSchemaCustomization` are still compatible with this
-  // functionality.
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
-  const nodes = gatsbyContext.getNodes?.() ?? []
+  const createNodeStub = gatsbyContext.actions.createNode as sinon.SinonStub
 
-  t.true(
-    queryResponse.results.every((doc) =>
-      nodes.some(
-        (node) =>
-          node.prismicId === doc.id &&
-          typeof (node.data as Record<string, unknown>)?.integration ===
-            'string',
+  for (const doc of queryResponse.results) {
+    t.true(
+      createNodeStub.calledWith(
+        sinon.match({
+          prismicId: doc.id,
+          data: sinon.match({
+            integration: sinon.match.string,
+          }),
+        }),
       ),
+    )
+  }
+
+  t.true(
+    createNodeStub.calledWith(
+      sinon.match({
+        prismicId: docWithIntegrationId.data.integration.id,
+        internal: sinon.match({
+          type: 'PrismicPrefixFooDataIntegrationIntegrationType',
+        }),
+      }),
     ),
   )
 
-  // The ID used to generate the node's `id` field should be derived from the
-  // integration field's `id` field.
   t.true(
-    nodes.some(
-      (node) =>
-        node.prismicId === docWithIntegrationId.data.integration.id &&
-        node.internal.type === 'PrismicPrefixFooDataIntegrationIntegrationType',
-    ),
-  )
-
-  // If the integration field doesn't have an `id` field, the field's content
-  // digest should be used instead.
-  t.true(
-    nodes.some(
-      (node) =>
-        node.prismicId ===
-          gatsbyContext.createContentDigest?.(
-            docWithoutIntegrationId.data.integration,
-          ) &&
-        node.internal.type === 'PrismicPrefixFooDataIntegrationIntegrationType',
+    createNodeStub.calledWith(
+      sinon.match({
+        prismicId: gatsbyContext.createContentDigest?.(
+          docWithoutIntegrationId.data.integration,
+        ),
+        internal: sinon.match({
+          type: 'PrismicPrefixFooDataIntegrationIntegrationType',
+        }),
+      }),
     ),
   )
 })

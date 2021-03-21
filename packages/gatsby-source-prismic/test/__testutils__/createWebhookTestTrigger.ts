@@ -1,8 +1,14 @@
-import { PrismicWebhookBodyTestTrigger, PrismicWebhookType } from '../../src'
+import {
+  PluginOptions,
+  PrismicWebhookBodyTestTrigger,
+  PrismicWebhookType,
+} from '../../src'
 
-export const createWebhookTestTrigger = (): PrismicWebhookBodyTestTrigger => ({
+export const createWebhookTestTrigger = (
+  pluginOptions: PluginOptions,
+): PrismicWebhookBodyTestTrigger => ({
   type: PrismicWebhookType.TestTrigger,
-  domain: 'qwerty',
-  apiUrl: 'http://qwerty.wroom.test/api',
-  secret: 'secret',
+  domain: pluginOptions.repositoryName,
+  apiUrl: pluginOptions.apiEndpoint.replace(/(\.cdn|\/v2)/, ''),
+  secret: pluginOptions.webhookSecret ?? null,
 })

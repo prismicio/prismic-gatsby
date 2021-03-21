@@ -1,16 +1,16 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { PrismicSchema } from '../src'
-import { createSchemaCustomization } from '../src/gatsby-node'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import kitchenSinkSchema from './__fixtures__/kitchenSinkSchema.json'
 
+import { PrismicSchema } from '../src'
+import { createSchemaCustomization } from '../src/gatsby-node'
+
 test('creates type path nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     kitchen_sink: kitchenSinkSchema as PrismicSchema,

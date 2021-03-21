@@ -1,16 +1,16 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { sourceNodes } from '../src/source-nodes'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createWebhookTestTrigger } from './__testutils__/createWebhookTestTrigger'
 
+import { sourceNodes } from '../src/source-nodes'
+
 test('reports success message', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
-  const webhookBody = createWebhookTestTrigger()
+  const pluginOptions = createPluginOptions(t)
+  const webhookBody = createWebhookTestTrigger(pluginOptions)
 
   gatsbyContext.webhookBody = webhookBody
 

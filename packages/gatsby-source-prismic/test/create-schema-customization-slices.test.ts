@@ -1,16 +1,16 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { PrismicFieldType } from '../src'
-import { createSchemaCustomization } from '../src/gatsby-node'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { findCreateTypesCall } from './__testutils__/findCreateTypesCall'
 
+import { PrismicFieldType } from '../src'
+import { createSchemaCustomization } from '../src/gatsby-node'
+
 test('creates types for each slice choice', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -166,7 +166,7 @@ test('creates types for each slice choice', async (t) => {
 
 test('id field resolves to a unique id', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {

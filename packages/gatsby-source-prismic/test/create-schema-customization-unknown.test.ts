@@ -1,14 +1,14 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { createSchemaCustomization } from '../src/gatsby-node'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 
+import { createSchemaCustomization } from '../src/gatsby-node'
+
 test('uses JSON type', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -43,7 +43,7 @@ test('uses JSON type', async (t) => {
 
 test('prints message about unknown type', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {

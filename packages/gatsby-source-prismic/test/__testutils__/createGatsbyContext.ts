@@ -55,7 +55,7 @@ export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
     },
     getNode: sinon.stub().callsFake((id: string) => nodeStore.get(id)),
     getNodes: sinon.stub().callsFake(() => [...nodeStore.values()]),
-    createNodeId: sinon.stub().callsFake((x) => x),
+    createNodeId: sinon.stub().callsFake((input) => input),
     createContentDigest: sinon.stub().returns('createContentDigest'),
   }
 }

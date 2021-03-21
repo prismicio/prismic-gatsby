@@ -1,8 +1,13 @@
 import * as prismic from 'ts-prismic'
 
-import { PrismicWebhookBodyApiUpdate, PrismicWebhookType } from '../../src'
+import {
+  PluginOptions,
+  PrismicWebhookBodyApiUpdate,
+  PrismicWebhookType,
+} from '../../src'
 
 export const createWebhookAPIUpdateReleaseDocDeletion = (
+  pluginOptions: PluginOptions,
   documents: prismic.Document[],
 ): PrismicWebhookBodyApiUpdate => ({
   type: PrismicWebhookType.APIUpdate,
@@ -21,7 +26,7 @@ export const createWebhookAPIUpdateReleaseDocDeletion = (
   tags: {},
   experiments: {},
   documents: [],
-  domain: 'qwerty',
-  apiUrl: 'http://qwerty.prismic.io/api',
-  secret: 'secret',
+  domain: pluginOptions.repositoryName,
+  apiUrl: pluginOptions.apiEndpoint.replace(/(\.cdn|\/v2)/, ''),
+  secret: pluginOptions.webhookSecret ?? null,
 })

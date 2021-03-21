@@ -1,17 +1,17 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { PrismicFieldType } from '../src'
-import { createSchemaCustomization } from '../src/gatsby-node'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createNodeHelpers } from './__testutils__/createNodeHelpers'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { findCreateTypesCall } from './__testutils__/findCreateTypesCall'
 
+import { PrismicFieldType } from '../src'
+import { createSchemaCustomization } from '../src/gatsby-node'
+
 test('includes base fields', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -59,7 +59,7 @@ test('includes base fields', async (t) => {
 
 test('includes UID field if included in the schema', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -88,7 +88,7 @@ test('includes UID field if included in the schema', async (t) => {
 
 test('includes data fields if the schema contains fields', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -120,7 +120,7 @@ test('includes data fields if the schema contains fields', async (t) => {
 
 test('dataRaw field resolves to raw data object', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -148,7 +148,7 @@ test('dataRaw field resolves to raw data object', async (t) => {
 
 test('url field resolves using linkResolver', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -172,7 +172,7 @@ test('url field resolves using linkResolver', async (t) => {
 
 test('_previewable field resolves to Prismic ID', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -196,7 +196,7 @@ test('_previewable field resolves to Prismic ID', async (t) => {
 
 test('data field type includes all data fields', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {

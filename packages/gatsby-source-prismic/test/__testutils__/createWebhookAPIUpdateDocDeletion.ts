@@ -1,8 +1,13 @@
 import * as prismic from 'ts-prismic'
 
-import { PrismicWebhookBodyApiUpdate, PrismicWebhookType } from '../../src'
+import {
+  PluginOptions,
+  PrismicWebhookBodyApiUpdate,
+  PrismicWebhookType,
+} from '../../src'
 
 export const createWebhookAPIUpdateDocDeletion = (
+  pluginOptions: PluginOptions,
   documents: prismic.Document[],
 ): PrismicWebhookBodyApiUpdate => ({
   type: PrismicWebhookType.APIUpdate,
@@ -12,7 +17,7 @@ export const createWebhookAPIUpdateDocDeletion = (
   tags: {},
   experiments: {},
   documents: documents.map((doc) => doc.id),
-  domain: 'qwerty',
-  apiUrl: 'http://qwerty.wroom.test/api',
-  secret: 'secret',
+  domain: pluginOptions.repositoryName,
+  apiUrl: pluginOptions.apiEndpoint.replace(/(\.cdn|\/v2)/, ''),
+  secret: pluginOptions.webhookSecret ?? null,
 })

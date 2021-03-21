@@ -1,15 +1,15 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 
-import { PrismicFieldType } from '../src'
-import { createSchemaCustomization } from '../src/gatsby-node'
-
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 
+import { PrismicFieldType } from '../src'
+import { createSchemaCustomization } from '../src/gatsby-node'
+
 test('uses inferred type with link extension', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
@@ -40,7 +40,7 @@ test('uses inferred type with link extension', async (t) => {
 
 test('creates inferred type using path', async (t) => {
   const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions()
+  const pluginOptions = createPluginOptions(t)
 
   pluginOptions.schemas = {
     foo: {
