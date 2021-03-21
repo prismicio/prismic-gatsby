@@ -64,6 +64,9 @@
     "typed-css-modules": "^0.6.5"
   },
   "ava": {
+    "files": [
+      "./test/**/*.test.{ts,tsx}"
+    ],
     "extensions": [
       "ts",
       "tsx"

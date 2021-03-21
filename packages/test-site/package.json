@@ -6,7 +6,8 @@
     "clean": "gatsby clean",
     "develop": "gatsby develop",
     "build": "gatsby build",
-    "serve": "gatsby serve"
+    "serve": "gatsby serve",
+    "test": "echo 'No tests for test-site'"
   },
   "dependencies": {
     "gatsby": "^2.32.4",
