@@ -4,7 +4,7 @@ import * as sinon from 'sinon'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 
-import { onPostBootstrap } from '../dist/gatsby-node'
+import { onPostBootstrap } from '../src/gatsby-node'
 
 test('saves serialized typepaths to filesystem', async (t) => {
   const gatsbyContext = createGatsbyContext()

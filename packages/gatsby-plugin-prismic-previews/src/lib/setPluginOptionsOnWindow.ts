@@ -21,8 +21,9 @@ export const setPluginOptionsOnWindow = (
       [pluginOptions.repositoryName]: pluginOptions,
     })
   } else {
-    Object.assign({}, window[WINDOW_PLUGIN_OPTIONS_KEY], {
+    window[WINDOW_PLUGIN_OPTIONS_KEY] = {
+      ...window[WINDOW_PLUGIN_OPTIONS_KEY],
       [pluginOptions.repositoryName]: pluginOptions,
-    })
+    }
   }
 }

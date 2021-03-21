@@ -1,7 +1,7 @@
 import test from 'ava'
 import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
 
-import { pluginOptionsSchema } from '../dist/gatsby-node'
+import { pluginOptionsSchema } from '../src/gatsby-node'
 
 test('passes on valid options', async (t) => {
   const pluginOptions = {

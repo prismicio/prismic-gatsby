@@ -20,7 +20,7 @@
     "dev": "NODE_ENV=development concurrently -p '[{name}]' -n 'esbuild,    tsc' -c 'yellow.dim,blue.dim' 'node ./build.mjs -w' 'tsc -w --preserveWatchOutput -p ./tsconfig.build.json'",
     "gen": "tcm src",
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
-    "test": "TS_NODE_IGNORE='/node_modules/(?!(ky/))/' ava test/**/*.ava.test.ts",
+    "test": "ava test/**/*.ava.test.{ts,tsx}",
     "prepare": "yarn build",
     "release": "standard-version"
   },
@@ -43,6 +43,7 @@
     "gatsby-node-helpers": "^1.2.1",
     "gatsby-plugin-imgix": "^0.9.0",
     "ky": "^0.27.0",
+    "ky-universal": "^0.9.1",
     "prismic-dom": "^2.2.5",
     "tiny-hashes": "^1.0.1",
     "ts-prismic": "^0.3.0"
@@ -55,6 +56,7 @@
   "devDependencies": {
     "@testing-library/react-hooks": "^5.0.3",
     "@types/jsdom": "^16.2.7",
+    "browser-env": "^3.3.0",
     "cross-fetch": "^3.0.6",
     "identity-obj-proxy": "^3.0.0",
     "jsdom": "^16.5.1",
@@ -65,11 +67,15 @@
   },
   "ava": {
     "extensions": [
-      "ts"
+      "ts",
+      "tsx"
     ],
     "require": [
       "ts-eager/register"
     ],
+    "environmentVariables": {
+      "TS_NODE_IGNORE": "(?:^|/)node_modules(?!/ky)/"
+    },
     "verbose": true
   }
 }

@@ -1,32 +1,32 @@
 import test from 'ava'
-import * as sinon from 'sinon'
-import { renderHook, act } from '@testing-library/react-hooks'
-import { createNodeHelpers } from 'gatsby-node-helpers'
+import * as msw from 'msw'
+import * as mswNode from 'msw/node'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as cookie from 'es-cookie'
+import { renderHook, act } from '@testing-library/react-hooks'
+import { createNodeHelpers } from 'gatsby-node-helpers'
 import md5 from 'tiny-hashes/md5'
-import nock from 'nock'
-import 'cross-fetch/polyfill'
-import { JSDOM } from 'jsdom'
+import browserEnv from 'browser-env'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
+import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewToken } from './__testutils__/createPreviewToken'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
+import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { polyfillKy } from './__testutils__/polyfillKy'
+import { resolveURL } from './__testutils__/resolveURL'
 
 import {
-  createPrismicContext,
   PrismicAPIDocumentNodeInput,
+  PrismicPreviewProvider,
+  UsePrismicPreviewBootstrapConfig,
   useMergePrismicPreviewData,
   usePrismicPreviewBootstrap,
-  UsePrismicPreviewBootstrapConfig,
   usePrismicPreviewContext,
-  PrismicPreviewProvider,
 } from '../src'
-import { onClientEntry } from '../src/on-client-entry'
-import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { onClientEntry } from '../src/gatsby-browser'
 
 const createStaticData = () => {
   const previewable = createPrismicAPIDocumentNodeInput({ text: 'static' })
@@ -48,24 +48,24 @@ const nodeHelpers = createNodeHelpers({
   createContentDigest: (input) => md5(JSON.stringify(input)),
 })
 
-declare global {
-  interface Window {
-    __BASE_PATH__: string
-  }
-}
+const server = mswNode.setupServer()
+test.before(() => {
+  polyfillKy()
 
+  server.listen({ onUnhandledRequest: 'error' })
+
+  browserEnv(['window', 'document'])
+
+  globalThis.__PATH_PREFIX__ = 'https://example.com'
+})
 test.beforeEach(() => {
-  globalThis.window = new JSDOM().window
-
-  // This global variable is used by Gatsby's `withAssetPrefix` to build a URL
-  // using the site's domain.
-  //
-  // A site would set this variable using the `siteMetadata.siteUrl` property in
-  // its `gatsby-config.js`.
-  globalThis.window.__BASE_PATH__ = 'https://example.com'
+  clearAllCookies()
+})
+test.after(() => {
+  server.close()
 })
 
-test('does not merge if no preview data is available', async (t) => {
+test.serial('does not merge if no preview data is available', async (t) => {
   const pluginOptions = createPluginOptions()
   const gatsbyContext = createGatsbyContext()
   const staticData = createStaticData()
@@ -81,96 +81,105 @@ test('does not merge if no preview data is available', async (t) => {
   t.true(result.current.data === staticData)
 })
 
-// test('merges data only where `_previewable` field matches', async () => {
-//   const pluginOptions = createPluginOptions()
-//   const Provider = createPrismicContext({ pluginOptions })
-//   const config = createConfig()
+test.serial(
+  'merges data only where `_previewable` field matches',
+  async (t) => {
+    const pluginOptions = createPluginOptions()
+    const gatsbyContext = createGatsbyContext()
+    const config = createConfig()
+    const queryResponse = createPrismicAPIQueryResponse()
 
-//   const token = createPreviewToken(pluginOptions.repositoryName)
-//   cookie.set(prismic.cookie.preview, token)
+    const token = createPreviewToken(pluginOptions.repositoryName)
+    cookie.set(prismic.cookie.preview, token)
 
-//   const queryResults = [
-//     createPrismicAPIDocument(),
-//     createPrismicAPIDocument(),
-//     createPrismicAPIDocument(),
-//     createPrismicAPIDocument(),
-//   ]
-//   const queryResultsNodes = queryResults.map(
-//     (doc) =>
-//       nodeHelpers.createNodeFactory(doc.type)(
-//         doc,
-//       ) as PrismicAPIDocumentNodeInput,
-//   )
+    const queryResponseNodes = queryResponse.results.map(
+      (doc) =>
+        nodeHelpers.createNodeFactory(doc.type)(
+          doc,
+        ) as PrismicAPIDocumentNodeInput,
+    )
 
-//   nock(new URL(pluginOptions.apiEndpoint).origin)
-//     .get('/api/v2/documents/search')
-//     .query({
-//       ref: token,
-//       access_token: pluginOptions.accessToken,
-//       lang: pluginOptions.lang,
-//       graphQuery: pluginOptions.graphQuery,
-//       page: 1,
-//       pageSize: 100,
-//     })
-//     .reply(200, {
-//       total_pages: 1,
-//       results: queryResults,
-//     })
+    server.use(
+      msw.rest.get(
+        resolveURL(pluginOptions.apiEndpoint, './documents/search'),
+        (req, res, ctx) =>
+          req.url.searchParams.get('access_token') ===
+            pluginOptions.accessToken &&
+          req.url.searchParams.get('ref') === token &&
+          req.url.searchParams.get('lang') === pluginOptions.lang &&
+          req.url.searchParams.get('graphQuery') === pluginOptions.graphQuery &&
+          req.url.searchParams.get('page') === '1' &&
+          req.url.searchParams.get('pageSize') === '100'
+            ? res(ctx.json(queryResponse))
+            : res(ctx.status(401)),
+      ),
+    )
 
-//   nock(window.__BASE_PATH__)
-//     .get('/static/9e387d94c04ebf0e369948edd9c66d2b.json')
-//     .reply(
-//       200,
-//       JSON.stringify({
-//         type: gatsbyPrismic.PrismicSpecialType.Document,
-//         'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
-//       }),
-//     )
+    server.use(
+      msw.rest.get(
+        resolveURL(
+          globalThis.__PATH_PREFIX__,
+          '/static/9e387d94c04ebf0e369948edd9c66d2b.json',
+        ),
+        (_req, res, ctx) =>
+          res(
+            ctx.json({
+              type: gatsbyPrismic.PrismicSpecialType.Document,
+              'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+            }),
+          ),
+      ),
+    )
 
-//   // Need to use the query results nodes rather than new documents to ensure
-//   // the IDs match.
-//   const staticData = {
-//     previewable: { ...queryResultsNodes[0] },
-//     nonPreviewable: { ...queryResultsNodes[1] },
-//   }
-//   staticData.previewable._previewable = queryResultsNodes[0].prismicId
-//   // Marking this data as "old" and should be replaced during the merge.
-//   staticData.previewable.uid = 'old'
+    // Need to use the query results nodes rather than new documents to ensure
+    // the IDs match.
+    const staticData = {
+      previewable: { ...queryResponseNodes[0] },
+      nonPreviewable: { ...queryResponseNodes[1] },
+    }
+    staticData.previewable._previewable = queryResponseNodes[0].prismicId
+    // Marking this data as "old" and should be replaced during the merge.
+    staticData.previewable.uid = 'old'
 
-//   const { result, waitForValueToChange } = renderHook(
-//     () => {
-//       const context = usePrismicPreviewContext(pluginOptions.repositoryName)
-//       const bootstrap = usePrismicPreviewBootstrap(
-//         pluginOptions.repositoryName,
-//         config,
-//       )
+    // @ts-expect-error - Partial gatsbyContext provided
+    await onClientEntry(gatsbyContext, pluginOptions)
 
-//       const mergedData = useMergePrismicPreviewData(
-//         pluginOptions.repositoryName,
-//         staticData,
-//       )
+    const { result, waitForValueToChange } = renderHook(
+      () => {
+        const context = usePrismicPreviewContext(pluginOptions.repositoryName)
+        const bootstrap = usePrismicPreviewBootstrap(
+          pluginOptions.repositoryName,
+          config,
+        )
 
-//       return { bootstrap, context, mergedData }
-//     },
-//     { wrapper: Provider },
-//   )
-//   const bootstrapPreview = result.current.bootstrap[1]
+        const mergedData = useMergePrismicPreviewData(
+          pluginOptions.repositoryName,
+          staticData,
+        )
 
-//   act(() => {
-//     bootstrapPreview()
-//   })
+        return { bootstrap, context, mergedData }
+      },
+      { wrapper: PrismicPreviewProvider },
+    )
+    const bootstrapPreview = result.current.bootstrap[1]
 
-//   await waitForValueToChange(() => result.current.bootstrap[0].state)
-//   expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPING')
+    act(() => {
+      bootstrapPreview()
+    })
 
-//   await waitForValueToChange(() => result.current.bootstrap[0].state)
-//   expect(result.current.bootstrap[0].state).toBe('BOOTSTRAPPED')
+    await waitForValueToChange(() => result.current.bootstrap[0].state)
+    t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPING')
 
-//   expect(result.current.mergedData.isPreview).toBe(true)
-//   expect(result.current.mergedData.data.previewable.uid).toEqual(
-//     queryResultsNodes[0].uid,
-//   )
-// })
+    await waitForValueToChange(() => result.current.bootstrap[0].state)
+    t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPED')
+
+    t.true(result.current.mergedData.isPreview)
+    t.true(
+      result.current.mergedData.data.previewable.uid ===
+        queryResponseNodes[0].uid,
+    )
+  },
+)
 
 // // test('recursively merges data', () => {})
 

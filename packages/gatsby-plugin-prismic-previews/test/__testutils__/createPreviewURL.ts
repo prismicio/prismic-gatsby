@@ -4,15 +4,15 @@ type CreatePreviewURLArgs = {
 }
 
 export const createPreviewURL = (args: CreatePreviewURLArgs): string => {
-  const params = new URLSearchParams()
+  const url = new URL('https://example.com')
 
   if (args.token) {
-    params.set('token', args.token)
+    url.searchParams.set('token', args.token)
   }
 
   if (args.documentId) {
-    params.set('documentId', args.documentId)
+    url.searchParams.set('documentId', args.documentId)
   }
 
-  return '?' + params.toString()
+  return url.toString()
 }
