@@ -1,6 +1,7 @@
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as RE from 'fp-ts/ReaderEither'
 import { Refinement } from 'fp-ts/function'
+
+import * as gatsbyPrismic from '../../../gatsby-source-prismic/src'
 
 import { FIELD_VALUE_TYPE_PATH_MISMATCH_MSG } from '../constants'
 import { sprintf } from './sprintf'

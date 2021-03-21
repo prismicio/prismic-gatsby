@@ -2,8 +2,9 @@ import * as React from 'react'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-import { PREVIEWABLE_NODE_ID_FIELD } from 'gatsby-source-prismic'
 import { ValueOf } from 'type-fest'
+
+import * as gatsbyPrismic from '../../gatsby-source-prismic/src'
 
 import { isPlainObject } from './lib/isPlainObject'
 import { camelCase } from './lib/camelCase'
@@ -19,9 +20,9 @@ const findAndReplacePreviewables = (
   // _previewable, then we need to check every property inside for something
   // that does.
   if (isPlainObject(nodeOrLeaf)) {
-    const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
-      | string
-      | undefined
+    const previewableValue = nodeOrLeaf[
+      gatsbyPrismic.PREVIEWABLE_NODE_ID_FIELD
+    ] as string | undefined
     if (previewableValue && nodes[previewableValue]) {
       return nodes[previewableValue]
     }

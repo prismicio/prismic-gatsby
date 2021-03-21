@@ -1,5 +1,4 @@
 import * as gatsby from 'gatsby'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as path from 'path'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
@@ -7,6 +6,8 @@ import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import { constVoid, pipe } from 'fp-ts/function'
 import { createNodeHelpers, NodeHelpers } from 'gatsby-node-helpers'
+
+import * as gatsbyPrismic from '../../gatsby-source-prismic/src'
 
 import {
   GLOBAL_TYPE_PREFIX,

@@ -1,13 +1,14 @@
 import test from 'ava'
 import * as msw from 'msw'
 import * as mswNode from 'msw/node'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as cookie from 'es-cookie'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { createNodeHelpers } from 'gatsby-node-helpers'
 import md5 from 'tiny-hashes/md5'
 import browserEnv from 'browser-env'
+
+import * as gatsbyPrismic from '../../gatsby-source-prismic/src'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'

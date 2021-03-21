@@ -1,8 +1,9 @@
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as RE from 'fp-ts/ReaderEither'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
 import { NodeHelpers } from 'gatsby-node-helpers'
+
+import * as gatsbyPrismic from '../../../gatsby-source-prismic/src'
 
 import {
   HTMLSerializer,
