@@ -1,10 +1,9 @@
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as gatsbyImgix from 'gatsby-plugin-imgix'
 import * as RE from 'fp-ts/ReaderEither'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-
-import * as gatsbyPrismic from '../../../gatsby-source-prismic/src'
 
 import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 import { refineFieldValue } from '../lib/refineFieldValue'

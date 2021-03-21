@@ -2,12 +2,11 @@ import test, { ExecutionContext } from 'ava'
 import * as mswNode from 'msw/node'
 import * as sinon from 'sinon'
 import * as gatsby from 'gatsby'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as cookie from 'es-cookie'
 import { renderHook, act } from '@testing-library/react-hooks'
 import browserEnv from 'browser-env'
-
-import * as gatsbyPrismic from '../../gatsby-source-prismic/src'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'

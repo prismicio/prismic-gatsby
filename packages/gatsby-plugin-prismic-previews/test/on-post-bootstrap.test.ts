@@ -6,7 +6,7 @@ import { createPluginOptions } from './__testutils__/createPluginOptions'
 
 import { onPostBootstrap } from '../src/gatsby-node'
 
-test.only('saves serialized typepaths to filesystem', async (t) => {
+test('saves serialized typepaths to filesystem', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
@@ -32,7 +32,7 @@ test.only('saves serialized typepaths to filesystem', async (t) => {
 
   t.true(
     (pluginOptions.writeTypePathsToFilesystem as sinon.SinonStub).calledWith({
-      publicPath: 'public/static/3e66cce7662062ad5137e62e8bb62096.json',
+      publicPath: 'public/static/9e387d94c04ebf0e369948edd9c66d2b.json',
       serializedTypePaths,
     }),
   )

@@ -1,9 +1,8 @@
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as PrismicDOM from 'prismic-dom'
 import * as RE from 'fp-ts/ReaderEither'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-
-import * as gatsbyPrismic from '../../../gatsby-source-prismic/src'
 
 import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 import { createGetProxy } from '../lib/createGetProxy'

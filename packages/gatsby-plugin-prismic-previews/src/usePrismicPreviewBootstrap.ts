@@ -7,9 +7,9 @@ import * as IO from 'fp-ts/IO'
 import * as A from 'fp-ts/Array'
 import { constVoid, pipe } from 'fp-ts/function'
 import { createNodeHelpers, NodeHelpers } from 'gatsby-node-helpers'
+import { GLOBAL_TYPE_PREFIX } from 'gatsby-source-prismic'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import md5 from 'tiny-hashes/md5'
-
-import * as gatsbyPrismic from '../../gatsby-source-prismic/src'
 
 import { BuildTypePathsStoreFilenameEnv } from './lib/buildTypePathsStoreFilename'
 import { fetchTypePathsStore } from './lib/fetchTypePaths'
@@ -268,12 +268,12 @@ export const usePrismicPreviewBootstrap = (
           md5(JSON.stringify(input)),
         nodeHelpers: createNodeHelpers({
           typePrefix: [
-            gatsbyPrismic.GLOBAL_TYPE_PREFIX,
+            GLOBAL_TYPE_PREFIX,
             contextState.pluginOptions.typePrefix,
           ]
             .filter(Boolean)
             .join(' '),
-          fieldPrefix: gatsbyPrismic.GLOBAL_TYPE_PREFIX,
+          fieldPrefix: GLOBAL_TYPE_PREFIX,
           createNodeId: (input: string) => md5(input),
           createContentDigest: (input: string | UnknownRecord) =>
             md5(JSON.stringify(input)),

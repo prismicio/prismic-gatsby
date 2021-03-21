@@ -1,9 +1,8 @@
 import * as gatsby from 'gatsby'
 import * as gatsbyImgix from 'gatsby-plugin-imgix'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as PrismicDOM from 'prismic-dom'
-
-import * as gatsbyPrismic from '../../gatsby-source-prismic/src'
 
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P]

@@ -1,8 +1,11 @@
 import * as gatsby from 'gatsby'
 import * as prismic from 'ts-prismic'
 import * as fs from 'fs/promises'
-
-import * as gatsbyPrismic from '../../gatsby-source-prismic/src'
+import {
+  DEFAULT_IMGIX_PARAMS,
+  DEFAULT_LANG,
+  DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
+} from 'gatsby-source-prismic'
 
 import { DEFAULT_PROMPT_FOR_ACCESS_TOKEN, DEFAULT_TOOLBAR } from './constants'
 import { WriteTypePathsToFilesystemArgs } from './types'
@@ -23,10 +26,10 @@ export const pluginOptionsSchema: NonNullable<
     ),
     graphQuery: Joi.string(),
     fetchLinks: Joi.array().items(Joi.string().required()),
-    lang: Joi.string().default(gatsbyPrismic.DEFAULT_LANG),
-    imageImgixParams: Joi.object().default(gatsbyPrismic.DEFAULT_IMGIX_PARAMS),
+    lang: Joi.string().default(DEFAULT_LANG),
+    imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
     imagePlaceholderImgixParams: Joi.object().default(
-      gatsbyPrismic.DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
+      DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
     ),
     typePrefix: Joi.string(),
     toolbar: Joi.string().valid('new', 'legacy').default(DEFAULT_TOOLBAR),
