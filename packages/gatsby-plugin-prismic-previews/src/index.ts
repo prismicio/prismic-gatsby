@@ -1,3 +1,5 @@
+import './styles.css'
+
 export * from './useMergePrismicPreviewData'
 export * from './usePrismicPreviewAccessToken'
 export * from './usePrismicPreviewBootstrap'

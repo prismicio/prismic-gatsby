@@ -19,9 +19,11 @@ import {
   SetAccessTokenFn,
   usePrismicPreviewAccessToken,
 } from './usePrismicPreviewAccessToken'
+
 import { Root } from './components/Root'
 import { ModalAccessToken } from './components/ModalAccessToken'
 import { ModalError } from './components/ModalError'
+import { ModalLoading } from './components/ModalLoading'
 
 export interface WithPrismicPreviewResolverProps {
   isPrismicPreview: boolean
@@ -58,6 +60,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       repositoryName,
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
+    const dismissModal = () => setLocalState('IDLE')
 
     const isPreview =
       resolverState.state === 'INIT' && localState === 'IDLE'
@@ -129,36 +132,6 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       contextState.pluginOptions.promptForAccessToken,
     ])
 
-    // // TODO: Replace this with a proper UI in the DOM.
-    // // TODO: Have a user-facing button to clear the access token cookie.
-    // React.useEffect(() => {
-    //   switch (localState) {
-    //     case 'PROMPT_FOR_ACCESS_TOKEN':
-    //     case 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN': {
-    //       const accessToken = prompt(
-    //         `Enter Prismic access token for ${repositoryName}`,
-    //       )
-
-    //       if (accessToken) {
-    //         // Set the access token in the repository's context and retry
-    //         // resolving the preview.
-    //         setAccessToken(accessToken)
-    //         resolvePreview()
-    //       } else {
-    //         setLocalState('DISPLAY_ERROR')
-    //       }
-
-    //       break
-    //     }
-
-    //     case 'DISPLAY_ERROR': {
-    //       console.error(resolverState.error)
-
-    //       break
-    //     }
-    //   }
-    // }, [localState, resolvePreview, resolverState.error, setAccessToken])
-
     return (
       <>
         <WrappedComponent
@@ -170,20 +143,41 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
           prismicPreviewError={resolverState.error}
           prismicPreviewSetAccessToken={setAccessToken}
         />
-        {(localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
-          (localState === 'DISPLAY_ERROR' && resolverState.error?.message)) && (
-          <Root>
-            {localState === 'PROMPT_FOR_ACCESS_TOKEN' && (
-              <ModalAccessToken repositoryName={repositoryName} />
-            )}
-            {localState === 'DISPLAY_ERROR' && resolverState.error?.message && (
-              <ModalError
-                repositoryName={repositoryName}
-                errorMessage={resolverState.error.message}
-              />
-            )}
-          </Root>
-        )}
+
+        <Root>
+          <ModalLoading
+            isOpen={
+              localState === 'IDLE' && resolverState.state === 'RESOLVING'
+            }
+            repositoryName={repositoryName}
+            onDismiss={dismissModal}
+          />
+          <ModalAccessToken
+            isOpen={
+              localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
+              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+            }
+            repositoryName={repositoryName}
+            state={
+              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+                ? 'INCORRECT'
+                : 'IDLE'
+            }
+            initialAccessToken={accessToken}
+            setAccessToken={setAccessToken}
+            afterSubmit={() => {
+              dismissModal()
+              resolvePreview()
+            }}
+            onDismiss={dismissModal}
+          />
+          <ModalError
+            isOpen={localState === 'DISPLAY_ERROR'}
+            repositoryName={repositoryName}
+            errorMessage={resolverState.error?.message}
+            onDismiss={dismissModal}
+          />
+        </Root>
       </>
     )
   }

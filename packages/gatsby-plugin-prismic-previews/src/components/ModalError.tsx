@@ -2,44 +2,72 @@ import * as React from 'react'
 
 import { VERSION } from '../constants'
 
-import { Modal } from './Modal'
+import { Modal, ModalProps } from './Modal'
 import { Button } from './Button'
+import { Text } from './Text'
 
-// import styles from './ModalError.module.css'
-const styles: Record<string, never> = {}
-
-type ModalProps = {
-  repositoryName: string
-  errorMessage: string
-}
+type ModalErrorProps = {
+  errorMessage?: string
+} & Pick<ModalProps, 'repositoryName' | 'isOpen' | 'onDismiss'>
 
 export const ModalError = ({
   repositoryName,
   errorMessage,
-}: ModalProps): JSX.Element => {
+  isOpen,
+  onDismiss,
+}: ModalErrorProps): JSX.Element => {
   return (
-    <Modal variant="red" repositoryName={repositoryName}>
-      <div className={styles.content}>
-        <div className={styles.intro}>
-          <h1 className={styles.heading}>Error</h1>
-          <p className={styles.p}>The preview could not be loaded.</p>
+    <Modal
+      variant="red"
+      repositoryName={repositoryName}
+      onDismiss={onDismiss}
+      isOpen={isOpen}
+    >
+      <div className="gppp-grid gppp-gap-6 sm:gppp-gap-7 gppp-justify-items-center">
+        <div className="gppp-grid gppp-gap-4">
+          <Text
+            variant="sans-24"
+            className="gppp-text-center gppp-font-semibold"
+          >
+            Error
+          </Text>
+          <Text variant="sans-12-14" className="gppp-text-center">
+            The preview could not be loaded.
+          </Text>
         </div>
-        <p className={styles.errorMessage}>{errorMessage}</p>
-        <Button
-          variant="whiteOutline"
-          type="button"
-          className={styles.cancelButton}
-        >
-          Cancel Preview
+
+        {errorMessage && (
+          <Text variant="mono-20" className="gppp-text-center gppp-my-2">
+            {errorMessage}
+          </Text>
+        )}
+
+        <Button variant="whiteOutline" onClick={onDismiss} className="mx-auto">
+          <Text variant="sans-14" className="gppp-font-medium">
+            Cancel Preview
+          </Text>
         </Button>
-        <dl className={styles.details}>
-          <div className={styles.detailsItem}>
-            <dt className={styles.detailsLabel}>Repository</dt>
-            <dd className={styles.detailsValue}>{repositoryName}</dd>
+
+        <dl className="gppp-text-red-80 gppp-flex gppp-flex-wrap gppp--mt-5 gppp--ml-5 gppp-justify-center">
+          <div className="gppp-grid gppp-gap-2 gppp-pl-5 gppp-pt-5 gppp-grid-flow-col">
+            <dt>
+              <Text variant="sans-12" className="gppp-font-semibold">
+                Repository
+              </Text>
+            </dt>
+            <dd>
+              <Text variant="sans-12">{repositoryName}</Text>
+            </dd>
           </div>
-          <div className={styles.detailsItem}>
-            <dt className={styles.detailsLabel}>Plugin Version</dt>
-            <dd className={styles.detailsValue}>{VERSION}</dd>
+          <div className="gppp-grid gppp-gap-2 gppp-pl-5 gppp-pt-5 gppp-grid-flow-col">
+            <dt>
+              <Text variant="sans-12" className="gppp-font-semibold">
+                Plugin Version
+              </Text>
+            </dt>
+            <dd>
+              <Text variant="sans-12">{VERSION}</Text>
+            </dd>
           </div>
         </dl>
       </div>

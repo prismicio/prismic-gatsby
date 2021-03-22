@@ -1,7 +1,11 @@
 import * as path from 'path'
 import * as url from 'url'
 import * as fs from 'fs/promises'
+import * as tmp from 'tmp'
 import esbuild from 'esbuild'
+import postcss from 'postcss'
+import tailwindcssJit from '@tailwindcss/jit'
+import postcssImport from 'postcss-import'
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 const isWatchMode = process.argv.slice(2).includes('-w')
@@ -22,6 +26,8 @@ const common = {
     ...Object.keys(pkg.peerDependencies),
   ],
 }
+
+const postcssPlugins = [postcssImport(), tailwindcssJit()]
 
 // Node platform files
 await esbuild.build({
@@ -55,4 +61,41 @@ await esbuild.build({
     // warning while not replacing the value, please open an issue or PR!
     // 'process.env.NODE_ENV': '"process.env.NODE_ENV"',
   },
+  plugins: [
+    {
+      name: 'postcss',
+      setup: function (build) {
+        const rootDir = process.cwd()
+        const tmpDirPath = tmp.dirSync().name
+        build.onResolve(
+          { filter: /.\.(css)$/, namespace: 'file' },
+          async (args) => {
+            const sourceFullPath = path.resolve(args.resolveDir, args.path)
+            const sourceExt = path.extname(sourceFullPath)
+            const sourceBaseName = path.basename(sourceFullPath, sourceExt)
+            const sourceDir = path.dirname(sourceFullPath)
+            const sourceRelDir = path.relative(path.dirname(rootDir), sourceDir)
+
+            const tmpDir = path.resolve(tmpDirPath, sourceRelDir)
+            const tmpFilePath = path.resolve(tmpDir, `${sourceBaseName}.css`)
+            await fs.mkdir(tmpDir, { recursive: true })
+
+            const css = await fs.readFile(sourceFullPath)
+
+            const result = await postcss(postcssPlugins).process(css, {
+              from: sourceFullPath,
+              to: tmpFilePath,
+            })
+
+            // Write result file
+            await fs.writeFile(tmpFilePath, result.css)
+
+            return {
+              path: tmpFilePath,
+            }
+          },
+        )
+      },
+    },
+  ],
 })

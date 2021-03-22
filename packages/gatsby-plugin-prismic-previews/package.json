@@ -22,7 +22,9 @@
     "format": "prettier --write '{src,docs}/**/*.{ts,tsx,md}'",
     "test": "ava",
     "prepare": "yarn build",
-    "release": "standard-version"
+    "release": "standard-version",
+    "storybook": "start-storybook --quiet -p 6006",
+    "build-storybook": "build-storybook"
   },
   "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
   "repository": {
@@ -35,15 +37,15 @@
     "prismic"
   ],
   "dependencies": {
-    "@reach/visually-hidden": "^0.13.2",
+    "@reach/dialog": "^0.13.2",
     "camel-case": "^4.1.2",
     "chalk": "^4.1.0",
+    "clsx": "^1.1.1",
     "es-cookie": "^1.3.2",
     "fp-ts": "^2.9.5",
     "gatsby-node-helpers": "^1.2.1",
     "gatsby-plugin-imgix": "^0.9.1-next.0",
     "ky": "^0.27.0",
-    "ky-universal": "^0.9.1",
     "prismic-dom": "^2.2.5",
     "tiny-hashes": "^1.0.1",
     "ts-prismic": "^0.3.0"
@@ -54,13 +56,18 @@
     "react": ">=16.13"
   },
   "devDependencies": {
+    "@asyarb/tailwind-capsize": "^0.1.6",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/cli": "^6.2.0-rc.6",
+    "@storybook/react": "^6.2.0-rc.6",
     "@testing-library/react-hooks": "^5.0.3",
+    "@themosaad/tailwindcss-capsize": "^1.0.0",
     "browser-env": "^3.3.0",
     "cross-fetch": "^3.1.2",
     "identity-obj-proxy": "^3.0.0",
+    "react-polymorphic-types": "^1.0.3",
     "react-test-renderer": "^17.0.1",
-    "source-map-explorer": "^2.5.2",
-    "typed-css-modules": "^0.6.5"
+    "source-map-explorer": "^2.5.2"
   },
   "ava": {
     "files": [

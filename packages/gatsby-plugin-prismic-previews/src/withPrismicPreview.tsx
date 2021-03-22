@@ -24,6 +24,7 @@ import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
 import { Root } from './components/Root'
 import { ModalAccessToken } from './components/ModalAccessToken'
 import { ModalError } from './components/ModalError'
+import { ModalLoading } from './components/ModalLoading'
 
 export interface WithPrismicPreviewProps<
   TStaticData extends UnknownRecord = UnknownRecord
@@ -74,6 +75,7 @@ export const withPrismicPreview = <
       repositoryName,
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
+    const dismissModal = () => setLocalState('IDLE')
 
     // Begin bootstrapping on page entry if the preview token is for this
     // repository and we haven't already bootstrapped.
@@ -113,6 +115,10 @@ export const withPrismicPreview = <
 
           break
         }
+
+        default: {
+          setLocalState('IDLE')
+        }
       }
     }, [
       accessToken,
@@ -120,36 +126,6 @@ export const withPrismicPreview = <
       bootstrapState.state,
       bootstrapState.error,
     ])
-
-    // // TODO: Replace this with a proper UI in the DOM.
-    // // TODO: Have a user-facing button to clear the access token cookie.
-    // React.useEffect(() => {
-    //   switch (localState) {
-    //     case 'PROMPT_FOR_ACCESS_TOKEN':
-    //     case 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN': {
-    //       const accessToken = prompt(
-    //         `Enter Prismic access token for ${repositoryName}`,
-    //       )
-
-    //       if (accessToken) {
-    //         // Set the access token in the repository's context and retry
-    //         // bootstrapping the preview.
-    //         setAccessToken(accessToken)
-    //         bootstrapPreview()
-    //       } else {
-    //         setLocalState('DISPLAY_ERROR')
-    //       }
-
-    //       break
-    //     }
-
-    //     case 'DISPLAY_ERROR': {
-    //       console.error(bootstrapState.error)
-
-    //       break
-    //     }
-    //   }
-    // }, [localState, bootstrapPreview, bootstrapState.error, setAccessToken])
 
     const mergedData = useMergePrismicPreviewData(repositoryName, props.data, {
       mergeStrategy: 'traverseAndReplace',
@@ -168,25 +144,41 @@ export const withPrismicPreview = <
           prismicPreviewSetAccessToken={setAccessToken}
           prismicPreviewOriginalData={props.data}
         />
-        {(localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
-          (localState === 'DISPLAY_ERROR' &&
-            bootstrapState.error?.message)) && (
-          <Root>
-            {localState === 'PROMPT_FOR_ACCESS_TOKEN' && (
-              <ModalAccessToken
-                repositoryName={repositoryName}
-                afterSubmit={bootstrapPreview}
-              />
-            )}
-            {localState === 'DISPLAY_ERROR' &&
-              bootstrapState.error?.message && (
-                <ModalError
-                  repositoryName={repositoryName}
-                  errorMessage={bootstrapState.error.message}
-                />
-              )}
-          </Root>
-        )}
+
+        <Root>
+          <ModalLoading
+            isOpen={
+              localState === 'IDLE' && bootstrapState.state === 'BOOTSTRAPPING'
+            }
+            repositoryName={repositoryName}
+            onDismiss={dismissModal}
+          />
+          <ModalAccessToken
+            isOpen={
+              localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
+              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+            }
+            repositoryName={repositoryName}
+            state={
+              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+                ? 'INCORRECT'
+                : 'IDLE'
+            }
+            initialAccessToken={accessToken}
+            setAccessToken={setAccessToken}
+            afterSubmit={() => {
+              dismissModal()
+              bootstrapPreview()
+            }}
+            onDismiss={dismissModal}
+          />
+          <ModalError
+            isOpen={localState === 'DISPLAY_ERROR'}
+            repositoryName={repositoryName}
+            errorMessage={bootstrapState.error?.message}
+            onDismiss={dismissModal}
+          />
+        </Root>
       </>
     )
   }

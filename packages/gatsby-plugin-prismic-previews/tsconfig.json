@@ -1,11 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
     "rootDir": "./",
     "resolveJsonModule": true,
     "jsx": "react",
     "allowJs": true
   },
-  "include": ["src", "test", "types"]
+  "include": ["src", "test", "types", ".storybook"]
 }

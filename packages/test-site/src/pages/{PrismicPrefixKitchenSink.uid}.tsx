@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { graphql, PageProps, Link } from 'gatsby'
 import {
-  usePrismicPreviewAccessToken,
   withPrismicPreview,
   WithPrismicPreviewProps,
 } from 'gatsby-plugin-prismic-previews'
@@ -14,15 +13,6 @@ const Page = (
   props: PageProps<Record<string, any>> &
     WithPrismicPreviewProps<Record<string, any>>,
 ): JSX.Element => {
-  // const propsStr = JSON.stringify(props, null, 2)
-
-  // const [accessToken] = usePrismicPreviewAccessToken(repoName)
-
-  // const [state] = usePrismicPreviewContext(repoName)
-  // const [token] = usePrismicPreviewAccessToken(repoName)
-
-  // console.log({ state, token })
-
   return (
     <div>
       <ul>
