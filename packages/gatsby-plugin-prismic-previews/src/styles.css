@@ -496,6 +496,8 @@ Add the correct display in Chrome and Safari.
   -webkit-font-smoothing: antialiased;
 }
 
+/* TODO: Scope the following styles to the plugin */
+
 /* Skip @reach styles */
 :root {
   --reach-dialog: 1;
