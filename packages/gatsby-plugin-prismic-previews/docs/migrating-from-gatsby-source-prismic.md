@@ -25,7 +25,7 @@ the function as described below.
 
 `withPrismicPreview` takes the following arguments:
 
-```
+```javascript
 withPrismicPreview(component, repositoryName, config)
 ```
 
@@ -44,10 +44,10 @@ withPrismicPreview(component, repositoryName, config)
 
 ### Update `withPreviewResolver` to `withPrismicPreviewResolver`
 
-In your dedicated preview page, update the `withPreviewResolver` import to the
-`withPrismicPreviewResolver` import and update the arguments provided to the
-function as described below. The preview resolver page is typically created at
-`/src/pages/preview.js`.
+In your dedicated preview resolver page, update the `withPreviewResolver` import
+to the `withPrismicPreviewResolver` import and update the arguments provided to
+the function as described below. The preview resolver page is typically created
+at `/src/pages/preview.js`.
 
 ```diff
 - import { withPreviewResolver } from 'gatsby-source-prismic'
@@ -69,7 +69,7 @@ function as described below. The preview resolver page is typically created at
 
 `withPrismicPreviewResolver` takes the following arguments:
 
-```
+```javascript
 withPrismicPreviewResolver(component, repositoryName, config)
 ```
 
