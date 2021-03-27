@@ -213,15 +213,12 @@ const defaultContextValue: PrismicContextValue = [
 export const PrismicContext = React.createContext(defaultContextValue)
 
 export type PrismicProviderProps = {
-  // initialState?: PrismicContextState
   children?: React.ReactNode
 }
 
 export const PrismicPreviewProvider = ({
-  // initialState,
   children,
 }: PrismicProviderProps): JSX.Element => {
-  // const resolvedInitialState = initialState ?? createInitialState()()
   const initialState = createInitialState()()
   const reducerTuple = React.useReducer(contextReducer, initialState)
 

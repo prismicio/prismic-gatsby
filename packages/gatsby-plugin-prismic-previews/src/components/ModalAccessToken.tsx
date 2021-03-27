@@ -52,6 +52,7 @@ export const ModalAccessToken = ({
       repositoryName={repositoryName}
       onDismiss={onDismiss}
       isOpen={isOpen}
+      aria-label={`Prismic access token for ${repositoryName}`}
     >
       <div className="gppp-grid gppp-gap-6 sm:gppp-gap-7">
         <div className="gppp-grid gppp-gap-5">

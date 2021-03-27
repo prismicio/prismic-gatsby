@@ -19,6 +19,7 @@ export const ModalLoading = ({
       repositoryName={repositoryName}
       onDismiss={onDismiss}
       isOpen={isOpen}
+      aria-label={`Prismic preview loading for ${repositoryName}`}
     >
       <div className="gppp-grid gppp-gap-6 sm:gppp-gap-7 gppp-justify-items-center">
         <div className="gppp-grid gppp-gap-5">

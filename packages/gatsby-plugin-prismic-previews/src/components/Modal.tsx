@@ -48,6 +48,7 @@ export type ModalProps = {
   repositoryName: string
   onDismiss: () => void
   isOpen: boolean
+  ['aria-label']: string
 }
 
 export const Modal = ({
@@ -56,11 +57,13 @@ export const Modal = ({
   onDismiss,
   isOpen,
   children,
+  'aria-label': ariaLabel,
 }: ModalProps): JSX.Element => {
   return (
     <Dialog
       isOpen={isOpen}
       onDismiss={onDismiss}
+      aria-label={ariaLabel}
       className="gppp-root gppp-w-full gppp-max-w-34rem gppp-mx-auto gppp-mt-20vh"
     >
       <div

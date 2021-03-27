@@ -30,7 +30,7 @@ export interface WithPrismicPreviewProps<
   TStaticData extends UnknownRecord = UnknownRecord
 > {
   bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn
-  isPrismicPreview: boolean
+  isPrismicPreview: boolean | null
   prismicPreviewState: UsePrismicPreviewBootstrapState['state']
   prismicPreviewError: UsePrismicPreviewBootstrapState['error']
   prismicPreviewOriginalData: TStaticData
@@ -61,10 +61,12 @@ export const withPrismicPreview = <
   TStaticData extends UnknownRecord,
   TProps extends gatsby.PageProps<TStaticData>
 >(
-  WrappedComponent: React.ComponentType<TProps>,
+  WrappedComponent: React.ComponentType<
+    TProps & WithPrismicPreviewProps<TStaticData>
+  >,
   repositoryName: string,
   config: WithPrismicPreviewConfig,
-): React.ComponentType<TProps & WithPrismicPreviewProps<TStaticData>> => {
+): React.ComponentType<TProps> => {
   const WithPrismicPreview = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext(repositoryName)
     const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
@@ -137,7 +139,7 @@ export const withPrismicPreview = <
         <WrappedComponent
           {...props}
           data={mergedData.data}
-          boostrapPrismicPreview={bootstrapPreview}
+          bootstrapPrismicPreview={bootstrapPreview}
           isPrismicPreview={mergedData.isPreview}
           prismicPreviewState={bootstrapState.state}
           prismicPreviewError={bootstrapState.error}

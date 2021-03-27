@@ -26,7 +26,7 @@ import { ModalError } from './components/ModalError'
 import { ModalLoading } from './components/ModalLoading'
 
 export interface WithPrismicPreviewResolverProps {
-  isPrismicPreview: boolean
+  isPrismicPreview: boolean | null
   resolvePrismicPreview: UsePrismicPreviewResolverFn
   prismicPreviewState: UsePrismicPreviewResolverState['state']
   prismicPreviewPath: UsePrismicPreviewResolverState['path']
@@ -34,7 +34,7 @@ export interface WithPrismicPreviewResolverProps {
   prismicPreviewSetAccessToken: SetAccessTokenFn
 }
 
-type WithPrismicPreviewResolverConfig = UsePrismicPreviewResolverConfig & {
+export type WithPrismicPreviewResolverConfig = UsePrismicPreviewResolverConfig & {
   autoRedirect?: boolean
 }
 
@@ -46,10 +46,12 @@ type LocalState =
   | 'NOT_PREVIEW'
 
 export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
-  WrappedComponent: React.ComponentType<TProps>,
+  WrappedComponent: React.ComponentType<
+    TProps & WithPrismicPreviewResolverProps
+  >,
   repositoryName: string,
   config: WithPrismicPreviewResolverConfig,
-): React.ComponentType<TProps & WithPrismicPreviewResolverProps> => {
+): React.ComponentType<TProps> => {
   const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext(repositoryName)
     const [resolverState, resolvePreview] = usePrismicPreviewResolver(
@@ -62,6 +64,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
     const dismissModal = () => setLocalState('IDLE')
 
+    const navigate = props.navigate
     const isPreview =
       resolverState.state === 'INIT' && localState === 'IDLE'
         ? null
@@ -90,7 +93,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       switch (resolverState.state) {
         case 'RESOLVED': {
           if ((config.autoRedirect ?? true) && resolverState.path) {
-            gatsby.navigate(resolverState.path)
+            navigate(resolverState.path)
           }
 
           break
@@ -125,6 +128,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
         }
       }
     }, [
+      navigate,
       accessToken,
       resolverState.state,
       resolverState.error,

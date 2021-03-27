@@ -44,6 +44,7 @@ await esbuild.build({
     path.resolve(__dirname, './src/gatsby-browser.ts'),
     path.resolve(__dirname, './src/gatsby-ssr.ts'),
     path.resolve(__dirname, './src/index.ts'),
+    path.resolve(__dirname, './src/styles.ts'),
   ],
   platform: 'browser',
   format: 'esm',
