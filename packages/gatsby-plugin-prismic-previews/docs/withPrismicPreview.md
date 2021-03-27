@@ -14,17 +14,15 @@ must mark documents in your query as "previewable." This involves adding a
 `_previewable` field to you query. An example of this is provided below.
 
 ```typescript
-type WithPrismicPreviewConfig = {
-  linkResolver: LinkResolver
-  htmlSerializer?: HTMLSerializer
-  mergePreviewData?: boolean
-}
-
-const withPrismicPreview: (
+function withPrismicPreview(
   WrappedComponent: React.ComponentType,
   repositoryName: string,
-  config: WithPrismicPreviewConfig,
-) => React.ComponentType
+  config: {
+    linkResolver: LinkResolver
+    htmlSerializer?: HTMLSerializer
+    mergePreviewData?: boolean
+  },
+): React.ComponentType
 ```
 
 - **`WrappedComponent`**<br/>The page component to which Prismic previews will
