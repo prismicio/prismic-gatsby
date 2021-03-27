@@ -1,0 +1,200 @@
+import test from 'ava'
+import * as assert from 'assert'
+import * as mswNode from 'msw/node'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
+import * as prismic from 'ts-prismic'
+import * as cookie from 'es-cookie'
+import * as gatsby from 'gatsby'
+import * as React from 'react'
+import * as tlr from '@testing-library/react'
+import { createNodeHelpers } from 'gatsby-node-helpers'
+import globalJsdom from 'global-jsdom'
+import md5 from 'tiny-hashes/md5'
+
+import { clearAllCookies } from './__testutils__/clearAllCookies'
+import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { createPageProps } from './__testutils__/createPageProps'
+import { createPluginOptions } from './__testutils__/createPluginOptions'
+import { createPreviewRef } from './__testutils__/createPreviewRef'
+import { createPreviewURL } from './__testutils__/createPreviewURL'
+import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
+import { polyfillKy } from './__testutils__/polyfillKy'
+
+import {
+  PluginOptions,
+  PrismicPreviewProvider,
+  WithPrismicPreviewConfig,
+  WithPrismicPreviewProps,
+  withPrismicPreview,
+  UnknownRecord,
+  PrismicAPIDocumentNodeInput,
+} from '../src'
+import { onClientEntry } from '../src/on-client-entry'
+
+const nodeHelpers = createNodeHelpers({
+  typePrefix: 'Prismic prefix',
+  fieldPrefix: 'Prismic',
+  createNodeId: (id) => md5(id),
+  createContentDigest: (input) => md5(JSON.stringify(input)),
+})
+
+const server = mswNode.setupServer()
+test.before(() => {
+  polyfillKy()
+  globalJsdom(undefined, {
+    url: 'https://example.com',
+    pretendToBeVisual: true,
+  })
+  server.listen({ onUnhandledRequest: 'error' })
+  globalThis.__PATH_PREFIX__ = 'https://example.com'
+  // console.error = sinon.stub()
+})
+test.beforeEach(() => {
+  clearAllCookies()
+  window.history.replaceState(null, '', createPreviewURL())
+})
+test.afterEach(() => tlr.cleanup())
+test.after(() => {
+  server.close()
+})
+
+const createConfig = (): WithPrismicPreviewConfig => ({
+  linkResolver: (doc): string => `/${doc.uid}`,
+})
+
+// const fallbackChildren = 'fallback content'
+const Page = <TProps extends UnknownRecord = UnknownRecord>(
+  props: gatsby.PageProps<TProps> & WithPrismicPreviewProps<TProps>,
+) => (
+  <div>
+    <div data-testid="isPrismicPreview">
+      {props.isPrismicPreview === null
+        ? 'null'
+        : props.isPrismicPreview.toString()}
+    </div>
+    <div data-testid="prismicPreviewState">{props.prismicPreviewState}</div>
+    <div data-testid="prismicPreviewError">
+      {props.prismicPreviewError?.message}
+    </div>
+    <div data-testid="prismicPreviewOriginalData">
+      {JSON.stringify(props.prismicPreviewOriginalData)}
+    </div>
+    <div data-testid="data">{JSON.stringify(props.data)}</div>
+  </div>
+)
+
+const createTree = (
+  pluginOptions: PluginOptions,
+  pageProps: gatsby.PageProps,
+  config: WithPrismicPreviewConfig,
+) => {
+  const WrappedPage = withPrismicPreview(
+    Page,
+    pluginOptions.repositoryName,
+    config,
+  )
+
+  return (
+    <PrismicPreviewProvider>
+      <WrappedPage {...pageProps} />
+    </PrismicPreviewProvider>
+  )
+}
+
+test.serial(
+  'does not merge data if no preview data is available',
+  async (t) => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions(t)
+
+    const queryResponse = createPrismicAPIQueryResponse()
+    const queryResponseNodes = queryResponse.results.map(
+      (doc) =>
+        nodeHelpers.createNodeFactory(doc.type)(
+          doc,
+        ) as PrismicAPIDocumentNodeInput,
+    )
+
+    // Need to use the query results nodes rather than new documents to ensure
+    // the IDs match.
+    const staticData = {
+      previewable: { ...queryResponseNodes[0] },
+      nonPreviewable: { ...queryResponseNodes[1] },
+    }
+    staticData.previewable._previewable = queryResponseNodes[0].prismicId
+    // Marking this data as "old" and should be replaced during the merge.
+    staticData.previewable.uid = 'old'
+
+    const pageProps = createPageProps(staticData)
+    const config = createConfig()
+    const tree = createTree(pluginOptions, pageProps, config)
+
+    // @ts-expect-error - Partial gatsbyContext provided
+    await onClientEntry(gatsbyContext, pluginOptions)
+    const result = tlr.render(tree)
+
+    // Because a preview ref was not set, preview data was not fetched. The
+    // component should render static data.
+    t.true(
+      result.getByTestId('data').textContent ===
+        result.getByTestId('prismicPreviewOriginalData').textContent,
+    )
+  },
+)
+
+test.serial('merges data if preview data is available', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+
+  const ref = createPreviewRef(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, ref)
+
+  const queryResponse = createPrismicAPIQueryResponse()
+  const queryResponseNodes = queryResponse.results.map(
+    (doc) =>
+      nodeHelpers.createNodeFactory(doc.type)(
+        doc,
+      ) as PrismicAPIDocumentNodeInput,
+  )
+
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse, { ref }))
+  server.use(
+    createTypePathsMockedRequest('a9101d270279c16322571b8448d7a329.json', {
+      type: gatsbyPrismic.PrismicSpecialType.Document,
+      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+    }),
+  )
+
+  // Need to use the query results nodes rather than new documents to ensure
+  // the IDs match.
+  const staticData = {
+    previewable: { ...queryResponseNodes[0] },
+    nonPreviewable: { ...queryResponseNodes[1] },
+  }
+  staticData.previewable._previewable = queryResponseNodes[0].prismicId
+  // Marking this data as "old" and should be replaced during the merge.
+  staticData.previewable.uid = 'old'
+
+  const pageProps = createPageProps(staticData)
+  const config = createConfig()
+  const tree = createTree(pluginOptions, pageProps, config)
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await onClientEntry(gatsbyContext, pluginOptions)
+  const result = tlr.render(tree)
+
+  await tlr.waitFor(() =>
+    assert.ok(
+      result.getByTestId('data').textContent !==
+        result.getByTestId('prismicPreviewOriginalData').textContent,
+    ),
+  )
+
+  const originalData = JSON.parse(
+    result.getByTestId('data').textContent ?? '{}',
+  )
+  const mergedData = { ...staticData, previewable: queryResponseNodes[0] }
+  t.deepEqual(originalData, mergedData)
+})

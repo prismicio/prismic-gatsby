@@ -36,7 +36,7 @@ export interface WithPrismicPreviewProps<
   prismicPreviewOriginalData: TStaticData
 }
 
-type WithPrismicPreviewConfig = UsePrismicPreviewBootstrapConfig & {
+export type WithPrismicPreviewConfig = UsePrismicPreviewBootstrapConfig & {
   mergePreviewData?: boolean
 }
 
@@ -78,6 +78,11 @@ export const withPrismicPreview = <
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
     const dismissModal = () => setLocalState('IDLE')
+
+    const mergedData = useMergePrismicPreviewData(repositoryName, props.data, {
+      mergeStrategy: 'traverseAndReplace',
+      skip: config.mergePreviewData,
+    })
 
     // Begin bootstrapping on page entry if the preview token is for this
     // repository and we haven't already bootstrapped.
@@ -128,11 +133,6 @@ export const withPrismicPreview = <
       bootstrapState.state,
       bootstrapState.error,
     ])
-
-    const mergedData = useMergePrismicPreviewData(repositoryName, props.data, {
-      mergeStrategy: 'traverseAndReplace',
-      skip: config.mergePreviewData,
-    })
 
     return (
       <>

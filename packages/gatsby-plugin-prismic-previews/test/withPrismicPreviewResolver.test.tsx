@@ -10,23 +10,24 @@ import * as tlr from '@testing-library/react'
 import globalJsdom from 'global-jsdom'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
+import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { createPageProps } from './__testutils__/createPageProps'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
+import { createPreviewRef } from './__testutils__/createPreviewRef'
+import { createPreviewURL } from './__testutils__/createPreviewURL'
+import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
+import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
   PluginOptions,
   PrismicPreviewProvider,
-  withPrismicPreviewResolver,
   WithPrismicPreviewResolverConfig,
   WithPrismicPreviewResolverProps,
+  withPrismicPreviewResolver,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
-import { createPreviewURL } from './__testutils__/createPreviewURL'
-import { createPreviewRef } from './__testutils__/createPreviewRef'
-import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 
 const server = mswNode.setupServer()
 test.before(() => {
@@ -59,23 +60,6 @@ const navigateToPreviewResolverURL = (
 
 const createConfig = (): WithPrismicPreviewResolverConfig => ({
   linkResolver: (doc): string => `/${doc.uid}`,
-})
-
-const createPageProps = <TData extends Record<PropertyKey, unknown>>(
-  data: TData = {} as TData,
-): gatsby.PageProps => ({
-  path: '/',
-  uri: '/',
-  // @ts-expect-error - Partial Location provided
-  location: {},
-  // @ts-expect-error - Partial navigate provided
-  navigate: sinon.stub(),
-  children: undefined,
-  params: {},
-  // @ts-expect-error - Partial pageResources provided
-  pageResources: {},
-  data,
-  pageContext: {},
 })
 
 // const fallbackChildren = 'fallback content'
