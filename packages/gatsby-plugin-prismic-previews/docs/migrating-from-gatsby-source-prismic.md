@@ -4,8 +4,8 @@
 
 ### Update `withPreview` to `withPrismicPreview`
 
-In your preview-enabled page components or templates, update the `withPreview`
-import to the `withPrismicPreview` import and provide additional arguments to
+In your preview-enabled page components or templates, update the `withPreview()`
+import to the `withPrismicPreview()` import and provide additional arguments to
 the function as described below.
 
 ```diff
@@ -23,24 +23,11 @@ the function as described below.
 + })
 ```
 
-`withPrismicPreview` takes the following arguments:
+In most cases, you will need to add your repository name, Link Resolver, and, if
+used, HTML Serializer, to the `withPrismicPreview()` function.
 
-```javascript
-withPrismicPreview(component, repositoryName, config)
-```
-
-- `component`: The page or template's component.
-- `repositoryName`: Your Prismic repository name. This should be the same
-  `repositoryName` from your plugin options in `gatsby-config.js`.
-- `config`:
-  - `linkResolver`: Your project's Link Resolver. This should be the same
-    `linkResolver` provided to `gatsby-source-prismic` in `gatsby-config.js`.
-  - `htmlSerializer` (optional): Your project's HTML Serializer. This should be
-    the same `htmlSerializer` provided to `gatsby-source-prismic` in
-    `gatsby-config.js`
-  - `mergePreviewData` (default: `true`): `true` if preview data should be
-    merged into the `data` prop automatically. You can set this option to
-    `false` if you choose to merge the data manually.
+See the [`withPrismicPreview()`](./api-withPrismicPreview.md) documentation for
+more details.
 
 ### Update `withPreviewResolver` to `withPrismicPreviewResolver`
 
@@ -62,26 +49,16 @@ at `/src/pages/preview.js`.
 -   repositoryName: 'your-repository-name',
 -   linkResolver,
 - })
-+ export default withPrismicPreview(PreviewPage, 'your-repository-name', {
++ export default withPrismicPreviewResolver(PreviewPage, 'your-repository-name', {
 +   linkResolver,
 + })
 ```
 
-`withPrismicPreviewResolver` takes the following arguments:
+In most cases, you will only need to move your repository name to the function's
+second argument.
 
-```javascript
-withPrismicPreviewResolver(component, repositoryName, config)
-```
-
-- `component`: The page component.
-- `repositoryName`: Your Prismic repository name. This should be the same
-  `repositoryName` from your plugin options in `gatsby-config.js`.
-- `config`:
-  - `linkResolver`: Your project's Link Resolver. This should be the same
-    `linkResolver` provided to `gatsby-source-prismic` in `gatsby-config.js`.
-  - `autoRedirect` (default: `true`): `true` if the page should automatically
-    redirect to the previewed document's URL after it has been resolved. You can
-    set this option to `false` if you choose to redirect manually.
+See the [`withPrismicPreviewResolver()`](./api-withPrismicPreviewResolver.md)
+documentation for more details.
 
 ### Update `withUnpublishedPreview` to `withPrismicUnpublishedPreview`
 
