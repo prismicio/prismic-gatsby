@@ -64,7 +64,6 @@ const createConfig = (): WithPrismicPreviewConfig => ({
   linkResolver: (doc): string => `/${doc.uid}`,
 })
 
-// const fallbackChildren = 'fallback content'
 const Page = <TProps extends UnknownRecord = UnknownRecord>(
   props: gatsby.PageProps<TProps> & WithPrismicPreviewProps<TProps>,
 ) => (
