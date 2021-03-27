@@ -3,7 +3,7 @@ type CreatePreviewURLArgs = {
   documentId?: string
 }
 
-export const createPreviewURL = (args: CreatePreviewURLArgs): string => {
+export const createPreviewURL = (args: CreatePreviewURLArgs = {}): string => {
   const url = new URL('https://example.com')
 
   if (args.token) {

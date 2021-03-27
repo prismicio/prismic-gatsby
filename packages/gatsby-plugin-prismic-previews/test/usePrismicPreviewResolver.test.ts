@@ -3,7 +3,7 @@ import * as mswNode from 'msw/node'
 import * as prismic from 'ts-prismic'
 import * as cookie from 'es-cookie'
 import { renderHook } from '@testing-library/react-hooks'
-import browserEnv from 'browser-env'
+import globalJsdom from 'global-jsdom'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
@@ -29,7 +29,7 @@ const createConfig = (): UsePrismicPreviewResolverConfig => ({
 const server = mswNode.setupServer()
 test.before(() => {
   polyfillKy()
-  browserEnv(['window', 'document'], {
+  globalJsdom(undefined, {
     url: 'https://example.com',
   })
   server.listen({ onUnhandledRequest: 'error' })
