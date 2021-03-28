@@ -218,6 +218,93 @@ customizations, see the
 [`withPrismicPreviewResolver()`](./docs/api-withPrismicPreviewResolver.md)
 reference.
 
+### Content pages and templates
+
+Your app's pages and templates usually contain GraphQL queries to Gatsby's data
+layer to fetch content from Prismic. In order for this content to be updated
+during a preview, pages must be connected to the preview system using a function
+called [`withPrismicPreview()`](./docs/api-withPrismicPreview.md). It
+automatically updates a page's `data` prop with content from an active preview
+session as needed.
+
+In order for this HOC to add preview content to your existing page data, you
+must mark documents in your query as "previewable." This involves adding a
+`_previewable` field to you query. An example of this is
+[provided below](#typical-example).
+
+This is what a simple preview resolver page could look like:
+
+```javascript
+// src/pages/{PrismicPage.uid}.js
+
+import * as React from 'react'
+import { graphql } from 'gatsby'
+import { withPrismicPreview } from 'gatsby-plugin-prismic-previews'
+
+import { linkResolver } from '../linkResolver'
+
+const PageTemplate = ({ data }) => {
+  const page = data.prismicPage
+
+  return (
+    <div>
+      <h1>{page.data.title.text}</h1>
+    </div>
+  )
+}
+
+export default withPrismicPreview(PageTemplate, {
+  [process.env.GATSBY_PRISMIC_REPOSITORY_NAME]: { linkResolver },
+})
+
+export const query = graphql`
+  query PageTemplate($id: ID!) {
+    prismicPage(id: { eq: $id }) {
+      _previewable
+      data {
+        title {
+          text
+        }
+      }
+    }
+  }
+`
+```
+
+The page template component is written as a standard Gatsby page without any
+special preview-specific code. In most cases, you can simply add
+`withPrismicPreview()` around the default export to an existing page template to
+enable preview support.
+
+The page's query includes a `_previewable` field for the queried document. This
+tells the HOC to replace the document's data with preview content if available.
+This special field should be included any time a document is queried, including
+querying for documents within relationship fields.
+
+You can see that the Link Resolver provided to `withPrismicPreview()` is nested
+under your Prismic repository's name. This allows you to setup additional
+repositories separately, if needed. For example, if your app displays content
+from two repositories, each with their own Link Resolver, your
+`withPrismicPreview()` would look something like this:
+
+```javascript
+import { mainLinkResolver } from '../mainLinkResolver'
+import { secondaryLinkResolver } from '../secondaryLinkResolver'
+
+export default withPrismicPreview(PreviewPage, {
+  [process.env.GATSBY_PRISMIC_MAIN_REPOSITORY_NAME]: {
+    linkResolver: mainLinkResolver,
+  },
+  [process.env.GATSBY_PRISMIC_SECONDARY_REPOSITORY_NAME]: {
+    linkResolver: secondaryLinkResolver,
+  },
+})
+```
+
+For more details on connecting your pages and templates to preview data and the
+available customizations, see the
+[`withPrismicPreview()`](./docs/api-withPrismicPreview.md) reference.
+
 ## Prismic Toolbar
 
 The [Prismic Toolbar][prismic-toolbar] adds an in-app edit button when an editor
@@ -268,7 +355,8 @@ requires the older toolbar, perform the following steps:
    ```
 
 If you need to use the legacy version of the toolbar, update your plugin options
-in `gatsby-config.js` to include the following `toolbar` option:
+in `gatsby-config.js` to include the following `toolbar` option. This will
+perform the toolbar setup described in the code snippet automatically.
 
 ```javascript
 // gatsby-config.js
