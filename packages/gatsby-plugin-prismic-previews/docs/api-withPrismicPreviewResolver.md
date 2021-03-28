@@ -6,11 +6,11 @@ editor clicks the preview button for a blog post in the writing room, they will
 land on the preview resolver page within your app, which then redirects them to
 the blog post with previewed content.
 
-Every app must have a preview resolver page to properly preview content. This
-page usually will be created as `/preview` by creating a page at
+Every app must have a preview resolver page to preview content. This page
+usually will be created as `/preview` by creating a page at
 `/src/pages/preview.js`. This page should be configured as the preview resolver
 page in your Prismic repository's settings. For more information on updating
-this setting, see [Prismic's documentation on setting up
+this setting within Prismic, see [Prismic's documentation on setting up
 previews][how-to-set-up-a-preview].
 
 If you choose to keep your access token private by not providing it as part of
@@ -84,7 +84,7 @@ const PreviewPage = () => {
   )
 }
 
-export default withPrismicPreviewResolver(PageTemplate, {
+export default withPrismicPreviewResolver(PreviewPage, {
   'my-repository-name': { linkResolver },
 })
 ```
