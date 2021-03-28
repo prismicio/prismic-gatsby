@@ -45,10 +45,10 @@ the bug you're encountering.
 **Suggest an improvement**: [Open an issue][new-issue] explaining your
 improvement or feature so we can discuss and learn more.
 
-**Submitting code changes**: For small fixes (1-10 lines), feel free to open a
-PR with a description of your changes. For large changes, please first [open an
-issue][new-issue] so we can discuss if and how the changes should be
-implemented.
+**Submitting code changes**: For small fixes (1-10 lines), feel free to [open a
+PR][pull-requests] with a description of your changes. For large changes, please
+first [open an issue][new-issue] so we can discuss if and how the changes should
+be implemented.
 
 ### A note on how this repository is organized
 
@@ -59,3 +59,4 @@ publish them to NPM as separate packages.
 [gatsby]: https://gatsbyjs.com/
 [prismic]: https://prismic.io/
 [new-issue]: https://github.com/angeloashmore/gatsby-source-prismic/issues/new
+[pull-requests]: https://github.com/angeloashmore/gatsby-source-prismic/pulls
