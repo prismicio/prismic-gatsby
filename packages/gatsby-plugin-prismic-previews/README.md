@@ -4,6 +4,7 @@ Integrate live [Prismic Previews][prismic-previews] into a static Gatsby site to
 enable editors a seamless content editing experience.
 
 - Integrates tightly with the [Gatsby Prismic source plugin][gsp]
+- Refreshes preview content automatically as changes are saved in Prismic
 - Adds the [Prismic Toolbar][prismic-toolbar] with an in-app edit button and
   preview link sharing.
 - No extra infrastructure or costs required (specifically, [Gatsby
@@ -169,6 +170,8 @@ page in your Prismic repository's settings.
 For more information on updating this setting within Prismic, see [Prismic's
 documentation on setting up previews][prismic-how-to-set-up-a-preview].
 
+This is what a simple preview resolver page could look like:
+
 ```javascript
 // src/pages/preview.js
 
@@ -210,7 +213,78 @@ export default withPrismicPreviewResolver(PreviewPage, {
 })
 ```
 
+For more details on setting up a preview resolver page and the available
+customizations, see the
+[`withPrismicPreviewResolver()`](./docs/api-withPrismicPreviewResolver.md)
+reference.
+
 ## Prismic Toolbar
+
+The [Prismic Toolbar][prismic-toolbar] adds an in-app edit button when an editor
+is signed into Prismic and automatic refreshing when content is updated in the
+writing room. It also facilitates the preview process by setting up data in the
+background that this plugin then reads.
+
+By default, the newer, current version of the toolbar is used. All new and
+recently created Prismic repositories will use this version of the toolbar and
+requires no extra settings.
+
+If your repository if older, it may not support the latest version of the
+toolbar. Don't worry, previews will still work! But you will need to tell the
+plugin to use an older version of the toolbar. To check if your repository
+requires the older toolbar, perform the following steps:
+
+1. Sign in the writing room for your Prismic repository (e.g.
+   https://your-repository-name.prismic.io).
+1. Navigate to your repository's Settings page.
+1. Select the Previews section.
+1. On that page, check the "Include the Prismic Toolbar JavaScript file" code
+   snippet.
+
+   If it looks like this, you can use the latest version of the toolbar which
+   requires no extra settings:
+
+   ```html
+   <script
+     async
+     defer
+     src="https://static.cdn.prismic.io/prismic.js?new=true&repo=your-repository-name"
+   ></script>
+   ```
+
+   If it looks like this, you need to use the "legacy" version of the toolbar
+   which requires setting the `toolbar` plugin option:
+
+   ```html
+   <script>
+     window.prismic = {
+       endpoint: 'https://your-repository-name.cdn.prismic.io/api/v2',
+     }
+   </script>
+   <script
+     type="text/javascript"
+     src="https://static.cdn.prismic.io/prismic.min.js"
+   ></script>
+   ```
+
+If you need to use the legacy version of the toolbar, update your plugin options
+in `gatsby-config.js` to include the following `toolbar` option:
+
+```javascript
+// gatsby-config.js
+
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-prismic-previews',
+      options: {
+        // Alongside your other options...
+        toolbar: 'legacy',
+      },
+    },
+  ],
+}
+```
 
 [gsp]: ../gatsby-source-prismic
 [prismic-previews]: #
