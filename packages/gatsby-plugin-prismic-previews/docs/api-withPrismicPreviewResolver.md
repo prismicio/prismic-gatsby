@@ -9,9 +9,10 @@ the blog post with previewed content.
 Every app must have a preview resolver page to preview content. This page
 usually will be created as `/preview` by creating a page at
 `/src/pages/preview.js`. This page should be configured as the preview resolver
-page in your Prismic repository's settings. For more information on updating
-this setting within Prismic, see [Prismic's documentation on setting up
-previews][how-to-set-up-a-preview].
+page in your Prismic repository's settings.
+
+For more information on updating this setting within Prismic, see [Prismic's
+documentation on setting up previews][how-to-set-up-a-preview].
 
 If you choose to keep your access token private by not providing it as part of
 the plugin's options, this HOC will display a modal allowing an editor to

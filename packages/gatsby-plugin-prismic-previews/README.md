@@ -148,7 +148,7 @@ export const linkResolver = (doc) => {
 
     // Fallback for all other documents
     default:
-      return `/`
+      return '/'
   }
 }
 ```
@@ -164,9 +164,10 @@ previewed content.
 Every app must have a preview resolver page to preview content. This page
 usually will be created as `/preview` by creating a page at
 `/src/pages/preview.js`. This page should be configured as the preview resolver
-page in your Prismic repository's settings. For more information on updating
-this setting within Prismic, see [Prismic's documentation on setting up
-previews][how-to-set-up-a-preview].
+page in your Prismic repository's settings.
+
+For more information on updating this setting within Prismic, see [Prismic's
+documentation on setting up previews][prismic-how-to-set-up-a-preview].
 
 ```javascript
 // src/pages/preview.js
@@ -220,3 +221,5 @@ export default withPrismicPreviewResolver(PreviewPage, {
 [gatsby-env-vars]: https://gatsby.dev/env-vars
 [prismic-link-resolver]:
   https://prismic.io/docs/technologies/link-resolver-gatsby
+[prismic-how-to-set-up-a-preview]:
+  https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
