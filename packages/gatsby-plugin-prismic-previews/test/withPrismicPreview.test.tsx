@@ -30,6 +30,7 @@ import {
   withPrismicPreview,
   UnknownRecord,
   PrismicAPIDocumentNodeInput,
+  UsePrismicPreviewBootstrapConfig,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
 
@@ -60,8 +61,12 @@ test.after(() => {
   server.close()
 })
 
-const createConfig = (): WithPrismicPreviewConfig => ({
-  linkResolver: (doc): string => `/${doc.uid}`,
+const createUsePrismicPreviewBootstrapConfig = (
+  pluginOptions: PluginOptions,
+): UsePrismicPreviewBootstrapConfig => ({
+  [pluginOptions.repositoryName]: {
+    linkResolver: (doc): string => `/${doc.uid}`,
+  },
 })
 
 const Page = <TProps extends UnknownRecord = UnknownRecord>(
@@ -85,13 +90,13 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
 )
 
 const createTree = (
-  pluginOptions: PluginOptions,
   pageProps: gatsby.PageProps,
-  config: WithPrismicPreviewConfig,
+  usePrismicPreviewBootstrapConfig: UsePrismicPreviewBootstrapConfig,
+  config?: WithPrismicPreviewConfig,
 ) => {
   const WrappedPage = withPrismicPreview(
     Page,
-    pluginOptions.repositoryName,
+    usePrismicPreviewBootstrapConfig,
     config,
   )
 
@@ -127,8 +132,8 @@ test.serial(
     staticData.previewable.uid = 'old'
 
     const pageProps = createPageProps(staticData)
-    const config = createConfig()
-    const tree = createTree(pluginOptions, pageProps, config)
+    const config = createUsePrismicPreviewBootstrapConfig(pluginOptions)
+    const tree = createTree(pageProps, config)
 
     // @ts-expect-error - Partial gatsbyContext provided
     await onClientEntry(gatsbyContext, pluginOptions)
@@ -177,8 +182,8 @@ test.serial('merges data if preview data is available', async (t) => {
   staticData.previewable.uid = 'old'
 
   const pageProps = createPageProps(staticData)
-  const config = createConfig()
-  const tree = createTree(pluginOptions, pageProps, config)
+  const config = createUsePrismicPreviewBootstrapConfig(pluginOptions)
+  const tree = createTree(pageProps, config)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)

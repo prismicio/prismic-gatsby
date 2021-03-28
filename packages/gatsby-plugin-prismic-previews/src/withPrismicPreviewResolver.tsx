@@ -1,12 +1,13 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import * as E from 'fp-ts/Either'
+import * as prismic from 'ts-prismic'
+import * as IOE from 'fp-ts/IOEither'
 import { pipe } from 'fp-ts/function'
 import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
-import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
-import { getURLSearchParam } from './lib/getURLSearchParam'
+import { getCookie } from './lib/getCookie'
+import { userFriendlyError } from './lib/userFriendlyError'
 
 import {
   usePrismicPreviewResolver,
@@ -34,8 +35,9 @@ export interface WithPrismicPreviewResolverProps {
   prismicPreviewSetAccessToken: SetAccessTokenFn
 }
 
-export type WithPrismicPreviewResolverConfig = UsePrismicPreviewResolverConfig & {
+export type WithPrismicPreviewResolverConfig = {
   autoRedirect?: boolean
+  navigate?: typeof gatsby.navigate
 }
 
 type LocalState =
@@ -49,17 +51,16 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewResolverProps
   >,
-  repositoryName: string,
-  config: WithPrismicPreviewResolverConfig,
+  usePrismicPreviewResolverConfig: UsePrismicPreviewResolverConfig,
+  config: WithPrismicPreviewResolverConfig = {},
 ): React.ComponentType<TProps> => {
   const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
-    const [contextState] = usePrismicPreviewContext(repositoryName)
+    const [contextState] = usePrismicPreviewContext()
     const [resolverState, resolvePreview] = usePrismicPreviewResolver(
-      repositoryName,
-      config,
+      usePrismicPreviewResolverConfig,
     )
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
-      repositoryName,
+      contextState.activeRepositoryName,
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
     const dismissModal = () => setLocalState('IDLE')
@@ -72,20 +73,13 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 
     // Begin resolving on page entry if the preview token is for this repository.
     React.useEffect(() => {
-      const isValidToken = pipe(
-        getURLSearchParam('token'),
-        E.fromOption(() => new Error('token URL parameter not present')),
-        E.chain((token) =>
-          validatePreviewRefForRepository(repositoryName, token),
+      pipe(
+        getCookie(prismic.cookie.preview),
+        IOE.fold(
+          () => () => setLocalState('NOT_PREVIEW'),
+          () => () => resolvePreview(),
         ),
-        E.getOrElse(() => false),
-      )
-
-      if (isValidToken) {
-        resolvePreview()
-      } else {
-        setLocalState('NOT_PREVIEW')
-      }
+      )()
     }, [resolvePreview])
 
     // Handle state changes from the preview resolver.
@@ -93,7 +87,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       switch (resolverState.state) {
         case 'RESOLVED': {
           if ((config.autoRedirect ?? true) && resolverState.path) {
-            navigate(resolverState.path)
+            (config.navigate ?? gatsby.navigate)(resolverState.path)
           }
 
           break
@@ -103,7 +97,9 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
           if (
             resolverState.error instanceof ky.HTTPError &&
             resolverState.error.response.status === 401 &&
-            contextState.pluginOptions.promptForAccessToken
+            contextState.activeRepositoryName &&
+            contextState.pluginOptionsStore[contextState.activeRepositoryName]
+              .promptForAccessToken
           ) {
             // If we encountered a 401 status, we don't have the correct access
             // token, and the plugin is configured to prompt for a token, prompt
@@ -128,12 +124,13 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
         }
       }
     }, [
+      contextState.activeRepositoryName,
+      contextState.pluginOptionsStore,
       navigate,
       accessToken,
       resolverState.state,
       resolverState.error,
       resolverState.path,
-      contextState.pluginOptions.promptForAccessToken,
     ])
 
     return (
@@ -148,40 +145,46 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
           prismicPreviewSetAccessToken={setAccessToken}
         />
 
-        <Root>
-          <ModalLoading
-            isOpen={
-              localState === 'IDLE' && resolverState.state === 'RESOLVING'
-            }
-            repositoryName={repositoryName}
-            onDismiss={dismissModal}
-          />
-          <ModalAccessToken
-            isOpen={
-              localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
-              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
-            }
-            repositoryName={repositoryName}
-            state={
-              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
-                ? 'INCORRECT'
-                : 'IDLE'
-            }
-            initialAccessToken={accessToken}
-            setAccessToken={setAccessToken}
-            afterSubmit={() => {
-              dismissModal()
-              resolvePreview()
-            }}
-            onDismiss={dismissModal}
-          />
-          <ModalError
-            isOpen={localState === 'DISPLAY_ERROR'}
-            repositoryName={repositoryName}
-            errorMessage={resolverState.error?.message}
-            onDismiss={dismissModal}
-          />
-        </Root>
+        {contextState.activeRepositoryName && (
+          <Root>
+            <ModalLoading
+              isOpen={
+                localState === 'IDLE' && resolverState.state === 'RESOLVING'
+              }
+              repositoryName={contextState.activeRepositoryName}
+              onDismiss={dismissModal}
+            />
+            <ModalAccessToken
+              isOpen={
+                localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
+                localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+              }
+              repositoryName={contextState.activeRepositoryName}
+              state={
+                localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+                  ? 'INCORRECT'
+                  : 'IDLE'
+              }
+              initialAccessToken={accessToken}
+              setAccessToken={setAccessToken}
+              afterSubmit={() => {
+                dismissModal()
+                resolvePreview()
+              }}
+              onDismiss={dismissModal}
+            />
+            <ModalError
+              isOpen={localState === 'DISPLAY_ERROR'}
+              repositoryName={contextState.activeRepositoryName}
+              errorMessage={
+                resolverState.error
+                  ? userFriendlyError(resolverState.error).message
+                  : undefined
+              }
+              onDismiss={dismissModal}
+            />
+          </Root>
+        )}
       </>
     )
   }

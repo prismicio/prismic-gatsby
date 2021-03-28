@@ -45,21 +45,6 @@ const populateAccessToken = (
     IOE.getOrElse(() => IO.of(pluginOptions)),
   )
 
-const initRepositoryState = (
-  pluginOptions: PluginOptions,
-): IO.IO<PrismicContextRepositoryState> =>
-  pipe(
-    populateAccessToken(pluginOptions),
-    IO.map((pluginOptions) => ({
-      pluginOptions,
-      repositoryName: pluginOptions.repositoryName,
-      nodes: {},
-      typePaths: {},
-      rootNodeMap: {},
-      isBootstrapped: false,
-    })),
-  )
-
 const isPrismicAPIDocumentNodeInput = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any,
@@ -71,19 +56,21 @@ export type PrismicContextValue = readonly [
   React.Dispatch<PrismicContextAction>,
 ]
 
-export type PrismicContextState = Record<string, PrismicContextRepositoryState>
-
-export interface PrismicContextRepositoryState {
-  repositoryName: string
-  pluginOptions: PluginOptions
+export type PrismicContextState = {
+  activeRepositoryName: string | undefined
+  isBootstrapped: boolean
   /** Record of Prismic document nodes keyed by their `prismicId` field. */
   nodes: Record<string, PrismicAPIDocumentNodeInput>
-  typePaths: TypePathsStore
+  /** Record of document IDs to be added as a root data field keyed by its resolved page URL. */
   rootNodeMap: Record<string, string>
-  isBootstrapped: boolean
+  /** Record of plugin options keyed by their repository name. */
+  pluginOptionsStore: Record<string, PluginOptions>
+  /** Record of type paths keyed by their repository name. */
+  typePathsStore: Record<string, TypePathsStore>
 }
 
 export enum PrismicContextActionType {
+  SetActiveRepositoryName = 'SetActiveRepositoryName',
   SetAccessToken = 'SetAccessToken',
   CreateRootNodeRelationship = 'CreateRootNodeRelationship',
   AppendNodes = 'AppendDocuments',
@@ -93,12 +80,16 @@ export enum PrismicContextActionType {
 
 export type PrismicContextAction =
   | {
+      type: PrismicContextActionType.SetActiveRepositoryName
+      payload: { repositoryName: string }
+    }
+  | {
       type: PrismicContextActionType.SetAccessToken
       payload: { repositoryName: string; accessToken: string }
     }
   | {
       type: PrismicContextActionType.AppendNodes
-      payload: { repositoryName: string; nodes: unknown[] }
+      payload: { nodes: unknown[] }
     }
   | {
       type: PrismicContextActionType.AppendTypePaths
@@ -106,64 +97,58 @@ export type PrismicContextAction =
     }
   | {
       type: PrismicContextActionType.Bootstrapped
-      payload: { repositoryName: string }
     }
   | {
       type: PrismicContextActionType.CreateRootNodeRelationship
-      payload: { repositoryName: string; path: string; documentId: string }
+      payload: { path: string; documentId: string }
     }
 
 export const contextReducer = (
   state: PrismicContextState,
   action: PrismicContextAction,
 ): PrismicContextState => {
-  const repositoryName = action.payload.repositoryName
-
   switch (action.type) {
+    case PrismicContextActionType.SetActiveRepositoryName: {
+      return {
+        ...state,
+        activeRepositoryName: action.payload.repositoryName,
+      }
+    }
+
     case PrismicContextActionType.AppendNodes: {
-      const nodesMap = action.payload.nodes.reduce(
-        (acc: PrismicContextRepositoryState['nodes'], node) => {
+      const nodes = action.payload.nodes.reduce(
+        (acc: PrismicContextState['nodes'], node) => {
           if (isPrismicAPIDocumentNodeInput(node)) {
             acc[node.prismicId] = node
           }
 
           return acc
         },
-        {},
+        state.nodes,
       )
 
-      return {
-        ...state,
-        [repositoryName]: {
-          ...state[repositoryName],
-          nodes: {
-            ...state[repositoryName].nodes,
-            ...nodesMap,
-          },
-        },
-      }
+      return { ...state, nodes }
     }
 
     case PrismicContextActionType.AppendTypePaths: {
       return {
         ...state,
-        [repositoryName]: {
-          ...state[repositoryName],
-          typePaths: {
-            ...state[repositoryName].typePaths,
-            ...action.payload.typePaths,
-          },
+        typePathsStore: {
+          ...state.typePathsStore,
+          [action.payload.repositoryName]: action.payload.typePaths,
         },
       }
     }
 
     case PrismicContextActionType.SetAccessToken: {
+      const repositoryName = action.payload.repositoryName
+
       return {
         ...state,
-        [repositoryName]: {
-          ...state[repositoryName],
-          pluginOptions: {
-            ...state[repositoryName].pluginOptions,
+        pluginOptionsStore: {
+          ...state.pluginOptionsStore,
+          [repositoryName]: {
+            ...state.pluginOptionsStore[repositoryName],
             accessToken: action.payload.accessToken,
           },
         },
@@ -173,12 +158,9 @@ export const contextReducer = (
     case PrismicContextActionType.CreateRootNodeRelationship: {
       return {
         ...state,
-        [repositoryName]: {
-          ...state[repositoryName],
-          rootNodeMap: {
-            ...state[repositoryName].rootNodeMap,
-            [action.payload.path]: action.payload.documentId,
-          },
+        rootNodeMap: {
+          ...state.rootNodeMap,
+          [action.payload.path]: action.payload.documentId,
         },
       }
     }
@@ -186,13 +168,19 @@ export const contextReducer = (
     case PrismicContextActionType.Bootstrapped: {
       return {
         ...state,
-        [repositoryName]: {
-          ...state[repositoryName],
-          isBootstrapped: true,
-        },
+        isBootstrapped: true,
       }
     }
   }
+}
+
+const defaultInitialState: PrismicContextState = {
+  activeRepositoryName: undefined,
+  isBootstrapped: false,
+  nodes: {},
+  pluginOptionsStore: {},
+  typePathsStore: {},
+  rootNodeMap: {},
 }
 
 const createInitialState = (): IO.IO<PrismicContextState> =>
@@ -200,11 +188,14 @@ const createInitialState = (): IO.IO<PrismicContextState> =>
     typeof window === 'undefined'
       ? ssrPluginOptionsStore
       : window[WINDOW_PLUGIN_OPTIONS_KEY],
-    R.map(initRepositoryState),
+    R.map(populateAccessToken),
     R.sequence(IO.io),
+    IO.map((pluginOptionsStore) => ({
+      ...defaultInitialState,
+      pluginOptionsStore,
+    })),
   )
 
-const defaultInitialState: PrismicContextState = {}
 const defaultContextValue: PrismicContextValue = [
   defaultInitialState,
   () => void 0,

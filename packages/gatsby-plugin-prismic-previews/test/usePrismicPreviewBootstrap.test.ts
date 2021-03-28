@@ -24,11 +24,16 @@ import {
   UsePrismicPreviewBootstrapConfig,
   usePrismicPreviewBootstrap,
   usePrismicPreviewContext,
+  PluginOptions,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
-const createConfig = (): UsePrismicPreviewBootstrapConfig => ({
-  linkResolver: (doc): string => `/${doc.uid}`,
+const createConfig = (
+  pluginOptions: PluginOptions,
+): UsePrismicPreviewBootstrapConfig => ({
+  [pluginOptions.repositoryName]: {
+    linkResolver: (doc): string => `/${doc.uid}`,
+  },
 })
 
 const nodeHelpers = createNodeHelpers({
@@ -55,14 +60,13 @@ test.after(() => {
 test.serial('initial state', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(
-    () => usePrismicPreviewBootstrap(pluginOptions.repositoryName, config),
-    { wrapper: PrismicPreviewProvider },
-  )
+  const { result } = renderHook(() => usePrismicPreviewBootstrap(config), {
+    wrapper: PrismicPreviewProvider,
+  })
   const state = result.current[0]
 
   t.true(state.state === 'INIT')
@@ -72,12 +76,12 @@ test.serial('initial state', async (t) => {
 test.serial('fails if not a preview session - cookie is not set', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
   const { result, waitForNextUpdate } = renderHook(
-    () => usePrismicPreviewBootstrap(pluginOptions.repositoryName, config),
+    () => usePrismicPreviewBootstrap(config),
     { wrapper: PrismicPreviewProvider },
   )
 
@@ -97,42 +101,12 @@ test.serial('fails if not a preview session - cookie is not set', async (t) => {
   )
 })
 
-test.serial('fails if not for this repository', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
-
-  const ref = createPreviewRef('not-this-repository')
-  cookie.set(prismic.cookie.preview, ref)
-
-  // @ts-expect-error - Partial gatsbyContext provided
-  await onClientEntry(gatsbyContext, pluginOptions)
-  const { result, waitForNextUpdate } = renderHook(
-    () => usePrismicPreviewBootstrap(pluginOptions.repositoryName, config),
-    { wrapper: PrismicPreviewProvider },
-  )
-
-  act(() => {
-    const [, bootstrapPreview] = result.current
-    bootstrapPreview()
-  })
-
-  await waitForNextUpdate()
-
-  const state = result.current[0]
-
-  t.true(state.state === 'FAILED')
-  t.true(
-    state.error?.message &&
-      /token is not for this repository/i.test(state.error.message),
-  )
-})
-
 test.serial(
   'fetches all repository documents and bootstraps context',
   async (t) => {
     const gatsbyContext = createGatsbyContext()
     const pluginOptions = createPluginOptions(t)
+    const config = createConfig(pluginOptions)
     const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
       page: 1,
       total_pages: 2,
@@ -141,7 +115,6 @@ test.serial(
       page: 2,
       total_pages: 2,
     })
-    const config = createConfig()
 
     const ref = createPreviewRef(pluginOptions.repositoryName)
     cookie.set(prismic.cookie.preview, ref)
@@ -153,7 +126,7 @@ test.serial(
 
       return {
         ...node,
-        url: config.linkResolver(doc),
+        url: config[pluginOptions.repositoryName].linkResolver(doc),
       }
     })
 
@@ -164,7 +137,7 @@ test.serial(
 
       return {
         ...node,
-        url: config.linkResolver(doc),
+        url: config[pluginOptions.repositoryName].linkResolver(doc),
       }
     })
 
@@ -211,11 +184,8 @@ test.serial(
     await onClientEntry(gatsbyContext, pluginOptions)
     const { result, waitForValueToChange } = renderHook(
       () => {
-        const context = usePrismicPreviewContext(pluginOptions.repositoryName)
-        const bootstrap = usePrismicPreviewBootstrap(
-          pluginOptions.repositoryName,
-          config,
-        )
+        const context = usePrismicPreviewContext()
+        const bootstrap = usePrismicPreviewBootstrap(config)
 
         return { bootstrap, context }
       },
@@ -248,6 +218,7 @@ test.serial(
 test.serial('fails if already bootstrapped', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
+  const config = createConfig(pluginOptions)
   const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
     page: 1,
     total_pages: 2,
@@ -256,7 +227,6 @@ test.serial('fails if already bootstrapped', async (t) => {
     page: 2,
     total_pages: 2,
   })
-  const config = createConfig()
 
   const ref = createPreviewRef(pluginOptions.repositoryName)
   cookie.set(prismic.cookie.preview, ref)
@@ -302,44 +272,34 @@ test.serial('fails if already bootstrapped', async (t) => {
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
   const { result, waitForValueToChange } = renderHook(
-    () => {
-      const context = usePrismicPreviewContext(pluginOptions.repositoryName)
-      const bootstrap = usePrismicPreviewBootstrap(
-        pluginOptions.repositoryName,
-        config,
-      )
-
-      return { bootstrap, context }
-    },
+    () => usePrismicPreviewBootstrap(config),
     { wrapper: PrismicPreviewProvider },
   )
 
-  t.true(result.current.bootstrap[0].state === 'INIT')
+  t.true(result.current[0].state === 'INIT')
 
   // Bootstrap the first time.
   act(() => {
-    const [, bootstrapPreview] = result.current.bootstrap
+    const [, bootstrapPreview] = result.current
     bootstrapPreview()
   })
 
-  await waitForValueToChange(() => result.current.bootstrap[0].state)
-  t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPING')
+  await waitForValueToChange(() => result.current[0].state)
+  t.true(result.current[0].state === 'BOOTSTRAPPING')
 
-  await waitForValueToChange(() => result.current.bootstrap[0].state)
-  t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPED')
-  t.true(result.current.bootstrap[0].error === undefined)
+  await waitForValueToChange(() => result.current[0].state)
+  t.true(result.current[0].state === 'BOOTSTRAPPED')
+  t.true(result.current[0].error === undefined)
 
   // Bootstrap the second time.
   act(() => {
-    result.current.bootstrap[1]()
+    result.current[1]()
   })
 
-  await waitForValueToChange(() => result.current.bootstrap[0].state)
-  t.true(result.current.bootstrap[0].state === 'FAILED')
+  await waitForValueToChange(() => result.current[0].state)
+  t.true(result.current[0].state === 'FAILED')
   t.true(
-    result.current.bootstrap[0].error?.message &&
-      /already been bootstrapped/i.test(
-        result.current.bootstrap[0].error.message,
-      ),
+    result.current[0].error?.message &&
+      /already been bootstrapped/i.test(result.current[0].error.message),
   )
 })

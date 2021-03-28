@@ -22,34 +22,26 @@ test.beforeEach(() => {
   clearAllCookies()
 })
 
-test.serial('throws if context does not exist for repository', async (t) => {
-  const { result } = renderHook(() =>
-    usePrismicPreviewContext('non-existent-repo'),
-  )
-
-  t.true(result.error?.message && /could not find/i.test(result.error.message))
-})
-
-test.serial('returns context for repository', async (t) => {
+test.serial('returns context with repository options', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(
-    () => usePrismicPreviewContext(pluginOptions.repositoryName),
-    { wrapper: PrismicPreviewProvider },
-  )
+  const { result } = renderHook(() => usePrismicPreviewContext(), {
+    wrapper: PrismicPreviewProvider,
+  })
 
   const context = result.current[0]
 
-  t.true(context.repositoryName === pluginOptions.repositoryName)
-  t.deepEqual(context.pluginOptions, pluginOptions)
+  t.true(context.isBootstrapped === false)
   t.deepEqual(context.nodes, {})
-  t.deepEqual(context.typePaths, {})
   // TODO: Remove once path-to-nodes map is created (to be used with unpublished previews)
   t.deepEqual(context.rootNodeMap, {})
-  t.true(context.isBootstrapped === false)
+  t.deepEqual(context.pluginOptionsStore, {
+    [pluginOptions.repositoryName]: pluginOptions,
+  })
+  t.deepEqual(context.typePathsStore, {})
 })
 
 test.serial(
@@ -72,12 +64,14 @@ test.serial(
       accessTokenResult.current[1].set(persistedAccessToken, true)
     })
 
-    const { result } = renderHook(
-      () => usePrismicPreviewContext(pluginOptions.repositoryName),
-      { wrapper: PrismicPreviewProvider },
-    )
+    const { result } = renderHook(() => usePrismicPreviewContext(), {
+      wrapper: PrismicPreviewProvider,
+    })
 
-    t.true(result.current[0].pluginOptions.accessToken === persistedAccessToken)
+    t.true(
+      result.current[0].pluginOptionsStore[pluginOptions.repositoryName]
+        .accessToken === persistedAccessToken,
+    )
   },
 )
 
@@ -87,10 +81,9 @@ test.serial('SetAccessToken action sets the access token', async (t) => {
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(
-    () => usePrismicPreviewContext(pluginOptions.repositoryName),
-    { wrapper: PrismicPreviewProvider },
-  )
+  const { result } = renderHook(() => usePrismicPreviewContext(), {
+    wrapper: PrismicPreviewProvider,
+  })
   const dispatch = result.current[1]
 
   const newAccessToken = 'newAccessToken'
@@ -106,7 +99,10 @@ test.serial('SetAccessToken action sets the access token', async (t) => {
 
   const context = result.current[0]
 
-  t.true(context.pluginOptions.accessToken === newAccessToken)
+  t.true(
+    context.pluginOptionsStore[pluginOptions.repositoryName].accessToken ===
+      newAccessToken,
+  )
 })
 
 test.serial('AppendNodes action adds nodes', async (t) => {
@@ -115,10 +111,9 @@ test.serial('AppendNodes action adds nodes', async (t) => {
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(
-    () => usePrismicPreviewContext(pluginOptions.repositoryName),
-    { wrapper: PrismicPreviewProvider },
-  )
+  const { result } = renderHook(() => usePrismicPreviewContext(), {
+    wrapper: PrismicPreviewProvider,
+  })
   const dispatch = result.current[1]
 
   const nodes = [
@@ -129,7 +124,7 @@ test.serial('AppendNodes action adds nodes', async (t) => {
   act(() => {
     dispatch({
       type: PrismicContextActionType.AppendNodes,
-      payload: { repositoryName: pluginOptions.repositoryName, nodes },
+      payload: { nodes },
     })
   })
 
@@ -149,19 +144,15 @@ test.serial(
 
     // @ts-expect-error - Partial gatsbyContext provided
     await onClientEntry(gatsbyContext, pluginOptions)
-    const { result } = renderHook(
-      () => usePrismicPreviewContext(pluginOptions.repositoryName),
-      { wrapper: PrismicPreviewProvider },
-    )
+    const { result } = renderHook(() => usePrismicPreviewContext(), {
+      wrapper: PrismicPreviewProvider,
+    })
     const dispatch = result.current[1]
 
     t.true(result.current[0].isBootstrapped === false)
 
     act(() => {
-      dispatch({
-        type: PrismicContextActionType.Bootstrapped,
-        payload: { repositoryName: pluginOptions.repositoryName },
-      })
+      dispatch({ type: PrismicContextActionType.Bootstrapped })
     })
 
     t.true(result.current[0].isBootstrapped)

@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "style": "./dist/index.css",
+  "style": "./dist/styles.css",
   "files": [
     "dist",
     "src",

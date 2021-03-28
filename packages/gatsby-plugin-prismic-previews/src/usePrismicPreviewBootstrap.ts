@@ -5,37 +5,29 @@ import * as RE from 'fp-ts/ReaderEither'
 import * as E from 'fp-ts/Either'
 import * as IO from 'fp-ts/IO'
 import * as A from 'fp-ts/Array'
+import * as R from 'fp-ts/Record'
 import { constVoid, pipe } from 'fp-ts/function'
-import { createNodeHelpers, NodeHelpers } from 'gatsby-node-helpers'
-import { GLOBAL_TYPE_PREFIX } from 'gatsby-source-prismic'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
+import { createNodeHelpers } from 'gatsby-node-helpers'
+import { GLOBAL_TYPE_PREFIX, PrismicTypePathType } from 'gatsby-source-prismic'
 import md5 from 'tiny-hashes/md5'
 
-import { BuildTypePathsStoreFilenameEnv } from './lib/buildTypePathsStoreFilename'
-import { fetchTypePathsStore } from './lib/fetchTypePaths'
+import { fetchTypePaths } from './lib/fetchTypePaths'
 import { getCookie } from './lib/getCookie'
 import { proxyDocumentNodeInput } from './lib/proxyDocumentNodeInput'
-import {
-  queryAllDocuments,
-  QueryAllDocumentsEnv,
-} from './lib/queryAllDocuments'
+import { queryAllDocuments } from './lib/queryAllDocuments'
 import { serializePath } from './lib/serializePath'
-import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
 
 import {
   HTMLSerializer,
   LinkResolver,
-  PluginOptions,
   PrismicAPIDocumentNodeInput,
   TypePathsStore,
   UnknownRecord,
   Mutable,
 } from './types'
-import {
-  PrismicContextActionType,
-  PrismicContextRepositoryState,
-} from './context'
+import { PrismicContextActionType, PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 
 export type UsePrismicPreviewBootstrapFn = () => void
 
@@ -94,26 +86,28 @@ const localReducer = (
   }
 }
 
-interface UsePrismicPreviewBootstrapProgramEnv
-  extends QueryAllDocumentsEnv,
-    BuildTypePathsStoreFilenameEnv {
-  repositoryName: string
-  typePrefix: string | undefined
+interface UsePrismicPreviewBootstrapProgramEnv {
   isBootstrapped: boolean
-  beginBootstrapping: IO.IO<void>
+  beginBootstrapping(repositoryName: string): IO.IO<void>
   bootstrapped: IO.IO<void>
   appendNodes(nodes: unknown[]): IO.IO<void>
-  appendTypePaths(typePathsStore: TypePathsStore): IO.IO<void>
+  appendTypePaths(
+    repositoryName: string,
+    typePaths: TypePathsStore,
+  ): IO.IO<void>
+
+  createNodeId(input: string): string
   createContentDigest(input: string | UnknownRecord): string
-  nodeHelpers: NodeHelpers
+
+  pluginOptionsStore: PrismicContextState['pluginOptionsStore']
+  config: UsePrismicPreviewBootstrapConfig
 
   // Proxify node env
   getNode(id: string): PrismicAPIDocumentNodeInput | undefined
-  getTypePath(path: string[]): gatsbyPrismic.PrismicTypePathType | undefined
-  linkResolver: LinkResolver
-  htmlSerializer?: HTMLSerializer
-  imageImgixParams: PluginOptions['imageImgixParams']
-  imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
+  getTypePath(
+    repositoryName: string,
+    path: string[],
+  ): PrismicTypePathType | undefined
 }
 
 const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
@@ -125,17 +119,57 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
 
   // Only continue if this is a preview session, which is determined by the
   // presence of the Prismic preview cookie.
-  RTE.bindW('token', () =>
+  RTE.bindW('previewRef', () =>
     pipe(
       RTE.fromIOEither(getCookie(prismic.cookie.preview)),
       RTE.mapLeft(() => new Error('preview cookie not present')),
     ),
   ),
 
-  // Only continue if this preview session is for this repository.
-  RTE.chainFirstW((env) =>
-    RTE.fromEither(
-      validatePreviewRefForRepository(env.repositoryName, env.token),
+  RTE.bindW('repositoryName', (env) =>
+    pipe(
+      env.previewRef,
+      extractPreviewRefRepositoryName,
+      RTE.fromOption(() => new Error('Invalid preview ref')),
+    ),
+  ),
+
+  RTE.bindW('repositoryConfig', (env) =>
+    pipe(
+      env.config,
+      R.lookup(env.repositoryName),
+      RTE.fromOption(
+        () =>
+          new Error(
+            `A configuration object could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's usePrismicPreviewResolver.`,
+          ),
+      ),
+    ),
+  ),
+
+  RTE.bindW('repositoryPluginOptions', (env) =>
+    pipe(
+      env.pluginOptionsStore,
+      R.lookup(env.repositoryName),
+      RTE.fromOption(
+        () =>
+          new Error(
+            `Plugin options could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's gatsby-config.js`,
+          ),
+      ),
+    ),
+  ),
+
+  RTE.bind('nodeHelpers', (env) =>
+    RTE.right(
+      createNodeHelpers({
+        typePrefix: [GLOBAL_TYPE_PREFIX, env.repositoryPluginOptions.typePrefix]
+          .filter(Boolean)
+          .join(' '),
+        fieldPrefix: GLOBAL_TYPE_PREFIX,
+        createNodeId: env.createNodeId,
+        createContentDigest: env.createContentDigest,
+      }),
     ),
   ),
 
@@ -144,22 +178,35 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   RTE.chainW(
     RTE.fromPredicate(
       (env) => !env.isBootstrapped,
-      (env) =>
+      () =>
         new Error(
-          `Cannot bootstrap a repository that has already been bootstrapped: ${env.repositoryName}`,
+          `The Prismic preview has already been bootstrapped and cannot happen again.`,
         ),
     ),
   ),
 
   // Start bootstrap.
-  RTE.chainFirst((env) => RTE.fromIO(env.beginBootstrapping)),
+  RTE.chainFirst((env) =>
+    RTE.fromIO(env.beginBootstrapping(env.repositoryName)),
+  ),
 
-  RTE.bindW('typePathsStore', () => fetchTypePathsStore),
-  RTE.chainFirst((env) => RTE.fromIO(env.appendTypePaths(env.typePathsStore))),
+  RTE.bindW('typePaths', (env) => () =>
+    fetchTypePaths({ repositoryName: env.repositoryName }),
+  ),
+  RTE.chainFirst((env) =>
+    RTE.fromIO(env.appendTypePaths(env.repositoryName, env.typePaths)),
+  ),
 
   RTE.bindW('nodes', (env) =>
     pipe(
-      queryAllDocuments,
+      () =>
+        queryAllDocuments({
+          apiEndpoint: env.repositoryPluginOptions.apiEndpoint,
+          lang: env.repositoryPluginOptions.lang,
+          fetchLinks: env.repositoryPluginOptions.fetchLinks,
+          graphQuery: env.repositoryPluginOptions.graphQuery,
+          accessToken: env.repositoryPluginOptions.accessToken,
+        }),
       RTE.map(
         A.map(
           (doc) =>
@@ -168,7 +215,21 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
             ) as PrismicAPIDocumentNodeInput,
         ),
       ),
-      RTE.map(A.map(proxyDocumentNodeInput)),
+      RTE.map(
+        A.map((doc) => () =>
+          proxyDocumentNodeInput(doc)({
+            createContentDigest: env.createContentDigest,
+            nodeHelpers: env.nodeHelpers,
+            linkResolver: env.repositoryConfig.linkResolver,
+            getTypePath: (path) => env.getTypePath(env.repositoryName, path),
+            getNode: env.getNode,
+            imageImgixParams: env.repositoryPluginOptions.imageImgixParams,
+            imagePlaceholderImgixParams:
+              env.repositoryPluginOptions.imagePlaceholderImgixParams,
+            htmlSerializer: env.repositoryConfig.htmlSerializer,
+          }),
+        ),
+      ),
       RTE.map(RE.sequenceArray),
       RTE.chainW(RTE.fromReaderEither),
     ),
@@ -183,13 +244,17 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
-export type UsePrismicPreviewBootstrapConfig = {
+export type UsePrismicPreviewBootstrapRepositoryConfig = {
   linkResolver: LinkResolver
   htmlSerializer?: HTMLSerializer
 }
 
+export type UsePrismicPreviewBootstrapConfig = Record<
+  string,
+  UsePrismicPreviewBootstrapRepositoryConfig
+>
+
 export const usePrismicPreviewBootstrap = (
-  repositoryName: string,
   config: UsePrismicPreviewBootstrapConfig,
 ): readonly [UsePrismicPreviewBootstrapState, UsePrismicPreviewBootstrapFn] => {
   // A ref to the latest contextState is setup specifically for getTypePath
@@ -198,11 +263,9 @@ export const usePrismicPreviewBootstrap = (
   // to closures, we need to opt out of the closure and use a ref.
   //
   // If you have a better idea how to handle this, please share!
-  const contextStateRef = React.useRef<PrismicContextRepositoryState>()
+  const contextStateRef = React.useRef<PrismicContextState>()
 
-  const [contextState, contextDispatch] = usePrismicPreviewContext(
-    repositoryName,
-  )
+  const [contextState, contextDispatch] = usePrismicPreviewContext()
   const [localState, localDispatch] = React.useReducer(
     localReducer,
     contextState.isBootstrapped,
@@ -218,12 +281,15 @@ export const usePrismicPreviewBootstrap = (
   const bootstrapPreview = React.useCallback(async (): Promise<void> => {
     pipe(
       await RTE.run(usePrismicPreviewBootstrapProgram, {
-        repositoryName,
-        accessToken: contextState.pluginOptions.accessToken,
-        beginBootstrapping: () =>
+        beginBootstrapping: (repositoryName: string) => () => {
+          contextDispatch({
+            type: PrismicContextActionType.SetActiveRepositoryName,
+            payload: { repositoryName },
+          })
           localDispatch({
             type: UsePrismicPreviewBootstrapActionType.BeginBootstrapping,
-          }),
+          })
+        },
         // TODO: Remove local bootstrapped state? We already have it in context.
         bootstrapped: () => {
           localDispatch({
@@ -231,53 +297,38 @@ export const usePrismicPreviewBootstrap = (
           })
           contextDispatch({
             type: PrismicContextActionType.Bootstrapped,
-            payload: { repositoryName },
           })
         },
         appendNodes: (nodes: unknown[]) => () =>
           contextDispatch({
             type: PrismicContextActionType.AppendNodes,
-            payload: { repositoryName, nodes },
+            payload: { nodes },
           }),
-        appendTypePaths: (typePathsStore: TypePathsStore) => () =>
+        appendTypePaths: (
+          repositoryName: string,
+          typePaths: TypePathsStore,
+        ) => () =>
           contextDispatch({
             type: PrismicContextActionType.AppendTypePaths,
-            payload: { repositoryName, typePaths: typePathsStore },
+            payload: { repositoryName, typePaths },
           }),
         isBootstrapped: contextState.isBootstrapped,
-        apiEndpoint: contextState.pluginOptions.apiEndpoint,
-        typePrefix: contextState.pluginOptions.typePrefix,
-        graphQuery: contextState.pluginOptions.graphQuery,
-        fetchLinks: contextState.pluginOptions.fetchLinks,
-        lang: contextState.pluginOptions.lang,
+        pluginOptionsStore: contextState.pluginOptionsStore,
+        config,
         // We use the ref to ensure we can access nodes populated during the
-        // same run as the population occurs. This means we don't need to wait
+        // same run that the population occurs. This means we don't need to wait
         // for the next render to access nodes.
         getNode: (id: string) => contextStateRef.current?.nodes[id],
-        // We use the ref to ensure we can access type paths populated during
-        // the same run as the population occurs. This means we don't need to
-        // wait for the next render to access type paths.
-        getTypePath: (path: string[]) =>
-          contextStateRef.current?.typePaths[serializePath(path)],
-        linkResolver: config.linkResolver,
-        htmlSerializer: config.htmlSerializer,
-        imageImgixParams: contextState.pluginOptions.imageImgixParams,
-        imagePlaceholderImgixParams:
-          contextState.pluginOptions.imagePlaceholderImgixParams,
+        // We use the ref to ensure we can access type paths populated during the
+        // same run that the population occurs. This means we don't need to wait
+        // for the next render to access type paths.
+        getTypePath: (repositoryName: string, path: string[]) =>
+          contextStateRef.current?.typePathsStore[repositoryName][
+            serializePath(path)
+          ],
+        createNodeId: (input: string) => md5(input),
         createContentDigest: (input: string | UnknownRecord) =>
           md5(JSON.stringify(input)),
-        nodeHelpers: createNodeHelpers({
-          typePrefix: [
-            GLOBAL_TYPE_PREFIX,
-            contextState.pluginOptions.typePrefix,
-          ]
-            .filter(Boolean)
-            .join(' '),
-          fieldPrefix: GLOBAL_TYPE_PREFIX,
-          createNodeId: (input: string) => md5(input),
-          createContentDigest: (input: string | UnknownRecord) =>
-            md5(JSON.stringify(input)),
-        }),
       }),
       E.fold(
         (error) =>
@@ -289,11 +340,9 @@ export const usePrismicPreviewBootstrap = (
       ),
     )
   }, [
-    repositoryName,
-    config.linkResolver,
-    config.htmlSerializer,
+    config,
+    contextState.pluginOptionsStore,
     contextState.isBootstrapped,
-    contextState.pluginOptions,
     contextDispatch,
   ])
 

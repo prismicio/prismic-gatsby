@@ -25,6 +25,7 @@ import {
   useMergePrismicPreviewData,
   usePrismicPreviewBootstrap,
   usePrismicPreviewContext,
+  PluginOptions,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
@@ -37,8 +38,12 @@ const createStaticData = () => {
   return { previewable, nonPreviewable }
 }
 
-const createConfig = (): UsePrismicPreviewBootstrapConfig => ({
-  linkResolver: (doc): string => `/${doc.id}`,
+const createConfig = (
+  pluginOptions: PluginOptions,
+): UsePrismicPreviewBootstrapConfig => ({
+  [pluginOptions.repositoryName]: {
+    linkResolver: (doc): string => `/${doc.uid}`,
+  },
 })
 
 const nodeHelpers = createNodeHelpers({
@@ -69,10 +74,9 @@ test.serial('does not merge if no preview data is available', async (t) => {
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(
-    () => useMergePrismicPreviewData(pluginOptions.repositoryName, staticData),
-    { wrapper: PrismicPreviewProvider },
-  )
+  const { result } = renderHook(() => useMergePrismicPreviewData(staticData), {
+    wrapper: PrismicPreviewProvider,
+  })
 
   t.false(result.current.isPreview)
   t.true(result.current.data === staticData)
@@ -83,7 +87,7 @@ test.serial(
   async (t) => {
     const pluginOptions = createPluginOptions(t)
     const gatsbyContext = createGatsbyContext()
-    const config = createConfig()
+    const config = createConfig(pluginOptions)
     const queryResponse = createPrismicAPIQueryResponse()
 
     const ref = createPreviewRef(pluginOptions.repositoryName)
@@ -121,16 +125,9 @@ test.serial(
 
     const { result, waitForValueToChange } = renderHook(
       () => {
-        const context = usePrismicPreviewContext(pluginOptions.repositoryName)
-        const bootstrap = usePrismicPreviewBootstrap(
-          pluginOptions.repositoryName,
-          config,
-        )
-
-        const mergedData = useMergePrismicPreviewData(
-          pluginOptions.repositoryName,
-          staticData,
-        )
+        const context = usePrismicPreviewContext()
+        const bootstrap = usePrismicPreviewBootstrap(config)
+        const mergedData = useMergePrismicPreviewData(staticData)
 
         return { bootstrap, context, mergedData }
       },

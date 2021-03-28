@@ -29,7 +29,7 @@ const Page = (
       </pre>
       <hr />
       <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
-        <code>isPrismicPreview: {props.isPrismicPreview.toString()}</code>
+        <code>isPrismicPreview: {props.isPrismicPreview?.toString()}</code>
       </pre>
       <hr />
       <pre
@@ -97,7 +97,11 @@ const Page = (
   )
 }
 
-export default withPrismicPreview(Page, repoName, { linkResolver })
+export default withPrismicPreview(Page, {
+  [repoName]: {
+    linkResolver,
+  },
+})
 
 export const query = graphql`
   query($uid: String!) {

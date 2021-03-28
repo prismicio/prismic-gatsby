@@ -27,8 +27,12 @@ import {
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
-const createConfig = (): UsePrismicPreviewBootstrapConfig => ({
-  linkResolver: (doc): string => `/${doc.uid}`,
+const createConfig = (
+  pluginOptions: PluginOptions,
+): UsePrismicPreviewBootstrapConfig => ({
+  [pluginOptions.repositoryName]: {
+    linkResolver: (doc): string => `/${doc.uid}`,
+  },
 })
 
 const server = mswNode.setupServer()
@@ -65,11 +69,8 @@ const performPreview = async (
   await onClientEntry(gatsbyContext, pluginOptions)
   const { result, waitForValueToChange } = renderHook(
     () => {
-      const context = usePrismicPreviewContext(pluginOptions.repositoryName)
-      const bootstrap = usePrismicPreviewBootstrap(
-        pluginOptions.repositoryName,
-        config,
-      )
+      const context = usePrismicPreviewContext()
+      const bootstrap = usePrismicPreviewBootstrap(config)
 
       return { bootstrap, context }
     },
@@ -95,7 +96,7 @@ const performPreview = async (
 test.serial('document', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   const doc = createPrismicAPIDocument()
   const queryResponse = createPrismicAPIQueryResponse([doc])
@@ -116,13 +117,13 @@ test.serial('document', async (t) => {
 
   const node = result.current.context[0].nodes[doc.id]
 
-  t.true(node.url === config.linkResolver(doc))
+  t.true(node.url === config[pluginOptions.repositoryName].linkResolver(doc))
 })
 
 test.serial('structured text', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   const doc = createPrismicAPIDocument({
     structured_text: [{ type: 'paragraph', text: 'foo' }],
@@ -157,7 +158,7 @@ test.serial('structured text', async (t) => {
 test.serial('link', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   const linkedDoc = createPrismicAPIDocument()
   const doc = createPrismicAPIDocument({
@@ -187,7 +188,7 @@ test.serial('link', async (t) => {
 
   t.deepEqual(node.data.doc_link, {
     ...doc.data.doc_link,
-    url: config.linkResolver(linkedDoc),
+    url: config[pluginOptions.repositoryName].linkResolver(linkedDoc),
     localFile: null,
     raw: doc.data.doc_link,
   })
@@ -210,7 +211,7 @@ test.serial('link', async (t) => {
 test.serial('image', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   const doc = createPrismicAPIDocument({
     image: {
@@ -311,7 +312,7 @@ test.serial('image', async (t) => {
 test.serial('group', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   const doc = createPrismicAPIDocument({
     group: [
@@ -361,7 +362,7 @@ test.serial('group', async (t) => {
 test.serial('slices', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   const doc = createPrismicAPIDocument({
     slices: [

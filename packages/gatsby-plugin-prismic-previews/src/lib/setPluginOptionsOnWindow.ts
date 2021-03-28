@@ -5,7 +5,7 @@ import { PluginOptions } from '../types'
 
 // This store is primary just used during testing. During the SSR build of a
 // Gatsby site, this function is not called.
-export const ssrPluginOptionsStore = {}
+export const ssrPluginOptionsStore: Record<string, PluginOptions> = {}
 
 declare global {
   interface Window {

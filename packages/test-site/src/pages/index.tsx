@@ -18,7 +18,7 @@ const HomePage = ({
   WithPrismicPreviewProps<Record<string, any>>): JSX.Element => {
   const dataStr = JSON.stringify(data, null, 2)
 
-  const [state] = usePrismicPreviewContext(repoName)
+  const [state] = usePrismicPreviewContext()
   const [token] = usePrismicPreviewAccessToken(repoName)
 
   return (
@@ -43,7 +43,11 @@ const HomePage = ({
   )
 }
 
-export default withPrismicPreview(HomePage, repoName, { linkResolver })
+export default withPrismicPreview(HomePage, {
+  [repoName]: {
+    linkResolver,
+  },
+})
 
 export const query = graphql`
   {

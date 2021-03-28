@@ -10,20 +10,25 @@ import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMocke
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
-import { createPreviewURL } from './__testutils__/createPreviewURL'
 import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { navigateToPreviewResolverURL } from './__testutils__/navigateToPreviewResolverURL'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
+  PluginOptions,
   PrismicPreviewProvider,
   UsePrismicPreviewResolverConfig,
   usePrismicPreviewResolver,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
-const createConfig = (): UsePrismicPreviewResolverConfig => ({
-  linkResolver: (doc): string => `/${doc.uid}`,
+const createConfig = (
+  pluginOptions: PluginOptions,
+): UsePrismicPreviewResolverConfig => ({
+  [pluginOptions.repositoryName]: {
+    linkResolver: (doc): string => `/${doc.uid}`,
+  },
 })
 
 const server = mswNode.setupServer()
@@ -44,14 +49,13 @@ test.after(() => {
 test.serial('initial state', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(
-    () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
-    { wrapper: PrismicPreviewProvider },
-  )
+  const { result } = renderHook(() => usePrismicPreviewResolver(config), {
+    wrapper: PrismicPreviewProvider,
+  })
 
   t.true(result.current[0].state === 'INIT')
   t.true(result.current[0].path === undefined)
@@ -59,18 +63,18 @@ test.serial('initial state', async (t) => {
 })
 
 test.serial('fails if documentId is not in URL', async (t) => {
-  window.history.replaceState(null, '', createPreviewURL({ token: 'token' }))
-
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
+  const ref = createPreviewRef(pluginOptions.repositoryName)
 
-  cookie.set(prismic.cookie.preview, 'token')
+  navigateToPreviewResolverURL(ref, null)
+  cookie.set(prismic.cookie.preview, ref)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
   const { result, waitForNextUpdate } = renderHook(
-    () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
+    () => usePrismicPreviewResolver(config),
     { wrapper: PrismicPreviewProvider },
   )
   const resolvePreview = result.current[1]
@@ -89,20 +93,17 @@ test.serial('fails if documentId is not in URL', async (t) => {
 })
 
 test.serial('fails if token is not in cookies', async (t) => {
-  window.history.replaceState(
-    {},
-    '',
-    createPreviewURL({ documentId: 'documentId', token: 'token' }),
-  )
-
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
+  const ref = createPreviewRef(pluginOptions.repositoryName)
+
+  navigateToPreviewResolverURL(ref)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
   const { result, waitForNextUpdate } = renderHook(
-    () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
+    () => usePrismicPreviewResolver(config),
     { wrapper: PrismicPreviewProvider },
   )
   const resolvePreview = result.current[1]
@@ -118,57 +119,17 @@ test.serial('fails if token is not in cookies', async (t) => {
   )
 })
 
-test.serial('fails if token does not match repository', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
-
-  const ref = createPreviewRef('not-this-repository')
-  cookie.set(prismic.cookie.preview, ref)
-
-  window.history.replaceState(
-    {},
-    '',
-    createPreviewURL({ token: ref, documentId: 'documentId' }),
-  )
-
-  // @ts-expect-error - Partial gatsbyContext provided
-  await onClientEntry(gatsbyContext, pluginOptions)
-  const { result, waitForNextUpdate } = renderHook(
-    () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
-    { wrapper: PrismicPreviewProvider },
-  )
-  const resolvePreview = result.current[1]
-
-  resolvePreview()
-
-  await waitForNextUpdate()
-
-  t.true(result.current[0].state === 'FAILED')
-  t.true(
-    result.current[0].error?.message &&
-      /token is not for this repository/i.test(
-        result.current[0].error?.message,
-      ),
-  )
-})
-
 test.serial('resolves a path using the link resolver', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig()
+  const config = createConfig(pluginOptions)
+  const ref = createPreviewRef(pluginOptions.repositoryName)
 
   const doc = createPrismicAPIDocument()
   const queryResponse = createPrismicAPIQueryResponse([doc])
 
-  const ref = createPreviewRef(pluginOptions.repositoryName)
+  navigateToPreviewResolverURL(ref, doc.id)
   cookie.set(prismic.cookie.preview, ref)
-
-  window.history.replaceState(
-    {},
-    '',
-    createPreviewURL({ token: ref, documentId: doc.id }),
-  )
 
   server.use(
     createAPIQueryMockedRequest(pluginOptions, queryResponse, {
@@ -183,7 +144,7 @@ test.serial('resolves a path using the link resolver', async (t) => {
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
   const { result, waitForValueToChange } = renderHook(
-    () => usePrismicPreviewResolver(pluginOptions.repositoryName, config),
+    () => usePrismicPreviewResolver(config),
     { wrapper: PrismicPreviewProvider },
   )
   const resolvePreview = result.current[1]

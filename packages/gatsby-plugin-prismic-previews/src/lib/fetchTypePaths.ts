@@ -22,7 +22,7 @@ const buildTypePathsStoreURL: RTE.ReaderTaskEither<
   RTE.map((filename) => gatsby.withAssetPrefix(`/static/${filename}`)),
 )
 
-export const fetchTypePathsStore: RTE.ReaderTaskEither<
+export const fetchTypePaths: RTE.ReaderTaskEither<
   FetchTypePathsStoreEnv,
   Error,
   TypePathsStore

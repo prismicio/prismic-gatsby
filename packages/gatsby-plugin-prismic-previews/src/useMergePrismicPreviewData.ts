@@ -9,12 +9,12 @@ import { isPlainObject } from './lib/isPlainObject'
 import { camelCase } from './lib/camelCase'
 
 import { UnknownRecord } from './types'
+import { PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-import { PrismicContextRepositoryState } from './context'
 
-const findAndReplacePreviewables = (
-  nodes: PrismicContextRepositoryState['nodes'],
-) => (nodeOrLeaf: unknown): unknown => {
+const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
+  nodeOrLeaf: unknown,
+): unknown => {
   // TODO: Need to traverse every property in the object. If it doesn't include
   // _previewable, then we need to check every property inside for something
   // that does.
@@ -60,7 +60,7 @@ const findAndReplacePreviewables = (
  */
 const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  node: ValueOf<PrismicContextRepositoryState['nodes']>,
+  node: ValueOf<PrismicContextState['nodes']>,
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
     O.fromNullable(node),
@@ -91,7 +91,7 @@ const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
  */
 const traverseAndReplace = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  nodes: PrismicContextRepositoryState['nodes'],
+  nodes: PrismicContextState['nodes'],
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
     nodes,
@@ -118,11 +118,10 @@ export type UsePrismicPreviewDataConfig =
     }
 
 export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
-  repositoryName: string,
   staticData: TStaticData,
   config: UsePrismicPreviewDataConfig = { mergeStrategy: 'traverseAndReplace' },
 ): { data: TStaticData; isPreview: boolean } => {
-  const [state] = usePrismicPreviewContext(repositoryName)
+  const [state] = usePrismicPreviewContext()
 
   return React.useMemo(() => {
     if (config.skip) {
@@ -145,7 +144,7 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
     staticData,
     config.mergeStrategy,
     config.skip,
-    state.nodes,
+    state,
     // @ts-expect-error - config.nodePrismicId only exists if mergeStrategy is "rootReplaceOrInsert"
     config.nodePrismicId,
   ])

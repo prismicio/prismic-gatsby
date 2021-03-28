@@ -4,17 +4,19 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as E from 'fp-ts/Either'
 import * as A from 'fp-ts/Array'
+import * as R from 'fp-ts/Record'
 import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
 import ky from 'ky'
 
-import { BuildQueryParamsEnv, buildQueryParams } from './lib/buildQueryParams'
+import { buildQueryParams } from './lib/buildQueryParams'
 import { getCookie } from './lib/getCookie'
 import { getURLSearchParam } from './lib/getURLSearchParam'
-import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
 
 import { LinkResolver } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
+import { PrismicContextActionType, PrismicContextState } from './context'
 
 export type UsePrismicPreviewResolverFn = () => Promise<void>
 
@@ -78,13 +80,11 @@ const localReducer = (
   }
 }
 
-interface UsePrismicPreviewResolverProgramEnv extends BuildQueryParamsEnv {
-  apiEndpoint: string
-  accessToken?: string
-  repositoryName: string
-  beginResolving: IO.IO<void>
+interface UsePrismicPreviewResolverProgramEnv {
+  beginResolving(repositoryName: string): IO.IO<void>
   resolved(path: string): IO.IO<void>
-  linkResolver: LinkResolver
+  pluginOptionsStore: PrismicContextState['pluginOptionsStore']
+  config: UsePrismicPreviewResolverConfig
 }
 
 const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
@@ -110,21 +110,55 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
     ),
   ),
 
-  // Only continue if this preview session is for this repository.
-  RTE.chainFirst((env) =>
-    RTE.fromEither(
-      validatePreviewRefForRepository(env.repositoryName, env.previewRef),
+  RTE.bindW('repositoryName', (env) =>
+    pipe(
+      env.previewRef,
+      extractPreviewRefRepositoryName,
+      RTE.fromOption(() => new Error('Invalid preview ref')),
+    ),
+  ),
+
+  RTE.bindW('repositoryConfig', (env) =>
+    pipe(
+      env.config,
+      R.lookup(env.repositoryName),
+      RTE.fromOption(
+        () =>
+          new Error(
+            `A configuration object could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's usePrismicPreviewResolver.`,
+          ),
+      ),
+    ),
+  ),
+
+  RTE.bindW('repositoryPluginOptions', (env) =>
+    pipe(
+      env.pluginOptionsStore,
+      R.lookup(env.repositoryName),
+      RTE.fromOption(
+        () =>
+          new Error(
+            `Plugin options could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's gatsby-config.js`,
+          ),
+      ),
     ),
   ),
 
   // Start resolving.
-  RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
+  RTE.chainFirst((env) => RTE.fromIO(env.beginResolving(env.repositoryName))),
 
-  RTE.bindW('params', () => buildQueryParams),
+  RTE.bind('params', (env) => () =>
+    buildQueryParams({
+      lang: env.repositoryPluginOptions.lang,
+      fetchLinks: env.repositoryPluginOptions.fetchLinks,
+      graphQuery: env.repositoryPluginOptions.graphQuery,
+      accessToken: env.repositoryPluginOptions.accessToken,
+    }),
+  ),
   RTE.bind('url', (env) =>
     RTE.right(
       prismic.buildQueryURL(
-        env.apiEndpoint,
+        env.repositoryPluginOptions.apiEndpoint,
         env.previewRef,
         prismic.predicate.at('document.id', env.documentId),
         env.params,
@@ -145,7 +179,9 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
       RTE.fromOption(() => new Error('Document could not be found.')),
     ),
   ),
-  RTE.bind('path', (env) => RTE.right(env.linkResolver(env.document))),
+  RTE.bind('path', (env) =>
+    RTE.right(env.repositoryConfig.linkResolver(env.document)),
+  ),
 
   // End resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.resolved(env.path))),
@@ -153,15 +189,19 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
-export type UsePrismicPreviewResolverConfig = {
+export type UsePrismicPreviewResolverRepositoryConfig = {
   linkResolver: LinkResolver
 }
 
+export type UsePrismicPreviewResolverConfig = Record<
+  string,
+  UsePrismicPreviewResolverRepositoryConfig
+>
+
 export const usePrismicPreviewResolver = (
-  repositoryName: string,
   config: UsePrismicPreviewResolverConfig,
 ): readonly [UsePrismicPreviewResolverState, UsePrismicPreviewResolverFn] => {
-  const [state] = usePrismicPreviewContext(repositoryName)
+  const [contextState, contextDispatch] = usePrismicPreviewContext()
   const [localState, localDispatch] = React.useReducer(
     localReducer,
     initialLocalState,
@@ -170,22 +210,23 @@ export const usePrismicPreviewResolver = (
   const resolvePreview = React.useCallback(async (): Promise<void> => {
     pipe(
       await RTE.run(usePrismicPreviewResolverProgram, {
-        repositoryName,
-        beginResolving: () =>
+        beginResolving: (repositoryName: string) => () => {
+          contextDispatch({
+            type: PrismicContextActionType.SetActiveRepositoryName,
+            payload: { repositoryName },
+          })
           localDispatch({
             type: UsePrismicPreviewResolverActionType.BeginResolving,
-          }),
+          })
+        },
         resolved: (path) => () =>
           localDispatch({
             type: UsePrismicPreviewResolverActionType.Resolved,
             payload: path,
           }),
-        linkResolver: config.linkResolver,
-        apiEndpoint: state.pluginOptions.apiEndpoint,
-        accessToken: state.pluginOptions.accessToken,
-        graphQuery: state.pluginOptions.graphQuery,
-        fetchLinks: state.pluginOptions.fetchLinks,
-        lang: state.pluginOptions.lang,
+        pluginOptionsStore: contextState.pluginOptionsStore,
+        // TODO: This may cause infinite rerenders.
+        config,
       }),
       E.fold(
         (error) =>
@@ -196,15 +237,7 @@ export const usePrismicPreviewResolver = (
         constVoid,
       ),
     )
-  }, [
-    repositoryName,
-    config.linkResolver,
-    state.pluginOptions.accessToken,
-    state.pluginOptions.apiEndpoint,
-    state.pluginOptions.graphQuery,
-    state.pluginOptions.fetchLinks,
-    state.pluginOptions.lang,
-  ])
+  }, [config, contextDispatch, contextState.pluginOptionsStore])
 
   return React.useMemo(() => [localState, resolvePreview] as const, [
     localState,

@@ -1,20 +1,7 @@
 import * as E from 'fp-ts/Either'
 import { constTrue, pipe } from 'fp-ts/function'
 
-type ObjectPreviewRef = {
-  _tracker: string
-} & {
-  [key in string]: {
-    preview: string
-  }
-}
-
-const isObjectPreviewRefForRepository = (repositoryName: string) => (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  input: any,
-): input is ObjectPreviewRef =>
-  `${repositoryName}.prismic.io` in input &&
-  'preview' in input[`${repositoryName}.prismic.io`]
+import { isObjectPreviewRefForRepository } from './isObjectPreviewRefForRepository'
 
 const validateObjectPreviewRef = (
   repositoryName: string,

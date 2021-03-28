@@ -1,3 +1,3 @@
-import { LinkResolver } from 'gatsby-plugin-prismic-previews-2'
+import { LinkResolver } from 'gatsby-plugin-prismic-previews'
 
-export const linkResolver: LinkResolver = (doc) => `/${doc.uid}`
+export const linkResolver: LinkResolver = (doc) => `/${doc.uid}/`

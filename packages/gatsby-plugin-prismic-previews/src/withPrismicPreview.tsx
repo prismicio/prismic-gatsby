@@ -2,13 +2,12 @@ import * as React from 'react'
 import * as gatsby from 'gatsby'
 import * as prismic from 'ts-prismic'
 import * as IOE from 'fp-ts/IOEither'
-import * as IO from 'fp-ts/IO'
 import { pipe } from 'fp-ts/function'
 import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
-import { validatePreviewRefForRepository } from './lib/validatePreviewRefForRepository'
 import { getCookie } from './lib/getCookie'
+import { userFriendlyError } from './lib/userFriendlyError'
 
 import { UnknownRecord } from './types'
 import {
@@ -36,7 +35,7 @@ export interface WithPrismicPreviewProps<
   prismicPreviewOriginalData: TStaticData
 }
 
-export type WithPrismicPreviewConfig = UsePrismicPreviewBootstrapConfig & {
+export type WithPrismicPreviewConfig = {
   mergePreviewData?: boolean
 }
 
@@ -46,17 +45,6 @@ type LocalState =
   | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
   | 'DISPLAY_ERROR'
 
-const isValidToken = (repositoryName: string): IO.IO<boolean> =>
-  pipe(
-    getCookie(prismic.cookie.preview),
-    IOE.chain((previewRef) =>
-      IOE.fromEither(
-        validatePreviewRefForRepository(repositoryName, previewRef),
-      ),
-    ),
-    IOE.getOrElse(() => IO.of(false as boolean)),
-  )
-
 export const withPrismicPreview = <
   TStaticData extends UnknownRecord,
   TProps extends gatsby.PageProps<TStaticData>
@@ -64,22 +52,21 @@ export const withPrismicPreview = <
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewProps<TStaticData>
   >,
-  repositoryName: string,
-  config: WithPrismicPreviewConfig,
+  usePrismicPreviewBootstrapConfig: UsePrismicPreviewBootstrapConfig,
+  config: WithPrismicPreviewConfig = {},
 ): React.ComponentType<TProps> => {
   const WithPrismicPreview = (props: TProps): React.ReactElement => {
-    const [contextState] = usePrismicPreviewContext(repositoryName)
+    const [contextState] = usePrismicPreviewContext()
     const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
-      repositoryName,
-      config,
+      usePrismicPreviewBootstrapConfig,
     )
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
-      repositoryName,
+      contextState.activeRepositoryName,
     )
     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
     const dismissModal = () => setLocalState('IDLE')
 
-    const mergedData = useMergePrismicPreviewData(repositoryName, props.data, {
+    const mergedData = useMergePrismicPreviewData(props.data, {
       mergeStrategy: 'traverseAndReplace',
       skip: config.mergePreviewData,
     })
@@ -87,9 +74,14 @@ export const withPrismicPreview = <
     // Begin bootstrapping on page entry if the preview token is for this
     // repository and we haven't already bootstrapped.
     React.useEffect(() => {
-      if (isValidToken(repositoryName)() && !contextState.isBootstrapped) {
-        bootstrapPreview()
-      }
+      pipe(
+        getCookie(prismic.cookie.preview),
+        IOE.filterOrElse(
+          () => !contextState.isBootstrapped,
+          () => new Error('Already bootstrapped'),
+        ),
+        IOE.chainFirst(() => IOE.right(bootstrapPreview())),
+      )()
     }, [bootstrapPreview, contextState.isBootstrapped])
 
     // Handle state changes from the preview resolver.
@@ -99,7 +91,9 @@ export const withPrismicPreview = <
           if (
             bootstrapState.error instanceof ky.HTTPError &&
             bootstrapState.error.response.status === 401 &&
-            contextState.pluginOptions.promptForAccessToken
+            contextState.activeRepositoryName &&
+            contextState.pluginOptionsStore[contextState.activeRepositoryName]
+              .promptForAccessToken
           ) {
             // If we encountered a 401 status, we don't have the correct access
             // token, and the plugin is configured to prompt for a token, prompt
@@ -128,8 +122,9 @@ export const withPrismicPreview = <
         }
       }
     }, [
+      contextState.activeRepositoryName,
+      contextState.pluginOptionsStore,
       accessToken,
-      contextState.pluginOptions.promptForAccessToken,
       bootstrapState.state,
       bootstrapState.error,
     ])
@@ -147,40 +142,47 @@ export const withPrismicPreview = <
           prismicPreviewOriginalData={props.data}
         />
 
-        <Root>
-          <ModalLoading
-            isOpen={
-              localState === 'IDLE' && bootstrapState.state === 'BOOTSTRAPPING'
-            }
-            repositoryName={repositoryName}
-            onDismiss={dismissModal}
-          />
-          <ModalAccessToken
-            isOpen={
-              localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
-              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
-            }
-            repositoryName={repositoryName}
-            state={
-              localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
-                ? 'INCORRECT'
-                : 'IDLE'
-            }
-            initialAccessToken={accessToken}
-            setAccessToken={setAccessToken}
-            afterSubmit={() => {
-              dismissModal()
-              bootstrapPreview()
-            }}
-            onDismiss={dismissModal}
-          />
-          <ModalError
-            isOpen={localState === 'DISPLAY_ERROR'}
-            repositoryName={repositoryName}
-            errorMessage={bootstrapState.error?.message}
-            onDismiss={dismissModal}
-          />
-        </Root>
+        {contextState.activeRepositoryName && (
+          <Root>
+            <ModalLoading
+              isOpen={
+                localState === 'IDLE' &&
+                bootstrapState.state === 'BOOTSTRAPPING'
+              }
+              repositoryName={contextState.activeRepositoryName}
+              onDismiss={dismissModal}
+            />
+            <ModalAccessToken
+              isOpen={
+                localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
+                localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+              }
+              repositoryName={contextState.activeRepositoryName}
+              state={
+                localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+                  ? 'INCORRECT'
+                  : 'IDLE'
+              }
+              initialAccessToken={accessToken}
+              setAccessToken={setAccessToken}
+              afterSubmit={() => {
+                dismissModal()
+                bootstrapPreview()
+              }}
+              onDismiss={dismissModal}
+            />
+            <ModalError
+              isOpen={localState === 'DISPLAY_ERROR'}
+              repositoryName={contextState.activeRepositoryName}
+              errorMessage={
+                bootstrapState.error
+                  ? userFriendlyError(bootstrapState.error).message
+                  : undefined
+              }
+              onDismiss={dismissModal}
+            />
+          </Root>
+        )}
       </>
     )
   }

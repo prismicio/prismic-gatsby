@@ -21,7 +21,8 @@ const PreviewPage = (props: PreviewPageProps): JSX.Element => {
   )
 }
 
-export default withPrismicPreviewResolver(PreviewPage, repoName, {
-  linkResolver,
-  // autoRedirect: false,
+export default withPrismicPreviewResolver(PreviewPage, {
+  [repoName]: {
+    linkResolver,
+  },
 })

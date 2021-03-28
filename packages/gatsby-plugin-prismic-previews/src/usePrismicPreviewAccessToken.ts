@@ -11,7 +11,7 @@ import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 export type SetAccessTokenFn = (accessToken: string, remember?: boolean) => void
 
 export const usePrismicPreviewAccessToken = (
-  repositoryName: string,
+  repositoryName?: string,
 ): readonly [
   string | undefined,
   {
@@ -19,11 +19,11 @@ export const usePrismicPreviewAccessToken = (
     removeCookie(): void
   },
 ] => {
-  const [contextState, contextDispatch] = usePrismicPreviewContext(
-    repositoryName,
-  )
+  const [contextState, contextDispatch] = usePrismicPreviewContext()
 
-  const cookieName = sprintf(COOKIE_ACCESS_TOKEN_NAME, repositoryName)
+  const cookieName = repositoryName
+    ? sprintf(COOKIE_ACCESS_TOKEN_NAME, repositoryName)
+    : undefined
 
   /**
    * Sets an access token for the repository and, by default, stores it in a
@@ -39,6 +39,12 @@ export const usePrismicPreviewAccessToken = (
       // eslint-disable-next-line @typescript-eslint/no-inferrable-types
       remember: boolean = true,
     ): void => {
+      if (!repositoryName || !cookieName) {
+        throw new Error(
+          'A repository name must be provided to the usePrismicPreviewAccessToken hook before using the set function.',
+        )
+      }
+
       contextDispatch({
         type: PrismicContextActionType.SetAccessToken,
         payload: { repositoryName, accessToken },
@@ -55,20 +61,29 @@ export const usePrismicPreviewAccessToken = (
    * Removes the stored access token, if set.
    */
   const removeAccessTokenCookie = React.useCallback(() => {
+    if (!cookieName) {
+      throw new Error(
+        'A repository name must be provided to the usePrismicPreviewAccessToken hook before using the removeCookie function.',
+      )
+    }
+
     removeCookie(cookieName)()
   }, [cookieName])
 
   return React.useMemo(
     () =>
       [
-        contextState.pluginOptions.accessToken,
+        repositoryName
+          ? contextState.pluginOptionsStore[repositoryName]?.accessToken
+          : undefined,
         {
           set: setAccessToken,
           removeCookie: removeAccessTokenCookie,
         },
       ] as const,
     [
-      contextState.pluginOptions.accessToken,
+      repositoryName,
+      contextState.pluginOptionsStore,
       setAccessToken,
       removeAccessTokenCookie,
     ],
