@@ -17,7 +17,7 @@ must mark documents in your query as "previewable." This involves adding a
 ```typescript
 function withPrismicPreview(
   WrappedComponent: React.ComponentType,
-  usePrismicPreviewResolverConfig: Record<
+  repositoryConfigs: Record<
     string,
     {
       linkResolver: LinkResolver
@@ -33,8 +33,8 @@ function withPrismicPreview(
 - **`WrappedComponent`**<br/>The page component to which Prismic previews will
   be connected.
 
-- **`usePrismicPreviewResolverConfig`**<br/>A set of configuration values for
-  each Prismic repository used in your app.
+- **`repositoryConfigs`**<br/>A set of configuration values for each Prismic
+  repository used in your app.
 
 - **`config`**<br/>A set of configuration values that determine how the preview
   data is prepared and provided.

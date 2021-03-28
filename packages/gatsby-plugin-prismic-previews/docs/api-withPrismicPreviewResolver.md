@@ -21,7 +21,7 @@ updates.
 ```typescript
 function withPrismicPreviewResolver(
   WrappedComponent: React.ComponentType,
-  usePrismicPreviewResolverConfig: Record<
+  repositoryConfigs: Record<
     string,
     {
       linkResolver: LinkResolver
@@ -35,6 +35,9 @@ function withPrismicPreviewResolver(
 
 - **`WrappedComponent`**<br/>The page component which will direct editors during
   preview sessions.
+
+- **`repositoryConfigs`**<br/>A set of configuration values for each Prismic
+  repository used in your app.
 
 - **`config`**<br/>A set of configuration values that determine how editors are
   directed during preview sessions.
