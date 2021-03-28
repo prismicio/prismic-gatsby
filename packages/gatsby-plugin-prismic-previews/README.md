@@ -112,10 +112,17 @@ Once the plugin is configured in `gatsby-config.js`, your app will need to be
 conneted to the plugin's system. The following files will need to be created or
 edited:
 
-- Link Resolver function
-- Preview resolver page
-- Content pages and templates
-- 404 Not Found page
+- [**Link Resolver function**](#link-resolver-function)<br/>A function used to
+  determine a document's URL.
+
+- [**Preview resolver page**](#preview-resolver-page)<br/>A page used to direct
+  editors to a document's page during a preview session.
+
+- [**Content pages and templates**](#content-pages-and-templates)<br/>Your app's
+  pages with content from Prismic.
+
+- [**404 Not Found page**](#404-not-found-page)<br/>Your app's 404 page which
+  will be used to displays previews for unpublished documents.
 
 ### Link Resolver function
 
@@ -229,10 +236,9 @@ session as needed.
 
 In order for this HOC to add preview content to your existing page data, you
 must mark documents in your query as "previewable." This involves adding a
-`_previewable` field to you query. An example of this is
-[provided below](#typical-example).
+`_previewable` field to your query.
 
-This is what a simple preview resolver page could look like:
+This is what a simple preview-connected page template could look like:
 
 ```javascript
 // src/pages/{PrismicPage.uid}.js
@@ -291,7 +297,7 @@ from two repositories, each with their own Link Resolver, your
 import { mainLinkResolver } from '../mainLinkResolver'
 import { secondaryLinkResolver } from '../secondaryLinkResolver'
 
-export default withPrismicPreview(PreviewPage, {
+export default withPrismicPreview(PageTemplate, {
   [process.env.GATSBY_PRISMIC_MAIN_REPOSITORY_NAME]: {
     linkResolver: mainLinkResolver,
   },
@@ -304,6 +310,10 @@ export default withPrismicPreview(PreviewPage, {
 For more details on connecting your pages and templates to preview data and the
 available customizations, see the
 [`withPrismicPreview()`](./docs/api-withPrismicPreview.md) reference.
+
+### 404 Not Found page
+
+> TODO
 
 ## Prismic Toolbar
 

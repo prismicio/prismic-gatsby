@@ -11,7 +11,7 @@ updates.
 
 In order for this HOC to add preview content to your existing page data, you
 must mark documents in your query as "previewable." This involves adding a
-`_previewable` field to you query. An example of this is
+`_previewable` field to your query. An example of this is
 [provided below](#typical-example).
 
 ```typescript
