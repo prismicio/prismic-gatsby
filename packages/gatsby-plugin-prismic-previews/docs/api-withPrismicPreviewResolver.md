@@ -82,9 +82,7 @@ const PreviewPage = () => {
 }
 
 export default withPrismicPreviewResolver(PageTemplate, {
-  'my-repository-name': {
-    linkResolver,
-  },
+  'my-repository-name': { linkResolver },
 })
 ```
 

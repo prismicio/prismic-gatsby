@@ -92,9 +92,7 @@ const PageTemplate = ({ data }) => {
 }
 
 export default withPrismicPreview(PageTemplate, {
-  'my-repository-name': {
-    linkResolver,
-  },
+  'my-repository-name': { linkResolver },
 })
 
 export const query = graphql`

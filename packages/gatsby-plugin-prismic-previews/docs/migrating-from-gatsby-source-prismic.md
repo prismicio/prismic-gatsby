@@ -19,9 +19,7 @@ the function as described below.
 
 - export default withPreview(Page)
 + export default withPrismicPreview(Page, {
-+   'your-repository-name': {
-+     linkResolver,
-+   }
++   'your-repository-name': { linkResolver }
 + })
 ```
 
@@ -52,9 +50,7 @@ at `/src/pages/preview.js`.
 -   linkResolver,
 - })
 + export default withPrismicPreviewResolver(Page, {
-+   'your-repository-name': {
-+     linkResolver,
-+   }
++   'your-repository-name': { linkResolver }
 + })
 ```
 
