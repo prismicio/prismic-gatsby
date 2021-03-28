@@ -52,14 +52,6 @@ in your app:
 
 Configuration values:
 
-- **`linkResolver`**<br/>The [Link Resolver][link-resolver] used for the
-  configured Prismic repository. This should be the same Link Resolver provided
-  to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`.
-
-- **`htmlSerializer`**<br/>The optional [HTML Serializer][html-serializer] used
-  for the configured Prismic repository. This should be the same HTML Serializer
-  provided to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`.
-
 - **`mergePreviewData`**<br/>An optional boolean that determines if previewed
   content should be automatically merged into the page's `data` prop. This
   option defaults to `true`. If this option is set to `false`, the `data` prop
