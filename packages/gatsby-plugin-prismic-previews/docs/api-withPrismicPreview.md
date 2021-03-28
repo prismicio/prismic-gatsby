@@ -17,10 +17,14 @@ must mark documents in your query as "previewable." This involves adding a
 ```typescript
 function withPrismicPreview(
   WrappedComponent: React.ComponentType,
-  repositoryName: string,
+  usePrismicPreviewResolverConfig: Record<
+    string,
+    {
+      linkResolver: LinkResolver
+      htmlSerializer?: HTMLSerializer
+    }
+  >,
   config: {
-    linkResolver: LinkResolver
-    htmlSerializer?: HTMLSerializer
     mergePreviewData?: boolean
   },
 ): React.ComponentType
@@ -29,12 +33,22 @@ function withPrismicPreview(
 - **`WrappedComponent`**<br/>The page component to which Prismic previews will
   be connected.
 
-- **`repositoryName`**<br/>The name of the Prismic repository that contains your
-  content. This should match the `repositoryName` option provided in the
-  plugin's configuration in your app's `gatsby-config.js`.
+- **`usePrismicPreviewResolverConfig`**<br/>A set of configuration values for
+  each Prismic repository used in your app.
 
 - **`config`**<br/>A set of configuration values that determine how the preview
   data is prepared and provided.
+
+The following configuration should be provided for each Prismic repository used
+in your app:
+
+- **`linkResolver`**<br/>The [Link Resolver][link-resolver] used for the Prismic
+  repository. This should be the same Link Resolver provided to
+  [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`.
+
+- **`htmlSerializer`**<br/>The optional [HTML Serializer][html-serializer] used
+  for the configured Prismic repository. This should be the same HTML Serializer
+  provided to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`.
 
 Configuration values:
 
@@ -85,8 +99,10 @@ const PageTemplate = ({ data }) => {
   )
 }
 
-export default withPrismicPreview(PageTemplate, 'my-repository-name', {
-  linkResolver,
+export default withPrismicPreview(PageTemplate, {
+  'my-repository-name': {
+    linkResolver,
+  },
 })
 
 export const query = graphql`

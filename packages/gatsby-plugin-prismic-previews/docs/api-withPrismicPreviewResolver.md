@@ -21,9 +21,13 @@ updates.
 ```typescript
 function withPrismicPreviewResolver(
   WrappedComponent: React.ComponentType,
-  repositoryName: string,
+  usePrismicPreviewResolverConfig: Record<
+    string,
+    {
+      linkResolver: LinkResolver
+    }
+  >,
   config: {
-    linkResolver: LinkResolver
     autoRedirect?: boolean
   },
 ): React.ComponentType
@@ -32,20 +36,19 @@ function withPrismicPreviewResolver(
 - **`WrappedComponent`**<br/>The page component which will direct editors during
   preview sessions.
 
-- **`repositoryName`**<br/>The name of the Prismic repository that contains your
-  content. This should match the `repositoryName` option provided in the
-  plugin's configuration in your app's `gatsby-config.js`.
-
 - **`config`**<br/>A set of configuration values that determine how editors are
   directed during preview sessions.
 
-Configuration values:
+The following configuration should be provided for each Prismic repository used
+in your app:
 
-- **`linkResolver`**<br/>The [Link Resolver][link-resolver] used for the
-  configured Prismic repository. This should be the same Link Resolver provided
-  to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`. The return
+- **`linkResolver`**<br/>The [Link Resolver][link-resolver] used for the Prismic
+  repository. This should be the same Link Resolver provided to
+  [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`. The return
   value of your Link Resolver determines the page to which editors will be
   directed.
+
+Configuration values:
 
 - **`autoRedirect`**<br/>An optional boolean that determines if editors should
   be automatically redirected to the previewed content's page within your app.
@@ -78,8 +81,10 @@ const PreviewPage = () => {
   )
 }
 
-export default withPrismicPreviewResolver(PageTemplate, 'my-repository-name', {
-  linkResolver,
+export default withPrismicPreviewResolver(PageTemplate, {
+  'my-repository-name': {
+    linkResolver,
+  },
 })
 ```
 
