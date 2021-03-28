@@ -38,7 +38,7 @@ const variants = {
   'mono-20': {
     fontFamilyClassName: 'gppp-font-mono',
     fontSizeClassName: 'gppp-text-20',
-    leadingClassName: 'gppp-leading-1_1',
+    leadingClassName: 'gppp-leading-1_4',
     trackingClassName: undefined,
   },
 } as const

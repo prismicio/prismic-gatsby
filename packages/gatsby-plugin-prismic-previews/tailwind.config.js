@@ -59,6 +59,7 @@ module.exports = {
     lineHeight: {
       none: '1',
       '1_1': '1.1',
+      '1_4': '1.4',
       '1_5': '1.5',
     },
     extend: {

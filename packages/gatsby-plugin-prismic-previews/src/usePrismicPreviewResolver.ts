@@ -81,7 +81,8 @@ const localReducer = (
 }
 
 interface UsePrismicPreviewResolverProgramEnv {
-  beginResolving(repositoryName: string): IO.IO<void>
+  setActiveRepositoryName(repositoryName: string): IO.IO<void>
+  beginResolving: IO.IO<void>
   resolved(path: string): IO.IO<void>
   pluginOptionsStore: PrismicContextState['pluginOptionsStore']
   config: UsePrismicPreviewResolverConfig
@@ -118,6 +119,10 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
     ),
   ),
 
+  RTE.chainFirst((env) =>
+    RTE.fromIO(env.setActiveRepositoryName(env.repositoryName)),
+  ),
+
   RTE.bindW('repositoryConfig', (env) =>
     pipe(
       env.config,
@@ -145,7 +150,7 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
   ),
 
   // Start resolving.
-  RTE.chainFirst((env) => RTE.fromIO(env.beginResolving(env.repositoryName))),
+  RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
 
   RTE.bind('params', (env) => () =>
     buildQueryParams({
@@ -210,15 +215,15 @@ export const usePrismicPreviewResolver = (
   const resolvePreview = React.useCallback(async (): Promise<void> => {
     pipe(
       await RTE.run(usePrismicPreviewResolverProgram, {
-        beginResolving: (repositoryName: string) => () => {
+        setActiveRepositoryName: (repositoryName: string) => () =>
           contextDispatch({
             type: PrismicContextActionType.SetActiveRepositoryName,
             payload: { repositoryName },
-          })
+          }),
+        beginResolving: () =>
           localDispatch({
             type: UsePrismicPreviewResolverActionType.BeginResolving,
-          })
-        },
+          }),
         resolved: (path) => () =>
           localDispatch({
             type: UsePrismicPreviewResolverActionType.Resolved,

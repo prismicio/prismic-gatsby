@@ -98,9 +98,7 @@ const Page = (
 }
 
 export default withPrismicPreview(Page, {
-  [repoName]: {
-    linkResolver,
-  },
+  [repoName]: { linkResolver },
 })
 
 export const query = graphql`

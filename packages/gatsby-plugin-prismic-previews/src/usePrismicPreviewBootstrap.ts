@@ -88,7 +88,8 @@ const localReducer = (
 
 interface UsePrismicPreviewBootstrapProgramEnv {
   isBootstrapped: boolean
-  beginBootstrapping(repositoryName: string): IO.IO<void>
+  setActiveRepositoryName(repositoryName: string): IO.IO<void>
+  beginBootstrapping: IO.IO<void>
   bootstrapped: IO.IO<void>
   appendNodes(nodes: unknown[]): IO.IO<void>
   appendTypePaths(
@@ -132,6 +133,10 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
       extractPreviewRefRepositoryName,
       RTE.fromOption(() => new Error('Invalid preview ref')),
     ),
+  ),
+
+  RTE.chainFirst((env) =>
+    RTE.fromIO(env.setActiveRepositoryName(env.repositoryName)),
   ),
 
   RTE.bindW('repositoryConfig', (env) =>
@@ -186,9 +191,7 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
   ),
 
   // Start bootstrap.
-  RTE.chainFirst((env) =>
-    RTE.fromIO(env.beginBootstrapping(env.repositoryName)),
-  ),
+  RTE.chainFirst((env) => RTE.fromIO(env.beginBootstrapping)),
 
   RTE.bindW('typePaths', (env) => () =>
     fetchTypePaths({ repositoryName: env.repositoryName }),
@@ -281,15 +284,15 @@ export const usePrismicPreviewBootstrap = (
   const bootstrapPreview = React.useCallback(async (): Promise<void> => {
     pipe(
       await RTE.run(usePrismicPreviewBootstrapProgram, {
-        beginBootstrapping: (repositoryName: string) => () => {
+        setActiveRepositoryName: (repositoryName: string) => () =>
           contextDispatch({
             type: PrismicContextActionType.SetActiveRepositoryName,
             payload: { repositoryName },
-          })
+          }),
+        beginBootstrapping: () =>
           localDispatch({
             type: UsePrismicPreviewBootstrapActionType.BeginBootstrapping,
-          })
-        },
+          }),
         // TODO: Remove local bootstrapped state? We already have it in context.
         bootstrapped: () => {
           localDispatch({
