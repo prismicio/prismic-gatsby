@@ -1,13 +1,11 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import * as prismic from 'ts-prismic'
 import * as IOE from 'fp-ts/IOEither'
 import { pipe } from 'fp-ts/function'
 import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
-import { getCookie } from './lib/getCookie'
-import { getURLSearchParam } from './lib/getURLSearchParam'
+import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
 import { userFriendlyError } from './lib/userFriendlyError'
 
 import {
@@ -75,15 +73,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
     // Begin resolving on page entry if the preview token is for this repository.
     React.useEffect(() => {
       pipe(
-        getCookie(prismic.cookie.preview),
-        IOE.chain(() =>
-          pipe(
-            getURLSearchParam('documentId'),
-            IOE.fromOption(
-              () => new Error('documentId URL parameter not present'),
-            ),
-          ),
-        ),
+        isPreviewResolverSession,
         IOE.fold(
           () => () => setLocalState('NOT_PREVIEW'),
           () => () => resolvePreview(),

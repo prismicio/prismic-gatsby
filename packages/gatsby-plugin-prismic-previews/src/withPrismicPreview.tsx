@@ -1,12 +1,11 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import * as prismic from 'ts-prismic'
 import * as IOE from 'fp-ts/IOEither'
-import { pipe } from 'fp-ts/function'
+import { constVoid, pipe } from 'fp-ts/function'
 import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
-import { getCookie } from './lib/getCookie'
+import { isPreviewSession } from './lib/isPreviewSession'
 import { userFriendlyError } from './lib/userFriendlyError'
 
 import { UnknownRecord } from './types'
@@ -44,6 +43,7 @@ type LocalState =
   | 'PROMPT_FOR_ACCESS_TOKEN'
   | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
   | 'DISPLAY_ERROR'
+  | 'NOT_PREVIEW'
 
 export const withPrismicPreview = <
   TStaticData extends UnknownRecord,
@@ -71,16 +71,26 @@ export const withPrismicPreview = <
       skip: config.mergePreviewData,
     })
 
-    // Begin bootstrapping on page entry if the preview token is for this
-    // repository and we haven't already bootstrapped.
+    // Begin bootstrapping on page entry if a preview token exists and we
+    // haven't already bootstrapped.
     React.useEffect(() => {
       pipe(
-        getCookie(prismic.cookie.preview),
-        IOE.filterOrElse(
-          () => !contextState.isBootstrapped,
-          () => new Error('Already bootstrapped'),
+        isPreviewSession,
+        IOE.fold(
+          () => () => setLocalState('NOT_PREVIEW'),
+          () =>
+            pipe(
+              contextState.isBootstrapped,
+              IOE.fromPredicate(
+                (isBootstrapped) => !isBootstrapped,
+                () => new Error('Already bootstrapped'),
+              ),
+              IOE.fold(
+                () => constVoid,
+                () => () => bootstrapPreview(),
+              ),
+            ),
         ),
-        IOE.chainFirst(() => IOE.right(bootstrapPreview())),
       )()
     }, [bootstrapPreview, contextState.isBootstrapped])
 

@@ -14,6 +14,7 @@ import md5 from 'tiny-hashes/md5'
 import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 import { fetchTypePaths } from './lib/fetchTypePaths'
 import { getCookie } from './lib/getCookie'
+import { isPreviewSession } from './lib/isPreviewSession'
 import { proxyDocumentNodeInput } from './lib/proxyDocumentNodeInput'
 import { queryAllDocuments } from './lib/queryAllDocuments'
 import { serializePath } from './lib/serializePath'
@@ -118,8 +119,9 @@ const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<UsePrismicPreviewBootstrapProgramEnv>(),
 
-  // Only continue if this is a preview session, which is determined by the
-  // presence of the Prismic preview cookie.
+  // Only continue if this is a preview session.
+  RTE.chainFirst(() => RTE.fromIOEither(isPreviewSession)),
+
   RTE.bindW('previewRef', () =>
     pipe(
       RTE.fromIOEither(getCookie(prismic.cookie.preview)),

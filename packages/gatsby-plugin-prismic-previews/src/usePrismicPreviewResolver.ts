@@ -10,12 +10,13 @@ import { constVoid, pipe } from 'fp-ts/function'
 import ky from 'ky'
 
 import { buildQueryParams } from './lib/buildQueryParams'
+import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 import { getCookie } from './lib/getCookie'
 import { getURLSearchParam } from './lib/getURLSearchParam'
+import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
 
 import { LinkResolver } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 import { PrismicContextActionType, PrismicContextState } from './context'
 
 export type UsePrismicPreviewResolverFn = () => Promise<void>
@@ -95,6 +96,9 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<UsePrismicPreviewResolverProgramEnv>(),
 
+  // Only continue if this is a preview session.
+  RTE.chainFirst(() => RTE.fromIOEither(isPreviewResolverSession)),
+
   RTE.bindW('documentId', () =>
     pipe(
       getURLSearchParam('documentId'),
@@ -102,8 +106,6 @@ const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
     ),
   ),
 
-  // Only continue if this is a preview session, which is determined by the
-  // presence of the Prismic preview cookie.
   RTE.bindW('previewRef', () =>
     pipe(
       RTE.fromIOEither(getCookie(prismic.cookie.preview)),
