@@ -9,15 +9,17 @@ const getToolbarScriptURL = (
 ): string => {
   switch (type) {
     case 'new': {
-      return `//static.cdn.prismic.io/prismic.js?repo=${repositoryName}&new=true`
+      return `https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}&new=true`
     }
 
     case 'legacy': {
-      return `//static.cdn.prismic.io/prismic.js?repo=${repositoryName}`
+      return `https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}`
     }
   }
 }
 
+// TODO: Explore what happens when multiple instances of the plugin are
+// configured. Will multiple toolbars cause conflicts (probably yes).
 export const onRenderBody: NonNullable<
   gatsby.GatsbySSR['onRenderBody']
 > = async (
@@ -31,7 +33,7 @@ export const onRenderBody: NonNullable<
         pluginOptions.toolbar,
       )}
       defer={true}
-      key={`prismic-toolbar-${pluginOptions.repositoryName}`}
+      key={`gatsby-plugin-prismic-previews-toolbar-${pluginOptions.repositoryName}`}
     />,
   ])
 }

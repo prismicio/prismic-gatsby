@@ -62,14 +62,9 @@ const createConfig = (): WithPrismicPreviewResolverConfig => ({
   navigate: sinon.stub().returns(void 0),
 })
 
-// const fallbackChildren = 'fallback content'
 const Page = (props: gatsby.PageProps & WithPrismicPreviewResolverProps) => (
   <div>
-    <div data-testid="isPrismicPreview">
-      {props.isPrismicPreview === null
-        ? 'null'
-        : props.isPrismicPreview.toString()}
-    </div>
+    <div data-testid="isPrismicPreview">{String(props.isPrismicPreview)}</div>
     <div data-testid="prismicPreviewState">{props.prismicPreviewState}</div>
     <div data-testid="prismicPreviewError">
       {props.prismicPreviewError?.message}
@@ -112,7 +107,7 @@ test.serial('renders component if not a preview', async (t) => {
   t.true((config.navigate as sinon.SinonStub).notCalled)
 })
 
-test.serial('fails if documentId is not in URL', async (t) => {
+test.serial('not a preview if documentId is not in URL', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const pageProps = createPageProps()
@@ -128,23 +123,12 @@ test.serial('fails if documentId is not in URL', async (t) => {
   await onClientEntry(gatsbyContext, pluginOptions)
   const result = tlr.render(tree)
 
-  await tlr.waitFor(() =>
-    assert.ok(
-      result.getByTestId('prismicPreviewState').textContent === 'FAILED',
-    ),
-  )
-
-  t.true(result.getByTestId('isPrismicPreview').textContent === 'true')
-  t.true(result.getByTestId('prismicPreviewState').textContent === 'FAILED')
-  t.true(
-    /documentId URL parameter not present/i.test(
-      result.getByTestId('prismicPreviewError').textContent ?? '',
-    ),
-  )
+  t.true(result.getByTestId('isPrismicPreview').textContent === 'false')
+  t.true(result.getByTestId('prismicPreviewState').textContent === 'INIT')
   t.true((config.navigate as sinon.SinonStub).notCalled)
 })
 
-test.serial('not a preview if no token', async (t) => {
+test.serial('not a preview if no token is available', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const pageProps = createPageProps()
@@ -160,6 +144,7 @@ test.serial('not a preview if no token', async (t) => {
   const result = tlr.render(tree)
 
   t.true(result.getByTestId('isPrismicPreview').textContent === 'false')
+  t.true(result.getByTestId('prismicPreviewState').textContent === 'INIT')
   t.true((config.navigate as sinon.SinonStub).notCalled)
 })
 

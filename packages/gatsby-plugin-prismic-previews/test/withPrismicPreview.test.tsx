@@ -102,6 +102,8 @@ const createTree = (
 
   return (
     <PrismicPreviewProvider>
+      {/*
+       // @ts-expect-error - Partial pageResources provided */}
       <WrappedPage {...pageProps} />
     </PrismicPreviewProvider>
   )

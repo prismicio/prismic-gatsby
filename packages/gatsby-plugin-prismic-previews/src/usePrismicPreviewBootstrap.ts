@@ -11,6 +11,7 @@ import { createNodeHelpers } from 'gatsby-node-helpers'
 import { GLOBAL_TYPE_PREFIX, PrismicTypePathType } from 'gatsby-source-prismic'
 import md5 from 'tiny-hashes/md5'
 
+import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 import { fetchTypePaths } from './lib/fetchTypePaths'
 import { getCookie } from './lib/getCookie'
 import { proxyDocumentNodeInput } from './lib/proxyDocumentNodeInput'
@@ -27,7 +28,6 @@ import {
 } from './types'
 import { PrismicContextActionType, PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 
 export type UsePrismicPreviewBootstrapFn = () => void
 

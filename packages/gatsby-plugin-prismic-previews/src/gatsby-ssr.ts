@@ -5,3 +5,4 @@
  */
 
 export { onRenderBody } from './on-render-body'
+// export { wrapRootElement } from './wrap-root-element'

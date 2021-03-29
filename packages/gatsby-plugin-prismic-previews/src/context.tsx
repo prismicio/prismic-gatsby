@@ -17,10 +17,6 @@ import { getCookie } from './lib/getCookie'
 import { sprintf } from './lib/sprintf'
 import { ssrPluginOptionsStore } from './lib/setPluginOptionsOnWindow'
 
-if (typeof window !== 'undefined') {
-  window[WINDOW_PLUGIN_OPTIONS_KEY] = {}
-}
-
 /**
  * Populate a plugin options' `accessToken` value with one stored in a persisted
  * cookie, if available. If an access token already exists in the plugin

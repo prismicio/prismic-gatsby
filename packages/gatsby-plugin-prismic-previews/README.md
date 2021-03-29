@@ -113,7 +113,7 @@ conneted to the plugin's system. The following files will need to be created or
 edited:
 
 - [**Link Resolver function**](#link-resolver-function)<br/>A function used to
-  determine a document's URL.
+  determine a document's URL within your app.
 
 - [**Preview resolver page**](#preview-resolver-page)<br/>A page used to direct
   editors to a document's page during a preview session.
@@ -326,13 +326,12 @@ By default, the newer, current version of the toolbar is used. All new and
 recently created Prismic repositories will use this version of the toolbar and
 requires no extra settings.
 
-If your repository if older, it may not support the latest version of the
+If your repository is older, it may not support the latest version of the
 toolbar. Don't worry, previews will still work! But you will need to tell the
 plugin to use an older version of the toolbar. To check if your repository
 requires the older toolbar, perform the following steps:
 
-1. Sign in the writing room for your Prismic repository (e.g.
-   https://your-repository-name.prismic.io).
+1. Sign in to the writing room for your Prismic repository.
 1. Navigate to your repository's Settings page.
 1. Select the Previews section.
 1. On that page, check the "Include the Prismic Toolbar JavaScript file" code

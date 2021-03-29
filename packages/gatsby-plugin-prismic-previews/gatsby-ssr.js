@@ -6,3 +6,4 @@
 const gatsbySSR = require('./dist/gatsby-ssr')
 
 exports.onRenderBody = gatsbySSR.onRenderBody
+// exports.wrapRootElement = gatsbySSR.wrapRootElement

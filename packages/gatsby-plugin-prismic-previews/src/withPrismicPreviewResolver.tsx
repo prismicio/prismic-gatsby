@@ -7,6 +7,7 @@ import ky from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { getCookie } from './lib/getCookie'
+import { getURLSearchParam } from './lib/getURLSearchParam'
 import { userFriendlyError } from './lib/userFriendlyError'
 
 import {
@@ -75,6 +76,14 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
     React.useEffect(() => {
       pipe(
         getCookie(prismic.cookie.preview),
+        IOE.chain(() =>
+          pipe(
+            getURLSearchParam('documentId'),
+            IOE.fromOption(
+              () => new Error('documentId URL parameter not present'),
+            ),
+          ),
+        ),
         IOE.fold(
           () => () => setLocalState('NOT_PREVIEW'),
           () => () => resolvePreview(),
