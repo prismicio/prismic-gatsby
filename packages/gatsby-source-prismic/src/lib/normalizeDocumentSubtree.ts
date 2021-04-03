@@ -36,6 +36,11 @@ const embedValueRefinement = (value: unknown): value is PrismicAPIEmbedField =>
 const sliceValueRefinement = (value: unknown): value is PrismicAPISliceField =>
   unknownRecordRefinement(value) && 'slice_type' in value
 
+const slicesValueRefinement = (
+  value: unknown,
+): value is PrismicAPISliceField[] =>
+  Array.isArray(value) && value.every(sliceValueRefinement)
+
 const stringableRefinement = (value: unknown): value is Stringable =>
   (typeof value === 'boolean' ||
     typeof value === 'number' ||
@@ -84,7 +89,6 @@ export const normalizeDocumentSubtree = (
           )
         }
 
-        case PrismicFieldType.Slices:
         case PrismicFieldType.Group: {
           return pipe(
             value,
@@ -96,6 +100,25 @@ export const normalizeDocumentSubtree = (
                 ),
             ),
             RTE.map(A.map((item) => normalizeDocumentRecord(path, item))),
+            RTE.chainW(RTE.sequenceArray),
+          )
+        }
+
+        case PrismicFieldType.Slices: {
+          return pipe(
+            value,
+            RTE.fromPredicate(
+              slicesValueRefinement,
+              () =>
+                new Error(
+                  `Field value does not match the type declared in its type path: ${env.type}`,
+                ),
+            ),
+            RTE.map(
+              A.map((item) =>
+                normalizeDocumentSubtree([...path, item.slice_type], item),
+              ),
+            ),
             RTE.chainW(RTE.sequenceArray),
           )
         }

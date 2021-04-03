@@ -154,7 +154,7 @@ export interface PrismicSchemaGroupField {
   config: {
     label?: string
     placeholder?: string
-    fields: Record<string, PrismicSchemaStandardField>
+    fields: Record<string, PrismicSchemaStandardField | PrismicSchemaImageField>
   }
 }
 
