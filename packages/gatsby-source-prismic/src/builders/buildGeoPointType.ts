@@ -15,7 +15,7 @@ export const buildGeoPointType: RTE.ReaderTaskEither<
   RTE.chain((deps) =>
     buildObjectType({
       name: deps.globalNodeHelpers.createTypeName('GeoPointType'),
-      fields: { longitude: 'Int!', latitude: 'Int!' },
+      fields: { longitude: 'Float!', latitude: 'Float!' },
     }),
   ),
 )
