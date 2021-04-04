@@ -158,8 +158,8 @@ The `fetchLinks` option will continue to work in V4, but `graphQuery` is
 recommend over `fetchLinks` as it provides more control over the fields fetched
 for a document.
 
-```javascript
-  // gatsby-config.js
+```diff
+// gatsby-config.js
 
   plugins: [
     {
