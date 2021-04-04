@@ -401,8 +401,8 @@ using the `raw` field, though use of this field is discouraged.
 ### Query Media fields
 
 Media fields can be populated with files such as PDFs, ZIPs, or images. The URL
-to a field's file can be queried using Prismic's CDN URL or can be downloaded
-locally to be served with your app.
+to a field's file can be served from Prismic's CDN or can be downloaded locally
+to be served with your app.
 
 Querying for the `localFile` field will tell Gatsby to download the file
 locally. To add `publicURL` as an available field, which copies the file into
