@@ -1,3 +1,4 @@
+const path = require('path')
 const dotenv = require('dotenv')
 
 dotenv.config()
@@ -20,6 +21,13 @@ module.exports = {
       options: {
         repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
         typePrefix: 'prefix',
+      },
+    },
+    {
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        name: 'gatsby-source-prismic',
+        path: path.resolve(__dirname, 'src'),
       },
     },
     process.env.ANALYZE === 'true' &&
