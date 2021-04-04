@@ -9,7 +9,7 @@ repositories.
   `gatsby-transformer-sharp`
 - Utilizes `prismic-dom` to convert content into HTML so you don't have to use
   `prismic-dom` directly
-- Supports live, client-side [Prismic previews](#Previews) using
+- Supports live, client-side [Prismic previews][prismic-previews] using
   [`gatsby-plugin-prismic-previews`][gppp]
 
 ## Install
@@ -87,8 +87,10 @@ module.exports = {
           // Return a URL for the document.
         },
 
-        // Set a list of links to fetch and be made available in your link
-        // resolver function.
+        // Define a set of documents fields to fetch from Prismic. By default,
+        // all top-level fields will be fetched for all documents. If you need
+        // to fetch nested content to make available in your Link Resolver
+        // function, provide a GraphQuery here.
         //
         // See: https://prismic.io/docs/technologies/graphquery-rest-api
         graphQuery: `
@@ -145,7 +147,7 @@ module.exports = {
         // you are sourcing from multiple repositories, each plugin should have
         // a unique typePrefix to avoid type conflicts. This is optional if you
         // are sourcing from a single repository.
-        typePrefix: process.env.PRISMIC_API_ENDPOINT,
+        typePrefix: 'Prefix',
 
         // If your Prismic repository's webhooks are configured to send a
         // secret, provide the secret here. Using a secret allows you to confirm
@@ -293,7 +295,7 @@ If the link type is a web link (i.e. a URL external from your site), the URL is
 provided without additional processing.
 
 All other URL fields, such as `target`, `lang`, and `isBroken`, are provided on
-the field, as well.
+the field as well.
 
 The `target` field defaults to an empty string. This allows you to always query
 the `target` field even if it is not set in Prismic.
@@ -467,10 +469,11 @@ Full example:
 
 If you find you cannot query the data you need through the GraphQL interface,
 you can get the raw response from the [prismic-javascript][prismic-javascript]
-API using the `dataString` field.
+API using the `dataRaw` field.
 
-This field contains the whole node's original data before processing as a string
-generated using `JSON.stringify`.
+This field contains the whole node's original data before processing as a single
+object. You will receive a JSON object which means you cannot query for
+individual fields within it.
 
 This is absolutely discouraged as it defeats the purpose of Gatsby's GraphQL
 data interface, but it is available if necessary
@@ -481,7 +484,7 @@ data interface, but it is available if necessary
     edges {
       node {
         id
-        dataString
+        dataRaw
       }
     }
   }
@@ -567,32 +570,6 @@ To use local image processing, you need `gatsby-transformer-sharp`,
 Note that this will incur additional build time as image processing is
 time-consuming.
 
-In your `gatsby-config.js` file, set the `shouldDownloadImage` plugin option to
-a function that returns `true` for images requiring local transformations.
-
-```javascript
-// In your gatsby-config.js
-plugins: [
-  {
-    resolve: 'gatsby-source-prismic',
-    options: {
-      // Along with your other options...
-
-      // Set a function to determine if images are downloaded locally and made
-      // available for gatsby-transformer-sharp for use with gatsby-image.
-      // The document node, field key (i.e. API ID), and field value are
-      // provided to the function, as seen below. This allows you to use
-      // different logic for each field if necessary.
-      // This defaults to always return false.
-      shouldDownloadImage: ({ node, key, value }) => {
-        // Return true to download the image or false to skip.
-        return true
-      },
-    },
-  },
-]
-```
-
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the [`gatsby-transformer-sharp`
 fragments][gatsby-image-fragments]:
@@ -648,13 +625,14 @@ To learn more about local image processing, check the documentation of
 
 ## Previews
 
-`gatsby-source-prismic` provides a way to preview document changes directly from
-Prismic without rebuilding your site. By rendering previews client-side, we can
-retain the benefits of Gatsby's HTML pre-rendering while still provding the
-dynamic and rich content editing experience of a traditional server setup.
+[`gatsby-plugin-prismic-previews`][gppp] provides a way to preview document
+changes directly from Prismic without rebuilding your site. By rendering
+previews client-side, we can retain the benefits of Gatsby's HTML pre-rendering
+while still provding the dynamic and rich content editing experience of a
+traditional server setup.
 
 For an in-depth guide on using previews, please refer to
-[this guide](./docs/previews.md).
+[`gatsby-plugin-prismic-previews`'s documentation][gppp].
 
 ## Releases
 
@@ -691,11 +669,9 @@ release ID. The label identifies the release's purpose. Master, for example, is
 the latest published version of all your documents. Your other Prismic Releases
 will be listed here with their names.
 
-Note that a release build is totally compatible with the preview system
-explained in the [preview guide](./docs/previews-guide.md). Using a `releaseID`
-is a way to view at once another version of your website, but under the hood it
-works the same way as the default build. So you can preview a draft of one
-document of your release just like you would do with the master version.
+Note that a release build is totally compatible with live client-side previews.
+Building with a release is a way to view at once another version of your
+website, but under the hood it works the same way as the default build.
 
 ## Limitations
 
@@ -716,7 +692,7 @@ Note that this does not allow fields containing the following:
 
 ## Site's `gatsby-node.js` example
 
-```jsx
+```javascript
 const path = require('path')
 
 exports.createPages = async ({ graphql, actions }) => {
@@ -729,29 +705,21 @@ exports.createPages = async ({ graphql, actions }) => {
         nodes {
           id
           uid
-          data {
-            template
-          }
         }
       }
     }
   `)
 
-  const pageTemplates = {
-    Light: path.resolve(__dirname, 'src/templates/light.js'),
-    Dark: path.resolve(__dirname, 'src/templates/dark.js'),
-  }
-
-  // Create pages for each Page in Prismic using the selected template.
-  pages.data.allPrismicPage.nodes.forEach((node) => {
+  // Create pages for each Page in Prismic using a template.
+  for (const node of pages.data.allPrismicPage.nodes) {
     createPage({
-      path: `/${node.uid}`,
-      component: pageTemplates[node.template],
+      path: node.url,
+      component: path.resolve(__dirname, 'src/templates/page.js'),
       context: {
         id: node.id,
       },
     })
-  })
+  }
 }
 ```
 
@@ -764,9 +732,7 @@ exports.createPages = async ({ graphql, actions }) => {
 [prismic-dom]: https://github.com/prismicio/prismic-dom
 [prismic-javascript]: https://github.com/prismicio/prismic-javascript
 [prismic-previews]:
-  https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
-[prismic-toolbar]:
-  https://prismic.io/docs/rest-api/beyond-the-api/in-website-edit-button
+  https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
 [prismic-releases]:
   https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
 [prismic-version-custom-types]:
