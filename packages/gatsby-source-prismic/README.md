@@ -398,6 +398,42 @@ using the `raw` field, though use of this field is discouraged.
 }
 ```
 
+### Query Media fields
+
+Media fields can be populated with files such as PDFs, ZIPs, or images. The URL
+to a field's file can be queried using Prismic's CDN URL or can be downloaded
+locally to be served with your app.
+
+Querying for the `localFile` field will tell Gatsby to download the file
+locally. To add `publicURL` as an available field, which copies the file into
+your app's `/static` directory, add
+[`gatsby-source-filesystem`][gatsby-source-filesystem] to your project.
+
+**Note**: `gatsby-source-filesystem` requires pointing the plugin to a directory
+within your app. If you aren't using `gatsby-source-filesystem` for any other
+purpose in your app, you can set its `path` parameter to any directory in your
+project. Adding `gatsby-source-filesystem` is the only way to register the
+`publicURL` field.
+
+```graphql
+{
+  allPrismicPage {
+    edges {
+      nodes {
+        data {
+          media_field {
+            url
+            localFile {
+              publicURL
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ### Query slices
 
 Prismic slices allow you to build a flexible series of content blocks. Since the
@@ -748,3 +784,5 @@ exports.createPages = async ({ graphql, actions }) => {
   https://www.gatsbyjs.org/packages/gatsby-image/?=gatsby-image#two-types-of-responsive-images
 [dotenv]: https://github.com/motdotla/dotenv
 [gatsby-env-vars]: https://gatsby.dev/env-vars
+[gatsby-source-filesystem]:
+  https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-source-filesystem
