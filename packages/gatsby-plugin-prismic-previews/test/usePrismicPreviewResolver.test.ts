@@ -115,7 +115,7 @@ test.serial('fails if token is not in cookies', async (t) => {
   t.true(result.current[0].state === 'FAILED')
   t.true(
     result.current[0].error?.message &&
-      /preview cookie not present/i.test(result.current[0].error?.message),
+      /not a preview session/i.test(result.current[0].error?.message),
   )
 })
 

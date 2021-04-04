@@ -96,8 +96,7 @@ test.serial('fails if not a preview session - cookie is not set', async (t) => {
 
   t.true(state.state === 'FAILED')
   t.true(
-    state.error?.message &&
-      /preview cookie not present/i.test(state.error.message),
+    state.error?.message && /not a preview session/i.test(state.error.message),
   )
 })
 
