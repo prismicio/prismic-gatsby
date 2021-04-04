@@ -780,3 +780,5 @@ exports.createPages = async ({ graphql, actions }) => {
   https://user-guides.prismic.io/en/articles/762324-how-to-set-up-responsive-images
 [gatsby-image-types]:
   https://www.gatsbyjs.org/packages/gatsby-image/?=gatsby-image#two-types-of-responsive-images
+[dotenv]: https://github.com/motdotla/dotenv
+[gatsby-env-vars]: https://gatsby.dev/env-vars
