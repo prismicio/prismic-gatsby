@@ -9,5 +9,5 @@ jobs:
         with:
           node-version: '14'
       - uses: bahmutov/npm-install@v1
-      - run: yarn test
       - run: yarn build
+      - run: yarn test
