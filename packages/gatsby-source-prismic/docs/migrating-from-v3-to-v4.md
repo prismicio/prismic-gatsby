@@ -251,5 +251,5 @@ the new plugin if you are using previews currently. See the
 + import { withPrismicPreview } from 'gatsby-plugin-prismic-previews'
 ```
 
-[gppp]: #
+[gppp]: ../../gatsby-plugin-prismic-previews
 [prismic-graphquery]: https://prismic.io/docs/technologies/graphquery-rest-api
