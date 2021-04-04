@@ -18,7 +18,7 @@ test('creates base type', async (t) => {
       kind: 'OBJECT',
       config: sinon.match({
         name: 'PrismicGeoPointType',
-        fields: { longitude: 'Int!', latitude: 'Int!' },
+        fields: { longitude: 'Float!', latitude: 'Float!' },
       }),
     }),
   )
