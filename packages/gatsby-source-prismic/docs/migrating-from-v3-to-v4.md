@@ -141,6 +141,46 @@ compatible with V4.
   ]
 ```
 
+### Optional: Replace `fetchLinks` plugin option with `graphQuery`
+
+In V3, the `fetchLinks` plugin option allowed for providing a list of document
+fields to make available in your app's Link Resolver. This is necessary if your
+Link Resolver requires data from a linked document, such as a parent or category
+document.
+
+In V4, the `graphQuery` plugin option provides the same functionality with
+greater control. The value provided to the `graphQuery` plugin option looks
+similar to a GraphQL query in that you can define exactly which fields you need
+in a document, included nested content. You can learn more at
+[Prismic's GraphQuery documentation](prismic-graphquery).
+
+The `fetchLinks` option will continue to work in V4, but `graphQuery` is
+recommend over `fetchLinks` as it provides more control over the fields fetched
+for a document.
+
+```javascript
+  // gatsby-config.js
+
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+-       fetchLinks: ['page.parent'],
++       graphQuery: `
++         {
++           page {
++             ...pageFields
++             parent {
++               ...parentFields
++             }
++           }
++         }
++       `,
++     },
+    },
+  ]
+```
+
 ### Remove `typePathsFilenamePrefix` plugin option
 
 In V3, the `typePathsFilenamePrefix` plugin option allowed for customizing the
@@ -212,3 +252,4 @@ the new plugin if you are using previews currently. See the
 ```
 
 [gppp]: #
+[prismic-graphquery]: https://prismic.io/docs/technologies/graphquery-rest-api

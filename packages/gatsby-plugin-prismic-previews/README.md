@@ -1,7 +1,7 @@
 # gatsby-plugin-prismic-previews
 
-Integrate live [Prismic Previews][prismic-previews] into a static Gatsby site to
-enable editors a seamless content editing experience.
+Integrate live [Prismic Previews][prismic-previews] into a static
+[Gatsby][gatsby] site to enable editors a seamless content editing experience.
 
 - Integrates tightly with the [Gatsby Prismic source plugin][gsp]
 - Refreshes preview content automatically as changes are saved in Prismic
@@ -44,6 +44,7 @@ we can use these environment variables and configure our plugin.
 
 ```javascript
 // In your gatsby-config.js
+
 module.exports = {
   plugins: [
     {
@@ -383,6 +384,7 @@ module.exports = {
 }
 ```
 
+[gatsby]: https://www.gatsbyjs.com/
 [gsp]: ../gatsby-source-prismic
 [prismic-previews]: #
 [prismic-toolbar]: #

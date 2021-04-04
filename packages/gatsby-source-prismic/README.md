@@ -1,38 +1,16 @@
 # gatsby-source-prismic
 
-Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
+Source plugin for pulling data into [Gatsby][gatsby] from [Prismic][prismic]
 repositories.
 
-## Table of Contents
-
-- [Features](#Features)
-- [Install](#Install)
-- [Migration Guide](#Migration-Guide)
-- [How to use](#How-to-use)
-- [Providing JSON schemas](#Providing-JSON-schemas)
-- [How to query](#How-to-query)
-  - [Query Rich Text fields](#Query-Rich-Text-fields)
-  - [Query Link fields](#Query-Link-fields)
-  - [Query Image fields](#Query-image-fields)
-  - [Query Content Relation fields](#Query-Content-Relation-fields)
-  - [Query Slices](#Query-slices)
-  - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
-  - [Image processing](#Image-processing)
-- [Previews](#Previews)
-- [Releases](#Releases)
-- [Limitations](#Limitations)
-  - [GraphQL-valid field names](#GraphQL-valid-field-names)
-- [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
-
-## Features
-
-- Supports Rich Text fields, slices, and content relation fields
+- Supports Rich Text fields, [Slices][prismic-slices], and content relation
+  fields
 - Supports `gatsby-image` using [Imgix][prismic-imgix] or
-  `gatsby-transformer-sharp` for image fields
-- Utilizes `prismic-dom` to provide HTML and link values so you don't have to
-  use `prismic-dom` directly
-- Supports [Prismic previews](#Previews) and automatically adds the
-  [Prismic Toolbar](prismic-toolbar)
+  `gatsby-transformer-sharp`
+- Utilizes `prismic-dom` to convert content into HTML so you don't have to use
+  `prismic-dom` directly
+- Supports live, client-side [Prismic previews](#Previews) using
+  [`gatsby-plugin-prismic-previews`][gppp]
 
 ## Install
 
@@ -40,135 +18,146 @@ repositories.
 npm install --save gatsby-source-prismic
 ```
 
+Or if you use Yarn:
+
+```sh
+yarn add gatsby-source-prismic
+```
+
 ## Migration Guide
 
-Read the migration guide to learn why and how to upgrade from v2 to v3. Then
-read the previews guide to learn how to setup previews.
+Read the migration guide to learn why and how to upgrade from v3 to v4.
 
-- [Migrating from v2 to v3](./docs/migrating-from-v2-to-v3.md)
-- [Previews](./docs/previews.md)
+**Guide**: [Migrating from v3 to v4](./docs/migrating-from-v3-to-v4.md)
 
 ## How to use
 
+First, you need a way to pass environment variables to the build process so
+secrets and other secured data aren't committed to source control. We recommend
+using [`dotenv`][dotenv] which will then expose environment variables. [Read
+more about dotenv and using environment variables here][gatsby-env-vars]. Then
+we can use these environment variables and configure our plugin.
+
 ```javascript
 // In your gatsby-config.js
-plugins: [
-  /*
-   * Gatsby's data processing layer begins with “source”
-   * plugins. Here the site sources its data from prismic.io.
-   */
-  {
-    resolve: 'gatsby-source-prismic',
-    options: {
-      // The name of your prismic.io repository. This is required.
-      // Example: 'gatsby-source-prismic-test-site' if your prismic.io address
-      // is 'gatsby-source-prismic-test-site.prismic.io'.
-      repositoryName: 'gatsby-source-prismic-test-site',
 
-      // An API access token to your prismic.io repository. This is optional.
-      // You can generate an access token in the "API & Security" section of
-      // your repository settings. Setting a "Callback URL" is not necessary.
-      // The token will be listed under "Permanent access tokens".
-      accessToken: 'example-wou7evoh0eexuf6chooz2jai2qui9pae4tieph1sei4deiboj',
+module.exports = {
+  plugins: [
+    /*
+     * Gatsby's data processing layer begins with “source”
+     * plugins. Here the site sources its data from Prismic.
+     */
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        // The name of your Prismic repository. This is required.
+        // Example: 'your-repository-name' if your prismic.io address
+        // is 'your-repository-name.prismic.io'.
+        //
+        // Learn about environment variables: https://gatsby.dev/env-vars
+        repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
 
-      // If you provide a release ID, the plugin will fetch data from Prismic
-      // for a specific release. A Prismic release is a way to gather a
-      // collection of changes for a future version of your website. Note that
-      // if you add changes to a release, you'll need to rebuild your website
-      // to see them.
-      // See: https://user-guides.prismic.io/en/collections/22653-releases-scheduling#the-basics-of-a-release
-      releaseID: 'example-eiyaingiefahyi7z',
+        // An API access token to your Prismic repository. This is optional.
+        // You can generate an access token in the "API & Security" section of
+        // your repository settings. Setting a "Callback URL" is not necessary.
+        // The token will be listed under "Permanent access tokens".
+        accessToken: process.env.PRISMIC_ACCESS_TOKEN,
 
-      // Set a link resolver function used to process links in your content.
-      // Fields with rich text formatting or links to internal content use this
-      // function to generate the correct link URL.
-      // The document node, field key (i.e. API ID), and field value are
-      // provided to the function, as seen below. This allows you to use
-      // different link resolver logic for each field if necessary.
-      // See: https://prismic.io/docs/javascript/query-the-api/link-resolving
-      linkResolver: ({ node, key, value }) => (doc) => {
-        // Your link resolver
+        // If you provide a release ID, the plugin will fetch data from Prismic
+        // for a specific release. A Prismic release is a way to gather a
+        // collection of changes for a future version of your website. Note that
+        // if you add changes to a release, you'll need to rebuild your website
+        // to see them.
+        //
+        // See: https://user-guides.prismic.io/en/articles/778358-what-is-a-release
+        releaseID: process.env.PRISMIC_RELEASE_ID,
+
+        // Provide an object of Prismic custom type JSON schemas to load into
+        // Gatsby. This is required.
+        schemas: {
+          // Your custom type JSON schemas.
+        },
+
+        // Set a Link Resolver function used to process links in your content.
+        // Fields with Rich Text formatting or links to internal content use this
+        // function to generate the correct link URL.
+        //
+        // See: https://prismic.io/docs/javascript/query-the-api/link-resolving
+        linkResolver: (doc) => {
+          // Return a URL for the document.
+        },
+
+        // Set a list of links to fetch and be made available in your link
+        // resolver function.
+        //
+        // See: https://prismic.io/docs/technologies/graphquery-rest-api
+        graphQuery: `
+          {
+            // Your graphQuery
+          }
+        `,
+
+        // Set an HTML Serializer function used to process formatted content.
+        // Fields with Rich Text formatting use this function to generate its
+        // HTML.
+        //
+        // See: https://prismic.io/docs/technologies/html-serializer-javascript
+        htmlSerializer: (type, element, content, children) => {
+          // Return HTML for an piece of content.
+        },
+
+        // Set a default language when fetching documents. The default value is
+        // '*' which will fetch all languages.
+        //
+        // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
+        lang: '*',
+
+        // Provide a default set of Imgix image transformations applied to
+        // Imgix-backed gatsby-image fields. These options will override the
+        // defaults set by Prismic.
+        //
+        // See: https://docs.imgix.com/apis/url
+        imageImgixParams: {
+          auto: 'compress,format',
+          fit: 'max',
+          q: 50,
+        },
+
+        // Provide a default set of Imgix image transformations applied to
+        // the placeholder images of Imgix-backed gatsby-image fields. These
+        // parameters will be applied over those provided in the above
+        // `imageImgixParams` option.
+        //
+        // See: https://docs.imgix.com/apis/url
+        imagePlaceholderImgixParams: {
+          w: 100,
+          blur: 15,
+          q: 50,
+        },
+
+        // The API endpoint used to fetch content from Prismic. You can omit
+        // this option in most cases unless you require an API proxy or need to
+        // mock network responses. By default, your repository's standard
+        // endpoint will be used.
+        apiEndpoint: process.env.PRISMIC_API_ENDPOINT,
+
+        // A prefix used for all GraphQL types for your Prismic repository. If
+        // you are sourcing from multiple repositories, each plugin should have
+        // a unique typePrefix to avoid type conflicts. This is optional if you
+        // are sourcing from a single repository.
+        typePrefix: process.env.PRISMIC_API_ENDPOINT,
+
+        // If your Prismic repository's webhooks are configured to send a
+        // secret, provide the secret here. Using a secret allows you to confirm
+        // the webhook is from Prismic. This is optional and only used if your
+        // site is integrated with Gatsby Cloud.
+        //
+        // See: https://user-guides.prismic.io/en/articles/790505-webhooks
+        webhookSecret: process.env.PRISMIC_WEBHOOK_SECRET,
       },
-
-      // Set a list of links to fetch and be made available in your link
-      // resolver function.
-      // See: https://prismic.io/docs/javascript/query-the-api/fetch-linked-document-fields
-      fetchLinks: [
-        // Your list of links
-      ],
-
-      // Set an HTML serializer function used to process formatted content.
-      // Fields with rich text formatting use this function to generate the
-      // correct HTML.
-      // The document node, field key (i.e. API ID), and field value are
-      // provided to the function, as seen below. This allows you to use
-      // different HTML serializer logic for each field if necessary.
-      // See: https://prismic.io/docs/nodejs/beyond-the-api/html-serializer
-      htmlSerializer: ({ node, key, value }) => (
-        type,
-        element,
-        content,
-        children,
-      ) => {
-        // Your HTML serializer
-      },
-
-      // Provide an object of Prismic custom type JSON schemas to load into
-      // Gatsby. This is required.
-      schemas: {
-        // Your custom types mapped to schemas
-      },
-
-      // Set a default language when fetching documents. The default value is
-      // '*' which will fetch all languages.
-      // See: https://prismic.io/docs/javascript/query-the-api/query-by-language
-      lang: '*',
-
-      // Add the Prismic Toolbar script to the site. Defaults to false.
-      // Set to "legacy" if your repository requires the older toolbar script.
-      // See: https://prismic.io/docs/rest-api/beyond-the-api/the-preview-feature
-      prismicToolbar: true,
-
-      // Set a function to determine if images are downloaded locally and made
-      // available for gatsby-transformer-sharp for use with gatsby-image.
-      // The document node, field key (i.e. API ID), and field value are
-      // provided to the function, as seen below. This allows you to use
-      // different logic for each field if necessary.
-      // This defaults to always return false.
-      shouldDownloadImage: ({ node, key, value }) => {
-        // Return true to download the image or false to skip.
-      },
-
-      // Provide a default set of Imgix image transformations applied to
-      // Imgix-backed gatsby-image fields. These options will override the
-      // defaults set by Prismic.
-      // See: https://docs.imgix.com/apis/url
-      imageImgixParams: {
-        auto: 'compress,format',
-        fit: 'max',
-        q: 50,
-      },
-
-      // Provide a default set of Imgix image transformations applied to
-      // the placeholder images of Imgix-backed gatsby-image fields. These
-      // parameters will be applied over those provided in the above
-      // `imageImgixParams` option.
-      // See: https://docs.imgix.com/apis/url
-      imagePlaceholderImgixParams: {
-        w: 100,
-        blur: 15,
-        q: 50,
-      },
-
-      // Set the prefix for the filename where type paths for your schemas are
-      // stored. The filename will include the MD5 hash of your schemas after
-      // the prefix.
-      // This defaults to 'prismic-typepaths---${repositoryName}'.
-      typePathsFilenamePrefix:
-        'prismic-typepaths---gatsby-source-prismic-test-site',
     },
-  },
-]
+  ],
+}
 ```
 
 ## Providing JSON schemas
@@ -766,8 +755,10 @@ exports.createPages = async ({ graphql, actions }) => {
 }
 ```
 
-[gatsby]: https://www.gatsbyjs.org/
+[gatsby]: https://www.gatsbyjs.com/
 [prismic]: https://prismic.io/
+[gppp]: ../gatsby-plugin-prismic-previews
+[prismic-slices]: https://prismic.io/feature/dynamic-layout-content-components
 [prismic-imgix]:
   https://user-guides.prismic.io/en/articles/3309829-image-optimization-imgix-integration
 [prismic-dom]: https://github.com/prismicio/prismic-dom
