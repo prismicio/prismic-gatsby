@@ -5,12 +5,15 @@
     "node": ">=12.22"
   },
   "scripts": {
+    "clean": "yarn workspaces run clean",
     "test": "yarn workspaces run test",
     "build": "yarn workspaces run build",
     "release": "multi-semantic-release --dry-run --ignore-packages=packages/test-site"
   },
   "workspaces": {
     "packages": [
+      "packages/gatsby-source-prismic",
+      "packages/gatsby-plugin-prismic-previews",
       "packages/*"
     ],
     "nohoist": [
