@@ -26,10 +26,7 @@
     "build-storybook": "build-storybook"
   },
   "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/angeloashmore/gatsby-source-prismic.git"
-  },
+  "repository": "github:angeloashmore/gatsby-source-prismic",
   "keywords": [
     "gatsby",
     "gatsby-plugin",

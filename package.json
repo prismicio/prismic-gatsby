@@ -5,7 +5,7 @@
     "node": ">=12.22"
   },
   "scripts": {
-    "release": "yarn multi-semantic-release --dry-run --ignore-packages=packages/test-site"
+    "release": "multi-semantic-release --dry-run --ignore-packages=packages/test-site"
   },
   "workspaces": {
     "packages": [
@@ -60,7 +60,6 @@
     ]
   },
   "release": {
-    "dryRun": true,
     "branches": [
       "main",
       {
