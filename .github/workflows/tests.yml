@@ -11,4 +11,3 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: yarn test
       - run: yarn build
-        env: NODE_ENV=production
