@@ -9,7 +9,7 @@ import { linkResolver } from '../linkResolver'
 
 const repoName = process.env.GATSBY_PRISMIC_REPOSITORY_NAME as string
 
-const Page = (
+const KitchenSinkPage = (
   props: PageProps<Record<string, any>> &
     WithPrismicPreviewProps<Record<string, any>>,
 ): JSX.Element => {
@@ -41,7 +41,7 @@ const Page = (
       >
         <code>
           {JSON.stringify(
-            props.data.prismicPrefixKitchenSink.data.body[0].primary
+            props.data.prismicPrefixKitchenSink.data.body[0]?.primary
               .first_option_nonrepeat_title.html,
             null,
             2,
@@ -58,7 +58,7 @@ const Page = (
       >
         <code>
           {JSON.stringify(
-            props.data.prismicPrefixKitchenSink.data.body[0].primary
+            props.data.prismicPrefixKitchenSink.data.body[0]?.primary
               .first_option_nonrepeat_content_relationship.document,
             null,
             2,
@@ -97,7 +97,7 @@ const Page = (
   )
 }
 
-export default withPrismicPreview(Page, {
+export default withPrismicPreview(KitchenSinkPage, {
   [repoName]: { linkResolver },
 })
 

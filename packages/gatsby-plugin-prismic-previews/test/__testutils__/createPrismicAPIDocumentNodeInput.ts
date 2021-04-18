@@ -8,6 +8,7 @@ const createContentDigest = (_: unknown): string => 'createContentDigest'
 
 export const createPrismicAPIDocumentNodeInput = <TData = unknown>(
   data: TData = {} as TData,
+  doc = createPrismicAPIDocument(data),
   { typePrefix = 'Prismic' } = {},
 ): PrismicAPIDocumentNodeInput<TData> => {
   const nodeHelpers = createNodeHelpers({
@@ -15,7 +16,6 @@ export const createPrismicAPIDocumentNodeInput = <TData = unknown>(
     createNodeId,
     createContentDigest,
   })
-  const doc = createPrismicAPIDocument(data)
 
   return nodeHelpers.createNodeFactory(doc.type)(
     doc,

@@ -6,6 +6,7 @@ export * from './usePrismicPreviewResolver'
 
 export * from './withPrismicPreview'
 export * from './withPrismicPreviewResolver'
+export * from './withPrismicUnpublishedPreview'
 
 export * from './context'
 

@@ -1,159 +1,263 @@
-// TODO: Unpublished preview support is on hold pending further discussion.
-//
-// import * as React from 'react'
-// import * as gatsby from 'gatsby'
-// import * as IOE from 'fp-ts/IOEither'
-// import * as IO from 'fp-ts/IO'
-// import { pipe } from 'fp-ts/function'
-// import Prismic from 'prismic-javascript'
+import * as React from 'react'
+import * as gatsby from 'gatsby'
+import * as IOE from 'fp-ts/IOEither'
+import * as A from 'fp-ts/Array'
+import * as O from 'fp-ts/Option'
+import * as R from 'fp-ts/Record'
+import { constNull, constVoid, pipe } from 'fp-ts/function'
+import ky from 'ky'
 
-// import { getComponentDisplayName } from './lib/getComponentDisplayName'
-// import { validatePreviewTokenForRepository } from './lib/isPreviewTokenForRepository'
-// import { getCookie } from './lib/getCookie'
+import { camelCase } from './lib/camelCase'
+import { getComponentDisplayName } from './lib/getComponentDisplayName'
+import { getNodesForPath } from './lib/getNodesForPath'
+import { isPreviewSession } from './lib/isPreviewSession'
+import { userFriendlyError } from './lib/userFriendlyError'
 
-// import { UnknownRecord } from './types'
-// import { UnauthorizedError } from './errors/NotAuthorizedError'
-// import {
-//   usePrismicPreviewBootstrap,
-//   UsePrismicPreviewBootstrapFn,
-//   UsePrismicPreviewBootstrapState,
-// } from './usePrismicPreviewBootstrap'
-// import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-// import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
-// import { useMergePrismicPreviewData } from './useMergePrismicPreviewData'
+import { PrismicAPIDocumentNodeInput, UnknownRecord } from './types'
+import {
+  usePrismicPreviewBootstrap,
+  UsePrismicPreviewBootstrapConfig,
+} from './usePrismicPreviewBootstrap'
+import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
 
-// export interface WithPrismicUnpublishedPreviewProps {
-//   bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn
-//   isPrismicPreview: boolean
-//   prismicPreviewState: UsePrismicPreviewBootstrapState['state']
-//   prismicPreviewError: UsePrismicPreviewBootstrapState['error']
-// }
+import { Root } from './components/Root'
+import { ModalAccessToken } from './components/ModalAccessToken'
+import { ModalError } from './components/ModalError'
+import { ModalLoading } from './components/ModalLoading'
 
-// type WithPrismicUnpublishedPreviewConfig = {
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   templateMap: Record<string, React.ComponentType<any>>
-// }
+export type WithPrismicUnpublishedPreviewConfig = {
+  mergePreviewData?: boolean
+  componentResolver<P>(
+    nodes: PrismicAPIDocumentNodeInput[],
+  ): React.ComponentType<P> | undefined | null
 
-// type LocalState =
-//   | 'IDLE'
-//   | 'PROMPT_FOR_ACCESS_TOKEN'
-//   | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
-//   | 'DISPLAY_ERROR'
+  /**
+   * Determines the data passed to a Gatsby page. The value returned from this
+   * function is passed directly to the `data` prop.
+   *
+   * @param nodes List of nodes that have URLs resolved to the current page.
+   * @param data The original page's `data` prop.
+   *
+   * @returns The value that will be passed to the page's `data` prop.
+   */
+  dataResolver?<TData extends Record<string, unknown>>(
+    nodes: PrismicAPIDocumentNodeInput[],
+    data: TData,
+  ): Record<string, unknown>
+}
 
-// const isValidToken = (repositoryName: string) =>
-//   pipe(
-//     getCookie(Prismic.previewCookie),
-//     IOE.chain((token) =>
-//       IOE.fromEither(validatePreviewTokenForRepository(repositoryName, token)),
-//     ),
-//     IOE.getOrElse(() => IO.of(false)),
-//   )
+/**
+ * A convenience function to create a `componentResolver` function from a record
+ * mapping a Prismic document type to a React component.
+ *
+ * In most cases, this convenience function is sufficient to provide a working
+ * unpublished preview experience.
+ *
+ * @param componentMap A record mapping a Prismic document type to a React component.
+ *
+ * @returns A `componentResolver` function that can be passed to `withPrismicUnpublishedPreview`'s configuration.
+ */
+export const componentResolverFromMap = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  componentMap: Record<string, React.ComponentType<any>>,
+): WithPrismicUnpublishedPreviewConfig['componentResolver'] => (nodes) =>
+  pipe(
+    A.head(nodes),
+    O.bindTo('node'),
+    O.bind('type', (env) => O.some(env.node.type)),
+    O.chain((env) => R.lookup(env.type, componentMap)),
+    O.getOrElseW(constNull),
+  )
 
-// export const withPrismicUnpublishedPreview = <
-//   TStaticData extends UnknownRecord,
-//   TProps extends gatsby.PageProps<TStaticData>
-// >(
-//   WrappedComponent: React.ComponentType<TProps>,
-//   repositoryName: string,
-//   config: WithPrismicUnpublishedPreviewConfig,
-// ): React.ComponentType<TProps & WithPrismicUnpublishedPreviewProps> => {
-//   const WithPrismicUnpublishedPreview = (props: TProps): React.ReactElement => {
-//     const [contextState] = usePrismicPreviewContext(repositoryName)
-//     const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
-//       repositoryName,
-//     )
-//     const [, { set: setAccessToken }] = usePrismicPreviewAccessToken(
-//       repositoryName,
-//     )
-//     const [localState, setLocalState] = React.useState<LocalState>('IDLE')
+/**
+ * A `dataResolver` function that assumes the first matching node for the page's
+ * URL is the primary document. The document is added to the page's `data` prop
+ * using the Prismic document's type formatted using Gatsby's camel-cased query
+ * convention.
+ */
+export const defaultDataResolver: NonNullable<
+  WithPrismicUnpublishedPreviewConfig['dataResolver']
+> = (nodes, data) =>
+  pipe(
+    A.head(nodes),
+    O.bindTo('node'),
+    O.bind('key', (env) => O.some(camelCase(env.node.internal.type))),
+    O.fold(
+      () => data,
+      (env) => ({
+        ...data,
+        [env.key]: env.node,
+      }),
+    ),
+  )
 
-//     // Begin bootstrapping on page entry if the preview token is for this
-//     // repository and we haven't already bootstrapped.
-//     React.useEffect(() => {
-//       if (isValidToken(repositoryName)() && !contextState.isBootstrapped) {
-//         bootstrapPreview()
-//       }
-//     }, [])
+type LocalState =
+  | 'IDLE'
+  | 'PROMPT_FOR_ACCESS_TOKEN'
+  | 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+  | 'DISPLAY_ERROR'
+  | 'NOT_PREVIEW'
 
-//     // Handle state changes from the preview resolver.
-//     React.useEffect(() => {
-//       switch (bootstrapState.state) {
-//         case 'FAILED': {
-//           if (
-//             bootstrapState.error instanceof UnauthorizedError &&
-//             contextState.pluginOptions.promptForAccessToken
-//           ) {
-//             // If we encountered an UnauthorizedError, we don't have the correct
-//             // access token, and the plugin is configured to prompt for a token,
-//             // prompt for the correct token.
-//             if (contextState.pluginOptions.accessToken) {
-//               setLocalState('PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN')
-//             } else {
-//               setLocalState('PROMPT_FOR_ACCESS_TOKEN')
-//             }
-//           } else {
-//             // Otherwise, just display the error to the user. This can either be
-//             // an internal error or an UnauthorizedError (if the plugin is
-//             // configured to not prompt for the access token or we have the wrong
-//             // token).
-//             setLocalState('DISPLAY_ERROR')
-//           }
+export const withPrismicUnpublishedPreview = <
+  TStaticData extends UnknownRecord,
+  TProps extends gatsby.PageProps<TStaticData>
+>(
+  WrappedComponent: React.ComponentType<TProps>,
+  usePrismicPreviewBootstrapConfig: UsePrismicPreviewBootstrapConfig,
+  config: WithPrismicUnpublishedPreviewConfig,
+): React.ComponentType<TProps> => {
+  const WithPrismicUnpublishedPreview = (props: TProps): React.ReactElement => {
+    const [contextState] = usePrismicPreviewContext()
+    const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
+      usePrismicPreviewBootstrapConfig,
+    )
+    const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
+      contextState.activeRepositoryName,
+    )
+    const [localState, setLocalState] = React.useState<LocalState>('IDLE')
+    const dismissModal = () => setLocalState('IDLE')
 
-//           break
-//         }
-//       }
-//     }, [bootstrapState.state, bootstrapState.error])
+    const nodesForPath = React.useMemo(() => {
+      // props.location.pathname must be used over props.path since the 404
+      // page only receives a subset of a page's normal props.
+      return getNodesForPath(props.location.pathname, contextState.nodes)
+    }, [contextState, props.location.pathname])
 
-//     // TODO: Replace this with a proper UI in the DOM.
-//     // TODO: Have a user-facing button to clear the access token cookie.
-//     React.useEffect(() => {
-//       switch (localState) {
-//         case 'PROMPT_FOR_ACCESS_TOKEN':
-//         case 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN': {
-//           const accessToken = prompt(
-//             `Enter Prismic access token for ${repositoryName}`,
-//           )
+    const ResolvedComponent = React.useMemo(
+      () => config.componentResolver(nodesForPath) ?? WrappedComponent,
+      [nodesForPath],
+    )
 
-//           if (accessToken) {
-//             // Set the access token in the repository's context and retry
-//             // bootstrapping the preview.
-//             setAccessToken(accessToken)
-//             bootstrapPreview()
-//           } else {
-//             setLocalState('DISPLAY_ERROR')
-//           }
+    const resolvedData = React.useMemo(() => {
+      const dataResolver = config.dataResolver ?? defaultDataResolver
 
-//           break
-//         }
+      return dataResolver(nodesForPath, props.data)
+    }, [nodesForPath, props.data])
 
-//         case 'DISPLAY_ERROR': {
-//           console.error(bootstrapState.error)
+    // Begin bootstrapping on page entry if a preview token exists and we
+    // haven't already bootstrapped.
+    React.useEffect(() => {
+      pipe(
+        isPreviewSession,
+        IOE.fold(
+          () => () => setLocalState('NOT_PREVIEW'),
+          () =>
+            pipe(
+              contextState.isBootstrapped,
+              IOE.fromPredicate(
+                (isBootstrapped) => !isBootstrapped,
+                () => new Error('Already bootstrapped'),
+              ),
+              IOE.fold(
+                () => constVoid,
+                () => () => bootstrapPreview(),
+              ),
+            ),
+        ),
+      )()
+    }, [bootstrapPreview, contextState.isBootstrapped])
 
-//           break
-//         }
-//       }
-//     }, [localState])
+    // Handle state changes from the preview resolver.
+    React.useEffect(() => {
+      switch (bootstrapState.state) {
+        case 'FAILED': {
+          if (
+            bootstrapState.error instanceof ky.HTTPError &&
+            bootstrapState.error.response.status === 401 &&
+            contextState.activeRepositoryName &&
+            contextState.pluginOptionsStore[contextState.activeRepositoryName]
+              .promptForAccessToken
+          ) {
+            // If we encountered a 401 status, we don't have the correct access
+            // token, and the plugin is configured to prompt for a token, prompt
+            // for the correct token.
+            if (accessToken) {
+              setLocalState('PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN')
+            } else {
+              setLocalState('PROMPT_FOR_ACCESS_TOKEN')
+            }
+          } else {
+            // Otherwise, just display the error to the user. This can either be
+            // an internal error or an UnauthorizedError (if the plugin is
+            // configured to not prompt for the access token or we have the wrong
+            // token).
+            setLocalState('DISPLAY_ERROR')
 
-//     // TODO: Need to rethink how data is merged on unpublished previews.
-//     // Perhaps a function needs to be provided for each template, with a good
-//     // default (like rootReplaceOrInsert)?
-//     const mergedData = useMergePrismicPreviewData(repositoryName, props.data)
+            // Show the full error and stack trace in the console.
+            console.error(bootstrapState.error)
+          }
 
-//     return (
-//       <WrappedComponent
-//         {...props}
-//         data={mergedData.data}
-//         boostrapPrismicPreview={bootstrapPreview}
-//         isPrismicPreview={mergedData.isPreview}
-//         prismicPreviewState={bootstrapState.state}
-//         prismicPreviewError={bootstrapState.error}
-//         prismicPreviewSetAccessToken={setAccessToken}
-//       />
-//     )
-//   }
+          break
+        }
 
-//   const wrappedComponentName = getComponentDisplayName(WrappedComponent)
-//   WithPrismicUnpublishedPreview.displayName = `withPrismicUnpublishedPreview(${wrappedComponentName})`
+        default: {
+          setLocalState('IDLE')
+        }
+      }
+    }, [
+      contextState.activeRepositoryName,
+      contextState.pluginOptionsStore,
+      accessToken,
+      bootstrapState.state,
+      bootstrapState.error,
+    ])
 
-//   return WithPrismicUnpublishedPreview
-// }
+    return (
+      <>
+        {localState === 'NOT_PREVIEW' ? (
+          <WrappedComponent {...props} />
+        ) : (
+          <ResolvedComponent {...props} data={resolvedData} />
+        )}
+
+        {contextState.activeRepositoryName && (
+          <Root>
+            <ModalLoading
+              isOpen={
+                localState === 'IDLE' &&
+                bootstrapState.state === 'BOOTSTRAPPING'
+              }
+              repositoryName={contextState.activeRepositoryName}
+              onDismiss={dismissModal}
+            />
+            <ModalAccessToken
+              isOpen={
+                localState === 'PROMPT_FOR_ACCESS_TOKEN' ||
+                localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+              }
+              repositoryName={contextState.activeRepositoryName}
+              state={
+                localState === 'PROMPT_FOR_REPLACEMENT_ACCESS_TOKEN'
+                  ? 'INCORRECT'
+                  : 'IDLE'
+              }
+              initialAccessToken={accessToken}
+              setAccessToken={setAccessToken}
+              afterSubmit={() => {
+                dismissModal()
+                bootstrapPreview()
+              }}
+              onDismiss={dismissModal}
+            />
+            <ModalError
+              isOpen={localState === 'DISPLAY_ERROR'}
+              repositoryName={contextState.activeRepositoryName}
+              errorMessage={
+                bootstrapState.error
+                  ? userFriendlyError(bootstrapState.error).message
+                  : undefined
+              }
+              onDismiss={dismissModal}
+            />
+          </Root>
+        )}
+      </>
+    )
+  }
+
+  const wrappedComponentName = getComponentDisplayName(WrappedComponent)
+  WithPrismicUnpublishedPreview.displayName = `withPrismicUnpublishedPreview(${wrappedComponentName})`
+
+  return WithPrismicUnpublishedPreview
+}
