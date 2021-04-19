@@ -213,10 +213,11 @@ export const withPrismicUnpublishedPreview = <
 
     return (
       <>
-        {localState === 'NOT_PREVIEW' ? (
-          <WrappedComponent {...props} />
-        ) : (
+        {localState !== 'NOT_PREVIEW' &&
+        bootstrapState.state === 'BOOTSTRAPPED' ? (
           <ResolvedComponent {...props} data={resolvedData} />
+        ) : (
+          <WrappedComponent {...props} />
         )}
 
         {contextState.activeRepositoryName && (
