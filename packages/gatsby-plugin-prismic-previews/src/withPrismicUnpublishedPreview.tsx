@@ -27,7 +27,15 @@ import { ModalError } from './components/ModalError'
 import { ModalLoading } from './components/ModalLoading'
 
 export type WithPrismicUnpublishedPreviewConfig = {
-  mergePreviewData?: boolean
+  /**
+   * Determines the React component to render for an unpublished preview. This
+   * function will be provided a list of nodes whose `url` field (computed using
+   * your app's Link Resolver) matches the page's URL.
+   *
+   * @param nodes List of nodes whose `url` field matches the page's URL.
+   *
+   * @returns The React component to render. If no component is returned, the wrapped component will be rendered.
+   */
   componentResolver<P>(
     nodes: PrismicAPIDocumentNodeInput[],
   ): React.ComponentType<P> | undefined | null
