@@ -314,7 +314,60 @@ available customizations, see the
 
 ### 404 Not Found page
 
-> TODO
+Your app's 404 page is displayed any time a user accesses a page that does not
+exist. This can be used to our advantage when trying to preview a page that has
+yet to be published. Because the page is not yet published, a page for it does
+not exist in your app. As a result, we can override the normal 404 page and
+render the previewed document instead automatically as needed.
+
+This is what a simple unpublished preview 404 page could look like:
+
+```javascript
+// src/pages/404.js
+
+import * as React from 'react'
+import { graphql } from 'gatsby'
+import {
+  withPrismicUnpublishedPreview,
+  componentResolverFromMap,
+} from 'gatsby-plugin-prismic-previews'
+
+import { PageTemplate } from './PageTemplate'
+import { linkResolver } from '../linkResolver'
+
+const NotFoundPage = ({ data }) => {
+  const page = data.prismicPage
+
+  return (
+    <div>
+      <h1>{page.data.title.text}</h1>
+    </div>
+  )
+}
+
+export default withPrismicUnpublishedPreview(
+  PageTemplate,
+  { 'my-repository-name': { linkResolver } },
+  {
+    componentResolver: componentResolverFromMap({
+      page: PageTemplate,
+    }),
+  },
+)
+
+export const query = graphql`
+  query NotFoundPage {
+    prismicPage(id: { eq: "404" }) {
+      _previewable
+      data {
+        title {
+          text
+        }
+      }
+    }
+  }
+`
+```
 
 ## Prismic Toolbar
 
@@ -384,6 +437,16 @@ module.exports = {
 }
 ```
 
+## Limitations
+
+There are limitations to client-side previewing since it is only being processed
+in your browser. Features that require build-time processing, such as
+`gatsby-transformer-sharp` or [field aliasing][gatsby-graphql-aliasing], cannot
+be handled within the browser.
+
+See the [Limtiations](./docs/limitations.md) documentation for a list of things
+to keep in mind and useful strategies.
+
 [gatsby]: https://www.gatsbyjs.com/
 [gsp]: ../gatsby-source-prismic
 [prismic-previews]: #
@@ -396,3 +459,5 @@ module.exports = {
   https://prismic.io/docs/technologies/link-resolver-gatsby
 [prismic-how-to-set-up-a-preview]:
   https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
+[gatsby-graphql-aliasing]:
+  https://www.gatsbyjs.com/docs/graphql-reference/#aliasing

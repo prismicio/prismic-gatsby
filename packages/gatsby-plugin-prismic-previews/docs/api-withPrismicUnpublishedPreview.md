@@ -2,8 +2,8 @@
 
 This [higher order component][hoc] (HOC) is used to preview unpublished pages
 within your app. It automatically renders a page template component with content
-from a document that has not yet been published as needed. This HOC relies on
-being added to your
+from a document that yet to be published. This HOC relies on being added to your
+app's
 [404 page](https://www.gatsbyjs.com/docs/how-to/adding-common-features/add-404-page/)
 to correctly detect an unpublished page.
 
@@ -12,11 +12,11 @@ the plugin's options, this HOC will also display a modal allowing an editor to
 provide it. It will save the token locally within the browser for future preview
 updates.
 
-**Note**: When viewing your unpublished preview page when in development, Gatsby
+**Note**: When viewing your unpublished preview page during development, Gatsby
 will display its default development 404 page. To preview content on the
 unpublished preview page, click the "Preview custom 404 page" button that
 appears toward the top of the page. This will hide Gatsby's default development
-404 page and render your page instead.
+404 component and render your page instead.
 
 ```typescript
 function withPrismicUnpublishedPreview(
@@ -41,7 +41,7 @@ function withPrismicUnpublishedPreview(
 ```
 
 - **`WrappedComponent`**<br/>The page component to which Prismic unpublished
-  previews will be connected. This should be your app's normal 404 page.
+  previews will be connected. This should be your app's 404 page.
 
 - **`repositoryConfigs`**<br/>A set of configuration values for each Prismic
   repository used in your app.
@@ -71,7 +71,7 @@ Configuration values:
   [`withPrismicPreview`](./api-withPrismicPreview.md) in order for the component
   to properly resolve the preview.
 
-  In most cases, the [`componentResolverFromMap`](#componentResolverFromMap)
+  In most cases, the [`componentResolverFromMap()`](#componentResolverFromMap)
   helper function can be used as an easy way to map a Prismic document type to a
   component.
 
@@ -86,17 +86,16 @@ Configuration values:
   automatically retrieve the first matching node and add it to the existing
   `data` prop using the node's typename.
 
-## `componentResolverFromMap`
+## `componentResolverFromMap()`
 
 This helper function is a simple method to determine which component to display
 during an unpublished preview. While `componentResolver` provides you with a
 list of nodes that match the URL of the previewed document, this list will
-usually only include one node. `componentResolverFromMap` uses this assumption
-to allow you to provide just set of document types and their matching component
+usually only include one node. `componentResolverFromMap()` uses this assumption
+to allow you to provide just set of document types and their matching components
 to render. The first node's type in the list is used to select the component.
 
-See the example in the next section for an example of
-`componentResolverFromMap`.
+See the the next section for an example of `componentResolverFromMap()`.
 
 ## Typical Example
 
@@ -114,6 +113,8 @@ display Prismic content. When an unpublished preview is active, this data will
 continue to be accessible within the previewed component.
 
 ```javascript
+// src/pages/404.js
+
 import * as React from 'react'
 import { graphql } from 'gatsby'
 import {
