@@ -11,7 +11,8 @@ the function as described below.
 ```diff
 - import { withPreview } from 'gatsby-source-prismic'
 + import { withPrismicPreview } from 'gatsby-plugin-prismic-previews'
-  import { linkResolver } from '../linkResolver'
+
++ import { linkResolver } from '../linkResolver'
 
   const Page = ({ data }) => {
     // Your Page component
@@ -39,7 +40,8 @@ at `/src/pages/preview.js`.
 ```diff
 - import { withPreviewResolver } from 'gatsby-source-prismic'
 + import { withPrismicPreviewResolver } from 'gatsby-plugin-prismic-previews'
-  import { linkResolver } from '../linkResolver'
+
++ import { linkResolver } from '../linkResolver'
 
   const PreviewPage = ({ data }) => {
     // Your Page component
@@ -62,9 +64,55 @@ documentation for more details.
 
 ### Update `withUnpublishedPreview` to `withPrismicUnpublishedPreview`
 
-> TODO
-
 In your dedicated preview page, update the `withUnpublishedPreview` import to
 the `withPrismicUnpublishedPreview` import and update the arguments provided to
 the function as described below. The unpublished preview page is typically
 created as part of the "Not Found" 404 page at `/src/pages/404.js`.
+
+Note that the page template components are imported using their default exports
+(`import PageTemplate` rather than `import { PageTemplate }`). This ensures that
+the template is wrapped in `withPrismicPreview` as is required.
+
+```diff
+- import { withUnpublishedPreview } from 'gatsby-source-prismic'
++ import {
++   withPrismicUnpublishedPreview,
++   componentResolverFromMap,
++ } from 'gatsby-plugin-prismic-previews'
+
++ import { linkResolver } from '../linkResolver'
+
+- import { PageTemplate } from '../templates/PageTemplate'
++ import PageTemplate from '../templates/PageTemplate'
+- import { BlogPostTemplate } from '../templates/BlogPostTemplate'
++ import BlogPostTemplate from '../templates/BlogPostTemplate'
+
+  import { Layout } from '../components/Layout'
+
+  const NotFoundPage = () => (
+    <Layout>
+      <h1>Page not found!</h1>
+    </Layout>
+  )
+
+- export default withUnpublishedPreview(NotFoundPage, {
+-   templateMap: {
+-     page: PageTemplate,
+-     blog_post: BlogPostTemplate,
+-   },
+- })
++ export default withUnpublishedPreview(
++   NotFoundPage,
++   { 'your-repository-name': { linkResolver } },
++   {
++     componentResolver: componentResolverFromMap({
++       page: PageTemplate,
++       blog_post: BlogPostTemplate,
++     }),
++   },
++ )
+```
+
+See the
+[`withPrismicUnpublishedPreview()`](./api-withPrismicUnpublishedPreview.md)
+documentation for more details.
