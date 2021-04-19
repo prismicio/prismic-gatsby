@@ -46,22 +46,9 @@ await esbuild.build({
     path.resolve(__dirname, './src/index.ts'),
     path.resolve(__dirname, './src/styles.ts'),
   ],
-  platform: 'browser',
-  format: 'esm',
+  platform: 'neutral',
   target: 'es6',
-  define: {
-    // We do NOT want `process.env.NODE_ENV` to be replaced with its value at
-    // plugin-build time. We want to preserve the value to allow Gatsby's build
-    // time to replace this.
-    //
-    // In the context of this plugin, `process.env.NODE_ENV` tells us if the
-    // user accessing the site using Gatsby in development mode or the built
-    // production version.
-    //
-    // Unfortunately esbuild will print a warning. If you know how to remove the
-    // warning while not replacing the value, please open an issue or PR!
-    // 'process.env.NODE_ENV': '"process.env.NODE_ENV"',
-  },
+  mainFields: ['module', 'main'],
   plugins: [
     {
       name: 'postcss',
