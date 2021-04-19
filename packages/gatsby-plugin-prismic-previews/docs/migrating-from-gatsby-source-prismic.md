@@ -64,14 +64,15 @@ documentation for more details.
 
 ### Update `withUnpublishedPreview` to `withPrismicUnpublishedPreview`
 
-In your dedicated preview page, update the `withUnpublishedPreview` import to
-the `withPrismicUnpublishedPreview` import and update the arguments provided to
-the function as described below. The unpublished preview page is typically
-created as part of the "Not Found" 404 page at `/src/pages/404.js`.
+In your dedicated unpublished preview page, update the `withUnpublishedPreview`
+import to the `withPrismicUnpublishedPreview` import and update the arguments
+provided to the function as described below. The unpublished preview page is
+typically created as part of the "Not Found" 404 page at `/src/pages/404.js`.
 
 Note that the page template components are imported using their default exports
 (`import PageTemplate` rather than `import { PageTemplate }`). This ensures that
-the template is wrapped in `withPrismicPreview` as is required.
+the template is wrapped with
+[`withPrismicPreview()`](./api-withPrismicPreview.md) as is required.
 
 ```diff
 - import { withUnpublishedPreview } from 'gatsby-source-prismic'

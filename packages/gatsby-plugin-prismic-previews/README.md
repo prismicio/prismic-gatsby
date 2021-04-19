@@ -369,6 +369,11 @@ export const query = graphql`
 `
 ```
 
+For more details on supporting unpublished document previews and the available
+customizations, see the
+[`withPrismicUnpublishedPreview()`](./docs/api-withPrismicUnpublishedPreview.md)
+reference.
+
 ## Prismic Toolbar
 
 The [Prismic Toolbar][prismic-toolbar] adds an in-app edit button when an editor
