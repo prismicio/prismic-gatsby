@@ -12,6 +12,11 @@ repositories.
 - Supports live, client-side [Prismic previews][prismic-previews] using
   [`gatsby-plugin-prismic-previews`][gppp]
 
+## Status
+
+[![npm version](https://img.shields.io/npm/v/gatsby-source-prismic?style=flat-square)](https://www.npmjs.com/package/gatsby-source-prismic)
+[![Build Status](https://img.shields.io/github/workflow/status/angeloashmore/gatsby-source-prismic/Tests?style=flat-square)](https://github.com/angeloashmore/gatsby-source-prismic/actions?query=workflow%3ATests)
+
 ## Install
 
 ```sh

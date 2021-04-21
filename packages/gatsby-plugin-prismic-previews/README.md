@@ -10,6 +10,11 @@ Integrate live [Prismic Previews][prismic-previews] into a static
 - No extra infrastructure or costs required (specifically, [Gatsby
   Cloud][gatsby-cloud] is not required)
 
+## Status
+
+[![npm version](https://img.shields.io/npm/v/gatsby-plugin-prismic-previews?style=flat-square)](https://www.npmjs.com/package/gatsby-plugin-prismic-previews)
+[![Build Status](https://img.shields.io/github/workflow/status/angeloashmore/gatsby-source-prismic/Tests?style=flat-square)](https://github.com/angeloashmore/gatsby-source-prismic/actions?query=workflow%3ATests)
+
 ## Install
 
 ```sh
