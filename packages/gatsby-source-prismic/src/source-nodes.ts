@@ -46,5 +46,5 @@ export const sourceNodes: NonNullable<
 ) =>
   await pipe(
     sourceNodesProgram(buildDependencies(gatsbyContext, pluginOptions)),
-    TE.fold(throwError, () => T.of(constVoid)),
+    TE.fold(throwError, () => T.of(void 0)),
   )()

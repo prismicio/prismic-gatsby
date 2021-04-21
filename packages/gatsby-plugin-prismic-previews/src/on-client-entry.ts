@@ -72,4 +72,4 @@ export const onClientEntry: NonNullable<
 ) =>
   // We don't care about the output of the program so we won't be doing
   // anything with the result.
-  await RTE.run(onClientEntryProgram, { pluginOptions })
+  await onClientEntryProgram({ pluginOptions })()

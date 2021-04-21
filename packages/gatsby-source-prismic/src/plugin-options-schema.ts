@@ -130,7 +130,7 @@ export const pluginOptionsSchema: NonNullable<
       async (pluginOptions: PluginOptions) =>
         await pipe(
           externalValidationProgram(Joi)({ pluginOptions }),
-          TE.fold(throwError, () => T.of(constVoid)),
+          TE.fold(throwError, () => T.of(void 0)),
         )(),
     )
 

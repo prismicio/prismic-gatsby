@@ -110,5 +110,5 @@ export const createSchemaCustomization: NonNullable<
     createSchemaCustomizationProgram(
       buildDependencies(gatsbyContext, pluginOptions),
     ),
-    TE.fold(throwError, () => T.of(constVoid)),
+    TE.fold(throwError, () => T.of(void 0)),
   )()

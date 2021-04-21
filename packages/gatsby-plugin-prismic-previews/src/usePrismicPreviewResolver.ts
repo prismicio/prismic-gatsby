@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
-import * as E from 'fp-ts/Either'
+import * as T from 'fp-ts/Task'
 import * as A from 'fp-ts/Array'
 import * as R from 'fp-ts/Record'
 import * as IO from 'fp-ts/IO'
@@ -89,7 +89,7 @@ interface UsePrismicPreviewResolverProgramEnv {
   config: UsePrismicPreviewResolverConfig
 }
 
-const usePrismicPreviewResolverProgram: RTE.ReaderTaskEither<
+const previewResolverProgram: RTE.ReaderTaskEither<
   UsePrismicPreviewResolverProgramEnv,
   Error,
   void
@@ -215,8 +215,8 @@ export const usePrismicPreviewResolver = (
   )
 
   const resolvePreview = React.useCallback(async (): Promise<void> => {
-    pipe(
-      await RTE.run(usePrismicPreviewResolverProgram, {
+    await pipe(
+      previewResolverProgram({
         setActiveRepositoryName: (repositoryName: string) => () =>
           contextDispatch({
             type: PrismicContextActionType.SetActiveRepositoryName,
@@ -235,15 +235,17 @@ export const usePrismicPreviewResolver = (
         // TODO: This may cause infinite rerenders.
         config,
       }),
-      E.fold(
+      TE.fold(
         (error) =>
-          localDispatch({
-            type: UsePrismicPreviewResolverActionType.Fail,
-            payload: error,
-          }),
-        constVoid,
+          T.fromIO(() =>
+            localDispatch({
+              type: UsePrismicPreviewResolverActionType.Fail,
+              payload: error,
+            }),
+          ),
+        () => T.of(void 0),
       ),
-    )
+    )()
   }, [config, contextDispatch, contextState.pluginOptionsStore])
 
   return React.useMemo(() => [localState, resolvePreview] as const, [
