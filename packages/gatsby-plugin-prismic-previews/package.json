@@ -32,7 +32,7 @@
     "prismic"
   ],
   "dependencies": {
-    "@reach/dialog": "^0.14.0",
+    "@reach/dialog": "^0.15.0",
     "camel-case": "^4.1.2",
     "chalk": "^4.1.0",
     "clsx": "^1.1.1",
@@ -53,8 +53,8 @@
   "devDependencies": {
     "@asyarb/tailwind-capsize": "^0.1.6",
     "@storybook/addon-postcss": "^2.0.0",
-    "@storybook/cli": "^6.2.2",
-    "@storybook/react": "^6.2.2",
+    "@storybook/cli": "^6.2.8",
+    "@storybook/react": "^6.2.8",
     "@testing-library/react": "^11.2.6",
     "@testing-library/react-hooks": "^5.1.1",
     "@themosaad/tailwindcss-capsize": "^1.0.0",
@@ -63,7 +63,7 @@
     "cross-fetch": "^3.1.4",
     "global-jsdom": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "jsdom": "^16.5.2",
+    "jsdom": "^16.5.3",
     "node-fetch": "^2.6.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
