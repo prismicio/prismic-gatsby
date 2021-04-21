@@ -454,7 +454,7 @@ in your browser. Features that require build-time processing, such as
 `gatsby-transformer-sharp` or [field aliasing][gatsby-graphql-aliasing], cannot
 be handled within the browser.
 
-See the [Limtiations](./docs/limitations.md) documentation for a list of things
+See the [Limitations](./docs/limitations.md) documentation for a list of things
 to keep in mind and useful strategies.
 
 [gatsby]: https://www.gatsbyjs.com/
