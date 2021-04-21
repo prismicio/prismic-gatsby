@@ -5,7 +5,7 @@ that require build-time processing, such as `gatsby-transformer-sharp` or [field
 aliasing][gatsby-graphql-aliasing], cannot be handled during a preview.
 
 Please keep the following limitations in mind while creating your templates if
-you app needs to support previews.
+your app needs to support previews.
 
 ### GraphQL field aliases
 
