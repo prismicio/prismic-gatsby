@@ -308,8 +308,54 @@ the new plugin if you are using previews currently. See the
 + import { withPrismicPreview } from 'gatsby-plugin-prismic-previews'
 ```
 
+### Use GraphQL over `getNodes` helpers in `gatsby-node.js`
+
+In V3, nodes of a certain type, such as `PrismicPage`, could be fetched using
+Gatsby's [`getNodes`][gatsby-getnodes] or
+[`getNodesByType`][gatsby-getnodesbytype] Node API helpers in `gatsby-node.js`.
+These functions returned the nodes with most of its data transformed as it would
+appear in a GraphQL query.
+
+In V4, using those API helpers will still return the relevant nodes, but little
+to no data transformations will be available. Instead, you will receive
+something that mostly matches exactly what is returned by Prismic REST API. Rich
+Text fields, for example, would not include `html` or `text` fields. To get the
+same data you would receive in a GraphQL query while in `gatsby-node.js`,
+replace `getNodes` and `getNodesByType` with a GraphQL query.
+
+```diff
+// gatsby-node.js
+
+- exports.createPages = (gatsbyContext) => {
+-   const { getNodesByType } = gatsbyContext
++ exports.createPages = async (gatsbyContext) => {
++   const { getNodesByType, graphql } = gatsbyContext
+
+-   const pageNodes = getNodesByType('PrismicPage')
++   const queryResult = await graphql(`
++     query {
++       allPrismicPage {
++         nodes {
++           uid
++           url
++         }
++       }
++     }
++   `)
+
+-   for (const pageNode of pageNodes) {
++   for (const pageNode of queryResult.data.allPrismicPage.nodes) {
+      // Do something with the page node
+    }
+  }
+```
+
 [gppp]: ../../gatsby-plugin-prismic-previews
 [prismic-graphquery]: https://prismic.io/docs/technologies/graphquery-rest-api
 [gatsby-migration-v2-v3]:
   https://www.gatsbyjs.com/docs/reference/release-notes/migrating-from-v2-to-v3/
 [gatsby-preview]: https://www.gatsbyjs.com/preview/
+[gatsby-getnodes]:
+  https://www.gatsbyjs.com/docs/reference/config-files/node-api-helpers/#getNodes
+[gatsby-getnodesbytype]:
+  https://www.gatsbyjs.com/docs/reference/config-files/node-api-helpers/#getNodesByType
