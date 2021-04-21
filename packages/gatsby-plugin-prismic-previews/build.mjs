@@ -4,7 +4,7 @@ import * as fs from 'fs/promises'
 import * as tmp from 'tmp'
 import esbuild from 'esbuild'
 import postcss from 'postcss'
-import tailwindcssJit from '@tailwindcss/jit'
+import tailwindcss from 'tailwindcss'
 import postcssImport from 'postcss-import'
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
@@ -27,7 +27,7 @@ const common = {
   ],
 }
 
-const postcssPlugins = [postcssImport(), tailwindcssJit()]
+const postcssPlugins = [postcssImport(), tailwindcss()]
 
 // Node platform files
 await esbuild.build({
