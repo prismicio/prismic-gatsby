@@ -2,20 +2,22 @@
 
 The V4 release of `gatsby-source-prismic` brings a number of new features and
 fixes that make working with Prismic within Gatsby easier and more flexible. The
-changes are a result of real-world usage and user feedback shared on GitHub and
-the Prismic community forums.
+changes are a result of real-world usage and [user feedback shared on
+GitHub][github] and the [Prismic community forums][prismic-community].
 
 ## What has changed?
 
-The key changes introduced in V4 include:
-
-- **Dedicated preview plugin**: Robust client-side Prismic previews support
-- **Multiple repository support**: Source content from multiple repositories
+Prismic's Gatsby support has been split into two plugins:
+[`gatsby-source-prismic`][gsp] and [`gatsby-plugin-prismic-previews`][gppp]. New
+features and changes for each are described below.
 
 ### Source plugin changes
 
+**Homepage**: [`gatsby-source-prismic`][gsp]
+
 This plugin is used to pull CMS data into Gatsby using Prismic's REST API.
 
+- Multiple repository support
 - Validate plugin options
 - [gatsby-plugin-image][gatsby-plugin-image] support
 - [GraphQuery][prismic-graphquery] support (replacement for fetchLinks option)
@@ -26,6 +28,8 @@ This plugin is used to pull CMS data into Gatsby using Prismic's REST API.
 - Private plugin options, including repository names, access tokens, and schemas
 
 ### Preview plugin changes
+
+**Homepage**: [`gatsby-plugin-prismic-previews`][gppp]
 
 This plugin is used to provide live editor previews client-side directly from
 the Prismic editor. The following changes are made over the preview
@@ -387,6 +391,7 @@ To get the same data you would receive in a GraphQL query while in
   }
 ```
 
+[gsp]: ../
 [gppp]: ../../gatsby-plugin-prismic-previews
 [prismic-graphquery]: https://prismic.io/docs/technologies/graphquery-rest-api
 [gatsby-migration-v2-v3]:
@@ -398,3 +403,5 @@ To get the same data you would receive in a GraphQL query while in
   https://www.gatsbyjs.com/docs/reference/config-files/node-api-helpers/#getNodesByType
 [gatsby-plugin-image]: https://www.gatsbyjs.com/plugins/gatsby-plugin-image/
 [prismic-integration-field]: https://prismic.io/feature/integration-field
+[github]: https://github.com/angeloashmore/gatsby-source-prismic/issues
+[prismic-community]: https://community.prismic.io/
