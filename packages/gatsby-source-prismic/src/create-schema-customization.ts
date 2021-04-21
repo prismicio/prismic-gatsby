@@ -2,7 +2,8 @@ import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as A from 'fp-ts/Array'
-import * as E from 'fp-ts/Either'
+import * as TE from 'fp-ts/TaskEither'
+import * as T from 'fp-ts/Task'
 import { pipe, constVoid } from 'fp-ts/function'
 
 import { createAllDocumentTypesType } from './lib/createAllDocumentTypesType'
@@ -75,7 +76,7 @@ const createCustomTypes: RTE.ReaderTaskEither<
 > = pipe(
   RTE.asks((deps: Dependencies) => deps.pluginOptions.schemas),
   RTE.map(R.mapWithIndex(createCustomType)),
-  RTE.chain(R.sequence(RTE.readerTaskEither)),
+  RTE.chain(R.sequence(RTE.ApplicativeSeq)),
   RTE.map(R.collect((_, value) => value)),
 )
 
@@ -105,10 +106,9 @@ export const createSchemaCustomization: NonNullable<
   gatsbyContext: gatsby.CreateSchemaCustomizationArgs,
   pluginOptions: PluginOptions,
 ) =>
-  pipe(
-    await RTE.run(
-      createSchemaCustomizationProgram,
+  await pipe(
+    createSchemaCustomizationProgram(
       buildDependencies(gatsbyContext, pluginOptions),
     ),
-    E.fold(throwError, constVoid),
-  )
+    TE.fold(throwError, () => T.of(void 0)),
+  )()

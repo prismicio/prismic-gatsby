@@ -1,6 +1,6 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as A from 'fp-ts/Array'
-import * as Eq from 'fp-ts/Eq'
+import * as s from 'fp-ts/string'
 import { pipe, constVoid } from 'fp-ts/function'
 
 import { Dependencies, PrismicWebhookBodyApiUpdate } from './types'
@@ -80,7 +80,7 @@ export const onWebhookApiUpdate = (
     RTE.bind('documentIdsToDelete', (scope) =>
       pipe(
         scope.documentIds,
-        A.difference(Eq.eqString)(scope.documentIdsToUpdate),
+        A.difference(s.Eq)(scope.documentIdsToUpdate),
         (ids) => RTE.right(ids),
       ),
     ),

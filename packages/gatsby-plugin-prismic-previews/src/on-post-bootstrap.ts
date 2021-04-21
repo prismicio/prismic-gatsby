@@ -4,7 +4,7 @@ import * as path from 'path'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as A from 'fp-ts/Array'
-import * as E from 'fp-ts/Either'
+import * as T from 'fp-ts/Task'
 import { constVoid, pipe } from 'fp-ts/function'
 import { createNodeHelpers, NodeHelpers } from 'gatsby-node-helpers'
 
@@ -83,27 +83,34 @@ const onPostBootstrapProgram: RTE.ReaderTaskEither<
 // not the Promise-returning method.
 export const onPostBootstrap: NonNullable<
   gatsby.GatsbyNode['onPostBootstrap']
-> = (gatsbyContext, pluginOptions: PluginOptions, callback) =>
-  RTE.run(onPostBootstrapProgram, {
-    getNodesByType: gatsbyContext.getNodesByType,
-    reportVerbose: gatsbyContext.reporter.verbose,
-    repositoryName: pluginOptions.repositoryName,
-    nodeHelpers: createNodeHelpers({
-      typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
-        .filter(Boolean)
-        .join(' '),
-      fieldPrefix: GLOBAL_TYPE_PREFIX,
-      createNodeId: gatsbyContext.createNodeId,
-      createContentDigest: gatsbyContext.createContentDigest,
+> = async (gatsbyContext, pluginOptions: PluginOptions, callback) =>
+  await pipe(
+    onPostBootstrapProgram({
+      getNodesByType: gatsbyContext.getNodesByType,
+      reportVerbose: gatsbyContext.reporter.verbose,
+      repositoryName: pluginOptions.repositoryName,
+      nodeHelpers: createNodeHelpers({
+        typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
+          .filter(Boolean)
+          .join(' '),
+        fieldPrefix: GLOBAL_TYPE_PREFIX,
+        createNodeId: gatsbyContext.createNodeId,
+        createContentDigest: gatsbyContext.createContentDigest,
+      }),
+      writeTypePathsToFilesystem: pluginOptions.writeTypePathsToFilesystem,
     }),
-    writeTypePathsToFilesystem: pluginOptions.writeTypePathsToFilesystem,
-  }).then(
-    E.fold(
+    TE.fold(
       (error) =>
-        reportPanic(error.message)({
-          repositoryName: pluginOptions.repositoryName,
-          reportPanic: gatsbyContext.reporter.panic,
-        })(),
-      () => (callback ? callback(null) : void 0),
+        pipe(
+          reportPanic(error.message)({
+            repositoryName: pluginOptions.repositoryName,
+            reportPanic: gatsbyContext.reporter.panic,
+          }),
+          TE.fold(
+            () => T.of(void 0),
+            () => T.of(void 0),
+          ),
+        ),
+      () => (callback ? T.fromIO(() => callback(null)) : T.of(void 0)),
     ),
-  )
+  )()

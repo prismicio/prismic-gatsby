@@ -2,7 +2,8 @@ import * as React from 'react'
 import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as RE from 'fp-ts/ReaderEither'
-import * as E from 'fp-ts/Either'
+import * as TE from 'fp-ts/TaskEither'
+import * as T from 'fp-ts/Task'
 import * as IO from 'fp-ts/IO'
 import * as A from 'fp-ts/Array'
 import * as R from 'fp-ts/Record'
@@ -112,7 +113,7 @@ interface UsePrismicPreviewBootstrapProgramEnv {
   ): PrismicTypePathType | undefined
 }
 
-const usePrismicPreviewBootstrapProgram: RTE.ReaderTaskEither<
+const previewBootstrapProgram: RTE.ReaderTaskEither<
   UsePrismicPreviewBootstrapProgramEnv,
   Error,
   void
@@ -284,8 +285,8 @@ export const usePrismicPreviewBootstrap = (
   }, [contextState])
 
   const bootstrapPreview = React.useCallback(async (): Promise<void> => {
-    pipe(
-      await RTE.run(usePrismicPreviewBootstrapProgram, {
+    await pipe(
+      previewBootstrapProgram({
         setActiveRepositoryName: (repositoryName: string) => () =>
           contextDispatch({
             type: PrismicContextActionType.SetActiveRepositoryName,
@@ -335,15 +336,17 @@ export const usePrismicPreviewBootstrap = (
         createContentDigest: (input: string | UnknownRecord) =>
           md5(JSON.stringify(input)),
       }),
-      E.fold(
+      TE.fold(
         (error) =>
-          localDispatch({
-            type: UsePrismicPreviewBootstrapActionType.Fail,
-            payload: error,
-          }),
-        constVoid,
+          T.fromIO(() =>
+            localDispatch({
+              type: UsePrismicPreviewBootstrapActionType.Fail,
+              payload: error,
+            }),
+          ),
+        () => T.of(void 0),
       ),
-    )
+    )()
   }, [
     config,
     contextState.pluginOptionsStore,
