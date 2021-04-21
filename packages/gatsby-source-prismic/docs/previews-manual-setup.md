@@ -1,3 +1,13 @@
+> **DEPRECATED** - Preview functionality has been moved to a separate new plugin
+> called
+> [`gatsby-plugin-prismic-previews`](../../gatsby-plugin-prismic-previews)
+>
+> Please see the
+> [Migrating from `gatsby-source-prismic`](../../gatsby-plugin-prismic-previews/docs/migrating-from-gatsby-source-prismic.md)
+> document to learn how to upgrade to the new plugin.
+>
+> The document you are currently reading will be removed in the future.
+
 # Manual Previews Setup
 
 `gatsby-source-prismic`'s preview system aims to be unopinionated in its
