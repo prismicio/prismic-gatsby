@@ -1,7 +1,7 @@
 # Migrating from V3 to V4
 
 The V4 release of `gatsby-source-prismic` brings a number of new features and
-fixes that make working with Prismic within Gatsby easier and more flexible
+fixes that make working with Prismic within Gatsby easier and more flexible.
 
 ## Updating your dependencies
 
@@ -9,10 +9,11 @@ First, you'll need to update your dependencies.
 
 ### Update Gatsby version
 
-The latest version of Gatsby v3 is highly recommended when using
-gatsby-source-prismic V4. If your site is using Gatsby v2, please migrate to v3
+The latest version of Gatsby V3 is highly recommended when using
+gatsby-source-prismic V4. If your site is using Gatsby V2, please migrate to V3
 first. Most projects can upgrade their version of Gatsby without much effort by
-following [the official v2 to v3 migration guide][gatsby-migration-v2-v3].
+following [the official Gatsby V2 to V3 migration
+guide][gatsby-migration-v2-v3].
 
 ```js
 // package.json
