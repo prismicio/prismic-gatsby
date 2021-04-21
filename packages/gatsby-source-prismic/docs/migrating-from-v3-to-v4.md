@@ -1,11 +1,47 @@
 # Migrating from V3 to V4
 
 The V4 release of `gatsby-source-prismic` brings a number of new features and
-fixes that make working with Prismic within Gatsby easier and more flexible.
+fixes that make working with Prismic within Gatsby easier and more flexible. The
+changes are a result of real-world usage and user feedback shared on GitHub and
+the Prismic community forums.
+
+## What has changed?
+
+The key changes introduced in V4 include:
+
+- **Dedicated preview plugin**: Robust client-side Prismic previews support
+- **Multiple repository support**: Source content from multiple repositories
+
+### Source plugin changes
+
+This plugin is used to pull CMS data into Gatsby using Prismic's REST API.
+
+- Validate plugin options
+- [gatsby-plugin-image][gatsby-plugin-image] support
+- [GraphQuery][prismic-graphquery] support (replacement for fetchLinks option)
+- Serve media files from Link fields locally via localFile field
+- Download image and media files only when queried for faster start-up times
+- Full support for Embed fields with oEmbed data
+- Full support for [Integration Fields][prismic-integration-field]
+- Private plugin options, including repository names, access tokens, and schemas
+
+### Preview plugin changes
+
+This plugin is used to provide live editor previews client-side directly from
+the Prismic editor. The following changes are made over the preview
+functionality previously provided by the source plugin.
+
+- Live refreshing as document changes are saved
+- Preview changes across all data and pages, not just the previewed document's
+  page
+- Preview a release with multiple documents
+- Sharable preview links
+- Easier to use hooks and higher-order-components to integrate with your site
+- Private access tokens (optional)
 
 ## Updating your dependencies
 
-First, you'll need to update your dependencies.
+To update your project to V4, first you'll need to update your dependencies.
 
 ### Update Gatsby version
 
@@ -318,10 +354,11 @@ appear in a GraphQL query.
 
 In V4, using those API helpers will still return the relevant nodes, but little
 to no data transformations will be available. Instead, you will receive
-something that mostly matches exactly what is returned by Prismic REST API. Rich
-Text fields, for example, would not include `html` or `text` fields. To get the
-same data you would receive in a GraphQL query while in `gatsby-node.js`,
-replace `getNodes` and `getNodesByType` with a GraphQL query.
+something that mostly matches what is returned by Prismic's REST API. Rich Text
+fields, for example, would not include `html` or `text` fields.
+
+To get the same data you would receive in a GraphQL query while in
+`gatsby-node.js`, replace `getNodes` and `getNodesByType` with a GraphQL query.
 
 ```diff
 // gatsby-node.js
@@ -359,3 +396,5 @@ replace `getNodes` and `getNodesByType` with a GraphQL query.
   https://www.gatsbyjs.com/docs/reference/config-files/node-api-helpers/#getNodes
 [gatsby-getnodesbytype]:
   https://www.gatsbyjs.com/docs/reference/config-files/node-api-helpers/#getNodesByType
+[gatsby-plugin-image]: https://www.gatsbyjs.com/plugins/gatsby-plugin-image/
+[prismic-integration-field]: https://prismic.io/feature/integration-field
