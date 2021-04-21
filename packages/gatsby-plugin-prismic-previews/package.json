@@ -51,7 +51,6 @@
     "react": ">=16.13"
   },
   "devDependencies": {
-    "@asyarb/tailwind-capsize": "^0.1.6",
     "@storybook/addon-postcss": "^2.0.0",
     "@storybook/cli": "^6.2.8",
     "@storybook/react": "^6.2.8",
