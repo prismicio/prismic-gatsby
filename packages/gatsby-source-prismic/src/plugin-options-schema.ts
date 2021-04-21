@@ -3,10 +3,10 @@ import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as prismic from 'ts-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
-import * as E from 'fp-ts/Either'
+import * as T from 'fp-ts/Task'
 import * as A from 'fp-ts/Array'
 import * as R from 'fp-ts/Record'
-import * as Eq from 'fp-ts/Eq'
+import * as s from 'fp-ts/string'
 import { constVoid, pipe } from 'fp-ts/function'
 import got from 'got'
 
@@ -71,7 +71,7 @@ const externalValidationProgram = (
       pipe(
         scope.repository.types,
         R.keys,
-        A.difference(Eq.eqString)(scope.schemaTypes),
+        A.difference(s.Eq)(scope.schemaTypes),
         (missingSchemas) => RTE.right(missingSchemas),
       ),
     ),
@@ -126,11 +126,12 @@ export const pluginOptionsSchema: NonNullable<
     ),
   })
     .oxor('fetchLinks', 'graphQuery')
-    .external(async (pluginOptions: PluginOptions) =>
-      pipe(
-        await RTE.run(externalValidationProgram(Joi), { pluginOptions }),
-        E.fold(throwError, constVoid),
-      ),
+    .external(
+      async (pluginOptions: PluginOptions) =>
+        await pipe(
+          externalValidationProgram(Joi)({ pluginOptions }),
+          TE.fold(throwError, () => T.of(constVoid)),
+        )(),
     )
 
   return schema

@@ -1,6 +1,7 @@
 import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as E from 'fp-ts/Either'
+import * as TE from 'fp-ts/TaskEither'
+import * as T from 'fp-ts/Task'
 import { constVoid, pipe } from 'fp-ts/function'
 
 import { sourceNodesForAllDocuments } from './lib/sourceNodesForAllDocuments'
@@ -43,10 +44,7 @@ export const sourceNodes: NonNullable<
   gatsbyContext: gatsby.SourceNodesArgs,
   pluginOptions: PluginOptions,
 ) =>
-  pipe(
-    await RTE.run(
-      sourceNodesProgram,
-      buildDependencies(gatsbyContext, pluginOptions),
-    ),
-    E.fold(throwError, constVoid),
-  )
+  await pipe(
+    sourceNodesProgram(buildDependencies(gatsbyContext, pluginOptions)),
+    TE.fold(throwError, () => T.of(constVoid)),
+  )()

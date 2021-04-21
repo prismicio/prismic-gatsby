@@ -27,6 +27,8 @@ export const buildFieldConfigMap = (
 > =>
   pipe(
     fieldSchemas,
-    R.mapWithIndex((name, schema) => toFieldConfig(A.snoc(path, name), schema)),
-    R.sequence(RTE.readerTaskEither),
+    R.mapWithIndex((name, schema) =>
+      toFieldConfig(pipe(path, A.append(name)), schema),
+    ),
+    R.sequence(RTE.ApplicativeSeq),
   )
