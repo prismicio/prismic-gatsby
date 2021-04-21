@@ -1,5 +1,61 @@
 # Migrating from V3 to V4
 
+The V4 release of `gatsby-source-prismic` brings a number of new features and
+fixes that make working with Prismic within Gatsby easier and more flexible
+
+## Updating your dependencies
+
+First, you'll need to update your dependencies.
+
+### Update Gatsby version
+
+The latest version of Gatsby v3 is highly recommended when using
+gatsby-source-prismic V4. If your site is using Gatsby v2, please migrate to v3
+first. Most projects can upgrade their version of Gatsby without much effort by
+following [the official v2 to v3 migration guide][gatsby-migration-v2-v3].
+
+```js
+// package.json
+
+{
+  "dependencies": {
+    "gatsby": "^3.3.0"
+  }
+}
+```
+
+### Update `gatsby-source-prismic` version
+
+You need to update your `package.json` to use the latest version of
+`gatsby-source-prismic`.
+
+```js
+// package.json
+
+{
+  "dependencies": {
+    "gatsby-source-prismic": "^4.0.0"
+  }
+}
+```
+
+### Add `gatsby-plugin-prismic-previews`
+
+If your site implements Prismic content previews, preview functionality has been
+moved to its own plugin called [`gatsby-plugin-prismic-previews`][gppp]. See the
+[Migrate Prismic Previews to `gatsby-plugin-prismic-previews`](#migrate-prismic-previews-to-gatsby-plugin-prismic-previews)
+section below for more details.
+
+```sh
+npm install gatsby-plugin-prismic-previews
+```
+
+Or if you use Yarn:
+
+```sh
+yarn add gatsby-plugin-prismic-previews
+```
+
 ## Handling breaking changes
 
 ### Provide all custom type schemas
@@ -253,3 +309,6 @@ the new plugin if you are using previews currently. See the
 
 [gppp]: ../../gatsby-plugin-prismic-previews
 [prismic-graphquery]: https://prismic.io/docs/technologies/graphquery-rest-api
+[gatsby-migration-v2-v3]:
+  https://www.gatsbyjs.com/docs/reference/release-notes/migrating-from-v2-to-v3/
+[gatsby-preview]: https://www.gatsbyjs.com/preview/
