@@ -120,6 +120,92 @@ test.serial('document', async (t) => {
   t.true(node.url === config[pluginOptions.repositoryName].linkResolver(doc))
 })
 
+test.serial(
+  'field names with dashes are transformed with underscores by default',
+  async (t) => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions(t)
+    const config = createConfig(pluginOptions)
+
+    // Note that we are using "structured-text" (with a dash), but the typepaths
+    // below use "structured_text" (with an underscore). The transformer will
+    // transformer "-" to "_" by default.
+    const doc = createPrismicAPIDocument({
+      'structured-text': [{ type: 'paragraph', text: 'foo' }],
+    })
+    const queryResponse = createPrismicAPIQueryResponse([doc])
+
+    const result = await performPreview(
+      t,
+      // @ts-expect-error - Partial gatsbyContext provided
+      gatsbyContext,
+      pluginOptions,
+      config,
+      queryResponse,
+      '104b34900d272bb2aa34ffc29a93afe5.json',
+      {
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+        'type.data.structured_text':
+          gatsbyPrismic.PrismicFieldType.StructuredText,
+      },
+    )
+
+    const node = result.current.context[0].nodes[doc.id]
+
+    t.deepEqual(node.data.structured_text, {
+      html: '<p>foo</p>',
+      text: 'foo',
+      raw: doc.data['structured-text'],
+    })
+  },
+)
+
+test.serial(
+  'field names are transformed using provided transformFieldName function',
+  async (t) => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions(t)
+    const config = createConfig(pluginOptions)
+
+    config[pluginOptions.repositoryName].transformFieldName = (
+      fieldName: string,
+    ) => fieldName.replace(/-/g, 'CUSTOM')
+
+    // Note that we are using "structuredCUSTOMtext", but the typepaths below
+    // use "structured_text" (with an underscore). The transformer will convert
+    // the field name.
+    const doc = createPrismicAPIDocument({
+      'structured-text': [{ type: 'paragraph', text: 'foo' }],
+    })
+    const queryResponse = createPrismicAPIQueryResponse([doc])
+
+    const result = await performPreview(
+      t,
+      // @ts-expect-error - Partial gatsbyContext provided
+      gatsbyContext,
+      pluginOptions,
+      config,
+      queryResponse,
+      '2ab170ad671b4d65411bcf73ed34a421.json',
+      {
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+        'type.data.structuredCUSTOMtext':
+          gatsbyPrismic.PrismicFieldType.StructuredText,
+      },
+    )
+
+    const node = result.current.context[0].nodes[doc.id]
+
+    t.deepEqual(node.data.structuredCUSTOMtext, {
+      html: '<p>foo</p>',
+      text: 'foo',
+      raw: doc.data['structured-text'],
+    })
+  },
+)
+
 test.serial('structured text', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)

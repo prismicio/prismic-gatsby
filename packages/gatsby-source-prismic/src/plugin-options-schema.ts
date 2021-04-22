@@ -124,6 +124,9 @@ export const pluginOptionsSchema: NonNullable<
     createRemoteFileNode: Joi.function().default(
       () => gatsbyFs.createRemoteFileNode,
     ),
+    transformFieldName: Joi.function().default(() => (fieldName: string) =>
+      fieldName.replace(/-/g, '_'),
+    ),
   })
     .oxor('fetchLinks', 'graphQuery')
     .external(

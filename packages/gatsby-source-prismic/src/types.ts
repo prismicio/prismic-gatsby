@@ -72,6 +72,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   webhookSecret?: string
   plugins: []
   createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
+  transformFieldName: (fieldName: string) => string
 }
 
 export type FieldConfigCreator<
