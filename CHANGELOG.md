@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.3.5-gatsby-v3-compat.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.4...v3.3.5-gatsby-v3-compat.0) (2021-04-10)
+
+
+### Bug Fixes
+
+* resolve npm install failure with Gatsby v3 ([7ec09d8](https://github.com/angeloashmore/gatsby-source-prismic/commit/7ec09d832b8ca59be0cca50af24d7fc1498ec596))
+
 ### [3.3.4](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.3...v3.3.4) (2021-03-04)
 
 
