@@ -185,7 +185,7 @@ const createInitialState = (): IO.IO<PrismicContextState> =>
       ? ssrPluginOptionsStore
       : window[WINDOW_PLUGIN_OPTIONS_KEY],
     R.map(populateAccessToken),
-    R.sequence(IO.io),
+    R.sequence(IO.Applicative),
     IO.map((pluginOptionsStore) => ({
       ...defaultInitialState,
       pluginOptionsStore,

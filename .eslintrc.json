@@ -8,13 +8,14 @@
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
-    }
+    },
+    "project": "./tsconfig.json"
   },
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended"
   ],
-  "plugins": ["react-hooks"],
+  "plugins": ["deprecation", "react-hooks"],
   "rules": {
     "curly": "error",
     "prefer-const": "error",
@@ -28,8 +29,14 @@
       { "multiline": { "delimiter": "none" } }
     ],
     "@typescript-eslint/camelcase": "off",
+    "deprecation/deprecation": "warn",
     "react/display-name": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

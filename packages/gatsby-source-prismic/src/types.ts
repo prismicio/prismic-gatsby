@@ -89,7 +89,7 @@ export interface PrismicSchema {
   [tabName: string]: PrismicSchemaTab
 }
 
-interface PrismicSchemaTab {
+export interface PrismicSchemaTab {
   [fieldName: string]: PrismicSchemaField
 }
 
@@ -234,6 +234,7 @@ export interface PrismicWebhookBodyApiUpdate extends PrismicWebhookBodyBase {
   masks: PrismicWebhookOperations<PrismicWebhookMask>
   tags: PrismicWebhookOperations<PrismicWebhookTag>
   documents: string[]
+  // eslint-disable-next-line deprecation/deprecation
   experiments?: PrismicWebhookOperations<PrismicWebhookExperiment>
 }
 
@@ -269,6 +270,7 @@ export interface PrismicWebhookRelease {
 interface PrismicWebhookExperiment {
   id: string
   name: string
+  // eslint-disable-next-line deprecation/deprecation
   variations: PrismicWebhookExperimentVariation[]
 }
 

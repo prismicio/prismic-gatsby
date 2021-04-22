@@ -3,6 +3,7 @@ import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
+import * as struct from 'fp-ts/struct'
 import { pipe } from 'fp-ts/function'
 
 import {
@@ -11,6 +12,7 @@ import {
   PrismicSchemaField,
   PrismicAPIDocumentNode,
   PrismicSpecialType,
+  PrismicSchemaTab,
 } from '../types'
 import {
   PREVIEWABLE_NODE_ID_FIELD,
@@ -28,7 +30,7 @@ const collectFields = (
   pipe(
     schema,
     R.collect((_, value) => value),
-    S.fold(S.getObjectSemigroup<Record<string, PrismicSchemaField>>())({}),
+    S.concatAll(struct.getAssignSemigroup<PrismicSchemaTab>())({}),
   )
 
 const buildDataFieldConfigMap = (

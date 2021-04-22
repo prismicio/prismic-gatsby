@@ -61,7 +61,7 @@ const normalizeDocumentRecord = (
     R.mapWithIndex((prop, propValue) =>
       normalizeDocumentSubtree([...path, prop], propValue),
     ),
-    R.sequence(RTE.readerTaskEither),
+    R.sequence(RTE.ApplicativeSeq),
   )
 
 export const normalizeDocumentSubtree = (

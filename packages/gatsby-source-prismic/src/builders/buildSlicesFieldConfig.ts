@@ -42,20 +42,20 @@ const buildSliceChoiceType = (
         >,
         R.isEmpty(schema['non-repeat'])
           ? identity
-          : R.insertAt(
+          : R.upsertAt(
               'primary',
               buildSchemaRecordType([...path, 'primary'], schema['non-repeat']),
             ),
         R.isEmpty(schema.repeat)
           ? identity
-          : R.insertAt(
+          : R.upsertAt(
               'items',
               buildSchemaRecordType([...path, 'items'], schema.repeat, [
                 ...path,
                 'item',
               ]),
             ),
-        R.sequence(RTE.readerTaskEither),
+        R.sequence(RTE.ApplicativeSeq),
         RTE.chainFirst(
           flow(
             R.collect((_, type) => type),
@@ -104,9 +104,9 @@ const buildSliceTypes = (
   pipe(
     choices,
     R.mapWithIndex((sliceName, sliceSchema) =>
-      buildSliceChoiceType(A.snoc(path, sliceName), sliceSchema),
+      buildSliceChoiceType(pipe(path, A.append(sliceName)), sliceSchema),
     ),
-    R.sequence(RTE.readerTaskEither),
+    R.sequence(RTE.ApplicativeSeq),
     RTE.map(R.collect((_, type) => type)),
   )
 

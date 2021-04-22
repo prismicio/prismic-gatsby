@@ -131,7 +131,7 @@ export const proxyValue = (
             RE.chain((baseFields) => buildImageProxyValue(baseFields)),
           ),
         ),
-        R.sequence(RE.readerEither),
+        R.sequence(RE.Applicative),
       ),
     ),
     RE.map((scope) => ({

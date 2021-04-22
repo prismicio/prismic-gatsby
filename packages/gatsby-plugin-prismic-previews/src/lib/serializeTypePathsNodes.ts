@@ -10,9 +10,9 @@ export const serializeTypePathNodes = (
   typePathNodes: gatsbyPrismic.TypePathNode[],
 ): string =>
   pipe(
-    R.fromFoldableMap(S.getLastSemigroup<string>(), A.array)(
-      typePathNodes,
-      (node) => [serializePath(node.path), node.type],
-    ),
+    R.fromFoldableMap(S.last<string>(), A.Foldable)(typePathNodes, (node) => [
+      serializePath(node.path),
+      node.type,
+    ]),
     JSON.stringify,
   )

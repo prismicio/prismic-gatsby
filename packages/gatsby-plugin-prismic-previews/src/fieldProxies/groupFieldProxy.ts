@@ -25,7 +25,7 @@ export const proxyValue = (
         R.mapWithIndex((fieldName, value) =>
           proxyDocumentSubtree([...path, fieldName], value),
         ),
-        R.sequence(RE.readerEither),
+        R.sequence(RE.Applicative),
       ),
     ),
     RE.sequenceArray,

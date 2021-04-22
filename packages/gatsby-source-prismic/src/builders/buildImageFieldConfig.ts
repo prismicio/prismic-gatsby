@@ -29,8 +29,8 @@ const createThumbnailsType = (
     RTE.bind('fields', (scope) =>
       pipe(
         R.fromFoldableMap(
-          S.getLastSemigroup<PrismicSchemaImageThumbnail>(),
-          A.array,
+          S.last<PrismicSchemaImageThumbnail>(),
+          A.Foldable,
         )(scope.thumbnails, (thumbnail) => [thumbnail.name, thumbnail]),
         R.map(() => scope.nodeHelpers.createTypeName('ImageThumbnailType')),
         (fields) => RTE.right(fields),
