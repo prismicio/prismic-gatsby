@@ -28,6 +28,7 @@ test('passes on valid options', async (t) => {
     typePrefix: 'string',
     webhookSecret: 'string',
     createRemoteFileNode: (): void => void 0,
+    transformFieldName: (): void => void 0,
   }
 
   server.use(

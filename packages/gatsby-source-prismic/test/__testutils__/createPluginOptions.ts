@@ -29,5 +29,6 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
     createRemoteFileNode: sinon
       .stub()
       .resolves(Promise.resolve({ id: 'remoteFileNodeId' })),
+    transformFieldName: (fieldName: string) => fieldName.replace(/-/g, '_'),
   }
 }

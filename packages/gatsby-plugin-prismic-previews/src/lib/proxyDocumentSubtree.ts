@@ -33,6 +33,7 @@ export interface ProxyDocumentSubtreeEnv {
   imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
   nodeHelpers: NodeHelpers
   createContentDigest(input: string | UnknownRecord): string
+  transformFieldName(fieldName: string): string
 }
 
 export const proxyDocumentSubtree = (

@@ -30,6 +30,7 @@ import {
 } from './types'
 import { PrismicContextActionType, PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { defaultFieldTransformer } from './lib/defaultFieldTransformer'
 
 export type UsePrismicPreviewBootstrapFn = () => void
 
@@ -233,6 +234,9 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
             imagePlaceholderImgixParams:
               env.repositoryPluginOptions.imagePlaceholderImgixParams,
             htmlSerializer: env.repositoryConfig.htmlSerializer,
+            transformFieldName:
+              env.repositoryConfig.transformFieldName ??
+              defaultFieldTransformer,
           }),
         ),
       ),
@@ -253,6 +257,7 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
 export type UsePrismicPreviewBootstrapRepositoryConfig = {
   linkResolver: LinkResolver
   htmlSerializer?: HTMLSerializer
+  transformFieldName?(fieldName: string): string
 }
 
 export type UsePrismicPreviewBootstrapConfig = Record<
