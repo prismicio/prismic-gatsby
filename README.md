@@ -5,24 +5,24 @@ repositories.
 
 ## Table of Contents
 
-- [Features](#Features)
-- [Install](#Install)
-- [Migration Guide](#Migration-Guide)
-- [How to use](#How-to-use)
-- [Providing JSON schemas](#Providing-JSON-schemas)
-- [How to query](#How-to-query)
-  - [Query Rich Text fields](#Query-Rich-Text-fields)
-  - [Query Link fields](#Query-Link-fields)
-  - [Query Image fields](#Query-image-fields)
-  - [Query Content Relation fields](#Query-Content-Relation-fields)
-  - [Query Slices](#Query-slices)
-  - [Query direct API data as a fallback](#Query-direct-API-data-as-a-fallback)
-  - [Image processing](#Image-processing)
-- [Previews](#Previews)
-- [Releases](#Releases)
-- [Limitations](#Limitations)
-  - [GraphQL-valid field names](#GraphQL-valid-field-names)
-- [Site's `gatsby-node.js` example](#Sites-gatsby-nodejs-example)
+- [Features](#features)
+- [Install](#install)
+- [Migration Guide](#migration-guide)
+- [How to use](#how-to-use)
+- [Providing JSON schemas](#providing-json-schemas)
+- [How to query](#how-to-query)
+  - [Query Rich Text fields](#query-rich-text-fields)
+  - [Query Link fields](#query-link-fields)
+  - [Query Image fields](#query-image-fields)
+  - [Query Content Relation fields](#query-content-relation-fields)
+  - [Query Slices](#query-slices)
+  - [Query direct API data as a fallback](#query-direct-api-data-as-a-fallback)
+  - [Image processing](#image-processing)
+- [Previews](#previews)
+- [Releases](#releases)
+- [Limitations](#limitations)
+  - [GraphQL-valid field names](#graphql-valid-field-names)
+- [Site's `gatsby-node.js` example](#sites-gatsby-nodejs-example)
 
 ## Features
 
@@ -31,7 +31,7 @@ repositories.
   `gatsby-transformer-sharp` for image fields
 - Utilizes `prismic-dom` to provide HTML and link values so you don't have to
   use `prismic-dom` directly
-- Supports [Prismic previews](#Previews) and automatically adds the
+- Supports [Prismic previews](#previews) and automatically adds the
   [Prismic Toolbar](prismic-toolbar)
 
 ## Install
@@ -45,8 +45,8 @@ npm install --save gatsby-source-prismic
 Read the migration guide to learn why and how to upgrade from v2 to v3. Then
 read the previews guide to learn how to setup previews.
 
-- [Migrating from v2 to v3](./docs/migrating-from-v2-to-v3.md)
-- [Previews](./docs/previews.md)
+- [Migrating from v2 to v3](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/migrating-from-v2-to-v3.md)
+- [Previews](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/previews.md)
 
 ## How to use
 
@@ -342,7 +342,7 @@ Image thumbnails are available on the `thumbnail` field of all image fields.
 See the official docs for more details on configuring thumbnails on your custom
 types: [How to set up responsive images][prismic-responsive-images].
 
-See the [Image processing](#Image-processing) section to learn how to enable
+See the [Image processing](#image-processing) section to learn how to enable
 Gatsby Image support.
 
 ```graphql
@@ -665,12 +665,12 @@ retain the benefits of Gatsby's HTML pre-rendering while still providing the
 dynamic and rich content editing experience of a traditional server setup.
 
 For an in-depth guide on using previews, please refer to
-[this guide](./docs/previews.md).
+[this guide](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/previews.md).
 
 ## Releases
 
 You can provide a `releaseID` option to build a release version of your website.
-See the [How to use](#How-to-use) section for a description of the option. To
+See the [How to use](#how-to-use) section for a description of the option. To
 learn more about Prismic releases, see Prismic's official documentation here:
 [The basics of a release][prismic-releases].
 
@@ -703,10 +703,12 @@ the latest published version of all your documents. Your other Prismic Releases
 will be listed here with their names.
 
 Note that a release build is totally compatible with the preview system
-explained in the [preview guide](./docs/previews-guide.md). Using a `releaseID`
-is a way to view at once another version of your website, but under the hood it
-works the same way as the default build. So you can preview a draft of one
-document of your release just like you would do with the master version.
+explained in the
+[preview guide](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/previews.md).
+Using a `releaseID` is a way to view at once another version of your website,
+but under the hood it works the same way as the default build. So you can
+preview a draft of one document of your release just like you would do with the
+master version.
 
 ## Limitations
 
