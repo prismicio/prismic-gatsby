@@ -7,7 +7,7 @@ import {
   proxyDocumentSubtree,
   ProxyDocumentSubtreeEnv,
 } from '../lib/proxyDocumentSubtree'
-import { mapRecordIndicies } from '../lib/mapRecordIndices'
+import { mapRecordIndices } from '../lib/mapRecordIndices'
 
 export const valueRefinement = (value: unknown): value is UnknownRecord =>
   typeof value === 'object' && value !== null
@@ -21,7 +21,7 @@ export const proxyValue = (
     RE.chain((env) =>
       pipe(
         fieldValue,
-        mapRecordIndicies(env.transformFieldName),
+        mapRecordIndices(env.transformFieldName),
         R.mapWithIndex((fieldName, value) =>
           proxyDocumentSubtree([...path, fieldName], value),
         ),

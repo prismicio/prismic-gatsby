@@ -4,7 +4,7 @@ import * as R from 'fp-ts/Record'
 import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
 
-import { mapRecordIndicies } from './mapRecordIndicies'
+import { mapRecordIndices } from './mapRecordIndices'
 import { toFieldConfig } from './toFieldConfig'
 
 import { Dependencies, PrismicSchemaField } from '../types'
@@ -34,7 +34,7 @@ export const buildFieldConfigMap = (
     RTE.chain((deps) =>
       pipe(
         fieldSchemas,
-        mapRecordIndicies(deps.pluginOptions.transformFieldName),
+        mapRecordIndices(deps.pluginOptions.transformFieldName),
         R.mapWithIndex((name, schema) =>
           toFieldConfig(pipe(path, A.append(name)), schema),
         ),
