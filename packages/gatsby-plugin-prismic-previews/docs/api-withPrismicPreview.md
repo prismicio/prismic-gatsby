@@ -50,6 +50,11 @@ in your app:
   for the configured Prismic repository. This should be the same HTML Serializer
   provided to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`.
 
+- **`transformFieldName`**<br/>The optional field transformer for the configured
+  Prismic repository. This should be the same `transformFieldName` function
+  provided to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js` if
+  used. Most project will not need to provide a value for this option.
+
 Configuration values:
 
 - **`mergePreviewData`**<br/>An optional boolean that determines if previewed
