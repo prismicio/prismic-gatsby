@@ -162,10 +162,11 @@ module.exports = {
         // See: https://user-guides.prismic.io/en/articles/790505-webhooks
         webhookSecret: process.env.PRISMIC_WEBHOOK_SECRET,
 
-        // If you field names contain characters that are not supported by
-        // GraphQL, such as dashes (e.g. "my-field"), you can provide a function
-        // that will transform a field name into one that is compatible. By
-        // default, field names with dashes will be converted to underscoes.
+        // If your custom types' field names contain characters that are not
+        // supported by GraphQL, such as dashes (e.g. "my-field"), you can
+        // provide a function that will transform a field name into one that is
+        // compatible. By default, field names with dashes will be converted to
+        // underscores.
         //
         // See the "GraphQL-valid field names" section below for more details.
         transformFieldName: (fieldName) => fieldName.replace(/-/g, '_'),
