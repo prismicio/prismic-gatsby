@@ -1,5 +1,6 @@
 import * as msw from 'msw'
 import * as prismic from 'ts-prismic'
+
 import { PluginOptions } from '../../src'
 
 const DEFAULT_RESPONSE: prismic.Response.Repository = {

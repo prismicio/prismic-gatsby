@@ -16,6 +16,7 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
   return {
     repositoryName,
     accessToken: 'accessToken',
+    customTypeApiToken: 'customTypeApiToken',
     apiEndpoint: prismic.defaultEndpoint(repositoryName),
     typePrefix: 'prefix',
     schemas: {},

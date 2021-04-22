@@ -195,7 +195,7 @@ test('embed fields are normalized to inferred nodes', async (t) => {
   )
 })
 
-test.only('integration fields are normalized to inferred nodes', async (t) => {
+test('integration fields are normalized to inferred nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const docWithIntegrationId = createPrismicAPIDocument({
