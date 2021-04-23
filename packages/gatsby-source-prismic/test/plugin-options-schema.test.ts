@@ -24,7 +24,7 @@ test.serial('passes on valid options', async (t) => {
   const pluginOptions = {
     repositoryName: 'string',
     accessToken: 'string',
-    customTypeApiToken: 'string',
+    customTypesApiToken: 'string',
     apiEndpoint: 'https://example.com',
     releaseID: 'string',
     graphQuery: 'string',
@@ -68,7 +68,7 @@ test.serial('fails on missing options', async (t) => {
   t.false(res.isValid)
   t.deepEqual(res.errors, [
     '"repositoryName" is required',
-    '"value" must contain at least one of [schemas, customTypeApiToken]',
+    '"value" must contain at least one of [schemas, customTypesApiToken]',
   ])
 })
 
@@ -76,7 +76,7 @@ test.serial('fails on invalid options', async (t) => {
   const pluginOptions = {
     repositoryName: Symbol(),
     accessToken: Symbol(),
-    customTypeApiToken: Symbol(),
+    customTypesApiToken: Symbol(),
     apiEndpoint: Symbol(),
     releaseID: Symbol(),
     graphQuery: Symbol(),
@@ -96,7 +96,7 @@ test.serial('fails on invalid options', async (t) => {
   t.deepEqual(res.errors, [
     '"repositoryName" must be a string',
     '"accessToken" must be a string',
-    '"customTypeApiToken" must be a string',
+    '"customTypesApiToken" must be a string',
     '"apiEndpoint" must be a string',
     '"releaseID" must be a string',
     '"graphQuery" must be a string',
@@ -112,10 +112,10 @@ test.serial('fails on invalid options', async (t) => {
   ])
 })
 
-test.serial('fails on invalid customTypeApiToken', async (t) => {
+test.serial('fails on invalid customTypesApiToken', async (t) => {
   const pluginOptions = {
     repositoryName: 'qwerty',
-    customTypeApiToken: 'customTypeApiToken',
+    customTypesApiToken: 'customTypesApiToken',
   }
 
   // Intentionally making a failed 401 response.
@@ -130,7 +130,7 @@ test.serial('fails on invalid customTypeApiToken', async (t) => {
 
   t.false(res.isValid)
   t.deepEqual(res.errors, [
-    'The Custom Type API could not be accessed. Please check that the customTypeApiToken provided is valid.',
+    'The Custom Type API could not be accessed. Please check that the customTypesApiToken provided is valid.',
   ])
 })
 
@@ -176,11 +176,11 @@ test.serial('checks that all schemas are provided', async (t) => {
 })
 
 test.serial(
-  'populates schemas if customTypeApiToken is provided',
+  'populates schemas if customTypesApiToken is provided',
   async (t) => {
     const pluginOptions = {
       repositoryName: 'qwerty',
-      customTypeApiToken: 'customTypeApiToken',
+      customTypesApiToken: 'customTypesApiToken',
     }
     const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
 
@@ -222,7 +222,7 @@ test.serial(
 )
 
 test.serial(
-  'merges schemas if customTypeApiToken and schemas are provided',
+  'merges schemas if customTypesApiToken and schemas are provided',
   async (t) => {
     const customTypeNotInAPI = createCustomTypesAPICustomType()
     const customTypeInAPI1 = createCustomTypesAPICustomType()
@@ -234,7 +234,7 @@ test.serial(
 
     const pluginOptions = {
       repositoryName: 'qwerty',
-      customTypeApiToken: 'customTypeApiToken',
+      customTypesApiToken: 'customTypesApiToken',
       schemas: {
         [customTypeNotInAPI.id]: customTypeNotInAPI.json,
         // Note that we are going to replace customTypeInAPI2 with

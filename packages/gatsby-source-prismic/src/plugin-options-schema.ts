@@ -49,16 +49,16 @@ const externalCustomTypeFetchingProgram = (
   pipe(
     RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
     RTE.filterOrElse(
-      (deps) => Boolean(deps.pluginOptions.customTypeApiToken),
+      (deps) => Boolean(deps.pluginOptions.customTypesApiToken),
       () =>
         new Error(
-          'No customTypeApiToken provided (skipping Custom Types API fetching)',
+          'No customTypesApiToken provided (skipping Custom Types API fetching)',
         ),
     ),
     RTE.bind('headers', (scope) =>
       RTE.of({
         repository: scope.pluginOptions.repositoryName,
-        Authorization: `Bearer ${scope.pluginOptions.customTypeApiToken}`,
+        Authorization: `Bearer ${scope.pluginOptions.customTypesApiToken}`,
       }),
     ),
     RTE.bindW('response', (scope) =>
@@ -74,7 +74,7 @@ const externalCustomTypeFetchingProgram = (
               [
                 {
                   message:
-                    'The Custom Type API could not be accessed. Please check that the customTypeApiToken provided is valid.',
+                    'The Custom Type API could not be accessed. Please check that the customTypesApiToken provided is valid.',
                 },
               ],
               scope.pluginOptions,
@@ -173,7 +173,7 @@ export const pluginOptionsSchema: NonNullable<
   const schema = Joi.object({
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
-    customTypeApiToken: Joi.string(),
+    customTypesApiToken: Joi.string(),
     apiEndpoint: Joi.string().default((parent) =>
       prismic.defaultEndpoint(parent.repositoryName),
     ),
@@ -197,7 +197,7 @@ export const pluginOptionsSchema: NonNullable<
       fieldName.replace(/-/g, '_'),
     ),
   })
-    .or('schemas', 'customTypeApiToken')
+    .or('schemas', 'customTypesApiToken')
     .oxor('fetchLinks', 'graphQuery')
     .external(
       async (pluginOptions: PluginOptions) =>
