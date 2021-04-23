@@ -62,11 +62,25 @@ module.exports = {
         // Learn about environment variables: https://gatsby.dev/env-vars
         repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
 
-        // An API access token to your Prismic repository. This is optional.
+        // An API access token for your Prismic repository. This is optional.
         // You can generate an access token in the "API & Security" section of
         // your repository settings. Setting a "Callback URL" is not necessary.
         // The token will be listed under "Permanent access tokens".
         accessToken: process.env.PRISMIC_ACCESS_TOKEN,
+
+        // A Custom Types API token for your Prismic repository that allows your
+        // custom type schemas to automatically be fetched. This is optional.
+        // You can provide your custom type schemas to the plugin manually using
+        // the `schemas` option.
+        //
+        // You can generate a permanent Custom Types API token in the
+        // "API & Security" section of your repository settings in the Custom
+        // Types API tab.
+        //
+        // This is a BETA feature that must be enabled on your Prismic repository.
+        //
+        // See: https://prismic.io/docs/technologies/custom-types-api
+        customTypesApiToken: process.env.PRISMIC_CUSTOM_TYPES_API_TOKEN,
 
         // If you provide a release ID, the plugin will fetch data from Prismic
         // for a specific release. A Prismic release is a way to gather a
