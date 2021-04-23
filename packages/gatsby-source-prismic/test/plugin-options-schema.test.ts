@@ -61,7 +61,7 @@ test.serial('passes on valid options', async (t) => {
   t.deepEqual(res.errors, [])
 })
 
-test('fails on missing options', async (t) => {
+test.serial('fails on missing options', async (t) => {
   const pluginOptions = {}
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
@@ -72,7 +72,7 @@ test('fails on missing options', async (t) => {
   ])
 })
 
-test('fails on invalid options', async (t) => {
+test.serial('fails on invalid options', async (t) => {
   const pluginOptions = {
     repositoryName: Symbol(),
     accessToken: Symbol(),
@@ -112,7 +112,29 @@ test('fails on invalid options', async (t) => {
   ])
 })
 
-test('allows only one of qraphQuery or fetchLinks', async (t) => {
+test.serial('fails on invalid customTypeApiToken', async (t) => {
+  const pluginOptions = {
+    repositoryName: 'qwerty',
+    customTypeApiToken: 'customTypeApiToken',
+  }
+
+  // Intentionally making a failed 401 response.
+  server.use(
+    msw.rest.get(
+      'https://customtypes.prismic.io/customtypes',
+      (_req, res, ctx) => res(ctx.status(401)),
+    ),
+  )
+
+  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+
+  t.false(res.isValid)
+  t.deepEqual(res.errors, [
+    'The Custom Type API could not be accessed. Please check that the customTypeApiToken provided is valid.',
+  ])
+})
+
+test.serial('allows only one of qraphQuery or fetchLinks', async (t) => {
   const pluginOptions = {
     repositoryName: 'qwerty',
     schemas: { page: kitchenSinkSchemaFixture },

@@ -70,8 +70,13 @@ const externalCustomTypeFetchingProgram = (
             }).json<PrismicCustomTypeApiResponse>(),
           () =>
             new Joi.ValidationError(
-              'The Custom Type API could not be accessed. Please check that the customTypeApiToken provided is valid.',
-              [],
+              'Failed Custom Type API Request',
+              [
+                {
+                  message:
+                    'The Custom Type API could not be accessed. Please check that the customTypeApiToken provided is valid.',
+                },
+              ],
               scope.pluginOptions,
             ),
         ),
@@ -120,8 +125,8 @@ const externalValidationProgram = (
           () => got(scope.repositoryURL).json<prismic.Response.Repository>(),
           () =>
             new Joi.ValidationError(
-              COULD_NOT_ACCESS_MSG,
-              [],
+              'Failed repository request',
+              [{ message: COULD_NOT_ACCESS_MSG }],
               scope.repositoryURL,
             ),
         ),
