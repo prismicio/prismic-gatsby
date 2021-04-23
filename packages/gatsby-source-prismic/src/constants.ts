@@ -13,6 +13,15 @@ export const GLOBAL_TYPE_PREFIX = 'Prismic'
 export const PRISMIC_API_NON_DATA_FIELDS = ['uid']
 
 /**
+ * Endpoint used to fetch custom type JSON schemas from Prismic's Custom Type
+ * API.
+ *
+ * @see https://prismic.io/docs/technologies/custom-types-api
+ */
+export const PRISMIC_CUSTOM_TYPES_API_ENDPOINT =
+  'https://customtypes.prismic.io/customtypes'
+
+/**
  * Default Imgix URL parameters for `gatsby-plugin-image` fields.
  *
  * These defaults provide a good balance between image quality and filesize.

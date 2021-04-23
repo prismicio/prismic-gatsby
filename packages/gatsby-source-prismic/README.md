@@ -62,11 +62,35 @@ module.exports = {
         // Learn about environment variables: https://gatsby.dev/env-vars
         repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
 
-        // An API access token to your Prismic repository. This is optional.
+        // An API access token for your Prismic repository. This is optional.
         // You can generate an access token in the "API & Security" section of
         // your repository settings. Setting a "Callback URL" is not necessary.
         // The token will be listed under "Permanent access tokens".
         accessToken: process.env.PRISMIC_ACCESS_TOKEN,
+
+        // A Custom Types API token for your Prismic repository that allows your
+        // custom type schemas to automatically be fetched. This is optional.
+        // You can provide your custom type schemas to the plugin manually using
+        // the `schemas` option.
+        //
+        // You can generate a permanent Custom Types API token in the
+        // "API & Security" section of your repository settings in the Custom
+        // Types API tab.
+        //
+        // This is a BETA feature that must be enabled on your Prismic repository.
+        //
+        // See: https://prismic.io/docs/technologies/custom-types-api
+        customTypesApiToken: process.env.PRISMIC_CUSTOM_TYPES_API_TOKEN,
+
+        // Provide an object of Prismic custom type JSON schemas to load into
+        // Gatsby. This is required only if you do not provide a value to
+        // customTypesApiToken.
+        //
+        // You may also provide schemas here to override the schemas pulled
+        // automatically from the API.
+        schemas: {
+          // Your custom type JSON schemas.
+        },
 
         // If you provide a release ID, the plugin will fetch data from Prismic
         // for a specific release. A Prismic release is a way to gather a
@@ -76,12 +100,6 @@ module.exports = {
         //
         // See: https://user-guides.prismic.io/en/articles/778358-what-is-a-release
         releaseID: process.env.PRISMIC_RELEASE_ID,
-
-        // Provide an object of Prismic custom type JSON schemas to load into
-        // Gatsby. This is required.
-        schemas: {
-          // Your custom type JSON schemas.
-        },
 
         // Set a Link Resolver function used to process links in your content.
         // Fields with Rich Text formatting or links to internal content use this
@@ -178,12 +196,22 @@ module.exports = {
 
 ## Providing JSON schemas
 
-In order for Gatsby to know about your Prismic custom types, you must provide
-the full JSON schema of each custom type. This is done via the plugin's
-`schemas` option in `gatsby-config.js`.
+In order for Gatsby to know about your Prismic custom types and provide a full
+GraphQL experience, the JSON schemas of each custom type must be provided to
+Gatsby.
 
-The recommended approach is to create a `schemas` directory in your project and
-import them into your `gatsby-config.js` file.
+> **Note**: A new automated process for fetching your repository's schemas is
+> currently in Beta. You can request that the Custom Types API feature be
+> enabled on your repository which will allow you to provide a
+> `customTypesApiToken` to your plugin options (see the
+> [How to use](#how-to-use) section for details).
+>
+> See the
+> [Custom Types API documentation](https://prismic.io/docs/technologies/custom-types-api)
+> for more details.
+
+The recommended approach to provide your schemas to create a `schemas` directory
+in your project and import them into your `gatsby-config.js` file.
 
 ```javascript
 // In your gatsby-config.js

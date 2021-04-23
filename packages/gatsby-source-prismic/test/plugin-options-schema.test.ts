@@ -2,20 +2,29 @@ import test from 'ava'
 import * as msw from 'msw'
 import * as mswn from 'msw/node'
 import * as prismic from 'ts-prismic'
-import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
+import {
+  testPluginOptionsSchema,
+  Joi,
+  validateOptionsSchema,
+} from 'gatsby-plugin-utils'
 
 import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
+import { createCustomTypesAPICustomType } from './__testutils__/createCustomTypesAPICustomType'
+import { createCustomTypesAPIMockedRequest } from './__testutils__/createCustomTypesAPIMockedRequest'
 
+import { PluginOptions, PrismicCustomTypeApiResponse } from '../src'
 import { pluginOptionsSchema } from '../src/plugin-options-schema'
 
 const server = mswn.setupServer()
 test.before(() => server.listen({ onUnhandledRequest: 'error' }))
+test.afterEach(() => server.resetHandlers())
 test.after(() => server.close())
 
-test('passes on valid options', async (t) => {
+test.serial('passes on valid options', async (t) => {
   const pluginOptions = {
     repositoryName: 'string',
     accessToken: 'string',
+    customTypesApiToken: 'string',
     apiEndpoint: 'https://example.com',
     releaseID: 'string',
     graphQuery: 'string',
@@ -44,27 +53,30 @@ test('passes on valid options', async (t) => {
     ),
   )
 
+  server.use(createCustomTypesAPIMockedRequest(pluginOptions, []))
+
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
   t.true(res.isValid)
   t.deepEqual(res.errors, [])
 })
 
-test('fails on missing options', async (t) => {
+test.serial('fails on missing options', async (t) => {
   const pluginOptions = {}
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
   t.false(res.isValid)
   t.deepEqual(res.errors, [
     '"repositoryName" is required',
-    '"schemas" is required',
+    '"value" must contain at least one of [schemas, customTypesApiToken]',
   ])
 })
 
-test('fails on invalid options', async (t) => {
+test.serial('fails on invalid options', async (t) => {
   const pluginOptions = {
     repositoryName: Symbol(),
     accessToken: Symbol(),
+    customTypesApiToken: Symbol(),
     apiEndpoint: Symbol(),
     releaseID: Symbol(),
     graphQuery: Symbol(),
@@ -84,6 +96,7 @@ test('fails on invalid options', async (t) => {
   t.deepEqual(res.errors, [
     '"repositoryName" must be a string',
     '"accessToken" must be a string',
+    '"customTypesApiToken" must be a string',
     '"apiEndpoint" must be a string',
     '"releaseID" must be a string',
     '"graphQuery" must be a string',
@@ -99,7 +112,29 @@ test('fails on invalid options', async (t) => {
   ])
 })
 
-test('allows only one of qraphQuery or fetchLinks', async (t) => {
+test.serial('fails on invalid customTypesApiToken', async (t) => {
+  const pluginOptions = {
+    repositoryName: 'qwerty',
+    customTypesApiToken: 'customTypesApiToken',
+  }
+
+  // Intentionally making a failed 401 response.
+  server.use(
+    msw.rest.get(
+      'https://customtypes.prismic.io/customtypes',
+      (_req, res, ctx) => res(ctx.status(401)),
+    ),
+  )
+
+  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+
+  t.false(res.isValid)
+  t.deepEqual(res.errors, [
+    'The Custom Type API could not be accessed. Please check that the customTypesApiToken provided is valid.',
+  ])
+})
+
+test.serial('allows only one of qraphQuery or fetchLinks', async (t) => {
   const pluginOptions = {
     repositoryName: 'qwerty',
     schemas: { page: kitchenSinkSchemaFixture },
@@ -114,7 +149,7 @@ test('allows only one of qraphQuery or fetchLinks', async (t) => {
   ])
 })
 
-test('checks that all schemas are provided', async (t) => {
+test.serial('checks that all schemas are provided', async (t) => {
   const pluginOptions = {
     repositoryName: 'qwerty',
     schemas: { page: kitchenSinkSchemaFixture },
@@ -131,9 +166,120 @@ test('checks that all schemas are provided', async (t) => {
     ),
   )
 
+  server.use(createCustomTypesAPIMockedRequest(pluginOptions, []))
+
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
   t.false(res.isValid)
   t.true(res.errors.length === 1)
   t.true(/blogPost/.test(res.errors[0]))
 })
+
+test.serial(
+  'populates schemas if customTypesApiToken is provided',
+  async (t) => {
+    const pluginOptions = {
+      repositoryName: 'qwerty',
+      customTypesApiToken: 'customTypesApiToken',
+    }
+    const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
+
+    const customType1 = createCustomTypesAPICustomType()
+    const customType2 = createCustomTypesAPICustomType()
+    const customTypesResponse: PrismicCustomTypeApiResponse = [
+      customType1,
+      customType2,
+    ]
+
+    server.use(
+      msw.rest.get(apiEndpoint, (_req, res, ctx) =>
+        res(
+          ctx.json({
+            types: {
+              [customType1.id]: customType1.label,
+              [customType2.id]: customType2.label,
+            },
+          }),
+        ),
+      ),
+    )
+
+    server.use(
+      createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
+    )
+
+    const schema = pluginOptionsSchema({ Joi })
+    const res = (await validateOptionsSchema(
+      schema,
+      pluginOptions,
+    )) as PluginOptions
+
+    t.deepEqual(res.schemas, {
+      [customType1.id]: customType1.json,
+      [customType2.id]: customType2.json,
+    })
+  },
+)
+
+test.serial(
+  'merges schemas if customTypesApiToken and schemas are provided',
+  async (t) => {
+    const customTypeNotInAPI = createCustomTypesAPICustomType()
+    const customTypeInAPI1 = createCustomTypesAPICustomType()
+    const customTypeInAPI2 = createCustomTypesAPICustomType()
+    const customTypesResponse: PrismicCustomTypeApiResponse = [
+      customTypeInAPI1,
+      customTypeInAPI2,
+    ]
+
+    const pluginOptions = {
+      repositoryName: 'qwerty',
+      customTypesApiToken: 'customTypesApiToken',
+      schemas: {
+        [customTypeNotInAPI.id]: customTypeNotInAPI.json,
+        // Note that we are going to replace customTypeInAPI2 with
+        // customTypeNotInAPI, in which customTypeInAPI2 is part of the API
+        // response. The test at the end checks for this.
+        [customTypeInAPI2.id]: customTypeNotInAPI.json,
+      },
+    }
+    const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
+
+    server.use(
+      msw.rest.get(apiEndpoint, (_req, res, ctx) =>
+        res(
+          ctx.json({
+            types: {
+              [customTypesResponse[0].id]: customTypesResponse[0].label,
+              [customTypesResponse[1].id]: customTypesResponse[1].label,
+            },
+          }),
+        ),
+      ),
+    )
+
+    server.use(
+      createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
+    )
+
+    const schema = pluginOptionsSchema({ Joi })
+    const res = (await validateOptionsSchema(
+      schema,
+      pluginOptions,
+    )) as PluginOptions
+
+    t.deepEqual(res.schemas, {
+      // We are testing that a schema provided in the plugin options, but not
+      // provided by the API, can be provided explicitly.
+      [customTypeNotInAPI.id]: customTypeNotInAPI.json,
+
+      // This custom type was not provided in the plugin options, but is provided
+      // by the API.
+      [customTypeInAPI1.id]: customTypeInAPI1.json,
+
+      // We are testing that a schema provided by the API can be overridden by
+      // one provided in plugin options.
+      [customTypeInAPI2.id]: customTypeNotInAPI.json,
+    })
+  },
+)

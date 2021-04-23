@@ -6,7 +6,8 @@ import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
 import * as A from 'fp-ts/Array'
 import * as R from 'fp-ts/Record'
-import * as s from 'fp-ts/string'
+import * as struct from 'fp-ts/struct'
+import * as string from 'fp-ts/string'
 import { constVoid, pipe } from 'fp-ts/function'
 import got from 'got'
 
@@ -20,8 +21,78 @@ import {
   MISSING_SCHEMAS_MSG,
   MISSING_SCHEMA_MSG,
   COULD_NOT_ACCESS_MSG,
+  PRISMIC_CUSTOM_TYPES_API_ENDPOINT,
 } from './constants'
-import { Dependencies, JoiValidationError, PluginOptions } from './types'
+import {
+  Dependencies,
+  JoiValidationError,
+  PluginOptions,
+  PrismicCustomTypeApiResponse,
+  PrismicSchema,
+} from './types'
+
+const getSchemasFromCustomTypeApiResponse = (
+  response: PrismicCustomTypeApiResponse,
+) =>
+  R.fromFoldableMap(
+    struct.getAssignSemigroup<PrismicSchema>(),
+    A.Foldable,
+  )(response, (item) => [item.id, item.json])
+
+const externalCustomTypeFetchingProgram = (
+  Joi: gatsby.PluginOptionsSchemaArgs['Joi'],
+): RTE.ReaderTaskEither<
+  Pick<Dependencies, 'pluginOptions'>,
+  Error,
+  PluginOptions
+> =>
+  pipe(
+    RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
+    RTE.filterOrElse(
+      (deps) => Boolean(deps.pluginOptions.customTypesApiToken),
+      () =>
+        new Error(
+          'No customTypesApiToken provided (skipping Custom Types API fetching)',
+        ),
+    ),
+    RTE.bind('headers', (scope) =>
+      RTE.of({
+        repository: scope.pluginOptions.repositoryName,
+        Authorization: `Bearer ${scope.pluginOptions.customTypesApiToken}`,
+      }),
+    ),
+    RTE.bindW('response', (scope) =>
+      RTE.fromTaskEither(
+        TE.tryCatch(
+          () =>
+            got(PRISMIC_CUSTOM_TYPES_API_ENDPOINT, {
+              headers: scope.headers,
+            }).json<PrismicCustomTypeApiResponse>(),
+          () =>
+            new Joi.ValidationError(
+              'Failed Custom Type API Request',
+              [
+                {
+                  message:
+                    'The Custom Type API could not be accessed. Please check that the customTypesApiToken provided is valid.',
+                },
+              ],
+              scope.pluginOptions,
+            ),
+        ),
+      ),
+    ),
+    RTE.bind('fetchedSchemas', (scope) =>
+      RTE.of(getSchemasFromCustomTypeApiResponse(scope.response)),
+    ),
+    RTE.map((scope) => ({
+      ...scope.pluginOptions,
+      schemas: {
+        ...scope.fetchedSchemas,
+        ...scope.pluginOptions.schemas,
+      },
+    })),
+  )
 
 /**
  * To be executed during the `external` phase of `pluginOptionsSchema`.
@@ -51,14 +122,11 @@ const externalValidationProgram = (
     RTE.bind('repository', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
-          () =>
-            got(
-              scope.repositoryURL,
-            ).json() as Promise<prismic.Response.Repository>,
+          () => got(scope.repositoryURL).json<prismic.Response.Repository>(),
           () =>
             new Joi.ValidationError(
-              COULD_NOT_ACCESS_MSG,
-              [],
+              'Failed repository request',
+              [{ message: COULD_NOT_ACCESS_MSG }],
               scope.repositoryURL,
             ),
         ),
@@ -71,7 +139,7 @@ const externalValidationProgram = (
       pipe(
         scope.repository.types,
         R.keys,
-        A.difference(s.Eq)(scope.schemaTypes),
+        A.difference(string.Eq)(scope.schemaTypes),
         (missingSchemas) => RTE.right(missingSchemas),
       ),
     ),
@@ -105,6 +173,7 @@ export const pluginOptionsSchema: NonNullable<
   const schema = Joi.object({
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
+    customTypesApiToken: Joi.string(),
     apiEndpoint: Joi.string().default((parent) =>
       prismic.defaultEndpoint(parent.repositoryName),
     ),
@@ -114,7 +183,7 @@ export const pluginOptionsSchema: NonNullable<
     lang: Joi.string().default(DEFAULT_LANG),
     linkResolver: Joi.function(),
     htmlSerializer: Joi.function(),
-    schemas: Joi.object().required(),
+    schemas: Joi.object(),
     imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
     imagePlaceholderImgixParams: Joi.object().default(
       DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
@@ -128,7 +197,23 @@ export const pluginOptionsSchema: NonNullable<
       fieldName.replace(/-/g, '_'),
     ),
   })
+    .or('schemas', 'customTypesApiToken')
     .oxor('fetchLinks', 'graphQuery')
+    .external(
+      async (pluginOptions: PluginOptions) =>
+        await pipe(
+          externalCustomTypeFetchingProgram(Joi)({ pluginOptions }),
+          TE.fold(
+            (error) =>
+              // Non-ValidationErrors are used for flow control, so we can
+              // ignore the error if it isn't specifically one made for Joi.
+              error instanceof Joi.ValidationError
+                ? throwError(error)
+                : T.of(void 0),
+            (p) => T.of(p),
+          ),
+        )(),
+    )
     .external(
       async (pluginOptions: PluginOptions) =>
         await pipe(

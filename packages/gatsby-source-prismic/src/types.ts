@@ -58,6 +58,7 @@ export interface Dependencies {
 export interface PluginOptions extends gatsby.PluginOptions {
   repositoryName: string
   accessToken?: string
+  customTypesApiToken?: string
   apiEndpoint: string
   releaseID?: string
   graphQuery?: string
@@ -282,4 +283,13 @@ interface PrismicWebhookExperimentVariation {
   id: string
   ref: string
   label: string
+}
+
+export type PrismicCustomTypeApiResponse = PrismicCustomTypeApiCustomType[]
+
+export interface PrismicCustomTypeApiCustomType {
+  id: string
+  label: string
+  repeatable: boolean
+  json: PrismicSchema
 }
