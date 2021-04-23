@@ -205,7 +205,7 @@ export const pluginOptionsSchema: NonNullable<
           externalCustomTypeFetchingProgram(Joi)({ pluginOptions }),
           TE.fold(
             (error) =>
-              // Non-ValidationErrors are used to as control flow, so we can
+              // Non-ValidationErrors are used for flow control, so we can
               // ignore the error if it isn't specifically one made for Joi.
               error instanceof Joi.ValidationError
                 ? throwError(error)
