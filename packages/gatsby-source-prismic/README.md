@@ -82,6 +82,16 @@ module.exports = {
         // See: https://prismic.io/docs/technologies/custom-types-api
         customTypesApiToken: process.env.PRISMIC_CUSTOM_TYPES_API_TOKEN,
 
+        // Provide an object of Prismic custom type JSON schemas to load into
+        // Gatsby. This is required only if you do not provide a value to
+        // customTypesApiToken.
+        //
+        // You may also provide schemas here to override the schemas pulled
+        // automatically from the API.
+        schemas: {
+          // Your custom type JSON schemas.
+        },
+
         // If you provide a release ID, the plugin will fetch data from Prismic
         // for a specific release. A Prismic release is a way to gather a
         // collection of changes for a future version of your website. Note that
@@ -90,12 +100,6 @@ module.exports = {
         //
         // See: https://user-guides.prismic.io/en/articles/778358-what-is-a-release
         releaseID: process.env.PRISMIC_RELEASE_ID,
-
-        // Provide an object of Prismic custom type JSON schemas to load into
-        // Gatsby. This is required.
-        schemas: {
-          // Your custom type JSON schemas.
-        },
 
         // Set a Link Resolver function used to process links in your content.
         // Fields with Rich Text formatting or links to internal content use this
@@ -192,12 +196,22 @@ module.exports = {
 
 ## Providing JSON schemas
 
-In order for Gatsby to know about your Prismic custom types, you must provide
-the full JSON schema of each custom type. This is done via the plugin's
-`schemas` option in `gatsby-config.js`.
+In order for Gatsby to know about your Prismic custom types and provide a full
+GraphQL experience, the JSON schemas of each custom type must be provided to
+Gatsby.
 
-The recommended approach is to create a `schemas` directory in your project and
-import them into your `gatsby-config.js` file.
+> **Note**: A new automated process for fetching your repository's schemas is
+> currently in Beta. You can request that the Custom Types API feature be
+> enabled on your repository which will allow you to provide a
+> `customTypesApiToken` to your plugin options (see the
+> [How to use](#how-to-use) section for details).
+>
+> See the
+> [Custom Types API documentation](https://prismic.io/docs/technologies/custom-types-api)
+> for more details.
+
+The recommended approach to provide your schemas to create a `schemas` directory
+in your project and import them into your `gatsby-config.js` file.
 
 ```javascript
 // In your gatsby-config.js
