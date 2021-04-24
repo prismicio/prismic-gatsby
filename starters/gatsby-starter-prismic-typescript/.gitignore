@@ -1,0 +1,16 @@
+# Dependency directories
+node_modules/
+
+# Logs
+*.log
+
+# dotenv environment variable files
+.env*
+!.env.example
+
+# Gatsby files
+.cache
+public
+
+# Mac files
+.DS_Store
