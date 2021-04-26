@@ -19,14 +19,6 @@
     "curly": "error",
     "prefer-const": "error",
     "newline-before-return": "error",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { "argsIgnorePattern": "^_" }
-    ],
-    "@typescript-eslint/member-delimiter-style": [
-      "error",
-      { "multiline": { "delimiter": "none" } }
-    ],
     "@typescript-eslint/camelcase": "off",
     "react/display-name": "off"
   },
