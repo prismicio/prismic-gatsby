@@ -1,3 +1,9 @@
+# This file contains configuration for graphql-code-generator.
+# graphql-code-generator is used to provide TypeScript support for your app's
+# GraphQL queries.
+#
+# @see https://www.graphql-code-generator.com/
+
 # URL to Gatsby's development GraphQL endpoint.
 schema: http://localhost:8000/___graphql
 
