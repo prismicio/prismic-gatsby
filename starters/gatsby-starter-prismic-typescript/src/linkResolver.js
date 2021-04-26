@@ -1,7 +1,7 @@
 /**
  * This file contains the Link Resolver for your Prismic repository's content.
  * The Link Resolver function converts a Prismic document to a URL within your
- * app. It will be used throughout your app to resolve document links and
+ * app. It will be used throughout your app to determine document links and
  * support editor previews.
  *
  * Customize the `linkResolver` function to match your app's URL structure.
