@@ -8,14 +8,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-
-      - name: Install Yarn
-        run: npm install -g yarn
-
-      - run: yarn install
+      - uses: bahmutov/npm-install@v1
       - run: yarn build
       - run: yarn test
-
-      - name: Uninstall Yarn
-        if: always()
-        run: npm uninstall -g yarn
