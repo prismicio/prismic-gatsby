@@ -15,5 +15,6 @@
     "resolveJsonModule": true,
     "noEmit": true
   },
+  "include": ["packages/**/*.ts", "packages/**/*.tsx"],
   "exclude": ["**/node_modules", "**/.*/"]
 }
