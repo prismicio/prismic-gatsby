@@ -18,7 +18,7 @@ export const PRISMIC_API_NON_DATA_FIELDS = ['uid']
  *
  * @see https://prismic.io/docs/technologies/custom-types-api
  */
-export const PRISMIC_CUSTOM_TYPES_API_ENDPOINT =
+export const DEFAULT_CUSTOM_TYPES_API_ENDPOINT =
   'https://customtypes.prismic.io/customtypes'
 
 /**
