@@ -166,6 +166,12 @@ module.exports = {
         // endpoint will be used.
         apiEndpoint: process.env.PRISMIC_API_ENDPOINT,
 
+        // The API endpoint used to automatically fetch custom types from
+        // Prismic. You can omit this option in most cases unless you require
+        // an API proxy or need to mock network responses. By default, Prismic's
+        // standard endpoint will be used.
+        customTypesApiEndpoint: process.env.PRISMIC_CUSTOM_TYPES_API_ENDPOINT,
+
         // A prefix used for all GraphQL types for your Prismic repository. If
         // you are sourcing from multiple repositories, each plugin should have
         // a unique typePrefix to avoid type conflicts. This is optional if you

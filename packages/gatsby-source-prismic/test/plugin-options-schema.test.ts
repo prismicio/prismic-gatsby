@@ -25,7 +25,8 @@ test.serial('passes on valid options', async (t) => {
     repositoryName: 'string',
     accessToken: 'string',
     customTypesApiToken: 'string',
-    apiEndpoint: 'https://example.com',
+    customTypesApiEndpoint: 'https://example-customTypesApiEndpoint.com',
+    apiEndpoint: 'https://example-apiEndpoint.com',
     releaseID: 'string',
     graphQuery: 'string',
     lang: 'string',
@@ -77,6 +78,7 @@ test.serial('fails on invalid options', async (t) => {
     repositoryName: Symbol(),
     accessToken: Symbol(),
     customTypesApiToken: Symbol(),
+    customTypesApiEndpoint: Symbol(),
     apiEndpoint: Symbol(),
     releaseID: Symbol(),
     graphQuery: Symbol(),
@@ -96,8 +98,9 @@ test.serial('fails on invalid options', async (t) => {
   t.deepEqual(res.errors, [
     '"repositoryName" must be a string',
     '"accessToken" must be a string',
-    '"customTypesApiToken" must be a string',
     '"apiEndpoint" must be a string',
+    '"customTypesApiToken" must be a string',
+    '"customTypesApiEndpoint" must be a string',
     '"releaseID" must be a string',
     '"graphQuery" must be a string',
     '"lang" must be a string',
@@ -152,6 +155,7 @@ test.serial('allows only one of qraphQuery or fetchLinks', async (t) => {
 test.serial('checks that all schemas are provided', async (t) => {
   const pluginOptions = {
     repositoryName: 'qwerty',
+    customTypesApiEndpoint: 'https://example.com',
     schemas: { page: kitchenSinkSchemaFixture },
   }
   const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
@@ -181,6 +185,7 @@ test.serial(
     const pluginOptions = {
       repositoryName: 'qwerty',
       customTypesApiToken: 'customTypesApiToken',
+      customTypesApiEndpoint: 'https://example.com',
     }
     const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
 
@@ -235,6 +240,7 @@ test.serial(
     const pluginOptions = {
       repositoryName: 'qwerty',
       customTypesApiToken: 'customTypesApiToken',
+      customTypesApiEndpoint: 'https://example.com',
       schemas: {
         [customTypeNotInAPI.id]: customTypeNotInAPI.json,
         // Note that we are going to replace customTypeInAPI2 with
