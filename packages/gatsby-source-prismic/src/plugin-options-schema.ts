@@ -21,7 +21,7 @@ import {
   MISSING_SCHEMAS_MSG,
   MISSING_SCHEMA_MSG,
   COULD_NOT_ACCESS_MSG,
-  PRISMIC_CUSTOM_TYPES_API_ENDPOINT,
+  DEFAULT_CUSTOM_TYPES_API_ENDPOINT,
 } from './constants'
 import {
   Dependencies,
@@ -65,7 +65,7 @@ const externalCustomTypeFetchingProgram = (
       RTE.fromTaskEither(
         TE.tryCatch(
           () =>
-            got(PRISMIC_CUSTOM_TYPES_API_ENDPOINT, {
+            got(scope.pluginOptions.customTypesApiEndpoint, {
               headers: scope.headers,
             }).json<PrismicCustomTypeApiResponse>(),
           () =>
@@ -173,9 +173,12 @@ export const pluginOptionsSchema: NonNullable<
   const schema = Joi.object({
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
-    customTypesApiToken: Joi.string(),
     apiEndpoint: Joi.string().default((parent) =>
       prismic.defaultEndpoint(parent.repositoryName),
+    ),
+    customTypesApiToken: Joi.string(),
+    customTypesApiEndpoint: Joi.string().default(
+      DEFAULT_CUSTOM_TYPES_API_ENDPOINT,
     ),
     releaseID: Joi.string(),
     fetchLinks: Joi.array().items(Joi.string().required()),
