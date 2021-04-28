@@ -5,6 +5,11 @@ import { pipe } from 'fp-ts/function'
 
 import { Dependencies } from '../types'
 
+/**
+ * Builds a list of Imgix GraphQL types used by Image Custom Type fields. The
+ * resulting types can be created using Gatsby's `createTypes` action.
+ */
+// TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
 export const buildImgixImageTypes: RTE.ReaderTaskEither<
   Dependencies,
   never,

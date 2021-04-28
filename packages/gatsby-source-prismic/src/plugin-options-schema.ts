@@ -39,6 +39,17 @@ const getSchemasFromCustomTypeApiResponse = (
     A.Foldable,
   )(response, (item) => [item.id, item.json])
 
+/**
+ * To be execuring during the `external` phase of `pluginOptionsSchema`.
+ *
+ * Populates the `schemas` plugin option with JSON schemas fetched using
+ * Prismic's Custom Types API. This will only happen if a valid
+ * `customTypesApiToken` plugin option is provided.
+ *
+ * Schemas provided to the plugin via the `schemas` plugin option will be merged
+ * over ones fetched from the API. In other words, provided schemas take
+ * priority over automatically fetched ones.
+ */
 const externalCustomTypeFetchingProgram = (
   Joi: gatsby.PluginOptionsSchemaArgs['Joi'],
 ): RTE.ReaderTaskEither<

@@ -8,6 +8,11 @@ import { buildObjectType } from '../lib/buildObjectType'
 
 import { Dependencies, PrismicAPILinkField } from '../types'
 
+/**
+ * Builds a GraphQL Type used by Link fields. The resulting type can be created
+ * using Gatsby's `createTypes` action.
+ */
+// TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
 export const buildLinkType: RTE.ReaderTaskEither<
   Dependencies,
   never,

@@ -5,6 +5,17 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { Dependencies, FieldConfigCreator, PrismicFieldType } from '../types'
 
+/**
+ * Builds a GraphQL field configuration object for a GeoPoint Custom Type
+ * field. The resulting configuration object can be used in a GraphQL type.
+ *
+ * This function registers a typepath for the field.
+ *
+ * @param path Path to the field.
+ *
+ * @returns GraphQL field configuration object.
+ */
+// TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
 export const buildGeoPointFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),

@@ -6,6 +6,11 @@ import { buildNamedInferredNodeType } from '../lib/buildNamedInferredNodeType'
 
 import { Dependencies } from '../types'
 
+/**
+ * Builds a GraphQL type used by Embed fields. The resulting type can be
+ * created using Gatsby's `createTypes` action.
+ */
+// TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
 export const buildEmbedType: RTE.ReaderTaskEither<
   Dependencies,
   never,

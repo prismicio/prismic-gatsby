@@ -10,6 +10,17 @@ import { QUERY_PAGE_SIZE } from '../constants'
 import { buildQueryParams } from './buildQueryParams'
 import { getRef } from './getRef'
 
+/**
+ * Recursively fetches all Prismic documents for a given set of Predicates.
+ * Prismic's API is paginated so this function may make multiple network
+ * requests for fetch all matching documents.
+ *
+ * @param predicates List of Predicates used to filter documents.
+ * @param page Page to begin fetching.
+ * @param docs Initial list of documents to which fetched documents will be appended.
+ *
+ * @return A list of documents matching the given Predicates.
+ */
 export const aggregateQuery = (
   predicates: string | string[] | null,
   page = 1,

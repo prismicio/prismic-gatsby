@@ -6,14 +6,41 @@ import { pipe } from 'fp-ts/function'
 
 import { Dependencies, PrismicAPIImageField } from '../types'
 
+/**
+ * Returns the URL of an image from the value of an Image field.
+ *
+ * @param source Image field data.
+ *
+ * @returns The URL of the image if an image is provided, `null` otherwise.
+ */
 const resolveUrl = (source: PrismicAPIImageField): string | null => source.url
 
+/**
+ * Returns the width of an image from the value of an Image field.
+ *
+ * @param source Image field data.
+ *
+ * @returns The width of the image if an image is provided, `undefined` otherwise.
+ */
 const resolveWidth = (source: PrismicAPIImageField): number | undefined =>
   source.dimensions?.width
 
+/**
+ * Returns the height of an image from the value of an Image field.
+ *
+ * @param source Image field data.
+ *
+ * @returns The height of the image if an image is provided, `undefined` otherwise.
+ */
 const resolveHeight = (source: PrismicAPIImageField): number | undefined =>
   source.dimensions?.height
 
+/**
+ * Builds a GraphQL field configuration object to be used as part of another
+ * Image field GraphQL configuration object. For example, this base
+ * configuration object could be added to a config for the thumbnails of an
+ * Image field.
+ */
 export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
   Dependencies,
   never,

@@ -6,6 +6,16 @@ import { Dependencies, PrismicSchemaField } from '../types'
 import { buildObjectType } from './buildObjectType'
 import { buildFieldConfigMap } from './buildFieldConfigMap'
 
+/**
+ * Builds a GraphQL type from a record mapping a Prismic field API ID to its
+ * schema definition.
+ *
+ * @param path Path to the schema record.
+ * @param record Record mapping a Prismic field API ID to its schema definition.
+ * @param typeName Type name of the resulting GraphQL type.
+ *
+ * @returns GraphQL type containing fields for each record property.
+ */
 export const buildSchemaRecordType = (
   path: string[],
   record: Record<string, PrismicSchemaField>,
