@@ -10,6 +10,7 @@ import { buildEmbedType } from './builders/buildEmbedType'
 import { buildGeoPointType } from './builders/buildGeoPointType'
 import { buildImageDimensionsType } from './builders/buildImageDimensionsType'
 import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
+import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
 import { buildLinkType } from './builders/buildLinkType'
 import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
 import { buildSliceInterface } from './builders/buildSliceInterface'
@@ -50,10 +51,12 @@ export const createBaseTypes: RTE.ReaderTaskEither<
       RTE.sequenceArray,
     ),
   ),
+  RTE.bind('imgixTypes', () => buildImgixImageTypes),
+
   RTE.map((scope) =>
     GatsbyGraphQLTypeM.concat(
       scope.baseTypes as Mutable<typeof scope.baseTypes>,
-      [],
+      scope.imgixTypes,
     ),
   ),
   RTE.chain(createTypes),

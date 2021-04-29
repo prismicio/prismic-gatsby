@@ -1,5 +1,5 @@
 import * as gatsby from 'gatsby'
-import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
+import * as imgixGatsby from '@imgix/gatsby/dist/pluginHelpers'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
@@ -15,15 +15,17 @@ export const buildImgixImageTypes: RTE.ReaderTaskEither<
   never,
   gatsby.GatsbyGraphQLType[]
 > = pipe(
-  RTE.asks((deps) =>
-    gatsbyImgix.createImgixTypes({
-      fixedTypeName: deps.nodeHelpers.createTypeName('ImageFixedType'),
-      fluidTypeName: deps.nodeHelpers.createTypeName('ImageFluidType'),
-      paramsInputTypeName: deps.globalNodeHelpers.createTypeName(
-        'ImgixUrlParamsInput',
-      ),
+  RTE.asks((deps) => {
+    const imgixTypes = imgixGatsby.createImgixGatsbyTypes({
       cache: deps.cache,
-      schema: deps.schema,
-    }),
-  ),
+      resolveUrl: () => '',
+      namespace: 'Imgix',
+    })
+
+    return [
+      ...imgixTypes.types.map(deps.schema.buildObjectType),
+      ...imgixTypes.enumTypes.map(deps.schema.buildEnumType),
+      ...imgixTypes.inputTypes.map(deps.schema.buildInputObjectType),
+    ]
+  }),
 )

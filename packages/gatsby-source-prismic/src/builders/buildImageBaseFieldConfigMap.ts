@@ -55,13 +55,6 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
       namespace: 'Imgix',
     })
 
-    const types = [
-      ...imgixTypes.types.map(deps.schema.buildObjectType),
-      ...imgixTypes.enumTypes.map(deps.schema.buildEnumType),
-      ...imgixTypes.inputTypes.map(deps.schema.buildInputObjectType),
-    ]
-    deps.createTypes(types)
-
     return {
       alt: 'String',
       copyright: 'String',
