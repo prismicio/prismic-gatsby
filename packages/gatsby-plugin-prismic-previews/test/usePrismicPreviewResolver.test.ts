@@ -18,18 +18,20 @@ import { polyfillKy } from './__testutils__/polyfillKy'
 import {
   PluginOptions,
   PrismicPreviewProvider,
-  UsePrismicPreviewResolverConfig,
   usePrismicPreviewResolver,
+  PrismicRepositoryConfig,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
 const createConfig = (
   pluginOptions: PluginOptions,
-): UsePrismicPreviewResolverConfig => ({
-  [pluginOptions.repositoryName]: {
+): PrismicRepositoryConfig[] => [
+  {
+    repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
+    componentResolver: () => null,
   },
-})
+]
 
 const server = mswNode.setupServer()
 test.before(() => {

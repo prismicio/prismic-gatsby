@@ -21,11 +21,11 @@ import { polyfillKy } from './__testutils__/polyfillKy'
 import {
   PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
-  UsePrismicPreviewBootstrapConfig,
   useMergePrismicPreviewData,
   usePrismicPreviewBootstrap,
   usePrismicPreviewContext,
   PluginOptions,
+  PrismicRepositoryConfig,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
@@ -38,13 +38,14 @@ const createStaticData = () => {
   return { previewable, nonPreviewable }
 }
 
-const createConfig = (
+const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): UsePrismicPreviewBootstrapConfig => ({
-  [pluginOptions.repositoryName]: {
+): PrismicRepositoryConfig[] => [
+  {
+    repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
   },
-})
+]
 
 const nodeHelpers = createNodeHelpers({
   typePrefix: 'Prismic prefix',
@@ -87,7 +88,7 @@ test.serial(
   async (t) => {
     const pluginOptions = createPluginOptions(t)
     const gatsbyContext = createGatsbyContext()
-    const config = createConfig(pluginOptions)
+    const config = createRepositoryConfigs(pluginOptions)
     const queryResponse = createPrismicAPIQueryResponse()
 
     const ref = createPreviewRef(pluginOptions.repositoryName)

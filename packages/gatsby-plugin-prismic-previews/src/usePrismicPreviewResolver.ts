@@ -15,7 +15,7 @@ import { getCookie } from './lib/getCookie'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
 
-import { LinkResolver } from './types'
+import { LinkResolver, PrismicRepositoryConfig } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { PrismicContextActionType, PrismicContextState } from './context'
 
@@ -86,7 +86,7 @@ interface UsePrismicPreviewResolverProgramEnv {
   beginResolving: IO.IO<void>
   resolved(path: string): IO.IO<void>
   pluginOptionsStore: PrismicContextState['pluginOptionsStore']
-  config: UsePrismicPreviewResolverConfig
+  repositoryConfigs: PrismicRepositoryConfig[]
 }
 
 const previewResolverProgram: RTE.ReaderTaskEither<
@@ -127,8 +127,8 @@ const previewResolverProgram: RTE.ReaderTaskEither<
 
   RTE.bindW('repositoryConfig', (env) =>
     pipe(
-      env.config,
-      R.lookup(env.repositoryName),
+      env.repositoryConfigs,
+      A.findFirst((config) => config.repositoryName === env.repositoryName),
       RTE.fromOption(
         () =>
           new Error(
@@ -204,18 +204,13 @@ export type UsePrismicPreviewResolverRepositoryConfig = {
   linkResolver: LinkResolver
 }
 
-export type UsePrismicPreviewResolverConfig = Record<
-  string,
-  UsePrismicPreviewResolverRepositoryConfig
->
-
 /**
  * React hook that determines the destination URL for a Prismic preview session.
  *
- * @param config Configuration that determines how the destination URL is resolved.
+ * @param repositoryConfigs Configuration that determines how the destination URL is resolved.
  */
 export const usePrismicPreviewResolver = (
-  config: UsePrismicPreviewResolverConfig,
+  repositoryConfigs: PrismicRepositoryConfig[],
 ): readonly [UsePrismicPreviewResolverState, UsePrismicPreviewResolverFn] => {
   const [contextState, contextDispatch] = usePrismicPreviewContext()
   const [localState, localDispatch] = React.useReducer(
@@ -242,7 +237,7 @@ export const usePrismicPreviewResolver = (
           }),
         pluginOptionsStore: contextState.pluginOptionsStore,
         // TODO: This may cause infinite rerenders.
-        config,
+        repositoryConfigs: repositoryConfigs,
       }),
       TE.fold(
         (error) =>
@@ -255,7 +250,7 @@ export const usePrismicPreviewResolver = (
         () => T.of(void 0),
       ),
     )()
-  }, [config, contextDispatch, contextState.pluginOptionsStore])
+  }, [repositoryConfigs, contextDispatch, contextState.pluginOptionsStore])
 
   return React.useMemo(() => [localState, resolvePreview] as const, [
     localState,

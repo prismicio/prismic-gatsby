@@ -10,7 +10,6 @@ import { userFriendlyError } from './lib/userFriendlyError'
 
 import {
   usePrismicPreviewResolver,
-  UsePrismicPreviewResolverConfig,
   UsePrismicPreviewResolverFn,
   UsePrismicPreviewResolverState,
 } from './usePrismicPreviewResolver'
@@ -24,6 +23,7 @@ import { Root } from './components/Root'
 import { ModalAccessToken } from './components/ModalAccessToken'
 import { ModalError } from './components/ModalError'
 import { ModalLoading } from './components/ModalLoading'
+import { PrismicRepositoryConfig } from './types'
 
 export interface WithPrismicPreviewResolverProps {
   isPrismicPreview: boolean | null
@@ -61,13 +61,13 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewResolverProps
   >,
-  usePrismicPreviewResolverConfig: UsePrismicPreviewResolverConfig,
+  repositoryConfigs: PrismicRepositoryConfig[],
   config: WithPrismicPreviewResolverConfig = {},
 ): React.ComponentType<TProps> => {
   const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext()
     const [resolverState, resolvePreview] = usePrismicPreviewResolver(
-      usePrismicPreviewResolverConfig,
+      repositoryConfigs,
     )
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       contextState.activeRepositoryName,

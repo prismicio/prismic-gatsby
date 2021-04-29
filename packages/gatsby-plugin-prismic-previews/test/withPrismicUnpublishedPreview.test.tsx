@@ -27,12 +27,12 @@ import {
   PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
   UnknownRecord,
-  UsePrismicPreviewBootstrapConfig,
   WithPrismicPreviewProps,
-  WithPrismicUnpublishedPreviewConfig,
   componentResolverFromMap,
   withPrismicPreview,
   withPrismicUnpublishedPreview,
+  PrismicRepositoryConfig,
+  PrismicUnpublishedRepositoryConfig,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
 import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
@@ -65,21 +65,23 @@ test.after(() => {
   server.close()
 })
 
-const createUsePrismicPreviewBootstrapConfig = (
+const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): UsePrismicPreviewBootstrapConfig => ({
-  [pluginOptions.repositoryName]: {
-    linkResolver: (doc): string => `/${doc.uid}`,
-  },
-})
+): PrismicUnpublishedRepositoryConfig[] => {
+  const baseConfigs: PrismicRepositoryConfig[] = [
+    {
+      repositoryName: pluginOptions.repositoryName,
+      linkResolver: (doc): string => `/${doc.uid}`,
+    },
+  ]
 
-const createWithPrismicUnpublishedPreviewConfig = (
-  usePrismicPreviewBootstrapConfig: UsePrismicPreviewBootstrapConfig,
-): WithPrismicUnpublishedPreviewConfig => ({
-  componentResolver: componentResolverFromMap({
-    type: withPrismicPreview(Page, usePrismicPreviewBootstrapConfig),
-  }),
-})
+  return baseConfigs.map((config) => ({
+    ...config,
+    componentResolver: componentResolverFromMap({
+      type: withPrismicPreview(Page, baseConfigs),
+    }),
+  }))
+}
 
 const NotFoundPage = <TProps extends UnknownRecord = UnknownRecord>(
   props: gatsby.PageProps<TProps>,
@@ -113,13 +115,11 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
 
 const createTree = (
   pageProps: gatsby.PageProps,
-  usePrismicPreviewBootstrapConfig: UsePrismicPreviewBootstrapConfig,
-  config: WithPrismicUnpublishedPreviewConfig,
+  repositoryConfigs: PrismicUnpublishedRepositoryConfig[],
 ) => {
   const WrappedPage = withPrismicUnpublishedPreview(
     NotFoundPage,
-    usePrismicPreviewBootstrapConfig,
-    config,
+    repositoryConfigs,
   )
 
   return (
@@ -154,9 +154,8 @@ test.serial('renders the 404 page if not a preview', async (t) => {
   staticData.previewable.uid = 'old'
 
   const pageProps = createPageProps(staticData)
-  const bootstrapConfig = createUsePrismicPreviewBootstrapConfig(pluginOptions)
-  const config = createWithPrismicUnpublishedPreviewConfig(bootstrapConfig)
-  const tree = createTree(pageProps, bootstrapConfig, config)
+  const repositoryConfigs = createRepositoryConfigs(pluginOptions)
+  const tree = createTree(pageProps, repositoryConfigs)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -208,9 +207,8 @@ test.serial('merges data if preview data is available', async (t) => {
   staticData.previewable.uid = 'old'
 
   const pageProps = createPageProps(staticData)
-  const bootstrapConfig = createUsePrismicPreviewBootstrapConfig(pluginOptions)
-  const config = createWithPrismicUnpublishedPreviewConfig(bootstrapConfig)
-  const tree = createTree(pageProps, bootstrapConfig, config)
+  const repositoryConfigs = createRepositoryConfigs(pluginOptions)
+  const tree = createTree(pageProps, repositoryConfigs)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)

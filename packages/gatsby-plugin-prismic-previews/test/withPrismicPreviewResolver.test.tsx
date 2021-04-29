@@ -26,7 +26,7 @@ import {
   WithPrismicPreviewResolverConfig,
   WithPrismicPreviewResolverProps,
   withPrismicPreviewResolver,
-  UsePrismicPreviewBootstrapConfig,
+  PrismicRepositoryConfig,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
 import { navigateToPreviewResolverURL } from './__testutils__/navigateToPreviewResolverURL'
@@ -50,13 +50,14 @@ test.after(() => {
   server.close()
 })
 
-const createUsePrismicPreviewResolverConfig = (
+const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): UsePrismicPreviewBootstrapConfig => ({
-  [pluginOptions.repositoryName]: {
+): PrismicRepositoryConfig[] => [
+  {
+    repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
   },
-})
+]
 
 const createConfig = (): WithPrismicPreviewResolverConfig => ({
   navigate: sinon.stub().returns(void 0),
@@ -75,12 +76,12 @@ const Page = (props: gatsby.PageProps & WithPrismicPreviewResolverProps) => (
 
 const createTree = (
   pageProps: gatsby.PageProps,
-  usePrismicPreviewResolverConfig: UsePrismicPreviewBootstrapConfig,
+  repositoryConfigs: PrismicRepositoryConfig[],
   config?: WithPrismicPreviewResolverConfig,
 ) => {
   const WrappedPage = withPrismicPreviewResolver(
     Page,
-    usePrismicPreviewResolverConfig,
+    repositoryConfigs,
     config,
   )
 
@@ -95,7 +96,7 @@ test.serial('renders component if not a preview', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const pageProps = createPageProps()
-  const hookConfig = createUsePrismicPreviewResolverConfig(pluginOptions)
+  const hookConfig = createRepositoryConfigs(pluginOptions)
   const config = createConfig()
   const tree = createTree(pageProps, hookConfig, config)
 
@@ -111,7 +112,7 @@ test.serial('not a preview if documentId is not in URL', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const pageProps = createPageProps()
-  const hookConfig = createUsePrismicPreviewResolverConfig(pluginOptions)
+  const hookConfig = createRepositoryConfigs(pluginOptions)
   const config = createConfig()
   const tree = createTree(pageProps, hookConfig, config)
   const token = createPreviewRef(pluginOptions.repositoryName)
@@ -132,7 +133,7 @@ test.serial('not a preview if no token is available', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const pageProps = createPageProps()
-  const hookConfig = createUsePrismicPreviewResolverConfig(pluginOptions)
+  const hookConfig = createRepositoryConfigs(pluginOptions)
   const config = createConfig()
   const tree = createTree(pageProps, hookConfig, config)
   const token = createPreviewRef(pluginOptions.repositoryName)
@@ -152,7 +153,7 @@ test.serial('redirects to path on valid preview', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const pageProps = createPageProps()
-  const hookConfig = createUsePrismicPreviewResolverConfig(pluginOptions)
+  const hookConfig = createRepositoryConfigs(pluginOptions)
   const config = createConfig()
   const tree = createTree(pageProps, hookConfig, config)
   const ref = createPreviewRef(pluginOptions.repositoryName)
@@ -183,7 +184,7 @@ test.serial('redirects to path on valid preview', async (t) => {
 
   t.true(
     (config.navigate as sinon.SinonStub).calledWith(
-      hookConfig[pluginOptions.repositoryName].linkResolver(doc),
+      hookConfig[0].linkResolver(doc),
     ),
   )
 })
@@ -194,7 +195,7 @@ test.serial(
     const gatsbyContext = createGatsbyContext()
     const pluginOptions = createPluginOptions(t)
     const pageProps = createPageProps()
-    const hookConfig = createUsePrismicPreviewResolverConfig(pluginOptions)
+    const hookConfig = createRepositoryConfigs(pluginOptions)
     const config = createConfig()
     config.autoRedirect = false
     const tree = createTree(pageProps, hookConfig, config)
@@ -226,7 +227,7 @@ test.serial(
 
     t.true(
       result.getByTestId('prismicPreviewPath').textContent ===
-        hookConfig[pluginOptions.repositoryName].linkResolver(doc),
+        hookConfig[0].linkResolver(doc),
     )
     t.true((config.navigate as sinon.SinonStub).notCalled)
   },

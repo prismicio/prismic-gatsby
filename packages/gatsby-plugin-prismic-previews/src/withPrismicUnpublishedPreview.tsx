@@ -13,11 +13,8 @@ import { getNodesForPath } from './lib/getNodesForPath'
 import { isPreviewSession } from './lib/isPreviewSession'
 import { userFriendlyError } from './lib/userFriendlyError'
 
-import { PrismicAPIDocumentNodeInput, UnknownRecord } from './types'
-import {
-  usePrismicPreviewBootstrap,
-  UsePrismicPreviewBootstrapConfig,
-} from './usePrismicPreviewBootstrap'
+import { PrismicRepositoryConfig, UnknownRecord } from './types'
+import { usePrismicPreviewBootstrap } from './usePrismicPreviewBootstrap'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
 
@@ -25,35 +22,7 @@ import { Root } from './components/Root'
 import { ModalAccessToken } from './components/ModalAccessToken'
 import { ModalError } from './components/ModalError'
 import { ModalLoading } from './components/ModalLoading'
-
-export type WithPrismicUnpublishedPreviewConfig = {
-  /**
-   * Determines the React component to render for an unpublished preview. This
-   * function will be provided a list of nodes whose `url` field (computed using
-   * your app's Link Resolver) matches the page's URL.
-   *
-   * @param nodes List of nodes whose `url` field matches the page's URL.
-   *
-   * @returns The React component to render. If no component is returned, the wrapped component will be rendered.
-   */
-  componentResolver<P>(
-    nodes: PrismicAPIDocumentNodeInput[],
-  ): React.ComponentType<P> | undefined | null
-
-  /**
-   * Determines the data passed to a Gatsby page. The value returned from this
-   * function is passed directly to the `data` prop.
-   *
-   * @param nodes List of nodes that have URLs resolved to the current page.
-   * @param data The original page's `data` prop.
-   *
-   * @returns The value that will be passed to the page's `data` prop.
-   */
-  dataResolver?<TData extends Record<string, unknown>>(
-    nodes: PrismicAPIDocumentNodeInput[],
-    data: TData,
-  ): Record<string, unknown>
-}
+import { SetRequired } from 'type-fest'
 
 /**
  * A convenience function to create a `componentResolver` function from a record
@@ -69,7 +38,7 @@ export type WithPrismicUnpublishedPreviewConfig = {
 export const componentResolverFromMap = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   componentMap: Record<string, React.ComponentType<any>>,
-): WithPrismicUnpublishedPreviewConfig['componentResolver'] => (nodes) =>
+): NonNullable<PrismicRepositoryConfig['componentResolver']> => (nodes) =>
   pipe(
     A.head(nodes),
     O.bindTo('node'),
@@ -85,7 +54,7 @@ export const componentResolverFromMap = (
  * convention.
  */
 export const defaultDataResolver: NonNullable<
-  WithPrismicUnpublishedPreviewConfig['dataResolver']
+  PrismicRepositoryConfig['dataResolver']
 > = (nodes, data) =>
   pipe(
     A.head(nodes),
@@ -107,6 +76,11 @@ type LocalState =
   | 'DISPLAY_ERROR'
   | 'NOT_PREVIEW'
 
+export type PrismicUnpublishedRepositoryConfig = SetRequired<
+  PrismicRepositoryConfig,
+  'componentResolver'
+>
+
 /**
  * A React higher order component (HOC) that wraps a Gatsby page to
  * automatically display a template for an unpublished Prismic document. This
@@ -123,13 +97,12 @@ export const withPrismicUnpublishedPreview = <
   TProps extends gatsby.PageProps<TStaticData>
 >(
   WrappedComponent: React.ComponentType<TProps>,
-  usePrismicPreviewBootstrapConfig: UsePrismicPreviewBootstrapConfig,
-  config: WithPrismicUnpublishedPreviewConfig,
+  repositoryConfigs: PrismicUnpublishedRepositoryConfig[],
 ): React.ComponentType<TProps> => {
   const WithPrismicUnpublishedPreview = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext()
     const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
-      usePrismicPreviewBootstrapConfig,
+      repositoryConfigs,
     )
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       contextState.activeRepositoryName,
@@ -144,15 +117,35 @@ export const withPrismicUnpublishedPreview = <
     }, [contextState, props.location.pathname])
 
     const ResolvedComponent = React.useMemo(
-      () => config.componentResolver(nodesForPath) ?? WrappedComponent,
-      [nodesForPath],
+      () =>
+        pipe(
+          repositoryConfigs,
+          A.findFirst(
+            (config) =>
+              config.repositoryName === contextState.activeRepositoryName,
+          ),
+          O.chain((repositoryConfig) =>
+            O.fromNullable(repositoryConfig.componentResolver(nodesForPath)),
+          ),
+          O.getOrElseW(() => WrappedComponent),
+        ),
+      [contextState.activeRepositoryName, nodesForPath],
     )
 
-    const resolvedData = React.useMemo(() => {
-      const dataResolver = config.dataResolver ?? defaultDataResolver
-
-      return dataResolver(nodesForPath, props.data)
-    }, [nodesForPath, props.data])
+    const resolvedData = React.useMemo(
+      () =>
+        pipe(
+          repositoryConfigs,
+          A.findFirst(
+            (config) =>
+              config.repositoryName === contextState.activeRepositoryName,
+          ),
+          O.chain((config) => O.fromNullable(config.dataResolver)),
+          O.getOrElse(() => defaultDataResolver),
+          (dataResolver) => dataResolver(nodesForPath, props.data),
+        ),
+      [contextState.activeRepositoryName, nodesForPath, props.data],
+    )
 
     // Begin bootstrapping on page entry if a preview token exists and we
     // haven't already bootstrapped.
