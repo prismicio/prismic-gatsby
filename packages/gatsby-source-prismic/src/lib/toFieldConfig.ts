@@ -21,6 +21,15 @@ import { buildUIDFieldConfig } from '../builders/buildUIDFieldConfig'
 import { buildUnknownFieldConfig } from '../builders/buildUnknownFieldConfig'
 import { buildIntegrationFieldConfig } from '../builders/buildIntegrationFieldConfig'
 
+/**
+ * Returns a GraphQL field configuration object for a Custom Type field. The
+ * resulting configuration object can be used in a GraphQL type.
+ *
+ * @param path Path to the field.
+ * @param schema Schema definition for the field.
+ *
+ * @returns GraphQL field configuration object.
+ */
 export const toFieldConfig = (
   path: string[],
   schema: PrismicSchemaField,
