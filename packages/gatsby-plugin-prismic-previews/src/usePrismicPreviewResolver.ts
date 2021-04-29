@@ -197,6 +197,10 @@ const previewResolverProgram: RTE.ReaderTaskEither<
 )
 
 export type UsePrismicPreviewResolverRepositoryConfig = {
+  /**
+   * Link Resolver for the repository. This should be the same Link Resolver
+   * provided to `gatsby-source-prismic`'s plugin options.
+   */
   linkResolver: LinkResolver
 }
 
@@ -205,6 +209,11 @@ export type UsePrismicPreviewResolverConfig = Record<
   UsePrismicPreviewResolverRepositoryConfig
 >
 
+/**
+ * React hook that determines the destination URL for a Prismic preview session.
+ *
+ * @param config Configuration that determines how the destination URL is resolved.
+ */
 export const usePrismicPreviewResolver = (
   config: UsePrismicPreviewResolverConfig,
 ): readonly [UsePrismicPreviewResolverState, UsePrismicPreviewResolverFn] => {

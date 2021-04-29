@@ -9,7 +9,6 @@ import { constVoid, pipe } from 'fp-ts/function'
 import { createNodeHelpers, NodeHelpers } from 'gatsby-node-helpers'
 
 import {
-  GLOBAL_TYPE_PREFIX,
   TYPE_PATHS_MISSING_NODE_MSG,
   WROTE_TYPE_PATHS_TO_FS_MSG,
 } from './constants'
@@ -32,6 +31,9 @@ interface OnPostBootstrapProgramEnv
   writeTypePathsToFilesystem: PluginOptions['writeTypePathsToFilesystem']
 }
 
+/**
+ * To be executed in the `onPostBootstrap` API.
+ */
 const onPostBootstrapProgram: RTE.ReaderTaskEither<
   OnPostBootstrapProgramEnv,
   Error,
@@ -78,6 +80,12 @@ const onPostBootstrapProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
+/**
+ * Called at the end of the bootstrap process after all other extension APIs
+ * have been called.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#onPostBootstrap
+ */
 // This needs to be written in thenable syntax to satisfy Gatsby's API.
 // The TypeScript types say this function only supports the callback method,
 // not the Promise-returning method.
@@ -90,10 +98,10 @@ export const onPostBootstrap: NonNullable<
       reportVerbose: gatsbyContext.reporter.verbose,
       repositoryName: pluginOptions.repositoryName,
       nodeHelpers: createNodeHelpers({
-        typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
+        typePrefix: [gatsbyPrismic.GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
           .filter(Boolean)
           .join(' '),
-        fieldPrefix: GLOBAL_TYPE_PREFIX,
+        fieldPrefix: gatsbyPrismic.GLOBAL_TYPE_PREFIX,
         createNodeId: gatsbyContext.createNodeId,
         createContentDigest: gatsbyContext.createContentDigest,
       }),

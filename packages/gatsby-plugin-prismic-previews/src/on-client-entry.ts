@@ -11,6 +11,10 @@ interface OnClientEntryProgramEnv {
   pluginOptions: PluginOptions
 }
 
+/**
+ * Sets up the app for the legacy toolbar which requires configuration to be set
+ * on `window`.
+ */
 export const setupLegacyToolbar: RTE.ReaderTaskEither<
   OnClientEntryProgramEnv,
   Error,
@@ -34,6 +38,9 @@ export const setupLegacyToolbar: RTE.ReaderTaskEither<
   RTE.orElse(() => RTE.right(void 0 as void)),
 )
 
+/**
+ * Sets the plugin's options on a window using a predefined identifier.
+ */
 export const setWindowPluginOptions: RTE.ReaderTaskEither<
   OnClientEntryProgramEnv,
   Error,
@@ -54,6 +61,9 @@ export const setWindowPluginOptions: RTE.ReaderTaskEither<
   RTE.orElse(() => RTE.right(void 0 as void)),
 )
 
+/**
+ * To be executed in the `onClientEntry` API.
+ */
 export const onClientEntryProgram: RTE.ReaderTaskEither<
   OnClientEntryProgramEnv,
   Error,
@@ -64,6 +74,11 @@ export const onClientEntryProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
+/**
+ * Called when the Gatsby browser runtime first starts.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/#onClientEntry
+ */
 export const onClientEntry: NonNullable<
   gatsby.GatsbyBrowser['onClientEntry']
 > = async (

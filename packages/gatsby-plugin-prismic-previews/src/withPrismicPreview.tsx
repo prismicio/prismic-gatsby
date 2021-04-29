@@ -45,6 +45,16 @@ type LocalState =
   | 'DISPLAY_ERROR'
   | 'NOT_PREVIEW'
 
+/**
+ * A React higher order component (HOC) that wraps a Gatsby page to
+ * automatically merge previewed content during a Prismic preview session.
+ *
+ * @param WrappedComponent The Gatsby page component.
+ * @param usePrismicPreviewBootstrapConfig Configuration determining how the preview session is managed.
+ * @param config Configuration determining how the HOC handes previewed content.
+ *
+ * @returns `WrappedComponent` with automatic Prismic preview data.
+ */
 export const withPrismicPreview = <
   TStaticData extends UnknownRecord,
   TProps extends gatsby.PageProps<TStaticData>
@@ -67,7 +77,6 @@ export const withPrismicPreview = <
     const dismissModal = () => setLocalState('IDLE')
 
     const mergedData = useMergePrismicPreviewData(props.data, {
-      mergeStrategy: 'traverseAndReplace',
       skip: config.mergePreviewData,
     })
 

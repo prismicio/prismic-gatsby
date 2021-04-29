@@ -33,7 +33,6 @@ export const valueRefinement = (
 // && 'url' in value &&
 // 'dimensions' in value
 
-// TODO: Add mock localFile field
 const buildImageProxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPIImageField,
 ): RE.ReaderEither<
@@ -87,16 +86,19 @@ const buildImageProxyValue = (
         }),
       ),
     ),
-    RE.map((env) => ({
-      ...fieldValue,
-      fixed: env.fixed,
-      fluid: env.fluid,
-      localFile: {
+    RE.bind('localFile', (env) =>
+      RE.of({
         childImageSharp: {
           fixed: env.fixed,
           fluid: env.fluid,
         },
-      },
+      }),
+    ),
+    RE.map((env) => ({
+      ...fieldValue,
+      fixed: env.fixed,
+      fluid: env.fluid,
+      localFile: env.localFile,
     })),
     // If data is missing, we fall back to the original field value.
     RE.orElse(() => RE.of(fieldValue)),

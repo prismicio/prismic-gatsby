@@ -5,9 +5,9 @@ import { flow } from 'fp-ts/function'
 import { normalizeDocument } from './normalizeDocument'
 
 /**
- * Creates one or more nodes.
+ * Normalizes one or more documents.
  *
- * @see gatsby-source-prismic/lib/createNode.ts
+ * @see gatsby-source-prismic/lib/normalizeDocument.ts
  */
 export const normalizeDocuments = flow(
   A.map(normalizeDocument),

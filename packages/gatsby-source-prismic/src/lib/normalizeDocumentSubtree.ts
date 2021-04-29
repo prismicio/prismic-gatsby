@@ -7,6 +7,7 @@ import { Stringable } from 'gatsby-node-helpers'
 
 import {
   Dependencies,
+  PrismicAPIEmbedField,
   PrismicAPISliceField,
   PrismicFieldType,
   PrismicSpecialType,
@@ -16,31 +17,67 @@ import {
 import { getTypePath } from './getTypePath'
 import { createNodeOfType } from './createNodeOfType'
 
-// TODO: Move field-type-specific code to their own files.
-
-interface PrismicAPIEmbedField extends UnknownRecord {
-  url: string
-}
-
+/**
+ * Determines if a value is a record.
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if the value is a record, `false` otherwise.
+ */
 const unknownRecordRefinement = (value: unknown): value is UnknownRecord =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
+/**
+ * Determines if a value is an array of records.
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if the value is an array of records, `false` otherwise.
+ */
 const unknownRecordArrayValueRefinement = (
   value: unknown,
 ): value is UnknownRecord[] =>
   Array.isArray(value) && value.every(unknownRecordRefinement)
 
+/**
+ * Determines if a value is an Embed field.
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if the value is an Embed field, `false` otherwise.
+ */
 const embedValueRefinement = (value: unknown): value is PrismicAPIEmbedField =>
   unknownRecordRefinement(value) && 'embed_url' in value
 
+/**
+ * Determines if a value is a Slice.
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if the value is a Slice, `false` otherwise.
+ */
 const sliceValueRefinement = (value: unknown): value is PrismicAPISliceField =>
   unknownRecordRefinement(value) && 'slice_type' in value
 
+/**
+ * Determines if a value is a Slice Zone.
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if the value is a Slice Zone, `false` otherwise.
+ */
 const slicesValueRefinement = (
   value: unknown,
 ): value is PrismicAPISliceField[] =>
   Array.isArray(value) && value.every(sliceValueRefinement)
 
+/**
+ * Determines if the value is Stringable (has a `toString()` method).
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if the value is Stringable, `false` otherwise.
+ */
 const stringableRefinement = (value: unknown): value is Stringable =>
   (typeof value === 'boolean' ||
     typeof value === 'number' ||
@@ -52,6 +89,15 @@ const stringableRefinement = (value: unknown): value is Stringable =>
   value != null &&
   Boolean(value.toString)
 
+/**
+ * Normalizes a record within a Prismic document. It normalizes each field
+ * individually.
+ *
+ * @param path Path to the record.
+ * @param value The record to normalize.
+ *
+ * @returns A normalized version of `value`.
+ */
 const normalizeDocumentRecord = (
   path: string[],
   value: UnknownRecord,
@@ -64,6 +110,15 @@ const normalizeDocumentRecord = (
     R.sequence(RTE.ApplicativeSeq),
   )
 
+/**
+ * Traverses a subtree from a Prismic document and normalizes values as needed.
+ * This function may process the subtree recursively.
+ *
+ * @param path Path to the subtree.
+ * @param value The subtree to normalize.
+ *
+ * @returns A normalized version of `value`.
+ */
 export const normalizeDocumentSubtree = (
   path: string[],
   value: unknown,

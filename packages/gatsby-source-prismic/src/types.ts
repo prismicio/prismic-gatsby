@@ -203,6 +203,10 @@ export type PrismicAPIStructuredTextField = {
   spans: { [key: string]: unknown }
 }[]
 
+export interface PrismicAPIEmbedField extends UnknownRecord {
+  embed_url: string
+}
+
 export interface PrismicAPIDocumentNode extends prismic.Document, gatsby.Node {
   prismicId: string
 }
