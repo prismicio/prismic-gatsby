@@ -49,6 +49,8 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
     const imgixTypes = imgixGatsby.createImgixGatsbyTypes({
       cache: deps.cache,
       resolveUrl,
+      resolveWidth,
+      resolveHeight,
       defaultParams: deps.pluginOptions.imageImgixParams,
       namespace: 'Imgix',
     })
