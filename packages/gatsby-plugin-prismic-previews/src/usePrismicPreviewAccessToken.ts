@@ -10,14 +10,22 @@ import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 
 export type SetAccessTokenFn = (accessToken: string, remember?: boolean) => void
 
+type UsePrismicPreviewAccessTokenActions = {
+  set: SetAccessTokenFn
+  removeCookie(): void
+}
+
+/**
+ * React hook that reads and sets a Prismic access token for a repository. This
+ * hook can be used for multiple repositories by using it multiple times.
+ *
+ * @param repositoryName Name of the repository.
+ */
 export const usePrismicPreviewAccessToken = (
   repositoryName?: string,
 ): readonly [
-  string | undefined,
-  {
-    set: SetAccessTokenFn
-    removeCookie(): void
-  },
+  accessToken: string | undefined,
+  actions: UsePrismicPreviewAccessTokenActions,
 ] => {
   const [contextState, contextDispatch] = usePrismicPreviewContext()
 

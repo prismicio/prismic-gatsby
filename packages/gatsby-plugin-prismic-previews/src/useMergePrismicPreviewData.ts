@@ -3,21 +3,24 @@ import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
 import { PREVIEWABLE_NODE_ID_FIELD } from 'gatsby-source-prismic'
-import { ValueOf } from 'type-fest'
 
 import { isPlainObject } from './lib/isPlainObject'
-import { camelCase } from './lib/camelCase'
 
 import { UnknownRecord } from './types'
 import { PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 
+/**
+ * Recursively finds previewable data and replaces data if a previewed version
+ * of it exists in the provided nodes.
+ *
+ * @param nodes List of Prismic document nodes.
+ *
+ * @returns Function that accepts a node or node content to find and replace previewable content.
+ */
 const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
   nodeOrLeaf: unknown,
 ): unknown => {
-  // TODO: Need to traverse every property in the object. If it doesn't include
-  // _previewable, then we need to check every property inside for something
-  // that does.
   if (isPlainObject(nodeOrLeaf)) {
     const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
       | string
@@ -46,33 +49,6 @@ const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
   // If the node is not an object or array, it cannot be a previewable value.
   return nodeOrLeaf
 }
-
-/**
- * Inserts a root-level node in a static data object. If a node with the same
- * type already exists at the root-level, the existing node is replaced with the
- * given node. This is useful when you know the static data object does not
- * include the given node, such as nodes that have not been publsihed.
- *
- * @param staticData Static data object into which the node will be inserted.
- * @param node Node to insert into the static data object.
- *
- * @returns `staticData` with `node` inserted at the root level.
- */
-const rootReplaceOrInsert = <TStaticData extends UnknownRecord>(
-  staticData: TStaticData,
-  node: ValueOf<PrismicContextState['nodes']>,
-): { data: TStaticData; isPreview: boolean } =>
-  pipe(
-    O.fromNullable(node),
-    O.map((node) => ({
-      ...staticData,
-      [camelCase(node.internal.type)]: node,
-    })),
-    O.fold(
-      () => ({ data: staticData, isPreview: false as boolean }),
-      (data) => ({ data, isPreview: true }),
-    ),
-  )
 
 /**
  * Takes a static data object and a record of nodes and replaces any instances
@@ -104,48 +80,50 @@ const traverseAndReplace = <TStaticData extends UnknownRecord>(
     ),
   )
 
-// TODO: Update references to gatsby.NodeInput and nodes to PrismicAPIDocumentNodes
+export type UsePrismicPreviewDataConfig = {
+  /**
+   * Determines if merging should be skipped.
+   */
+  skip?: boolean
+}
 
-export type UsePrismicPreviewDataConfig =
-  | {
-      mergeStrategy: 'traverseAndReplace'
-      skip?: boolean
-    }
-  | {
-      mergeStrategy: 'rootReplaceOrInsert'
-      nodePrismicId: string
-      skip?: boolean
-    }
+export type UsePrismicPreviewDataResult<TStaticData extends UnknownRecord> = {
+  /**
+   * Data with previewed content merged if matching documents are found.
+   */
+  data: TStaticData
 
+  /**
+   * Boolean determining if `data` contains previewed data.
+   */
+  isPreview: boolean
+}
+
+/**
+ * Merges static Prismic data with previewed data during a Prismic preview
+ * session. If the static data finds previewable Prismic data (identified by the
+ * `_previewable` field in a Prismic document), this hook will replace its value
+ * with one from the preview session.
+ *
+ * The static data could come from page queries or `useStaticQuery` within a
+ * component.
+ *
+ * @param staticData Static data from Gatsby's GraphQL layer.
+ * @param config Configuration that determines how the hook merges preview data.
+ *
+ * @returns An object containing the merged data and a boolean determining if the merged data contains preview data.
+ */
 export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  config: UsePrismicPreviewDataConfig = { mergeStrategy: 'traverseAndReplace' },
-): { data: TStaticData; isPreview: boolean } => {
+  config: UsePrismicPreviewDataConfig = { skip: false },
+): UsePrismicPreviewDataResult<TStaticData> => {
   const [state] = usePrismicPreviewContext()
 
   return React.useMemo(() => {
     if (config.skip) {
       return { data: staticData, isPreview: false }
+    } else {
+      return traverseAndReplace(staticData, state.nodes)
     }
-
-    switch (config.mergeStrategy) {
-      case 'rootReplaceOrInsert': {
-        return rootReplaceOrInsert(
-          staticData,
-          state.nodes[config.nodePrismicId],
-        )
-      }
-
-      case 'traverseAndReplace': {
-        return traverseAndReplace(staticData, state.nodes)
-      }
-    }
-  }, [
-    staticData,
-    config.mergeStrategy,
-    config.skip,
-    state,
-    // @ts-expect-error - config.nodePrismicId only exists if mergeStrategy is "rootReplaceOrInsert"
-    config.nodePrismicId,
-  ])
+  }, [staticData, config.skip, state])
 }

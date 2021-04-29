@@ -11,5 +11,8 @@ type UsePrismicPreviewContextValue = readonly [
   React.Dispatch<PrismicContextAction>,
 ]
 
+/**
+ * Returns the global state for Prismic preview sessions.
+ */
 export const usePrismicPreviewContext = (): UsePrismicPreviewContextValue =>
   React.useContext(PrismicContext)

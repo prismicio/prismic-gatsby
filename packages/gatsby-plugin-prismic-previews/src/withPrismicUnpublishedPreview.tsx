@@ -107,6 +107,17 @@ type LocalState =
   | 'DISPLAY_ERROR'
   | 'NOT_PREVIEW'
 
+/**
+ * A React higher order component (HOC) that wraps a Gatsby page to
+ * automatically display a template for an unpublished Prismic document. This
+ * HOC should be used on your app's 404 page (usually `src/pages/404.js`).
+ *
+ * @param WrappedComponent The Gatsby page component.
+ * @param usePrismicPreviewBootstrapConfig Configuration determining how the preview session is managed.
+ * @param config Configuration determining how the HOC handes previewed content.
+ *
+ * @returns `WrappedComponent` with automatic unpublished Prismic preview data.
+ */
 export const withPrismicUnpublishedPreview = <
   TStaticData extends UnknownRecord,
   TProps extends gatsby.PageProps<TStaticData>

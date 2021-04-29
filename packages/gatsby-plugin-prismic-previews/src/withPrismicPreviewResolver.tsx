@@ -46,6 +46,17 @@ type LocalState =
   | 'DISPLAY_ERROR'
   | 'NOT_PREVIEW'
 
+/**
+ * A React higher order component (HOC) that wraps a Gatsby page to
+ * automatically setup a Prismic preview resolver page. It can automatically
+ * redirect an editor to the previewed document's page.
+ *
+ * @param WrappedComponent The Gatsby page component.
+ * @param usePrismicPreviewResolverConfig Configuration determining how the preview session is resolved.
+ * @param config Configuration determining how the HOC handes the resolved preview.
+ *
+ * @returns `WrappedComponent` with automatic Prismic preview resolving.
+ */
 export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewResolverProps

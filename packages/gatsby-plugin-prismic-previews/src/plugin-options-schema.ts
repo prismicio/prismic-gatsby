@@ -10,6 +10,12 @@ import {
 import { DEFAULT_PROMPT_FOR_ACCESS_TOKEN, DEFAULT_TOOLBAR } from './constants'
 import { WriteTypePathsToFilesystemArgs } from './types'
 
+/**
+ * Run during the bootstrap phase. Plugins can use this to define a schema for
+ * their options using Joi to validate the options users pass to the plugin.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#pluginOptionsSchema
+ */
 export const pluginOptionsSchema: NonNullable<
   gatsby.GatsbyNode['pluginOptionsSchema']
 > = function (args) {

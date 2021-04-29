@@ -255,8 +255,26 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
 )
 
 export type UsePrismicPreviewBootstrapRepositoryConfig = {
+  /**
+   * Link Resolver for the repository. This should be the same Link Resolver
+   * provided to `gatsby-source-prismic`'s plugin options.
+   */
   linkResolver: LinkResolver
+
+  /**
+   * HTML Serializer for the repository. This should be the same HTML Serializer
+   * provided to `gatsby-source-prismic`'s plugin options.
+   */
   htmlSerializer?: HTMLSerializer
+
+  /**
+   * Field name transformer for the repository. This should be the same function
+   * provided to `gatsby-source-prismic`'s `transformFieldName` plugin option.
+   *
+   * @param fieldName Field name to transform.
+   *
+   * @returns Transformed version of `fieldName`.
+   */
   transformFieldName?(fieldName: string): string
 }
 
@@ -265,6 +283,14 @@ export type UsePrismicPreviewBootstrapConfig = Record<
   UsePrismicPreviewBootstrapRepositoryConfig
 >
 
+/**
+ * React hook that bootstraps a Prismic preview session. When the returned
+ * bootstrap function is called, the preiew session will be scoped to this
+ * hook's Prismic repository. All documents from the repository will be fetched
+ * using the preview session's documents.
+ *
+ * @param config Configuration that determines how the bootstrap function runs.
+ */
 export const usePrismicPreviewBootstrap = (
   config: UsePrismicPreviewBootstrapConfig,
 ): readonly [UsePrismicPreviewBootstrapState, UsePrismicPreviewBootstrapFn] => {

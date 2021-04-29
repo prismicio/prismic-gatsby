@@ -1,10 +1,3 @@
-/**
- * TODO:
- * This file is not used due to issues with multiple React.Context instances
- * being created. This causes an issue where gatsby-browser and the hooks
- * appear to use different instances, causing invalid lookups and dispatches.
- */
-
 import * as React from 'react'
 import * as gatsby from 'gatsby'
 import * as IO from 'fp-ts/IO'
@@ -23,8 +16,19 @@ import { PrismicPreviewProvider } from './context'
  */
 let isProviderAdded = false as boolean
 
+/**
+ * Declares that the required context Provider has been added to the app. This
+ * should be called immediately after the first successful attempt at adding the
+ * Provider. This stops future attempts from adding additional Providers.
+ */
 const declareProviderAdded: IO.IO<void> = () => void (isProviderAdded = true)
 
+/**
+ * Allows plugins to wrap the root element of an app. This is useful to set up
+ * any Provider components that will wrap your application.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/#wrapRootElement
+ */
 export const wrapRootElement: NonNullable<
   gatsby.GatsbyBrowser['wrapRootElement']
 > = (gatsbyContext: gatsby.WrapRootElementBrowserArgs) =>

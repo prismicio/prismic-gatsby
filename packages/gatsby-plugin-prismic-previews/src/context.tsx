@@ -41,6 +41,13 @@ const populateAccessToken = (
     IOE.getOrElse(() => IO.of(pluginOptions)),
   )
 
+/**
+ * Determines if a value is a Gatsby node for a Prismic document.
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if value is a Gatsby node for a Prismic document, `false` otherwise.
+ */
 const isPrismicAPIDocumentNodeInput = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any,

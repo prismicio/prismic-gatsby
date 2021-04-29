@@ -3,6 +3,14 @@ import * as gatsby from 'gatsby'
 
 import { PluginOptions } from './types'
 
+/**
+ * Returns the URL for the Prismic Toolbar script.
+ *
+ * @param repositoryName Name of the repository.
+ * @param type Type of the toolbar to use.
+ *
+ * @returns URL for the Prismic Toolbar script.
+ */
 const getToolbarScriptURL = (
   repositoryName: string,
   type: PluginOptions['toolbar'],
@@ -18,8 +26,14 @@ const getToolbarScriptURL = (
   }
 }
 
+/**
+ * Called after every page Gatsby server renders while building HTML so it can
+ * set head and body components to be rendered in the app's `html.js`.
+ *
+ * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr#onRenderBody
+ */
 // TODO: Explore what happens when multiple instances of the plugin are
-// configured. Will multiple toolbars cause conflicts (probably yes).
+// configured. Will multiple toolbars cause conflicts?
 export const onRenderBody: NonNullable<
   gatsby.GatsbySSR['onRenderBody']
 > = async (
