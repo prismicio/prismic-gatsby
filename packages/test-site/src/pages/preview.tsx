@@ -5,9 +5,7 @@ import {
   WithPrismicPreviewResolverProps,
 } from 'gatsby-plugin-prismic-previews'
 
-import { linkResolver } from '../linkResolver'
-
-const repoName = process.env.GATSBY_PRISMIC_REPOSITORY_NAME as string
+import { repositoryConfigs } from '../prismicPreviews'
 
 type PreviewPageProps = PageProps & WithPrismicPreviewResolverProps
 
@@ -21,6 +19,4 @@ const PreviewPage = (props: PreviewPageProps): JSX.Element => {
   )
 }
 
-export default withPrismicPreviewResolver(PreviewPage, {
-  [repoName]: { linkResolver },
-})
+export default withPrismicPreviewResolver(PreviewPage, repositoryConfigs)
