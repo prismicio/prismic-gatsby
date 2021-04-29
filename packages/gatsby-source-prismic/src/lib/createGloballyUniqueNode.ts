@@ -11,9 +11,14 @@ export interface IdentifiableRecordWithType extends IdentifiableRecord {
 }
 
 /**
- * Creates a node using the environment's `createNode` function. The provided record is passed through a node helper factory based on the record's `type` field.
+ * Creates a node using the environment's `createNode` function. The provided
+ * record is passed through a node helper factory based on the record's `type`
+ * field.
  *
- * By using this function, the record's `id` field must be globally unique. If the record's ID may conflict with another's within the application's scope, even if it is of a different type, use the standard `createNode` function instead.
+ * By using this function, the record's `id` field must be globally unique. If
+ * the record's ID may conflict with another's within the application's scope,
+ * even if it is of a different type, use the standard `createNode` function
+ * instead.
  *
  * @see `lib/createNode.ts`
  *

@@ -11,7 +11,9 @@ export interface IdentifiableRecordWithType extends IdentifiableRecord {
 }
 
 /**
- * Creates a node using the environment's `createNode` function. The provided record is passed through a node helper factory based on the record's `type` field.
+ * Creates a node using the environment's `createNode` function. The provided
+ * record is passed through a node helper factory based on the record's `type`
+ * field.
  *
  * @param record Record with an `id` and `type` field with which to create a node.
  */

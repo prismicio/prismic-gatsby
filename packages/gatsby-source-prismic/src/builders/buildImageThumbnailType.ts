@@ -7,6 +7,11 @@ import { buildObjectType } from '../lib/buildObjectType'
 
 import { buildImageBaseFieldConfigMap } from './buildImageBaseFieldConfigMap'
 
+/**
+ * Builds a GraphQL type used by an Image field's thumbnails. The resulting type
+ * can be created using Gatsby's `createTypes` action.
+ */
+// TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
 export const buildImageThumbnailType: RTE.ReaderTaskEither<
   Dependencies,
   never,

@@ -13,8 +13,8 @@ export const GLOBAL_TYPE_PREFIX = 'Prismic'
 export const PRISMIC_API_NON_DATA_FIELDS = ['uid']
 
 /**
- * Endpoint used to fetch custom type JSON schemas from Prismic's Custom Type
- * API.
+ * Default endpoint used to fetch custom type JSON schemas from Prismic's
+ * Custom Type API.
  *
  * @see https://prismic.io/docs/technologies/custom-types-api
  */

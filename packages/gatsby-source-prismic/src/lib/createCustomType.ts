@@ -24,6 +24,14 @@ import { createType } from './createType'
 import { buildFieldConfigMap } from './buildFieldConfigMap'
 import { createTypePath } from './createTypePath'
 
+/**
+ * Returns all fields from a Prismic Custom Type schema definition. It
+ * effectively gathers all fields for each tab into one object.
+ *
+ * @param schema Schema definition for a Custom Type.
+ *
+ * @returns Record of fields for the Custom Type.
+ */
 const collectFields = (
   schema: PrismicSchema,
 ): Record<string, PrismicSchemaField> =>
@@ -33,6 +41,16 @@ const collectFields = (
     S.concatAll(struct.getAssignSemigroup<PrismicSchemaTab>())({}),
   )
 
+/**
+ * Builds a record of GraphQL field configuration objects containing a Custom
+ * Type's `data` fields. The resulting record can be used within a GraphQL type
+ * for the Custom Type.
+ *
+ * @param customTypeName API ID of the Custom Type.
+ * @param fields Record mapping Custom Type field API IDs to their schema definitions.
+ *
+ * @returns Record of GraphQL field configuration objects containing `data`-related fields.
+ */
 const buildDataFieldConfigMap = (
   customTypeName: string,
   fields: Record<string, PrismicSchemaField>,
@@ -88,6 +106,15 @@ const buildDataFieldConfigMap = (
     ),
   )
 
+/**
+ * Creates a GraphQL type for a Custom Type. This function also registers a
+ * root-level typepath for the Custom Type.
+ *
+ * @param name API ID of the Custom Type
+ * @param schema Schema definition for the Custom Type.
+ *
+ * @returns GraphQL type for the Custom Type.
+ */
 export const createCustomType = (
   name: string,
   schema: PrismicSchema,

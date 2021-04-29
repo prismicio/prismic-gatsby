@@ -19,6 +19,15 @@ import {
   PrismicSchemaImageThumbnail,
 } from '../types'
 
+/**
+ * Creates a GraphQL type containing fields for thumbnails of an Image field.
+ *
+ * @param path Path to the field.
+ * @param schema Schema definition for the field.
+ *
+ * @returns GraphQL type name for the created type.
+ */
+// TODO: Move `fields` typename to Dependencies (create in `buildDependencies.ts`).
 const createThumbnailsType = (
   path: string[],
   schema: PrismicSchemaImageField,
@@ -49,6 +58,18 @@ const createThumbnailsType = (
     RTE.map(getTypeName),
   )
 
+/**
+ * Builds a GraphQL field configuration object for an Image Custom Type field.
+ * If the field is configured to have thumbnails, a field-specific type is
+ * created for them.
+ *
+ * This function registers a typepath for the field.
+ *
+ * @param path Path to the field.
+ * @param schema Schema definition for the field.
+ *
+ * @returns GraphQL field configuration object.
+ */
 export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> = (
   path,
   schema,

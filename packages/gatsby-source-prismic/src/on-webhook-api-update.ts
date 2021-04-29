@@ -46,7 +46,7 @@ const extractApiUpdateWebhookBodyDocumentIds = (
  * - UPDATED documents: Nodes are updated in the Gatsby data layer.
  * - DELETED documents: Nodes are deleted from the Gatsby data layer.
  *
- * After the handle is complete, the Gatsby data layer should be identical to
+ * After the handler is complete, the Gatsby data layer should be identical to
  * one that just performed a fresh bootstrap.
  */
 export const onWebhookApiUpdate = (

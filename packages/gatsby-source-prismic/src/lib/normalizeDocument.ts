@@ -5,6 +5,9 @@ import { pipe } from 'fp-ts/function'
 import { Dependencies } from '../types'
 import { normalizeDocumentSubtree } from './normalizeDocumentSubtree'
 
+/**
+ * Type guard to verify that the given value is a valid Prismic document.
+ */
 const documentRefinement = (value: unknown): value is prismic.Document =>
   typeof value === 'object' &&
   value !== null &&
@@ -12,6 +15,15 @@ const documentRefinement = (value: unknown): value is prismic.Document =>
   'data' in value &&
   'type' in value
 
+/**
+ * Normalizes values of a Prismic document where necessary.
+ *
+ * @see gatsby-source-prismic/lib/normalizeDocumentSubtree.ts
+ *
+ * @param doc Prismic document to normalize.
+ *
+ * @returns Normalized Prismic document.
+ */
 export const normalizeDocument = (
   doc: prismic.Document,
 ): RTE.ReaderTaskEither<Dependencies, Error, prismic.Document> =>

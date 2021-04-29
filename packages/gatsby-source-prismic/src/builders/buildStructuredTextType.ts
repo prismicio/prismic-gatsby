@@ -7,6 +7,11 @@ import { buildObjectType } from '../lib/buildObjectType'
 
 import { Dependencies, PrismicAPIStructuredTextField } from '../types'
 
+/**
+ * Builds a GraphQL Type used by StructuredText fields. The resulting type can
+ * be created using Gatsby's `createTypes` action.
+ */
+// TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
 export const buildStructuredTextType: RTE.ReaderTaskEither<
   Dependencies,
   never,

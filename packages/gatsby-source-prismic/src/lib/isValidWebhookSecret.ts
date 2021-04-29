@@ -7,6 +7,8 @@ import { PrismicWebhookBody } from '../types'
  *
  * @param webhookBody Webhook body optionally containing a secret.
  * @param secret Secret to test against the webhook body.
+ *
+ * @returns `true` if the secret is valid, `false` otherwise.
  */
 export const isValidWebhookSecret = (secret?: string) => (
   webhookBody: PrismicWebhookBody,

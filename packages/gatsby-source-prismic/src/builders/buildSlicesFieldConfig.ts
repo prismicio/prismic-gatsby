@@ -23,6 +23,19 @@ import {
   UnknownRecord,
 } from '../types'
 
+/**
+ * Builds a GraphQL field configuration object for a Slice zone's Slice. Both
+ * `non-repeat` and `repeat` schemas will be converted to GraphQL field
+ * configuration objects. The resulting type can be created using Gatsby's
+ * `createTypes` action.
+ *
+ * This function registers a typepath for the field.
+ *
+ * @param path Path to the Slice zone.
+ * @param schema Schema definition for the Slice.
+ *
+ * @returns GraphQL object type.
+ */
 const buildSliceChoiceType = (
   path: string[],
   schema: PrismicSchemaSlice,
@@ -93,6 +106,15 @@ const buildSliceChoiceType = (
     ),
   )
 
+/**
+ * Builds GraphQL types for Slice Custom Type fields. The resulting types can
+ * be created using Gatsby's `createTypes` action.
+ *
+ * @param path Path to the fields.
+ * @param choices Record of Slice choices mapping a Slice API ID to its schema definition.
+ *
+ * @returns List of GraphQL types for the provided Slice schemas.
+ */
 const buildSliceTypes = (
   path: string[],
   choices: Record<string, PrismicSchemaSlice>,
@@ -110,6 +132,18 @@ const buildSliceTypes = (
     RTE.map(R.collect((_, type) => type)),
   )
 
+/**
+ * Builds a GraphQL field configuration object for a Slices Custom Type field
+ * (also known as a Slice zone). The resulting configuration object can be used
+ * in a GraphQL type.
+ *
+ * This function registers a typepath for the field.
+ *
+ * @param path Path to the field.
+ * @param schema Schema definition for the field.
+ *
+ * @returns GraphQL field configuration object.
+ */
 export const buildSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField> = (
   path,
   schema,

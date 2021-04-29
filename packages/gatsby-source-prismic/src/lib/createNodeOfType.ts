@@ -12,15 +12,14 @@ import { Dependencies } from '../types'
  * @param record Record with an `id` field with which to create a node.
  * @param type Type of the record.
  */
-export function createNodeOfType(
+export const createNodeOfType = (
   record: IdentifiableRecord,
   type: string | string[],
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.NodeInput> {
-  return RTE.asks((deps) =>
+): RTE.ReaderTaskEither<Dependencies, never, gatsby.NodeInput> =>
+  RTE.asks((deps) =>
     pipe(
       record,
       deps.nodeHelpers.createNodeFactory(type),
       I.chainFirst(deps.createNode),
     ),
   )
-}
