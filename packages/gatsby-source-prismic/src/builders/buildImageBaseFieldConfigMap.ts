@@ -1,8 +1,9 @@
-import * as imgixGatsby from '@imgix/gatsby/dist/pluginHelpers'
-import { pipe } from 'fp-ts/function'
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as gqlc from 'graphql-compose'
+import * as gatsbyFs from 'gatsby-source-filesystem'
+import * as imgixGatsby from '@imgix/gatsby/dist/pluginHelpers'
+import * as RTE from 'fp-ts/ReaderTaskEither'
+import { pipe } from 'fp-ts/function'
+
 import { Dependencies, PrismicAPIImageField } from '../types'
 
 /**

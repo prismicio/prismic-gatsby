@@ -1,11 +1,16 @@
-import * as A from 'fp-ts/Array'
-import { constVoid, pipe } from 'fp-ts/function'
+import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
-import * as T from 'fp-ts/Task'
+import * as A from 'fp-ts/Array'
 import * as TE from 'fp-ts/TaskEither'
-import * as gatsby from 'gatsby'
-import { buildDependencies } from './buildDependencies'
+import * as T from 'fp-ts/Task'
+import { pipe, constVoid } from 'fp-ts/function'
+
+import { createAllDocumentTypesType } from './lib/createAllDocumentTypesType'
+import { createCustomType } from './lib/createCustomType'
+import { createTypes } from './lib/createTypes'
+import { throwError } from './lib/throwError'
+
 import { buildEmbedType } from './builders/buildEmbedType'
 import { buildGeoPointType } from './builders/buildGeoPointType'
 import { buildImageDimensionsType } from './builders/buildImageDimensionsType'
@@ -16,11 +21,9 @@ import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
 import { buildSliceInterface } from './builders/buildSliceInterface'
 import { buildStructuredTextType } from './builders/buildStructuredTextType'
 import { buildTypePathType } from './builders/buildTypePathType'
-import { createAllDocumentTypesType } from './lib/createAllDocumentTypesType'
-import { createCustomType } from './lib/createCustomType'
-import { createTypes } from './lib/createTypes'
-import { throwError } from './lib/throwError'
+
 import { Dependencies, Mutable, PluginOptions } from './types'
+import { buildDependencies } from './buildDependencies'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
@@ -52,7 +55,6 @@ export const createBaseTypes: RTE.ReaderTaskEither<
     ),
   ),
   RTE.bind('imgixTypes', () => buildImgixImageTypes),
-
   RTE.map((scope) =>
     GatsbyGraphQLTypeM.concat(
       scope.baseTypes as Mutable<typeof scope.baseTypes>,
