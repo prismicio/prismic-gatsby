@@ -24,13 +24,13 @@ import {
   usePrismicPreviewBootstrap,
   usePrismicPreviewContext,
   PluginOptions,
-  PrismicRepositoryConfig,
+  PrismicRepositoryConfigs,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): PrismicRepositoryConfig[] => [
+): PrismicRepositoryConfigs => [
   {
     repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,

@@ -3,6 +3,7 @@ import * as gatsbyImgix from 'gatsby-plugin-imgix'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as PrismicDOM from 'prismic-dom'
+import { SetRequired } from 'type-fest'
 
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P]
@@ -46,6 +47,15 @@ export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
   K,
   unknown
 >
+
+export type PrismicRepositoryConfigs = PrismicRepositoryConfig[]
+
+export type PrismicUnpublishedRepositoryConfig = SetRequired<
+  PrismicRepositoryConfig,
+  'componentResolver'
+>
+
+export type PrismicUnpublishedRepositoryConfigs = PrismicUnpublishedRepositoryConfig[]
 
 export type PrismicRepositoryConfig = {
   /**

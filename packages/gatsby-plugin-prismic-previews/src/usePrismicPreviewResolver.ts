@@ -15,7 +15,7 @@ import { getCookie } from './lib/getCookie'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
 
-import { LinkResolver, PrismicRepositoryConfig } from './types'
+import { LinkResolver, PrismicRepositoryConfigs } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { PrismicContextActionType, PrismicContextState } from './context'
 
@@ -86,7 +86,7 @@ interface UsePrismicPreviewResolverProgramEnv {
   beginResolving: IO.IO<void>
   resolved(path: string): IO.IO<void>
   pluginOptionsStore: PrismicContextState['pluginOptionsStore']
-  repositoryConfigs: PrismicRepositoryConfig[]
+  repositoryConfigs: PrismicRepositoryConfigs
 }
 
 const previewResolverProgram: RTE.ReaderTaskEither<
@@ -210,7 +210,7 @@ export type UsePrismicPreviewResolverRepositoryConfig = {
  * @param repositoryConfigs Configuration that determines how the destination URL is resolved.
  */
 export const usePrismicPreviewResolver = (
-  repositoryConfigs: PrismicRepositoryConfig[],
+  repositoryConfigs: PrismicRepositoryConfigs,
 ): readonly [UsePrismicPreviewResolverState, UsePrismicPreviewResolverFn] => {
   const [contextState, contextDispatch] = usePrismicPreviewContext()
   const [localState, localDispatch] = React.useReducer(

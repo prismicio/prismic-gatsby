@@ -21,7 +21,7 @@ import { polyfillKy } from './__testutils__/polyfillKy'
 import {
   PluginOptions,
   PrismicPreviewProvider,
-  PrismicRepositoryConfig,
+  PrismicRepositoryConfigs,
   usePrismicPreviewBootstrap,
   usePrismicPreviewContext,
 } from '../src'
@@ -29,7 +29,7 @@ import { onClientEntry } from '../src/gatsby-browser'
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): PrismicRepositoryConfig[] => [
+): PrismicRepositoryConfigs => [
   {
     repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
@@ -56,7 +56,7 @@ const performPreview = async (
   t: ExecutionContext,
   gatsbyContext: gatsby.BrowserPluginArgs,
   pluginOptions: PluginOptions,
-  repositoryConfigs: PrismicRepositoryConfig[],
+  repositoryConfigs: PrismicRepositoryConfigs,
   queryResponse: prismic.Response.Query,
   typePathsFilename: string,
   typePaths: Record<string, gatsbyPrismic.PrismicTypePathType>,

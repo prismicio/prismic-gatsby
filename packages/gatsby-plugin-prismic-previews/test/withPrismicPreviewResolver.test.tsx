@@ -26,7 +26,7 @@ import {
   WithPrismicPreviewResolverConfig,
   WithPrismicPreviewResolverProps,
   withPrismicPreviewResolver,
-  PrismicRepositoryConfig,
+  PrismicRepositoryConfigs,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
 import { navigateToPreviewResolverURL } from './__testutils__/navigateToPreviewResolverURL'
@@ -52,7 +52,7 @@ test.after(() => {
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): PrismicRepositoryConfig[] => [
+): PrismicRepositoryConfigs => [
   {
     repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
@@ -76,7 +76,7 @@ const Page = (props: gatsby.PageProps & WithPrismicPreviewResolverProps) => (
 
 const createTree = (
   pageProps: gatsby.PageProps,
-  repositoryConfigs: PrismicRepositoryConfig[],
+  repositoryConfigs: PrismicRepositoryConfigs,
   config?: WithPrismicPreviewResolverConfig,
 ) => {
   const WrappedPage = withPrismicPreviewResolver(

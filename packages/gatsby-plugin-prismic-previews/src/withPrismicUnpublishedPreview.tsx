@@ -13,7 +13,11 @@ import { getNodesForPath } from './lib/getNodesForPath'
 import { isPreviewSession } from './lib/isPreviewSession'
 import { userFriendlyError } from './lib/userFriendlyError'
 
-import { PrismicRepositoryConfig, UnknownRecord } from './types'
+import {
+  PrismicRepositoryConfig,
+  PrismicUnpublishedRepositoryConfigs,
+  UnknownRecord,
+} from './types'
 import { usePrismicPreviewBootstrap } from './usePrismicPreviewBootstrap'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { usePrismicPreviewAccessToken } from './usePrismicPreviewAccessToken'
@@ -22,7 +26,6 @@ import { Root } from './components/Root'
 import { ModalAccessToken } from './components/ModalAccessToken'
 import { ModalError } from './components/ModalError'
 import { ModalLoading } from './components/ModalLoading'
-import { SetRequired } from 'type-fest'
 
 /**
  * A convenience function to create a `componentResolver` function from a record
@@ -76,11 +79,6 @@ type LocalState =
   | 'DISPLAY_ERROR'
   | 'NOT_PREVIEW'
 
-export type PrismicUnpublishedRepositoryConfig = SetRequired<
-  PrismicRepositoryConfig,
-  'componentResolver'
->
-
 /**
  * A React higher order component (HOC) that wraps a Gatsby page to
  * automatically display a template for an unpublished Prismic document. This
@@ -97,7 +95,7 @@ export const withPrismicUnpublishedPreview = <
   TProps extends gatsby.PageProps<TStaticData>
 >(
   WrappedComponent: React.ComponentType<TProps>,
-  repositoryConfigs: PrismicUnpublishedRepositoryConfig[],
+  repositoryConfigs: PrismicUnpublishedRepositoryConfigs,
 ): React.ComponentType<TProps> => {
   const WithPrismicUnpublishedPreview = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext()

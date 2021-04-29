@@ -26,11 +26,11 @@ import {
   PluginOptions,
   PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
+  PrismicRepositoryConfigs,
   UnknownRecord,
   WithPrismicPreviewConfig,
   WithPrismicPreviewProps,
   withPrismicPreview,
-  PrismicRepositoryConfig,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
 
@@ -63,7 +63,7 @@ test.after(() => {
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): PrismicRepositoryConfig[] => [
+): PrismicRepositoryConfigs => [
   {
     repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
@@ -92,7 +92,7 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
 
 const createTree = (
   pageProps: gatsby.PageProps,
-  repositoryConfigs: PrismicRepositoryConfig[],
+  repositoryConfigs: PrismicRepositoryConfigs,
   config?: WithPrismicPreviewConfig,
 ) => {
   const WrappedPage = withPrismicPreview(Page, repositoryConfigs, config)

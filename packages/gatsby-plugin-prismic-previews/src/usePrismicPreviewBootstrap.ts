@@ -23,7 +23,7 @@ import { serializePath } from './lib/serializePath'
 import {
   Mutable,
   PrismicAPIDocumentNodeInput,
-  PrismicRepositoryConfig,
+  PrismicRepositoryConfigs,
   TypePathsStore,
   UnknownRecord,
 } from './types'
@@ -103,7 +103,7 @@ interface UsePrismicPreviewBootstrapProgramEnv {
   createContentDigest(input: string | UnknownRecord): string
 
   pluginOptionsStore: PrismicContextState['pluginOptionsStore']
-  repositoryConfigs: PrismicRepositoryConfig[]
+  repositoryConfigs: PrismicRepositoryConfigs
 
   // Proxify node env
   getNode(id: string): PrismicAPIDocumentNodeInput | undefined
@@ -262,7 +262,7 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
  * @param repositoryConfigs Configuration that determines how the bootstrap function runs.
  */
 export const usePrismicPreviewBootstrap = (
-  repositoryConfigs: PrismicRepositoryConfig[],
+  repositoryConfigs: PrismicRepositoryConfigs,
 ): readonly [UsePrismicPreviewBootstrapState, UsePrismicPreviewBootstrapFn] => {
   // A ref to the latest contextState is setup specifically for getTypePath
   // which is populated during the program's runtime. Since

@@ -8,7 +8,7 @@ import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { isPreviewSession } from './lib/isPreviewSession'
 import { userFriendlyError } from './lib/userFriendlyError'
 
-import { PrismicRepositoryConfig, UnknownRecord } from './types'
+import { PrismicRepositoryConfigs, UnknownRecord } from './types'
 import {
   usePrismicPreviewBootstrap,
   UsePrismicPreviewBootstrapFn,
@@ -61,7 +61,7 @@ export const withPrismicPreview = <
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewProps<TStaticData>
   >,
-  repositoryConfigs: PrismicRepositoryConfig[],
+  repositoryConfigs: PrismicRepositoryConfigs,
   config: WithPrismicPreviewConfig = {},
 ): React.ComponentType<TProps> => {
   const WithPrismicPreview = (props: TProps): React.ReactElement => {

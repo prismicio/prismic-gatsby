@@ -8,6 +8,7 @@ import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
 import { userFriendlyError } from './lib/userFriendlyError'
 
+import { PrismicRepositoryConfigs } from './types'
 import {
   usePrismicPreviewResolver,
   UsePrismicPreviewResolverFn,
@@ -23,7 +24,6 @@ import { Root } from './components/Root'
 import { ModalAccessToken } from './components/ModalAccessToken'
 import { ModalError } from './components/ModalError'
 import { ModalLoading } from './components/ModalLoading'
-import { PrismicRepositoryConfig } from './types'
 
 export interface WithPrismicPreviewResolverProps {
   isPrismicPreview: boolean | null
@@ -61,7 +61,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewResolverProps
   >,
-  repositoryConfigs: PrismicRepositoryConfig[],
+  repositoryConfigs: PrismicRepositoryConfigs,
   config: WithPrismicPreviewResolverConfig = {},
 ): React.ComponentType<TProps> => {
   const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {

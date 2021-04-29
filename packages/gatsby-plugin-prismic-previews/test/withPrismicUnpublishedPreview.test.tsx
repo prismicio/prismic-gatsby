@@ -26,13 +26,13 @@ import {
   PluginOptions,
   PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
+  PrismicRepositoryConfigs,
+  PrismicUnpublishedRepositoryConfigs,
   UnknownRecord,
   WithPrismicPreviewProps,
   componentResolverFromMap,
   withPrismicPreview,
   withPrismicUnpublishedPreview,
-  PrismicRepositoryConfig,
-  PrismicUnpublishedRepositoryConfig,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
 import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
@@ -54,7 +54,6 @@ test.before(() => {
   })
   server.listen({ onUnhandledRequest: 'error' })
   globalThis.__PATH_PREFIX__ = 'https://example.com'
-  // console.error = sinon.stub()
 })
 test.beforeEach(() => {
   clearAllCookies()
@@ -67,8 +66,8 @@ test.after(() => {
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): PrismicUnpublishedRepositoryConfig[] => {
-  const baseConfigs: PrismicRepositoryConfig[] = [
+): PrismicUnpublishedRepositoryConfigs => {
+  const baseConfigs: PrismicRepositoryConfigs = [
     {
       repositoryName: pluginOptions.repositoryName,
       linkResolver: (doc): string => `/${doc.uid}`,
@@ -115,7 +114,7 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
 
 const createTree = (
   pageProps: gatsby.PageProps,
-  repositoryConfigs: PrismicUnpublishedRepositoryConfig[],
+  repositoryConfigs: PrismicUnpublishedRepositoryConfigs,
 ) => {
   const WrappedPage = withPrismicUnpublishedPreview(
     NotFoundPage,
