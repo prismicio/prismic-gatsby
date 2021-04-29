@@ -47,6 +47,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
   gqlc.ObjectTypeComposerFieldConfigMapDefinition<PrismicAPIImageField, unknown>
 > = pipe(
   RTE.asks((deps) => {
+    // ⚠️ These options need to be kept in sync with the options at packages/gatsby-source-prismic/src/builders/buildImgixImageTypes.ts
     const imgixTypes = imgixGatsby.createImgixGatsbyTypes({
       cache: deps.cache,
       resolveUrl,

@@ -16,9 +16,10 @@ export const buildImgixImageTypes: RTE.ReaderTaskEither<
   gatsby.GatsbyGraphQLType[]
 > = pipe(
   RTE.asks((deps) => {
+    // ⚠️ These options need to be kept in sync with the options at packages/gatsby-source-prismic/src/builders/buildImageBaseFieldConfigMap.ts
     const imgixTypes = imgixGatsby.createImgixGatsbyTypes({
       cache: deps.cache,
-      resolveUrl: () => '',
+      resolveUrl: () => '', // Doesn't matter
       namespace: 'Imgix',
     })
 
