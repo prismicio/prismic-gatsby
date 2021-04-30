@@ -29,7 +29,7 @@
     "prismic"
   ],
   "dependencies": {
-    "@imgix/gatsby": "^1.6.0-rc.1",
+    "@imgix/gatsby": "^1.6.0-rc.3",
     "camel-case": "^4.1.2",
     "fp-ts": "^2.9.5",
     "gatsby-node-helpers": "^1.2.1",

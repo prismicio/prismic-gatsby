@@ -1602,10 +1602,10 @@
   resolved "https://registry.yarnpkg.com/@iarna/toml/-/toml-2.2.5.tgz#b32366c89b43c6f8cefbdefac778b9c828e3ba8c"
   integrity sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==
 
-"@imgix/gatsby@^1.6.0-rc.1":
-  version "1.6.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@imgix/gatsby/-/gatsby-1.6.0-rc.1.tgz#9ad537bc844092f886173fb057f77f5746c54193"
-  integrity sha512-GpHSHbEVJMsS28gk4WGwPF3F0q7Rl5R11dSB0NCSgHr3mRhyBvNOkzhTaUmD0JCwfZDd0KxEuaRlh61CTR1Yeg==
+"@imgix/gatsby@^1.6.0-rc.3":
+  version "1.6.0-rc.3"
+  resolved "https://registry.yarnpkg.com/@imgix/gatsby/-/gatsby-1.6.0-rc.3.tgz#2972f035d8e3acfc336868cb24eca7681d4a56c3"
+  integrity sha512-yJ895vu7SwMuxIZ/LHja92eVXx1yK512mPiJMsv0U1Oy2BKCTG0EXuWBm8t2NE/Pfh/a+O6J17EJBndVxptB2g==
   dependencies:
     "@imgix/js-core" "3.1.3"
     camel-case "^4.1.2"
