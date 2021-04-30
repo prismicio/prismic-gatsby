@@ -5798,10 +5798,10 @@ gatsby-plugin-page-creator@^3.1.0:
     globby "^11.0.2"
     lodash "^4.17.21"
 
-gatsby-plugin-prismic-previews@^4.0.0-alpha.4:
-  version "4.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/gatsby-plugin-prismic-previews/-/gatsby-plugin-prismic-previews-4.0.0-alpha.4.tgz#a79dbee32a29f47da92f5fad2c1d3de5c6063222"
-  integrity sha512-IqTMHYFDZeZ3zATWxS6IChU65imS/qssEHAujodE7+ktctC6vWPaObvXSPw6Bw0cUjiLbzGbeQHJAhyZ65TU2Q==
+gatsby-plugin-prismic-previews@^4.0.0-alpha.5:
+  version "4.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-prismic-previews/-/gatsby-plugin-prismic-previews-4.0.0-alpha.5.tgz#17bd88140f6b3d79475648a0b93a7335cb7512e3"
+  integrity sha512-zTx2lkchdswU9MvfDxJAm1aMWBPVND0AUKgOu4pUGl39fVUofNX6xWBJeO9MfI1dFVId5ajW5j4B+WZVOvx5HQ==
   dependencies:
     "@reach/dialog" "^0.15.0"
     camel-case "^4.1.2"

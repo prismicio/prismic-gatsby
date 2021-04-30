@@ -8,9 +8,9 @@ import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
 import { userFriendlyError } from './lib/userFriendlyError'
 
+import { PrismicRepositoryConfigs } from './types'
 import {
   usePrismicPreviewResolver,
-  UsePrismicPreviewResolverConfig,
   UsePrismicPreviewResolverFn,
   UsePrismicPreviewResolverState,
 } from './usePrismicPreviewResolver'
@@ -61,13 +61,13 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewResolverProps
   >,
-  usePrismicPreviewResolverConfig: UsePrismicPreviewResolverConfig,
+  repositoryConfigs: PrismicRepositoryConfigs,
   config: WithPrismicPreviewResolverConfig = {},
 ): React.ComponentType<TProps> => {
   const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext()
     const [resolverState, resolvePreview] = usePrismicPreviewResolver(
-      usePrismicPreviewResolverConfig,
+      repositoryConfigs,
     )
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       contextState.activeRepositoryName,

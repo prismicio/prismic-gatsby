@@ -5,9 +5,7 @@ import {
   WithPrismicPreviewProps,
 } from 'gatsby-plugin-prismic-previews'
 
-import { linkResolver } from '../linkResolver'
-
-const repoName = process.env.GATSBY_PRISMIC_REPOSITORY_NAME as string
+import { repositoryConfigs } from '../prismicPreviews'
 
 const KitchenSinkPage = (
   props: PageProps<Record<string, any>> &
@@ -97,9 +95,7 @@ const KitchenSinkPage = (
   )
 }
 
-export default withPrismicPreview(KitchenSinkPage, {
-  [repoName]: { linkResolver },
-})
+export default withPrismicPreview(KitchenSinkPage, repositoryConfigs)
 
 export const query = graphql`
   query($uid: String!) {

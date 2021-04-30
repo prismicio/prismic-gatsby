@@ -17,13 +17,12 @@ must mark documents in your query as "previewable." This involves adding a
 ```typescript
 function withPrismicPreview(
   WrappedComponent: React.ComponentType,
-  repositoryConfigs: Record<
-    string,
-    {
-      linkResolver: LinkResolver
-      htmlSerializer?: HTMLSerializer
-    }
-  >,
+  repositoryConfigs: {
+    repositoryName: string
+    linkResolver: LinkResolver
+    htmlSerializer?: HTMLSerializer
+    transformFieldName?: FieldNameTransformer
+  }[],
   config: {
     mergePreviewData?: boolean
   },
@@ -50,10 +49,11 @@ in your app:
   for the configured Prismic repository. This should be the same HTML Serializer
   provided to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`.
 
-- **`transformFieldName`**<br/>The optional field transformer for the configured
-  Prismic repository. This should be the same `transformFieldName` function
-  provided to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js` if
-  used. Most projects will not need to provide a value for this option.
+- **`transformFieldName`**<br/>The optional field name transformer for the
+  configured Prismic repository. This should be the same `transformFieldName`
+  function provided to [`gatsby-source-prismic`][gsp] in your app's
+  `gatsby-config.js` if used. Most projects will not need to provide a value for
+  this option.
 
 Configuration values:
 
@@ -96,9 +96,12 @@ const PageTemplate = ({ data }) => {
   )
 }
 
-export default withPrismicPreview(PageTemplate, {
-  'my-repository-name': { linkResolver },
-})
+export default withPrismicPreview(PageTemplate, [
+  {
+    repositoryName: 'my-repository-name',
+    linkResolver,
+  },
+])
 
 export const query = graphql`
   query PageTemplate($id: ID!) {

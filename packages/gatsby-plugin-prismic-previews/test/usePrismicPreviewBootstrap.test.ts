@@ -21,20 +21,21 @@ import { resolveURL } from './__testutils__/resolveURL'
 import {
   PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
-  UsePrismicPreviewBootstrapConfig,
   usePrismicPreviewBootstrap,
   usePrismicPreviewContext,
   PluginOptions,
+  PrismicRepositoryConfigs,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 
-const createConfig = (
+const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): UsePrismicPreviewBootstrapConfig => ({
-  [pluginOptions.repositoryName]: {
+): PrismicRepositoryConfigs => [
+  {
+    repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
   },
-})
+]
 
 const nodeHelpers = createNodeHelpers({
   typePrefix: 'Prismic prefix',
@@ -60,7 +61,7 @@ test.after(() => {
 test.serial('initial state', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig(pluginOptions)
+  const config = createRepositoryConfigs(pluginOptions)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -76,7 +77,7 @@ test.serial('initial state', async (t) => {
 test.serial('fails if not a preview session - cookie is not set', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig(pluginOptions)
+  const config = createRepositoryConfigs(pluginOptions)
 
   // @ts-expect-error - Partial gatsbyContext provided
   await onClientEntry(gatsbyContext, pluginOptions)
@@ -105,7 +106,7 @@ test.serial(
   async (t) => {
     const gatsbyContext = createGatsbyContext()
     const pluginOptions = createPluginOptions(t)
-    const config = createConfig(pluginOptions)
+    const config = createRepositoryConfigs(pluginOptions)
     const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
       page: 1,
       total_pages: 2,
@@ -125,7 +126,7 @@ test.serial(
 
       return {
         ...node,
-        url: config[pluginOptions.repositoryName].linkResolver(doc),
+        url: config[0].linkResolver(doc),
       }
     })
 
@@ -136,7 +137,7 @@ test.serial(
 
       return {
         ...node,
-        url: config[pluginOptions.repositoryName].linkResolver(doc),
+        url: config[0].linkResolver(doc),
       }
     })
 
@@ -217,7 +218,7 @@ test.serial(
 test.serial('fails if already bootstrapped', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const config = createConfig(pluginOptions)
+  const config = createRepositoryConfigs(pluginOptions)
   const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
     page: 1,
     total_pages: 2,
