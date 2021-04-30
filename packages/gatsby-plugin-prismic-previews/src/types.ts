@@ -42,6 +42,7 @@ export interface PrismicAPIDocumentNodeInput<TData = Record<string, unknown>>
 
 export type LinkResolver = (doc: prismic.Document) => string
 export type HTMLSerializer = typeof PrismicDOM.HTMLSerializer
+export type FieldNameTransformer = (fieldName: string) => string
 
 export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
   K,
@@ -83,7 +84,7 @@ export type PrismicRepositoryConfig = {
    *
    * @returns Transformed version of `fieldName`.
    */
-  transformFieldName?(fieldName: string): string
+  transformFieldName?: FieldNameTransformer
 
   /**
    * Determines the React component to render during an unpublished preview. This
