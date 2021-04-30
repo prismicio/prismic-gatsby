@@ -21,14 +21,11 @@ appears toward the top of the page. This will hide Gatsby's default development
 ```typescript
 function withPrismicUnpublishedPreview(
   WrappedComponent: React.ComponentType,
-  repositoryConfigs: Record<
-    string,
-    {
-      linkResolver: LinkResolver
-      htmlSerializer?: HTMLSerializer
-    }
-  >,
-  config: {
+  repositoryConfigs: {
+    repositoryName: string
+    linkResolver: LinkResolver
+    htmlSerializer?: HTMLSerializer
+    transformFieldName?: FieldNameTransformer
     componentResolver: (
       nodes: PrismicNode[],
     ) => React.ComponentType | undefined | null
@@ -36,7 +33,7 @@ function withPrismicUnpublishedPreview(
       nodes: PrismicNode[],
       data: Record<string, unknown>,
     ) => Record<string, unknown>
-  },
+  }[],
 ): React.ComponentType
 ```
 
@@ -45,9 +42,6 @@ function withPrismicUnpublishedPreview(
 
 - **`repositoryConfigs`**<br/>A set of configuration values for each Prismic
   repository used in your app.
-
-- **`config`**<br/>A set of configuration values that determine how the
-  unpublished preview data is prepared and provided.
 
 The following configuration should be provided for each Prismic repository used
 in your app:
@@ -60,7 +54,11 @@ in your app:
   for the configured Prismic repository. This should be the same HTML Serializer
   provided to [`gatsby-source-prismic`][gsp] in your app's `gatsby-config.js`.
 
-Configuration values:
+- **`transformFieldName`**<br/>The optional field name transformer for the
+  configured Prismic repository. This should be the same `transformFieldName`
+  function provided to [`gatsby-source-prismic`][gsp] in your app's
+  `gatsby-config.js` if used. Most projects will not need to provide a value for
+  this option.
 
 - **`componentResolver`**<br/>A function that determines the component to render
   during an unpublished preview. This function will be provided a list of nodes
@@ -122,8 +120,9 @@ import {
   componentResolverFromMap,
 } from 'gatsby-plugin-prismic-previews'
 
-import { PageTemplate } from './PageTemplate'
 import { linkResolver } from '../linkResolver'
+
+import PageTemplate from './PageTemplate'
 
 const NotFoundPage = ({ data }) => {
   const page = data.prismicPage
@@ -135,15 +134,15 @@ const NotFoundPage = ({ data }) => {
   )
 }
 
-export default withPrismicUnpublishedPreview(
-  PageTemplate,
-  { 'my-repository-name': { linkResolver } },
+export default withPrismicUnpublishedPreview(PageTemplate, [
   {
+    repositoryName: 'my-repository-name',
+    linkResolver,
     componentResolver: componentResolverFromMap({
       page: PageTemplate,
     }),
   },
-)
+])
 
 export const query = graphql`
   query NotFoundPage {
