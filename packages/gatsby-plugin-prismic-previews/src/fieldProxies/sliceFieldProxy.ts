@@ -8,6 +8,7 @@ import {
   proxyDocumentSubtree,
   ProxyDocumentSubtreeEnv,
 } from '../lib/proxyDocumentSubtree'
+import { mapRecordIndices } from '../lib/mapRecordIndices'
 
 export const valueRefinement = (
   value: unknown,
@@ -20,21 +21,23 @@ export const proxyValue = (
 ): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
     RE.ask<ProxyDocumentSubtreeEnv>(),
-    RE.bind('primary', () =>
+    RE.bind('primary', (env) =>
       pipe(
         fieldValue.primary ?? {},
+        mapRecordIndices(env.transformFieldName),
         R.mapWithIndex((fieldName, value) =>
           proxyDocumentSubtree([...path, 'primary', fieldName], value),
         ),
         R.sequence(RE.Applicative),
       ),
     ),
-    RE.bind('items', () =>
+    RE.bind('items', (env) =>
       pipe(
         fieldValue.items ?? [],
         A.map((item) =>
           pipe(
             item,
+            mapRecordIndices(env.transformFieldName),
             R.mapWithIndex((fieldName, value) =>
               proxyDocumentSubtree([...path, 'items', fieldName], value),
             ),
