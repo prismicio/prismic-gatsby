@@ -12,7 +12,7 @@
 import * as React from 'react'
 import { withPrismicUnpublishedPreview } from 'gatsby-plugin-prismic-previews'
 
-import * as prismicPreviews from '../prismicPreviews'
+import { unpublishedRepositoryConfigs } from '../prismicUnpublishedPreviews'
 
 import { Layout } from '../components/Layout'
 import { SEO } from '../components/SEO'
@@ -37,6 +37,5 @@ const NotFoundPage = () => (
  */
 export default withPrismicUnpublishedPreview(
   NotFoundPage,
-  prismicPreviews.repositoryConfigs,
-  prismicPreviews.unpublishedPreviewConfig,
+  unpublishedRepositoryConfigs,
 )

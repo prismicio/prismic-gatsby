@@ -5,8 +5,6 @@
  * @see https://github.com/angeloashmore/gatsby-source-prismic/tree/alpha/packages/gatsby-plugin-prismic-previews
  */
 
-import { PrismicRepositoryConfigs } from 'gatsby-plugin-prismic-previews'
-
 import { linkResolver } from './linkResolver'
 
 /**
@@ -19,9 +17,9 @@ import { linkResolver } from './linkResolver'
  *
  * @see https://github.com/angeloashmore/gatsby-source-prismic/tree/alpha/packages/gatsby-plugin-prismic-previews#content-pages-and-templates
  */
-export const repositoryConfigs: PrismicRepositoryConfigs = [
+export const repositoryConfigs = [
   {
-    repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME!,
+    repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
     linkResolver,
   },
 ]

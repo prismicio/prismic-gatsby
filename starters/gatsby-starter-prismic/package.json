@@ -28,7 +28,7 @@
   "dependencies": {
     "gatsby": "^3.1.2",
     "gatsby-plugin-catch-links": "^3.1.0",
-    "gatsby-plugin-prismic-previews": "^4.0.0-alpha.0",
+    "gatsby-plugin-prismic-previews": "^4.0.0-alpha.5",
     "gatsby-plugin-react-helmet-async": "^1.2.0",
     "gatsby-source-prismic": "^4.0.0-alpha.2",
     "react": "^17.0.2",
