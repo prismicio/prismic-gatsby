@@ -5,6 +5,7 @@ import { pipe } from 'fp-ts/function'
 import { NodeHelpers } from 'gatsby-node-helpers'
 
 import {
+  FieldNameTransformer,
   HTMLSerializer,
   LinkResolver,
   PluginOptions,
@@ -33,7 +34,7 @@ export interface ProxyDocumentSubtreeEnv {
   imagePlaceholderImgixParams: PluginOptions['imagePlaceholderImgixParams']
   nodeHelpers: NodeHelpers
   createContentDigest(input: string | UnknownRecord): string
-  transformFieldName(fieldName: string): string
+  transformFieldName: FieldNameTransformer
 }
 
 export const proxyDocumentSubtree = (

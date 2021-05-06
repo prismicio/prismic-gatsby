@@ -7,7 +7,7 @@ import {
   WithPrismicPreviewProps,
 } from 'gatsby-plugin-prismic-previews'
 
-import { linkResolver } from '../linkResolver'
+import { repositoryConfigs } from '../prismicPreviews'
 
 const repoName = process.env.GATSBY_PRISMIC_REPOSITORY_NAME as string
 
@@ -43,9 +43,7 @@ const HomePage = ({
   )
 }
 
-export default withPrismicPreview(HomePage, {
-  [repoName]: { linkResolver },
-})
+export default withPrismicPreview(HomePage, repositoryConfigs)
 
 export const query = graphql`
   {

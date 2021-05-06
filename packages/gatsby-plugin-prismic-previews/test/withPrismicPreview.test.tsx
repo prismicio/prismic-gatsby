@@ -26,8 +26,8 @@ import {
   PluginOptions,
   PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
+  PrismicRepositoryConfigs,
   UnknownRecord,
-  UsePrismicPreviewBootstrapConfig,
   WithPrismicPreviewConfig,
   WithPrismicPreviewProps,
   withPrismicPreview,
@@ -61,13 +61,14 @@ test.after(() => {
   server.close()
 })
 
-const createUsePrismicPreviewBootstrapConfig = (
+const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
-): UsePrismicPreviewBootstrapConfig => ({
-  [pluginOptions.repositoryName]: {
+): PrismicRepositoryConfigs => [
+  {
+    repositoryName: pluginOptions.repositoryName,
     linkResolver: (doc): string => `/${doc.uid}`,
   },
-})
+]
 
 const Page = <TProps extends UnknownRecord = UnknownRecord>(
   props: gatsby.PageProps<TProps> & WithPrismicPreviewProps<TProps>,
@@ -91,14 +92,10 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
 
 const createTree = (
   pageProps: gatsby.PageProps,
-  usePrismicPreviewBootstrapConfig: UsePrismicPreviewBootstrapConfig,
+  repositoryConfigs: PrismicRepositoryConfigs,
   config?: WithPrismicPreviewConfig,
 ) => {
-  const WrappedPage = withPrismicPreview(
-    Page,
-    usePrismicPreviewBootstrapConfig,
-    config,
-  )
+  const WrappedPage = withPrismicPreview(Page, repositoryConfigs, config)
 
   return (
     <PrismicPreviewProvider>
@@ -134,7 +131,7 @@ test.serial(
     staticData.previewable.uid = 'old'
 
     const pageProps = createPageProps(staticData)
-    const config = createUsePrismicPreviewBootstrapConfig(pluginOptions)
+    const config = createRepositoryConfigs(pluginOptions)
     const tree = createTree(pageProps, config)
 
     // @ts-expect-error - Partial gatsbyContext provided
@@ -184,7 +181,7 @@ test.serial('merges data if preview data is available', async (t) => {
   staticData.previewable.uid = 'old'
 
   const pageProps = createPageProps(staticData)
-  const config = createUsePrismicPreviewBootstrapConfig(pluginOptions)
+  const config = createRepositoryConfigs(pluginOptions)
   const tree = createTree(pageProps, config)
 
   // @ts-expect-error - Partial gatsbyContext provided

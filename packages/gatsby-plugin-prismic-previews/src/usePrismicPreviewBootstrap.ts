@@ -21,12 +21,11 @@ import { queryAllDocuments } from './lib/queryAllDocuments'
 import { serializePath } from './lib/serializePath'
 
 import {
-  HTMLSerializer,
-  LinkResolver,
+  Mutable,
   PrismicAPIDocumentNodeInput,
+  PrismicRepositoryConfigs,
   TypePathsStore,
   UnknownRecord,
-  Mutable,
 } from './types'
 import { PrismicContextActionType, PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
@@ -104,7 +103,7 @@ interface UsePrismicPreviewBootstrapProgramEnv {
   createContentDigest(input: string | UnknownRecord): string
 
   pluginOptionsStore: PrismicContextState['pluginOptionsStore']
-  config: UsePrismicPreviewBootstrapConfig
+  repositoryConfigs: PrismicRepositoryConfigs
 
   // Proxify node env
   getNode(id: string): PrismicAPIDocumentNodeInput | undefined
@@ -145,8 +144,8 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
 
   RTE.bindW('repositoryConfig', (env) =>
     pipe(
-      env.config,
-      R.lookup(env.repositoryName),
+      env.repositoryConfigs,
+      A.findFirst((config) => config.repositoryName === env.repositoryName),
       RTE.fromOption(
         () =>
           new Error(
@@ -254,45 +253,16 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
   RTE.map(constVoid),
 )
 
-export type UsePrismicPreviewBootstrapRepositoryConfig = {
-  /**
-   * Link Resolver for the repository. This should be the same Link Resolver
-   * provided to `gatsby-source-prismic`'s plugin options.
-   */
-  linkResolver: LinkResolver
-
-  /**
-   * HTML Serializer for the repository. This should be the same HTML Serializer
-   * provided to `gatsby-source-prismic`'s plugin options.
-   */
-  htmlSerializer?: HTMLSerializer
-
-  /**
-   * Field name transformer for the repository. This should be the same function
-   * provided to `gatsby-source-prismic`'s `transformFieldName` plugin option.
-   *
-   * @param fieldName Field name to transform.
-   *
-   * @returns Transformed version of `fieldName`.
-   */
-  transformFieldName?(fieldName: string): string
-}
-
-export type UsePrismicPreviewBootstrapConfig = Record<
-  string,
-  UsePrismicPreviewBootstrapRepositoryConfig
->
-
 /**
  * React hook that bootstraps a Prismic preview session. When the returned
  * bootstrap function is called, the preiew session will be scoped to this
  * hook's Prismic repository. All documents from the repository will be fetched
  * using the preview session's documents.
  *
- * @param config Configuration that determines how the bootstrap function runs.
+ * @param repositoryConfigs Configuration that determines how the bootstrap function runs.
  */
 export const usePrismicPreviewBootstrap = (
-  config: UsePrismicPreviewBootstrapConfig,
+  repositoryConfigs: PrismicRepositoryConfigs,
 ): readonly [UsePrismicPreviewBootstrapState, UsePrismicPreviewBootstrapFn] => {
   // A ref to the latest contextState is setup specifically for getTypePath
   // which is populated during the program's runtime. Since
@@ -351,7 +321,7 @@ export const usePrismicPreviewBootstrap = (
           }),
         isBootstrapped: contextState.isBootstrapped,
         pluginOptionsStore: contextState.pluginOptionsStore,
-        config,
+        repositoryConfigs,
         // We use the ref to ensure we can access nodes populated during the
         // same run that the population occurs. This means we don't need to wait
         // for the next render to access nodes.
@@ -379,7 +349,7 @@ export const usePrismicPreviewBootstrap = (
       ),
     )()
   }, [
-    config,
+    repositoryConfigs,
     contextState.pluginOptionsStore,
     contextState.isBootstrapped,
     contextDispatch,

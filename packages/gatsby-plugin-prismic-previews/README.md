@@ -201,9 +201,12 @@ const PreviewPage = () => {
   )
 }
 
-export default withPrismicPreviewResolver(PreviewPage, {
-  [process.env.GATSBY_PRISMIC_REPOSITORY_NAME]: { linkResolver },
-})
+export default withPrismicPreviewResolver(PreviewPage, [
+  {
+    repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
+    linkResolver,
+  },
+])
 ```
 
 You can see that the Link Resolver provided to `withPrismicPreviewResolver()` is
@@ -216,14 +219,16 @@ from two repositories, each with their own Link Resolver, your
 import { mainLinkResolver } from '../mainLinkResolver'
 import { secondaryLinkResolver } from '../secondaryLinkResolver'
 
-export default withPrismicPreviewResolver(PreviewPage, {
-  [process.env.GATSBY_PRISMIC_MAIN_REPOSITORY_NAME]: {
+export default withPrismicPreviewResolver(PreviewPage, [
+  {
+    repositoryName: process.env.GATSBY_PRISMIC_MAIN_REPOSITORY_NAME,
     linkResolver: mainLinkResolver,
   },
-  [process.env.GATSBY_PRISMIC_SECONDARY_REPOSITORY_NAME]: {
+  {
+    repositoryName: process.env.GATSBY_PRISMIC_SECONDARY_REPOSITORY_NAME,
     linkResolver: secondaryLinkResolver,
   },
-})
+])
 ```
 
 For more details on setting up a preview resolver page and the available
@@ -265,9 +270,12 @@ const PageTemplate = ({ data }) => {
   )
 }
 
-export default withPrismicPreview(PageTemplate, {
-  [process.env.GATSBY_PRISMIC_REPOSITORY_NAME]: { linkResolver },
-})
+export default withPrismicPreview(PageTemplate, [
+  {
+    repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
+    linkResolver,
+  },
+])
 
 export const query = graphql`
   query PageTemplate($id: ID!) {
@@ -303,14 +311,16 @@ from two repositories, each with their own Link Resolver, your
 import { mainLinkResolver } from '../mainLinkResolver'
 import { secondaryLinkResolver } from '../secondaryLinkResolver'
 
-export default withPrismicPreview(PageTemplate, {
-  [process.env.GATSBY_PRISMIC_MAIN_REPOSITORY_NAME]: {
+export default withPrismicPreview(PageTemplate, [
+  {
+    repositoryName: process.env.GATSBY_PRISMIC_MAIN_REPOSITORY_NAME,
     linkResolver: mainLinkResolver,
   },
-  [process.env.GATSBY_PRISMIC_SECONDARY_REPOSITORY_NAME]: {
+  {
+    repositoryName: process.env.GATSBY_PRISMIC_SECONDARY_REPOSITORY_NAME,
     linkResolver: secondaryLinkResolver,
   },
-})
+])
 ```
 
 For more details on connecting your pages and templates to preview data and the
@@ -337,8 +347,9 @@ import {
   componentResolverFromMap,
 } from 'gatsby-plugin-prismic-previews'
 
-import { PageTemplate } from './PageTemplate'
 import { linkResolver } from '../linkResolver'
+
+import PageTemplate from './PageTemplate'
 
 const NotFoundPage = ({ data }) => {
   const page = data.prismicPage
@@ -350,15 +361,15 @@ const NotFoundPage = ({ data }) => {
   )
 }
 
-export default withPrismicUnpublishedPreview(
-  PageTemplate,
-  { 'my-repository-name': { linkResolver } },
+export default withPrismicUnpublishedPreview(PageTemplate, [
   {
+    repositoryName: 'my-repository-name',
+    linkResolver,
     componentResolver: componentResolverFromMap({
       page: PageTemplate,
     }),
   },
-)
+])
 
 export const query = graphql`
   query NotFoundPage {

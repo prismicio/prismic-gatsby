@@ -22,12 +22,10 @@ updates.
 ```typescript
 function withPrismicPreviewResolver(
   WrappedComponent: React.ComponentType,
-  repositoryConfigs: Record<
-    string,
-    {
-      linkResolver: LinkResolver
-    }
-  >,
+  repositoryConfigs: {
+    repositoryName: string
+    linkResolver: LinkResolver
+  }[],
   config: {
     autoRedirect?: boolean
   },
@@ -85,9 +83,12 @@ const PreviewPage = () => {
   )
 }
 
-export default withPrismicPreviewResolver(PreviewPage, {
-  'my-repository-name': { linkResolver },
-})
+export default withPrismicPreviewResolver(PreviewPage, [
+  {
+    repositoryName: 'my-repository-name',
+    linkResolver,
+  },
+])
 ```
 
 [hoc]: https://reactjs.org/docs/higher-order-components.html

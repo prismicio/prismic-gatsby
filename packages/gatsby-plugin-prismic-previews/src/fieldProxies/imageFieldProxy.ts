@@ -11,15 +11,6 @@ import { sprintf } from '../lib/sprintf'
 
 import { PRISMIC_API_IMAGE_FIELDS } from '../constants'
 
-// interface BaseImageProxyValue extends gatsbyPrismic.PrismicAPIImageField {
-//   fixed: gatsbyImage.FixedObject
-//   fluid: gatsbyImage.FluidObject
-// }
-
-// interface ImageProxyValue extends BaseImageProxyValue {
-//   thumbnails: Record<string, BaseImageProxyValue>
-// }
-
 interface ImageProxyValue extends gatsbyPrismic.PrismicAPIImageField {
   thumbnails: Record<string, gatsbyPrismic.PrismicAPIImageField>
 }
@@ -27,11 +18,9 @@ interface ImageProxyValue extends gatsbyPrismic.PrismicAPIImageField {
 export const valueRefinement = (
   value: unknown,
 ): value is gatsbyPrismic.PrismicAPIImageField =>
+  // Unfortunately, we can't check for specific properties here since it's
+  // possible for the object to be empty if an image was never set.
   typeof value === 'object' && value !== null
-// TODO: These values may not exist in the API response if a value was never
-// set. Only empty thumbnail fields will be present in that situation.
-// && 'url' in value &&
-// 'dimensions' in value
 
 const buildImageProxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPIImageField,

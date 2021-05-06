@@ -18,7 +18,7 @@ import {
 } from 'gatsby-plugin-prismic-previews'
 
 import { PageTemplateQuery } from '../types.generated'
-import * as prismicPreviews from '../prismicPreviews'
+import { repositoryConfigs } from '../prismicPreviews'
 
 import { Layout } from '../components/Layout'
 import { SEO } from '../components/SEO'
@@ -48,10 +48,7 @@ const PageTemplate = ({ data }: PageTemplateProps) => (
  *
  * @see https://github.com/angeloashmore/gatsby-source-prismic/blob/alpha/packages/gatsby-plugin-prismic-previews/docs/api-withPrismicPreview.md
  */
-export default withPrismicPreview(
-  PageTemplate,
-  prismicPreviews.repositoryConfigs,
-)
+export default withPrismicPreview(PageTemplate, repositoryConfigs)
 
 export const query = graphql`
   query PageTemplate($id: String!) {

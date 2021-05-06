@@ -15,8 +15,7 @@ import {
   withPrismicPreviewResolver,
   WithPrismicPreviewResolverProps,
 } from 'gatsby-plugin-prismic-previews'
-
-import * as prismicPreviews from '../prismicPreviews'
+import { repositoryConfigs } from '../prismicPreviews'
 
 type PreviewPageProps = PageProps & WithPrismicPreviewResolverProps
 
@@ -38,7 +37,4 @@ const PreviewPage = ({ isPrismicPreview }: PreviewPageProps) => {
  *
  * @see https://github.com/angeloashmore/gatsby-source-prismic/blob/alpha/packages/gatsby-plugin-prismic-previews/docs/api-withPrismicPreviewResolver.md
  */
-export default withPrismicPreviewResolver(
-  PreviewPage,
-  prismicPreviews.repositoryConfigs,
-)
+export default withPrismicPreviewResolver(PreviewPage, repositoryConfigs)

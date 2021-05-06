@@ -2,7 +2,7 @@ import * as React from 'react'
 import { graphql } from 'gatsby'
 import { withPrismicPreview } from 'gatsby-plugin-prismic-previews'
 
-import { linkResolver } from '../linkResolver'
+import { repositoryConfigs } from '../prismicPreviews'
 
 import { Layout } from '../components/Layout'
 import { SEO } from '../components/SEO'
@@ -21,9 +21,7 @@ const PageTemplate = ({ data }) => (
   </Layout>
 )
 
-export default withPrismicPreview(PageTemplate, {
-  [process.env.GATSBY_PRISMIC_REPOSITORY_NAME]: { linkResolver },
-})
+export default withPrismicPreview(PageTemplate, repositoryConfigs)
 
 export const query = graphql`
   query PageTemplate($id: String!) {
