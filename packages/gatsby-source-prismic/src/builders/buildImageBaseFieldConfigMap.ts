@@ -1,6 +1,6 @@
 import * as gqlc from 'graphql-compose'
 import * as gatsbyFs from 'gatsby-source-filesystem'
-import * as gatsbyImgix from 'gatsby-plugin-imgix/dist/node'
+import * as imgixGatsby from '@imgix/gatsby/dist/pluginHelpers'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
@@ -46,58 +46,41 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
   never,
   gqlc.ObjectTypeComposerFieldConfigMapDefinition<PrismicAPIImageField, unknown>
 > = pipe(
-  RTE.asks((deps) => ({
-    alt: 'String',
-    copyright: 'String',
-    dimensions: deps.globalNodeHelpers.createTypeName('ImageDimensionsType'),
-    url: gatsbyImgix.createImgixUrlFieldConfig({
-      paramsInputType: deps.globalNodeHelpers.createTypeName(
-        'ImgixUrlParamsInput',
-      ),
-      resolveUrl,
-      defaultImgixParams: deps.pluginOptions.imageImgixParams,
-    }),
-    fixed: gatsbyImgix.createImgixFixedFieldConfig({
-      type: deps.nodeHelpers.createTypeName('ImageFixedType'),
-      paramsInputType: deps.globalNodeHelpers.createTypeName(
-        'ImgixUrlParamsInput',
-      ),
+  RTE.asks((deps) => {
+    // ⚠️ These options need to be kept in sync with the options at packages/gatsby-source-prismic/src/builders/buildImgixImageTypes.ts
+    const imgixTypes = imgixGatsby.createImgixGatsbyTypes({
+      cache: deps.cache,
       resolveUrl,
       resolveWidth,
       resolveHeight,
-      cache: deps.cache,
-      defaultImgixParams: deps.pluginOptions.imageImgixParams,
-      defaultPlaceholderImgixParams:
-        deps.pluginOptions.imagePlaceholderImgixParams,
-    }),
-    fluid: gatsbyImgix.createImgixFluidFieldConfig({
-      type: deps.nodeHelpers.createTypeName('ImageFluidType'),
-      paramsInputType: deps.globalNodeHelpers.createTypeName(
-        'ImgixUrlParamsInput',
-      ),
-      resolveUrl,
-      resolveWidth,
-      resolveHeight,
-      cache: deps.cache,
-      defaultImgixParams: deps.pluginOptions.imageImgixParams,
-      defaultPlaceholderImgixParams:
-        deps.pluginOptions.imagePlaceholderImgixParams,
-    }),
-    localFile: {
-      type: 'File',
-      resolve: async (
-        source: PrismicAPIImageField,
-      ): Promise<gatsbyFs.FileSystemNode | null> =>
-        source.url
-          ? await deps.createRemoteFileNode({
-              url: source.url,
-              store: deps.store,
-              cache: deps.cache,
-              createNode: deps.createNode,
-              createNodeId: deps.createNodeId,
-              reporter: deps.reporter,
-            })
-          : null,
-    },
-  })),
+      defaultParams: deps.pluginOptions.imageImgixParams,
+      namespace: 'Imgix',
+    })
+
+    return {
+      alt: 'String',
+      copyright: 'String',
+      dimensions: deps.globalNodeHelpers.createTypeName('ImageDimensionsType'),
+      url: imgixTypes.fields.url,
+      fixed: imgixTypes.fields.fixed,
+      fluid: imgixTypes.fields.fluid,
+      gatsbyImageData: imgixTypes.fields.gatsbyImageData,
+      localFile: {
+        type: 'File',
+        resolve: async (
+          source: PrismicAPIImageField,
+        ): Promise<gatsbyFs.FileSystemNode | null> =>
+          source.url
+            ? await deps.createRemoteFileNode({
+                url: source.url,
+                store: deps.store,
+                cache: deps.cache,
+                createNode: deps.createNode,
+                createNodeId: deps.createNodeId,
+                reporter: deps.reporter,
+              })
+            : null,
+      },
+    }
+  }),
 )
