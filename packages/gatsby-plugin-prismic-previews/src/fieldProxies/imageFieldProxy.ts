@@ -1,6 +1,5 @@
 import * as gatsbyPrismic from 'gatsby-source-prismic'
-import * as imgixGatsby from '@imgix/gatsby'
-import * as imgixGatsbyHelpers from '@imgix/gatsby/dist/pluginHelpers'
+import * as imgixGatsbyHelpers from '@imgix/gatsby/dist/pluginHelpers.browser'
 import * as RE from 'fp-ts/ReaderEither'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
@@ -58,18 +57,21 @@ const buildImageProxyValue = (
     ),
     RE.bind('fixed', (env) =>
       RE.of(
-        imgixGatsby.buildFixedImageData(env.url, {
-          ...env.args.imgixParams,
-          w: env.sourceWidth,
-          h: env.sourceHeight,
+        imgixGatsbyHelpers.buildFixedObject({
+          url: env.url,
+          args: { ...env.args, width: 400 },
+          sourceWidth: env.sourceWidth,
+          sourceHeight: env.sourceHeight,
         }),
       ),
     ),
     RE.bind('fluid', (env) =>
       RE.of(
-        imgixGatsby.buildFluidImageData(env.url, {
-          ...env.args.imgixParams,
-          ar: env.sourceWidth / env.sourceHeight,
+        imgixGatsbyHelpers.buildFluidObject({
+          url: env.url,
+          args: { ...env.args, maxWidth: 800 },
+          sourceWidth: env.sourceWidth,
+          sourceHeight: env.sourceHeight,
         }),
       ),
     ),
@@ -77,7 +79,10 @@ const buildImageProxyValue = (
       RE.of(
         imgixGatsbyHelpers.buildGatsbyImageDataObject({
           url: env.url,
-          dimensions: { width: env.sourceWidth, height: env.sourceHeight },
+          dimensions: {
+            width: env.sourceWidth,
+            height: env.sourceHeight,
+          },
           defaultParams: env.imageImgixParams,
           resolverArgs: {},
         }),
@@ -106,6 +111,7 @@ const buildImageProxyValue = (
 export const proxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPIImageField,
 ): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, ImageProxyValue> =>
+  // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
   pipe(
     fieldValue,
     R.partitionWithIndex((fieldName) =>
@@ -132,6 +138,7 @@ export const proxyValue = (
             RE.chain((baseFields) => buildImageProxyValue(baseFields)),
           ),
         ),
+        // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
         R.sequence(RE.Applicative),
       ),
     ),
