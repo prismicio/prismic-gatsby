@@ -28,6 +28,7 @@ export const proxyValue = (
         R.mapWithIndex((fieldName, value) =>
           proxyDocumentSubtree([...path, 'primary', fieldName], value),
         ),
+        // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
         R.sequence(RE.Applicative),
       ),
     ),
@@ -41,9 +42,11 @@ export const proxyValue = (
             R.mapWithIndex((fieldName, value) =>
               proxyDocumentSubtree([...path, 'items', fieldName], value),
             ),
+            // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
             R.sequence(RE.Applicative),
           ),
         ),
+        // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
         RE.sequenceArray,
       ),
     ),
