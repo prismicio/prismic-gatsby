@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "4.0.0-alpha.3",
+  "version": "4.0.0-alpha.5",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -29,7 +29,7 @@
     "prismic"
   ],
   "dependencies": {
-    "@imgix/gatsby": "^1.6.0",
+    "@imgix/gatsby": "^1.6.1",
     "camel-case": "^4.1.2",
     "fp-ts": "^2.10.5",
     "gatsby-node-helpers": "^1.2.1",
