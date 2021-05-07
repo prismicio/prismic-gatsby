@@ -1,5 +1,5 @@
 import * as gatsby from 'gatsby'
-import * as gatsbyImgix from 'gatsby-plugin-imgix'
+import * as imgixGatsby from '@imgix/gatsby'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from 'ts-prismic'
 import * as PrismicDOM from 'prismic-dom'
@@ -17,8 +17,8 @@ export interface PluginOptions extends gatsby.PluginOptions {
   graphQuery?: string
   fetchLinks?: string[]
   lang: string
-  imageImgixParams: gatsbyImgix.ImgixUrlParams
-  imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
+  imageImgixParams: imgixGatsby.ImgixUrlParams
+  imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams
   typePrefix?: string
   toolbar: 'new' | 'legacy'
   plugins: []
