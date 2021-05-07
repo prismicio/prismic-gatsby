@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-prismic-previews",
-  "version": "4.0.0-alpha.5",
+  "version": "4.0.0-alpha.7",
   "description": "Gatsby plugin for integrating client-side Prismic previews support",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -32,7 +32,7 @@
     "prismic"
   ],
   "dependencies": {
-    "@imgix/gatsby": "^1.6.0",
+    "@imgix/gatsby": "^1.6.1",
     "@reach/dialog": "^0.15.0",
     "camel-case": "^4.1.2",
     "chalk": "^4.1.0",
