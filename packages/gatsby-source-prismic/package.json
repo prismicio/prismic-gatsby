@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "4.0.0-alpha.6",
+  "version": "4.0.0-alpha.7",
   "description": "Gatsby source plugin for building websites using prismic.io as a data source",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -45,8 +45,8 @@
   },
   "devDependencies": {
     "@types/prismic-dom": "^2.1.1",
-    "gatsby-image": "^3.3.0",
-    "gatsby-plugin-image": "^1.4.0"
+    "gatsby-image": "^3.4.0",
+    "gatsby-plugin-image": "^1.4.1"
   },
   "ava": {
     "files": [
