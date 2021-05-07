@@ -1,6 +1,6 @@
 import * as gatsby from 'gatsby'
 import * as gatsbyFs from 'gatsby-source-filesystem'
-import * as gatsbyImgix from 'gatsby-plugin-imgix'
+import * as imgixGatsby from '@imgix/gatsby'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as prismic from 'ts-prismic'
@@ -68,8 +68,8 @@ export interface PluginOptions extends gatsby.PluginOptions {
   linkResolver?: (doc: prismic.Document) => string
   htmlSerializer?: typeof PrismicDOM.HTMLSerializer
   schemas: Record<string, PrismicSchema>
-  imageImgixParams: gatsbyImgix.ImgixUrlParams
-  imagePlaceholderImgixParams: gatsbyImgix.ImgixUrlParams
+  imageImgixParams: imgixGatsby.ImgixUrlParams
+  imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams
   typePrefix?: string
   webhookSecret?: string
   plugins: []
