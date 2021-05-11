@@ -25,7 +25,6 @@ export const proxyValue = (
         R.mapWithIndex((fieldName, value) =>
           proxyDocumentSubtree([...path, fieldName], value),
         ),
-        // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
         R.sequence(RE.Applicative),
       ),
     ),

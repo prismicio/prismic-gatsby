@@ -111,7 +111,6 @@ const buildImageProxyValue = (
 export const proxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPIImageField,
 ): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, ImageProxyValue> =>
-  // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
   pipe(
     fieldValue,
     R.partitionWithIndex((fieldName) =>
@@ -138,7 +137,6 @@ export const proxyValue = (
             RE.chain((baseFields) => buildImageProxyValue(baseFields)),
           ),
         ),
-        // @ts-expect-error - fp-ts type mismatch possibly due to conflicting versions
         R.sequence(RE.Applicative),
       ),
     ),
