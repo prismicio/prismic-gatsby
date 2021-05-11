@@ -33,7 +33,7 @@
     "camel-case": "^4.1.2",
     "fp-ts": "^2.10.5",
     "gatsby-node-helpers": "^1.2.1",
-    "gatsby-source-filesystem": "^3.3.0",
+    "gatsby-source-filesystem": "^3.5.0",
     "got": "^11.8.1",
     "prismic-dom": "^2.2.5",
     "tiny-hashes": "^1.0.1",
