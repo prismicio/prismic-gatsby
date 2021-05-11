@@ -10,6 +10,7 @@ import { PrismicWebhookBody } from '../types'
  *
  * @returns `true` if the secret is valid, `false` otherwise.
  */
-export const isValidWebhookSecret = (secret?: string) => (
-  webhookBody: PrismicWebhookBody,
-): boolean => (secret ? webhookBody.secret === secret : true)
+export const isValidWebhookSecret =
+  (secret?: string) =>
+  (webhookBody: PrismicWebhookBody): boolean =>
+    secret ? webhookBody.secret === secret : true

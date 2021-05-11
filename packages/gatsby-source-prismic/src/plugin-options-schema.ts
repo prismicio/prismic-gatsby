@@ -34,10 +34,10 @@ import {
 const getSchemasFromCustomTypeApiResponse = (
   response: PrismicCustomTypeApiResponse,
 ) =>
-  R.fromFoldableMap(
-    struct.getAssignSemigroup<PrismicSchema>(),
-    A.Foldable,
-  )(response, (item) => [item.id, item.json])
+  R.fromFoldableMap(struct.getAssignSemigroup<PrismicSchema>(), A.Foldable)(
+    response,
+    (item) => [item.id, item.json],
+  )
 
 /**
  * To be execuring during the `external` phase of `pluginOptionsSchema`.
@@ -207,8 +207,8 @@ export const pluginOptionsSchema: NonNullable<
     createRemoteFileNode: Joi.function().default(
       () => gatsbyFs.createRemoteFileNode,
     ),
-    transformFieldName: Joi.function().default(() => (fieldName: string) =>
-      fieldName.replace(/-/g, '_'),
+    transformFieldName: Joi.function().default(
+      () => (fieldName: string) => fieldName.replace(/-/g, '_'),
     ),
   })
     .or('schemas', 'customTypesApiToken')

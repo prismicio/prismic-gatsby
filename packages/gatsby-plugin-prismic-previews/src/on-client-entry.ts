@@ -79,12 +79,11 @@ export const onClientEntryProgram: RTE.ReaderTaskEither<
  *
  * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/#onClientEntry
  */
-export const onClientEntry: NonNullable<
-  gatsby.GatsbyBrowser['onClientEntry']
-> = async (
-  _gatsbyContext: gatsby.BrowserPluginArgs,
-  pluginOptions: PluginOptions,
-) =>
-  // We don't care about the output of the program so we won't be doing
-  // anything with the result.
-  await onClientEntryProgram({ pluginOptions })()
+export const onClientEntry: NonNullable<gatsby.GatsbyBrowser['onClientEntry']> =
+  async (
+    _gatsbyContext: gatsby.BrowserPluginArgs,
+    pluginOptions: PluginOptions,
+  ) =>
+    // We don't care about the output of the program so we won't be doing
+    // anything with the result.
+    await onClientEntryProgram({ pluginOptions })()

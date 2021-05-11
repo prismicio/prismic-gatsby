@@ -78,7 +78,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
 }
 
 export type FieldConfigCreator<
-  TSchema extends PrismicSchemaField = PrismicSchemaField
+  TSchema extends PrismicSchemaField = PrismicSchemaField,
 > = (
   path: string[],
   schema: TSchema,

@@ -24,13 +24,14 @@ import KitchenSinkTemplate from './pages/{PrismicPrefixKitchenSink.uid}'
  *
  * @see https://github.com/angeloashmore/gatsby-source-prismic/tree/alpha/packages/gatsby-plugin-prismic-previews#404-not-found-page
  */
-export const unpublishedRepositoryConfigs: PrismicUnpublishedRepositoryConfigs = [
-  {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME!,
-    linkResolver,
-    componentResolver: componentResolverFromMap({
-      kitchen_sink: KitchenSinkTemplate,
-    }),
-  },
-]
+export const unpublishedRepositoryConfigs: PrismicUnpublishedRepositoryConfigs =
+  [
+    {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME!,
+      linkResolver,
+      componentResolver: componentResolverFromMap({
+        kitchen_sink: KitchenSinkTemplate,
+      }),
+    },
+  ]

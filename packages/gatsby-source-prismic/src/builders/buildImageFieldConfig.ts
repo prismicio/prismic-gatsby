@@ -37,10 +37,10 @@ const createThumbnailsType = (
     RTE.bind('thumbnails', () => RTE.right(schema.config?.thumbnails ?? [])),
     RTE.bind('fields', (scope) =>
       pipe(
-        R.fromFoldableMap(
-          S.last<PrismicSchemaImageThumbnail>(),
-          A.Foldable,
-        )(scope.thumbnails, (thumbnail) => [thumbnail.name, thumbnail]),
+        R.fromFoldableMap(S.last<PrismicSchemaImageThumbnail>(), A.Foldable)(
+          scope.thumbnails,
+          (thumbnail) => [thumbnail.name, thumbnail],
+        ),
         R.map(() => scope.nodeHelpers.createTypeName('ImageThumbnailType')),
         (fields) => RTE.right(fields),
       ),
@@ -70,27 +70,25 @@ const createThumbnailsType = (
  *
  * @returns GraphQL field configuration object.
  */
-export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> = (
-  path,
-  schema,
-) =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Image)),
-    RTE.bind('thumbnailsTypeName', () =>
-      A.isEmpty(schema.config?.thumbnails ?? [])
-        ? RTE.right(undefined)
-        : createThumbnailsType(path, schema),
-    ),
-    RTE.bind('baseFields', () => buildImageBaseFieldConfigMap),
-    RTE.chain((scope) =>
-      buildObjectType({
-        name: scope.nodeHelpers.createTypeName([...path, 'ImageType']),
-        fields: scope.thumbnailsTypeName
-          ? { ...scope.baseFields, thumbnails: scope.thumbnailsTypeName }
-          : scope.baseFields,
-      }),
-    ),
-    RTE.chainFirst(createType),
-    RTE.map(getTypeName),
-  )
+export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> =
+  (path, schema) =>
+    pipe(
+      RTE.ask<Dependencies>(),
+      RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Image)),
+      RTE.bind('thumbnailsTypeName', () =>
+        A.isEmpty(schema.config?.thumbnails ?? [])
+          ? RTE.right(undefined)
+          : createThumbnailsType(path, schema),
+      ),
+      RTE.bind('baseFields', () => buildImageBaseFieldConfigMap),
+      RTE.chain((scope) =>
+        buildObjectType({
+          name: scope.nodeHelpers.createTypeName([...path, 'ImageType']),
+          fields: scope.thumbnailsTypeName
+            ? { ...scope.baseFields, thumbnails: scope.thumbnailsTypeName }
+            : scope.baseFields,
+        }),
+      ),
+      RTE.chainFirst(createType),
+      RTE.map(getTypeName),
+    )

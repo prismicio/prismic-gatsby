@@ -18,37 +18,37 @@ import { usePrismicPreviewContext } from './usePrismicPreviewContext'
  *
  * @returns Function that accepts a node or node content to find and replace previewable content.
  */
-const findAndReplacePreviewables = (nodes: PrismicContextState['nodes']) => (
-  nodeOrLeaf: unknown,
-): unknown => {
-  if (isPlainObject(nodeOrLeaf)) {
-    const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
-      | string
-      | undefined
-    if (previewableValue && nodes[previewableValue]) {
-      return nodes[previewableValue]
+const findAndReplacePreviewables =
+  (nodes: PrismicContextState['nodes']) =>
+  (nodeOrLeaf: unknown): unknown => {
+    if (isPlainObject(nodeOrLeaf)) {
+      const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
+        | string
+        | undefined
+      if (previewableValue && nodes[previewableValue]) {
+        return nodes[previewableValue]
+      }
+
+      // We didn't find a previewable field, so continue to iterate through all
+      // properties to find it.
+      const newNode = {} as typeof nodeOrLeaf
+      for (const key in nodeOrLeaf) {
+        newNode[key] = findAndReplacePreviewables(nodes)(nodeOrLeaf[key])
+      }
+
+      return newNode
     }
 
-    // We didn't find a previewable field, so continue to iterate through all
-    // properties to find it.
-    const newNode = {} as typeof nodeOrLeaf
-    for (const key in nodeOrLeaf) {
-      newNode[key] = findAndReplacePreviewables(nodes)(nodeOrLeaf[key])
+    // Iterate all elements in the node to find the previewable value.
+    if (Array.isArray(nodeOrLeaf)) {
+      return (nodeOrLeaf as unknown[]).map((subnode) =>
+        findAndReplacePreviewables(nodes)(subnode),
+      )
     }
 
-    return newNode
+    // If the node is not an object or array, it cannot be a previewable value.
+    return nodeOrLeaf
   }
-
-  // Iterate all elements in the node to find the previewable value.
-  if (Array.isArray(nodeOrLeaf)) {
-    return (nodeOrLeaf as unknown[]).map((subnode) =>
-      findAndReplacePreviewables(nodes)(subnode),
-    )
-  }
-
-  // If the node is not an object or array, it cannot be a previewable value.
-  return nodeOrLeaf
-}
 
 /**
  * Takes a static data object and a record of nodes and replaces any instances

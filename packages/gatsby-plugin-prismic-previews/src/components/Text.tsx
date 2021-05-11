@@ -52,9 +52,8 @@ type TextOwnProps = {
   children?: React.ReactNode
 }
 
-export type TextProps<
-  T extends React.ElementType = typeof defaultElement
-> = PolymorphicPropsWithoutRef<TextOwnProps, T>
+export type TextProps<T extends React.ElementType = typeof defaultElement> =
+  PolymorphicPropsWithoutRef<TextOwnProps, T>
 
 export const Text = <T extends React.ElementType = typeof defaultElement>({
   as,

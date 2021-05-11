@@ -7,7 +7,8 @@
     "develop": "gatsby develop",
     "build": "gatsby build",
     "serve": "gatsby serve",
-    "test": "echo 'No tests for test-site'"
+    "test": "echo 'No tests for test-site'",
+    "format": "prettier --write 'src/**/*.{ts,tsx,md}'"
   },
   "dependencies": {
     "gatsby": "^3.5.0",

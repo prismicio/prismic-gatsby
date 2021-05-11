@@ -144,29 +144,27 @@ const buildSliceTypes = (
  *
  * @returns GraphQL field configuration object.
  */
-export const buildSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField> = (
-  path,
-  schema,
-) =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Slices)),
-    RTE.chain((deps) =>
-      pipe(
-        buildSliceTypes(path, schema.config.choices),
-        RTE.chainFirst(createTypes),
-        RTE.map(A.map(getTypeName)),
-        RTE.chain((types) =>
-          buildUnionType({
-            name: deps.nodeHelpers.createTypeName([...path, 'SlicesType']),
-            types,
-            resolveType: (source: PrismicAPISliceField) =>
-              deps.nodeHelpers.createTypeName([...path, source.slice_type]),
-          }),
+export const buildSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField> =
+  (path, schema) =>
+    pipe(
+      RTE.ask<Dependencies>(),
+      RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Slices)),
+      RTE.chain((deps) =>
+        pipe(
+          buildSliceTypes(path, schema.config.choices),
+          RTE.chainFirst(createTypes),
+          RTE.map(A.map(getTypeName)),
+          RTE.chain((types) =>
+            buildUnionType({
+              name: deps.nodeHelpers.createTypeName([...path, 'SlicesType']),
+              types,
+              resolveType: (source: PrismicAPISliceField) =>
+                deps.nodeHelpers.createTypeName([...path, source.slice_type]),
+            }),
+          ),
+          RTE.chainFirst(createType),
+          RTE.map(getTypeName),
+          RTE.map(listTypeName),
         ),
-        RTE.chainFirst(createType),
-        RTE.map(getTypeName),
-        RTE.map(listTypeName),
       ),
-    ),
-  )
+    )

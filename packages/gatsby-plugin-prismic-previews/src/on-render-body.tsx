@@ -34,20 +34,19 @@ const getToolbarScriptURL = (
  */
 // TODO: Explore what happens when multiple instances of the plugin are
 // configured. Will multiple toolbars cause conflicts?
-export const onRenderBody: NonNullable<
-  gatsby.GatsbySSR['onRenderBody']
-> = async (
-  gatsbyContext: gatsby.RenderBodyArgs,
-  pluginOptions: PluginOptions,
-) => {
-  gatsbyContext.setPostBodyComponents([
-    <script
-      src={getToolbarScriptURL(
-        pluginOptions.repositoryName,
-        pluginOptions.toolbar,
-      )}
-      defer={true}
-      key={`gatsby-plugin-prismic-previews-toolbar-${pluginOptions.repositoryName}`}
-    />,
-  ])
-}
+export const onRenderBody: NonNullable<gatsby.GatsbySSR['onRenderBody']> =
+  async (
+    gatsbyContext: gatsby.RenderBodyArgs,
+    pluginOptions: PluginOptions,
+  ) => {
+    gatsbyContext.setPostBodyComponents([
+      <script
+        src={getToolbarScriptURL(
+          pluginOptions.repositoryName,
+          pluginOptions.toolbar,
+        )}
+        defer={true}
+        key={`gatsby-plugin-prismic-previews-toolbar-${pluginOptions.repositoryName}`}
+      />,
+    ])
+  }

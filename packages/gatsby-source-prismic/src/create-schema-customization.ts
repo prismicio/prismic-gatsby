@@ -32,38 +32,35 @@ const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
  * repository-specific), while others are repository-specific, depending on
  * the type's use of custom plugin options.
  */
-export const createBaseTypes: RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  void
-> = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.bind('baseTypes', () =>
-    pipe(
-      [
-        buildEmbedType,
-        buildGeoPointType,
-        buildImageDimensionsType,
-        buildImageThumbnailType,
-        buildLinkType,
-        buildLinkTypeEnumType,
-        buildSliceInterface,
-        buildStructuredTextType,
-        buildTypePathType,
-      ],
-      RTE.sequenceArray,
+export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.bind('baseTypes', () =>
+      pipe(
+        [
+          buildEmbedType,
+          buildGeoPointType,
+          buildImageDimensionsType,
+          buildImageThumbnailType,
+          buildLinkType,
+          buildLinkTypeEnumType,
+          buildSliceInterface,
+          buildStructuredTextType,
+          buildTypePathType,
+        ],
+        RTE.sequenceArray,
+      ),
     ),
-  ),
-  RTE.bind('imgixTypes', () => buildImgixImageTypes),
-  RTE.map((scope) =>
-    GatsbyGraphQLTypeM.concat(
-      scope.baseTypes as Mutable<typeof scope.baseTypes>,
-      scope.imgixTypes,
+    RTE.bind('imgixTypes', () => buildImgixImageTypes),
+    RTE.map((scope) =>
+      GatsbyGraphQLTypeM.concat(
+        scope.baseTypes as Mutable<typeof scope.baseTypes>,
+        scope.imgixTypes,
+      ),
     ),
-  ),
-  RTE.chain(createTypes),
-  RTE.map(constVoid),
-)
+    RTE.chain(createTypes),
+    RTE.map(constVoid),
+  )
 
 /**
  * Create types for all repository custom types using the JSON schemas provided

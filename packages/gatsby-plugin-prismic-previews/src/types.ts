@@ -56,7 +56,8 @@ export type PrismicUnpublishedRepositoryConfig = SetRequired<
   'componentResolver'
 >
 
-export type PrismicUnpublishedRepositoryConfigs = PrismicUnpublishedRepositoryConfig[]
+export type PrismicUnpublishedRepositoryConfigs =
+  PrismicUnpublishedRepositoryConfig[]
 
 export type PrismicRepositoryConfig = {
   /**

@@ -13,17 +13,17 @@ declare global {
   }
 }
 
-export const setPluginOptionsOnWindow = (
-  pluginOptions: PluginOptions,
-): IO.IO<void> => () => {
-  if (typeof window === 'undefined') {
-    Object.assign(ssrPluginOptionsStore, {
-      [pluginOptions.repositoryName]: pluginOptions,
-    })
-  } else {
-    window[WINDOW_PLUGIN_OPTIONS_KEY] = {
-      ...window[WINDOW_PLUGIN_OPTIONS_KEY],
-      [pluginOptions.repositoryName]: pluginOptions,
+export const setPluginOptionsOnWindow =
+  (pluginOptions: PluginOptions): IO.IO<void> =>
+  () => {
+    if (typeof window === 'undefined') {
+      Object.assign(ssrPluginOptionsStore, {
+        [pluginOptions.repositoryName]: pluginOptions,
+      })
+    } else {
+      window[WINDOW_PLUGIN_OPTIONS_KEY] = {
+        ...window[WINDOW_PLUGIN_OPTIONS_KEY],
+        [pluginOptions.repositoryName]: pluginOptions,
+      }
     }
   }
-}

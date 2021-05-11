@@ -196,8 +196,9 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
   // Start bootstrap.
   RTE.chainFirst((env) => RTE.fromIO(env.beginBootstrapping)),
 
-  RTE.bindW('typePaths', (env) => () =>
-    fetchTypePaths({ repositoryName: env.repositoryName }),
+  RTE.bindW(
+    'typePaths',
+    (env) => () => fetchTypePaths({ repositoryName: env.repositoryName }),
   ),
   RTE.chainFirst((env) =>
     RTE.fromIO(env.appendTypePaths(env.repositoryName, env.typePaths)),
@@ -222,21 +223,22 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
         ),
       ),
       RTE.map(
-        A.map((doc) => () =>
-          proxyDocumentNodeInput(doc)({
-            createContentDigest: env.createContentDigest,
-            nodeHelpers: env.nodeHelpers,
-            linkResolver: env.repositoryConfig.linkResolver,
-            getTypePath: (path) => env.getTypePath(env.repositoryName, path),
-            getNode: env.getNode,
-            imageImgixParams: env.repositoryPluginOptions.imageImgixParams,
-            imagePlaceholderImgixParams:
-              env.repositoryPluginOptions.imagePlaceholderImgixParams,
-            htmlSerializer: env.repositoryConfig.htmlSerializer,
-            transformFieldName:
-              env.repositoryConfig.transformFieldName ??
-              defaultFieldTransformer,
-          }),
+        A.map(
+          (doc) => () =>
+            proxyDocumentNodeInput(doc)({
+              createContentDigest: env.createContentDigest,
+              nodeHelpers: env.nodeHelpers,
+              linkResolver: env.repositoryConfig.linkResolver,
+              getTypePath: (path) => env.getTypePath(env.repositoryName, path),
+              getNode: env.getNode,
+              imageImgixParams: env.repositoryPluginOptions.imageImgixParams,
+              imagePlaceholderImgixParams:
+                env.repositoryPluginOptions.imagePlaceholderImgixParams,
+              htmlSerializer: env.repositoryConfig.htmlSerializer,
+              transformFieldName:
+                env.repositoryConfig.transformFieldName ??
+                defaultFieldTransformer,
+            }),
         ),
       ),
       RTE.map(RE.sequenceArray),
@@ -311,14 +313,12 @@ export const usePrismicPreviewBootstrap = (
             type: PrismicContextActionType.AppendNodes,
             payload: { nodes },
           }),
-        appendTypePaths: (
-          repositoryName: string,
-          typePaths: TypePathsStore,
-        ) => () =>
-          contextDispatch({
-            type: PrismicContextActionType.AppendTypePaths,
-            payload: { repositoryName, typePaths },
-          }),
+        appendTypePaths:
+          (repositoryName: string, typePaths: TypePathsStore) => () =>
+            contextDispatch({
+              type: PrismicContextActionType.AppendTypePaths,
+              payload: { repositoryName, typePaths },
+            }),
         isBootstrapped: contextState.isBootstrapped,
         pluginOptionsStore: contextState.pluginOptionsStore,
         repositoryConfigs,
@@ -355,8 +355,8 @@ export const usePrismicPreviewBootstrap = (
     contextDispatch,
   ])
 
-  return React.useMemo(() => [localState, bootstrapPreview] as const, [
-    localState,
-    bootstrapPreview,
-  ])
+  return React.useMemo(
+    () => [localState, bootstrapPreview] as const,
+    [localState, bootstrapPreview],
+  )
 }

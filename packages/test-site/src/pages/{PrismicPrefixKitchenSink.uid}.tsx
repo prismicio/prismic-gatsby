@@ -98,7 +98,7 @@ const KitchenSinkPage = (
 export default withPrismicPreview(KitchenSinkPage, repositoryConfigs)
 
 export const query = graphql`
-  query($uid: String!) {
+  query ($uid: String!) {
     prismicPrefixKitchenSink(uid: { eq: $uid }) {
       _previewable
       uid

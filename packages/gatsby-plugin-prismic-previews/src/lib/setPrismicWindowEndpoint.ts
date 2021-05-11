@@ -8,8 +8,8 @@ declare global {
   }
 }
 
-export const setPrismicWindowEndpoint = (
-  endpoint: string,
-): IO.IO<void> => () => {
-  window.prismic = { ...window.prismic, endpoint }
-}
+export const setPrismicWindowEndpoint =
+  (endpoint: string): IO.IO<void> =>
+  () => {
+    window.prismic = { ...window.prismic, endpoint }
+  }

@@ -26,9 +26,8 @@ export const ModalAccessToken = ({
   isOpen,
   onDismiss,
 }: ModalAccessTokenProps): JSX.Element => {
-  const [ephemeralAccessToken, setEphemeralAccessToken] = React.useState(
-    initialAccessToken,
-  )
+  const [ephemeralAccessToken, setEphemeralAccessToken] =
+    React.useState(initialAccessToken)
 
   React.useEffect(() => {
     setEphemeralAccessToken(initialAccessToken)

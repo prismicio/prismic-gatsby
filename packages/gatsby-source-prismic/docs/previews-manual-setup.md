@@ -376,7 +376,7 @@ export const PageTemplate = ({ data }) => {
 }
 
 export const query = graphql`
-  query($id: String!) {
+  query ($id: String!) {
     prismicPage(id: { eq: $id }) {
       data {
         title

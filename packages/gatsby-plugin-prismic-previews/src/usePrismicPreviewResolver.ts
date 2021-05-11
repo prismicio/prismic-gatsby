@@ -154,13 +154,15 @@ const previewResolverProgram: RTE.ReaderTaskEither<
   // Start resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
 
-  RTE.bind('params', (env) => () =>
-    buildQueryParams({
-      lang: env.repositoryPluginOptions.lang,
-      fetchLinks: env.repositoryPluginOptions.fetchLinks,
-      graphQuery: env.repositoryPluginOptions.graphQuery,
-      accessToken: env.repositoryPluginOptions.accessToken,
-    }),
+  RTE.bind(
+    'params',
+    (env) => () =>
+      buildQueryParams({
+        lang: env.repositoryPluginOptions.lang,
+        fetchLinks: env.repositoryPluginOptions.fetchLinks,
+        graphQuery: env.repositoryPluginOptions.graphQuery,
+        accessToken: env.repositoryPluginOptions.accessToken,
+      }),
   ),
   RTE.bind('url', (env) =>
     RTE.right(
@@ -252,8 +254,8 @@ export const usePrismicPreviewResolver = (
     )()
   }, [repositoryConfigs, contextDispatch, contextState.pluginOptionsStore])
 
-  return React.useMemo(() => [localState, resolvePreview] as const, [
-    localState,
-    resolvePreview,
-  ])
+  return React.useMemo(
+    () => [localState, resolvePreview] as const,
+    [localState, resolvePreview],
+  )
 }

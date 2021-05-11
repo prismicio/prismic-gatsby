@@ -96,7 +96,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       switch (resolverState.state) {
         case 'RESOLVED': {
           if ((config.autoRedirect ?? true) && resolverState.path) {
-            (config.navigate ?? gatsby.navigate)(resolverState.path)
+            ;(config.navigate ?? gatsby.navigate)(resolverState.path)
           }
 
           break
