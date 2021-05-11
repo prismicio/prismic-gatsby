@@ -18,17 +18,19 @@ Integrate live [Prismic Previews][prismic-previews] into a static
 ## Install
 
 ```sh
-npm install --save gatsby-plugin-prismic-previews gatsby-source-prismic
+npm install --save gatsby-plugin-prismic-previews gatsby-source-prismic gatsby-plugin-image
 ```
 
 Or if you use Yarn:
 
 ```sh
-yarn add gatsby-plugin-prismic-previews gatsby-source-prismic
+yarn add gatsby-plugin-prismic-previews gatsby-source-prismic gatsby-plugin-image
 ```
 
-Note that [`gatsby-source-prismic`][gsp] is a peer dependency of this plugin.
-The functionality of this plugin is closely connected to the source plugin.
+Note that [`gatsby-source-prismic`][gsp] and
+[`gatsby-plugin-image`][gatsby-plugin-image] are a peer dependencies of this
+plugin. The functionality of this plugin is closely connected to the source
+plugin.
 
 ## Migrating from `gatsby-source-prismic`'s previews
 
@@ -482,3 +484,4 @@ to keep in mind and useful strategies.
   https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
 [gatsby-graphql-aliasing]:
   https://www.gatsbyjs.com/docs/graphql-reference/#aliasing
+[gatsby-plugin-image]: https://www.gatsbyjs.com/plugins/gatsby-plugin-image/

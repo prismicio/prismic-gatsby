@@ -20,14 +20,17 @@ repositories.
 ## Install
 
 ```sh
-npm install --save gatsby-source-prismic
+npm install --save gatsby-source-prismic gatsby-plugin-image
 ```
 
 Or if you use Yarn:
 
 ```sh
-yarn add gatsby-source-prismic
+yarn add gatsby-source-prismic gatsby-plugin-image
 ```
+
+Please note that [`gatsby-plugin-image`][gatsby-plugin-image] is a required peer
+dependency.
 
 ## Migration Guide
 
@@ -196,6 +199,10 @@ module.exports = {
         transformFieldName: (fieldName) => fieldName.replace(/-/g, '_'),
       },
     },
+
+    // This plugin provides support for automatically optimized images sourced
+    // from your Prismic repository.
+    'gatsby-plugin-image',
   ],
 }
 ```
@@ -839,3 +846,4 @@ exports.createPages = async ({ graphql, actions }) => {
 [gatsby-env-vars]: https://gatsby.dev/env-vars
 [gatsby-source-filesystem]:
   https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-source-filesystem
+[gatsby-plugin-image]: https://www.gatsbyjs.com/plugins/gatsby-plugin-image/
