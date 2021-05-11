@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as gatsby from 'gatsby'
 import * as IOE from 'fp-ts/IOEither'
 import { pipe } from 'fp-ts/function'
-import ky from 'ky'
+import { HTTPError } from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
@@ -66,9 +66,8 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 ): React.ComponentType<TProps> => {
   const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext()
-    const [resolverState, resolvePreview] = usePrismicPreviewResolver(
-      repositoryConfigs,
-    )
+    const [resolverState, resolvePreview] =
+      usePrismicPreviewResolver(repositoryConfigs)
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       contextState.activeRepositoryName,
     )
@@ -105,7 +104,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 
         case 'FAILED': {
           if (
-            resolverState.error instanceof ky.HTTPError &&
+            resolverState.error instanceof HTTPError &&
             resolverState.error.response.status === 401 &&
             contextState.activeRepositoryName &&
             contextState.pluginOptionsStore[contextState.activeRepositoryName]

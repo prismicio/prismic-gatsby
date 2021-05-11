@@ -5,7 +5,7 @@ import * as A from 'fp-ts/Array'
 import * as O from 'fp-ts/Option'
 import * as R from 'fp-ts/Record'
 import { constNull, constVoid, pipe } from 'fp-ts/function'
-import ky from 'ky'
+import { HTTPError } from 'ky'
 
 import { camelCase } from './lib/camelCase'
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
@@ -38,17 +38,19 @@ import { ModalLoading } from './components/ModalLoading'
  *
  * @returns A `componentResolver` function that can be passed to `withPrismicUnpublishedPreview`'s configuration.
  */
-export const componentResolverFromMap = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  componentMap: Record<string, React.ComponentType<any>>,
-): NonNullable<PrismicRepositoryConfig['componentResolver']> => (nodes) =>
-  pipe(
-    A.head(nodes),
-    O.bindTo('node'),
-    O.bind('type', (env) => O.some(env.node.type)),
-    O.chain((env) => R.lookup(env.type, componentMap)),
-    O.getOrElseW(constNull),
-  )
+export const componentResolverFromMap =
+  (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    componentMap: Record<string, React.ComponentType<any>>,
+  ): NonNullable<PrismicRepositoryConfig['componentResolver']> =>
+  (nodes) =>
+    pipe(
+      A.head(nodes),
+      O.bindTo('node'),
+      O.bind('type', (env) => O.some(env.node.type)),
+      O.chain((env) => R.lookup(env.type, componentMap)),
+      O.getOrElseW(constNull),
+    )
 
 /**
  * A `dataResolver` function that assumes the first matching node for the page's
@@ -92,16 +94,15 @@ type LocalState =
  */
 export const withPrismicUnpublishedPreview = <
   TStaticData extends UnknownRecord,
-  TProps extends gatsby.PageProps<TStaticData>
+  TProps extends gatsby.PageProps<TStaticData>,
 >(
   WrappedComponent: React.ComponentType<TProps>,
   repositoryConfigs: PrismicUnpublishedRepositoryConfigs,
 ): React.ComponentType<TProps> => {
   const WithPrismicUnpublishedPreview = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext()
-    const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
-      repositoryConfigs,
-    )
+    const [bootstrapState, bootstrapPreview] =
+      usePrismicPreviewBootstrap(repositoryConfigs)
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       contextState.activeRepositoryName,
     )
@@ -173,7 +174,7 @@ export const withPrismicUnpublishedPreview = <
       switch (bootstrapState.state) {
         case 'FAILED': {
           if (
-            bootstrapState.error instanceof ky.HTTPError &&
+            bootstrapState.error instanceof HTTPError &&
             bootstrapState.error.response.status === 401 &&
             contextState.activeRepositoryName &&
             contextState.pluginOptionsStore[contextState.activeRepositoryName]

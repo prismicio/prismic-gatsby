@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as gatsby from 'gatsby'
 import * as IOE from 'fp-ts/IOEither'
 import { constVoid, pipe } from 'fp-ts/function'
-import ky from 'ky'
+import { HTTPError } from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { isPreviewSession } from './lib/isPreviewSession'
@@ -24,7 +24,7 @@ import { ModalError } from './components/ModalError'
 import { ModalLoading } from './components/ModalLoading'
 
 export interface WithPrismicPreviewProps<
-  TStaticData extends UnknownRecord = UnknownRecord
+  TStaticData extends UnknownRecord = UnknownRecord,
 > {
   bootstrapPrismicPreview: UsePrismicPreviewBootstrapFn
   isPrismicPreview: boolean | null
@@ -56,7 +56,7 @@ type LocalState =
  */
 export const withPrismicPreview = <
   TStaticData extends UnknownRecord,
-  TProps extends gatsby.PageProps<TStaticData>
+  TProps extends gatsby.PageProps<TStaticData>,
 >(
   WrappedComponent: React.ComponentType<
     TProps & WithPrismicPreviewProps<TStaticData>
@@ -66,9 +66,8 @@ export const withPrismicPreview = <
 ): React.ComponentType<TProps> => {
   const WithPrismicPreview = (props: TProps): React.ReactElement => {
     const [contextState] = usePrismicPreviewContext()
-    const [bootstrapState, bootstrapPreview] = usePrismicPreviewBootstrap(
-      repositoryConfigs,
-    )
+    const [bootstrapState, bootstrapPreview] =
+      usePrismicPreviewBootstrap(repositoryConfigs)
     const [accessToken, { set: setAccessToken }] = usePrismicPreviewAccessToken(
       contextState.activeRepositoryName,
     )
@@ -107,7 +106,7 @@ export const withPrismicPreview = <
       switch (bootstrapState.state) {
         case 'FAILED': {
           if (
-            bootstrapState.error instanceof ky.HTTPError &&
+            bootstrapState.error instanceof HTTPError &&
             bootstrapState.error.response.status === 401 &&
             contextState.activeRepositoryName &&
             contextState.pluginOptionsStore[contextState.activeRepositoryName]
