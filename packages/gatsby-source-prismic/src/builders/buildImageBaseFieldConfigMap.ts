@@ -46,41 +46,60 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
   never,
   gqlc.ObjectTypeComposerFieldConfigMapDefinition<PrismicAPIImageField, unknown>
 > = pipe(
-  RTE.asks((deps) => {
-    // ⚠️ These options need to be kept in sync with the options at packages/gatsby-source-prismic/src/builders/buildImgixImageTypes.ts
-    const imgixTypes = imgixGatsby.createImgixGatsbyTypes({
-      cache: deps.cache,
-      resolveUrl,
-      resolveWidth,
-      resolveHeight,
-      defaultParams: deps.pluginOptions.imageImgixParams,
-      namespace: 'Imgix',
-    })
-
-    return {
-      alt: 'String',
-      copyright: 'String',
-      dimensions: deps.globalNodeHelpers.createTypeName('ImageDimensionsType'),
-      url: imgixTypes.fields.url,
-      fixed: imgixTypes.fields.fixed,
-      fluid: imgixTypes.fields.fluid,
-      gatsbyImageData: imgixTypes.fields.gatsbyImageData,
-      localFile: {
-        type: 'File',
-        resolve: async (
-          source: PrismicAPIImageField,
-        ): Promise<gatsbyFs.FileSystemNode | null> =>
-          source.url
-            ? await deps.createRemoteFileNode({
-                url: source.url,
-                store: deps.store,
-                cache: deps.cache,
-                createNode: deps.createNode,
-                createNodeId: deps.createNodeId,
-                reporter: deps.reporter,
-              })
-            : null,
-      },
-    }
-  }),
+  RTE.ask<Dependencies>(),
+  RTE.bind('imgixTypes', (scope) =>
+    RTE.right(
+      imgixGatsby.createImgixGatsbyTypes({
+        // IMPORTANT: These options need to be kept in sync with the options at
+        // packages/gatsby-source-prismic/src/builders/buildImgixImageTypes.ts
+        cache: scope.cache,
+        resolveUrl,
+        resolveWidth,
+        resolveHeight,
+        defaultParams: scope.pluginOptions.imageImgixParams,
+        namespace: 'Imgix',
+      }),
+    ),
+  ),
+  RTE.bind('urlField', (scope) => RTE.right(scope.imgixTypes.fields.url)),
+  RTE.bind('fixedField', (scope) => RTE.right(scope.imgixTypes.fields.fixed)),
+  RTE.bind('fluidField', (scope) => RTE.right(scope.imgixTypes.fields.fluid)),
+  RTE.bind('gatsbyImageDataField', (scope) =>
+    pipe(
+      RTE.right(scope.imgixTypes.fields.gatsbyImageData),
+      // This field is 'JSON!' by default (i.e. non-nullable). If an image is
+      // not set in Prismic, however, this field throws a GraphQL error saying a
+      // non-nullable field was returned a null value. This should not happen
+      // since the field is nested in a nullable object type, but it happens
+      // anyway.
+      //
+      // We're making the field nullable manually here.
+      RTE.chainFirst((field) => RTE.fromIO(() => (field.type = 'JSON'))),
+    ),
+  ),
+  RTE.map((scope) => ({
+    alt: 'String',
+    copyright: 'String',
+    dimensions: scope.globalNodeHelpers.createTypeName('ImageDimensionsType'),
+    url: scope.urlField,
+    fixed: scope.fixedField,
+    fluid: scope.fluidField,
+    gatsbyImageData: scope.gatsbyImageDataField,
+    localFile: {
+      type: 'File',
+      resolve: async (
+        source: PrismicAPIImageField,
+      ): Promise<gatsbyFs.FileSystemNode | null> =>
+        source.url
+          ? await scope.createRemoteFileNode({
+              url: source.url,
+              store: scope.store,
+              cache: scope.cache,
+              createNode: scope.createNode,
+              createNodeId: scope.createNodeId,
+              reporter: scope.reporter,
+            })
+          : null,
+    },
+  })),
 )

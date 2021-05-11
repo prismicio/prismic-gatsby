@@ -343,7 +343,6 @@ test.serial('image', async (t) => {
     height: sinon.match.number,
     src: sinon.match.string,
     srcSet: sinon.match.string,
-    base64: sinon.match.string,
     srcWebp: sinon.match.string,
     srcSetWebp: sinon.match.string,
   }
@@ -353,15 +352,23 @@ test.serial('image', async (t) => {
     src: sinon.match.string,
     srcSet: sinon.match.string,
     sizes: sinon.match.string,
-    base64: sinon.match.string,
     srcWebp: sinon.match.string,
     srcSetWebp: sinon.match.string,
+  }
+
+  const gatsbyImageDataFields = {
+    images: sinon.match.any,
+    layout: sinon.match.string,
+    backgroundColor: sinon.match.any,
+    width: sinon.match.number,
+    height: sinon.match.number,
   }
 
   const localFileFields = {
     childImageSharp: {
       fixed: fixedFields,
       fluid: fluidFields,
+      gatsbyImageData: gatsbyImageDataFields,
     },
   }
 
@@ -375,18 +382,21 @@ test.serial('image', async (t) => {
         url: doc.data.image.url,
         fixed: fixedFields,
         fluid: fluidFields,
+        gatsbyImageData: sinon.match(gatsbyImageDataFields),
         localFile: localFileFields,
         thumbnails: {
           Thumb1: {
             ...doc.data.image.Thumb1,
             fixed: fixedFields,
             fluid: fluidFields,
+            gatsbyImageData: sinon.match(gatsbyImageDataFields),
             localFile: localFileFields,
           },
           Thumb2: {
             ...doc.data.image.Thumb2,
             fixed: fixedFields,
             fluid: fluidFields,
+            gatsbyImageData: sinon.match(gatsbyImageDataFields),
             localFile: localFileFields,
           },
         },

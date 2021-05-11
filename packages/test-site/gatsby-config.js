@@ -6,6 +6,7 @@ dotenv.config({ path: '.env.secret' })
 
 module.exports = {
   plugins: [
+    'gatsby-plugin-image',
     {
       resolve: 'gatsby-source-prismic',
       options: {

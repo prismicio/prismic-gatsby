@@ -47,6 +47,10 @@ test('creates base types', async (t) => {
               type: sinon.match.any,
               resolve: sinon.match.func,
             }),
+            gatsbyImageData: sinon.match({
+              type: sinon.match.any,
+              resolve: sinon.match.func,
+            }),
             localFile: sinon.match({
               type: 'File',
               resolve: sinon.match.func,
@@ -91,6 +95,10 @@ test('creates field-specific image type', async (t) => {
             resolve: sinon.match.func,
           }),
           fluid: sinon.match({
+            type: sinon.match.any,
+            resolve: sinon.match.func,
+          }),
+          gatsbyImageData: sinon.match({
             type: sinon.match.any,
             resolve: sinon.match.func,
           }),
