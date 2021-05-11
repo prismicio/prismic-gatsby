@@ -6,6 +6,8 @@ import {
   withPrismicPreview,
   WithPrismicPreviewProps,
 } from 'gatsby-plugin-prismic-previews'
+import { GatsbyImage } from 'gatsby-plugin-image'
+import GatsbyImageOld from 'gatsby-image'
 
 import { repositoryConfigs } from '../prismicPreviews'
 
@@ -23,6 +25,18 @@ const HomePage = ({
 
   return (
     <div>
+      <GatsbyImageOld
+        fluid={
+          data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
+            .first_option_repeat_image.fluid
+        }
+      />
+      <GatsbyImage
+        image={
+          data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
+            .first_option_repeat_image.gatsbyImageData
+        }
+      />
       <ul>
         <li>
           <Link to="/">Home</Link>
@@ -62,6 +76,7 @@ export const query = graphql`
                   fluid {
                     ...GatsbyImgixFluid
                   }
+                  gatsbyImageData(layout: FULL_WIDTH)
                 }
               }
             }

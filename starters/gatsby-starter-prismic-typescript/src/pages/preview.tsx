@@ -15,6 +15,7 @@ import {
   withPrismicPreviewResolver,
   WithPrismicPreviewResolverProps,
 } from 'gatsby-plugin-prismic-previews'
+
 import { repositoryConfigs } from '../prismicPreviews'
 
 type PreviewPageProps = PageProps & WithPrismicPreviewResolverProps

@@ -32,7 +32,7 @@
     "prismic"
   ],
   "dependencies": {
-    "@imgix/gatsby": "^1.6.1",
+    "@imgix/gatsby": "^1.6.3",
     "@reach/dialog": "^0.15.0",
     "camel-case": "^4.1.2",
     "chalk": "^4.1.0",
@@ -61,7 +61,7 @@
     "abort-controller": "^3.0.0",
     "browser-env": "^3.3.0",
     "cross-fetch": "^3.1.4",
-    "gatsby-plugin-image": "^1.4.0",
+    "gatsby-plugin-image": "^1.5.0",
     "global-jsdom": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jsdom": "^16.5.3",
