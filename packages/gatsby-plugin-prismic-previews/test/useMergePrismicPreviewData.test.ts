@@ -156,4 +156,65 @@ test.serial(
 
 test.todo('recursively merges data')
 
-test.todo('allows skipping')
+test.only('allows skipping', async (t) => {
+  const pluginOptions = createPluginOptions(t)
+  const gatsbyContext = createGatsbyContext()
+  const config = createRepositoryConfigs(pluginOptions)
+  const queryResponse = createPrismicAPIQueryResponse()
+
+  const ref = createPreviewRef(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, ref)
+
+  const queryResponseNodes = queryResponse.results.map(
+    (doc) =>
+      nodeHelpers.createNodeFactory(doc.type)(
+        doc,
+      ) as PrismicAPIDocumentNodeInput,
+  )
+
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse, { ref }))
+  server.use(
+    createTypePathsMockedRequest('87ec42108faaca92ab06c427cf0b3b9d.json', {
+      type: gatsbyPrismic.PrismicSpecialType.Document,
+      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+    }),
+  )
+
+  // Need to use the query results nodes rather than new documents to ensure
+  // the IDs match.
+  const staticData = {
+    previewable: { ...queryResponseNodes[0] },
+    nonPreviewable: { ...queryResponseNodes[1] },
+  }
+  staticData.previewable._previewable = queryResponseNodes[0].prismicId
+  // Marking this data as "old" and should be replaced during the merge.
+  staticData.previewable.uid = 'old'
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await onClientEntry(gatsbyContext, pluginOptions)
+
+  const { result, waitForValueToChange } = renderHook(
+    () => {
+      const context = usePrismicPreviewContext()
+      const bootstrap = usePrismicPreviewBootstrap(config)
+      const mergedData = useMergePrismicPreviewData(staticData, { skip: true })
+
+      return { bootstrap, context, mergedData }
+    },
+    { wrapper: PrismicPreviewProvider },
+  )
+
+  act(() => {
+    const [, bootstrapPreview] = result.current.bootstrap
+    bootstrapPreview()
+  })
+
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
+  t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPING')
+
+  await waitForValueToChange(() => result.current.bootstrap[0].state)
+  t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPED')
+
+  t.false(result.current.mergedData.isPreview)
+  t.true(result.current.mergedData.data === staticData)
+})
