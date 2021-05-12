@@ -15,10 +15,12 @@ const KitchenSinkPage = (
     <div>
       <ul>
         <li>
-          <Link to="/">Home</Link>
+          <Link to="/">Index</Link>
         </li>
         <li>
-          {' '}
+          <Link to="/home">Home</Link>
+        </li>
+        <li>
           <Link to="/about">About</Link>
         </li>
       </ul>
