@@ -32,7 +32,7 @@ export const SEO = ({ description = '', lang = 'en', meta = [], title }) => {
         lang,
       }}
       title={title}
-      titleTemplate={defaultTitle ? `%s | ${defaultTitle}` : null}
+      titleTemplate={defaultTitle ? `%s | ${defaultTitle}` : undefined}
       meta={[
         {
           name: `description`,
@@ -66,7 +66,8 @@ export const SEO = ({ description = '', lang = 'en', meta = [], title }) => {
           name: `twitter:description`,
           content: metaDescription,
         },
-      ].concat(meta)}
+        ...meta,
+      ]}
     />
   )
 }

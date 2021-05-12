@@ -6,9 +6,21 @@
 
 import * as React from 'react'
 import { useStaticQuery, graphql } from 'gatsby'
-import { Helmet } from 'react-helmet-async'
+import { Helmet, HelmetProps } from 'react-helmet-async'
 
-export const SEO = ({ description = '', lang = 'en', meta = [], title }) => {
+type SEOProps = {
+  description?: string
+  lang?: string
+  meta?: HelmetProps['meta']
+  title?: string
+}
+
+export const SEO = ({
+  description = '',
+  lang = 'en',
+  meta = [],
+  title,
+}: SEOProps) => {
   const { site } = useStaticQuery(
     graphql`
       query {
@@ -32,7 +44,7 @@ export const SEO = ({ description = '', lang = 'en', meta = [], title }) => {
         lang,
       }}
       title={title}
-      titleTemplate={defaultTitle ? `%s | ${defaultTitle}` : null}
+      titleTemplate={defaultTitle ? `%s | ${defaultTitle}` : undefined}
       meta={[
         {
           name: `description`,
@@ -66,7 +78,8 @@ export const SEO = ({ description = '', lang = 'en', meta = [], title }) => {
           name: `twitter:description`,
           content: metaDescription,
         },
-      ].concat(meta)}
+        ...meta,
+      ]}
     />
   )
 }

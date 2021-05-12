@@ -3,7 +3,11 @@ import { useStaticQuery, graphql } from 'gatsby'
 
 import { Header } from './Header'
 
-export const Layout = ({ children }) => {
+type LayoutProps = {
+  children?: React.ReactNode
+}
+
+export const Layout = ({ children }: LayoutProps) => {
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {
