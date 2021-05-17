@@ -7,6 +7,8 @@ import {
   ProxyDocumentSubtreeEnv,
 } from '../lib/proxyDocumentSubtree'
 
+import * as alternativeLanguagesFieldProxy from '../fieldProxies/alternativeLanguagesFieldProxy'
+
 // TODO: This is a poor type guard. It should use something stricter to ensure
 // the object is a document.
 export const valueRefinement = (value: unknown): value is prismic.Document =>
@@ -27,11 +29,17 @@ export const proxyValue = (
       // This doesn't use `prismic-dom`'s `Link.url` function because this
       // isn't a link. The `Link.url` function includes a check for
       // link-specific fields which produces unwanted results.
+      // TODO: Once @prismicio/helpers V2 is released, use `documentToLinkField`
+      // along with `asLink`
       RE.of(env.linkResolver(fieldValue)),
+    ),
+    RE.bind('alternative_languages', () =>
+      alternativeLanguagesFieldProxy.proxyValue(fieldValue.alternate_languages),
     ),
     RE.map((env) => ({
       ...fieldValue,
       url: env.url,
+      alternate_languages: env.alternative_languages,
       data: env.data,
     })),
   )

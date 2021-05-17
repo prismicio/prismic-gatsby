@@ -189,6 +189,13 @@ export type PrismicAPILinkField = {
   uid?: string
 }
 
+export type PrismicAPIAlternateLanguageField = {
+  id: string
+  uid?: string
+  type: string
+  lang: string
+}
+
 export type PrismicAPIImageField = {
   dimensions: { width: number; height: number } | null
   alt: string | null

@@ -28,16 +28,19 @@ const HomePage = ({
       <GatsbyImageOld
         fluid={
           data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
-            .first_option_repeat_image.fluid
+            ?.first_option_repeat_image.fluid
         }
       />
-      <GatsbyImage
-        image={
-          data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
-            .first_option_repeat_image.gatsbyImageData
-        }
-        alt=""
-      />
+      {data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
+        ?.first_option_repeat_image.gatsbyImageData && (
+        <GatsbyImage
+          image={
+            data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
+              .first_option_repeat_image.gatsbyImageData
+          }
+          alt=""
+        />
+      )}
       <ul>
         <li>
           <Link to="/">Index</Link>

@@ -206,6 +206,81 @@ test.serial(
   },
 )
 
+test.serial('alternative languages', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+  const config = createRepositoryConfigs(pluginOptions)
+
+  const altLangDoc1 = createPrismicAPIDocument()
+  const altLangDoc2 = createPrismicAPIDocument()
+  const doc = {
+    ...createPrismicAPIDocument(),
+    alternate_languages: [
+      {
+        id: altLangDoc1.id,
+        uid: altLangDoc1.uid,
+        type: altLangDoc1.type,
+        lang: 'alt-lang-1',
+      },
+      {
+        id: altLangDoc2.id,
+        uid: altLangDoc2.uid,
+        type: altLangDoc2.type,
+        lang: 'alt-lang-2',
+      },
+    ],
+  }
+  const queryResponse = createPrismicAPIQueryResponse([
+    doc,
+    altLangDoc1,
+    altLangDoc2,
+  ])
+
+  const result = await performPreview(
+    t,
+    // @ts-expect-error - Partial gatsbyContext provided
+    gatsbyContext,
+    pluginOptions,
+    config,
+    queryResponse,
+    'da6a5fa194ee3f44d5b0a7e99b6b1db2.json',
+    {
+      type: gatsbyPrismic.PrismicSpecialType.Document,
+      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      'type.data.doc_link': gatsbyPrismic.PrismicFieldType.Link,
+      'type.data.media_link': gatsbyPrismic.PrismicFieldType.Link,
+    },
+  )
+
+  const node = result.current.context[0].nodes[doc.id]
+  const altLangNode1 = result.current.context[0].nodes[altLangDoc1.id]
+  const altLangNode2 = result.current.context[0].nodes[altLangDoc2.id]
+
+  t.deepEqual(node.alternate_languages, [
+    {
+      ...doc.alternate_languages[0],
+      // @ts-expect-error - This is not part of the base Prismic document type
+      raw: doc.alternate_languages[0],
+    },
+    {
+      ...doc.alternate_languages[1],
+      // @ts-expect-error - This is not part of the base Prismic document type
+      raw: doc.alternate_languages[1],
+    },
+  ])
+
+  // We must test the document field separately since it is only accessible
+  // via the Proxy handler. This field doesn't actually exist in the object.
+  t.true(
+    // @ts-expect-error - This is not part of the base Prismic document type
+    node.alternate_languages[0].document === altLangNode1,
+  )
+  t.true(
+    // @ts-expect-error - This is not part of the base Prismic document type
+    node.alternate_languages[1].document === altLangNode2,
+  )
+})
+
 test.serial('structured text', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
