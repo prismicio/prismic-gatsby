@@ -29,6 +29,7 @@ test('includes base fields', async (t) => {
         name: 'PrismicPrefixFoo',
         fields: {
           prismicId: 'ID!',
+          alternate_languages: '[PrismicPrefixAlternateLanguageType!]!',
           first_publication_date: {
             type: 'Date!',
             extensions: { dateformat: {} },

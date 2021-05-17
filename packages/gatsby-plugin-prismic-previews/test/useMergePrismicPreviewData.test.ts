@@ -156,7 +156,7 @@ test.serial(
 
 test.todo('recursively merges data')
 
-test.only('allows skipping', async (t) => {
+test('allows skipping', async (t) => {
   const pluginOptions = createPluginOptions(t)
   const gatsbyContext = createGatsbyContext()
   const config = createRepositoryConfigs(pluginOptions)

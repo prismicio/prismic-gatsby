@@ -24,6 +24,7 @@ import { buildTypePathType } from './builders/buildTypePathType'
 
 import { Dependencies, Mutable, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
+import { buildAlternateLanguageType } from './builders/buildAlternateLanguageType'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
@@ -38,6 +39,7 @@ export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
     RTE.bind('baseTypes', () =>
       pipe(
         [
+          buildAlternateLanguageType,
           buildEmbedType,
           buildGeoPointType,
           buildImageDimensionsType,

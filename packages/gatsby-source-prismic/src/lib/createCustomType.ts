@@ -23,6 +23,8 @@ import { buildObjectType } from './buildObjectType'
 import { createType } from './createType'
 import { buildFieldConfigMap } from './buildFieldConfigMap'
 import { createTypePath } from './createTypePath'
+import { listTypeName } from './listTypeName'
+import { requiredTypeName } from './requiredTypeName'
 
 /**
  * Returns all fields from a Prismic Custom Type schema definition. It
@@ -142,6 +144,12 @@ export const createCustomType = (
           ...scope.rootFieldConfigMap,
           ...scope.dataFieldConfigMap,
           [scope.nodeHelpers.createFieldName('id') as 'id']: 'ID!',
+          alternate_languages: pipe(
+            scope.nodeHelpers.createTypeName('AlternateLanguageType'),
+            requiredTypeName,
+            listTypeName,
+            requiredTypeName,
+          ),
           first_publication_date: {
             type: 'Date!',
             extensions: { dateformat: {} },
@@ -157,6 +165,8 @@ export const createCustomType = (
           url: {
             type: 'String',
             resolve: (source: PrismicAPIDocumentNode) =>
+              // TODO: Once @prismicio/helpers V2 is released, use
+              // `documentToLinkField` along with `asLink`
               scope.pluginOptions.linkResolver?.(source),
           },
           [PREVIEWABLE_NODE_ID_FIELD]: {

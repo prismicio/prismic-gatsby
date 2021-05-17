@@ -14,6 +14,7 @@ module.exports = {
         accessToken: process.env.PRISMIC_ACCESS_TOKEN,
         customTypesApiToken: process.env.PRISMIC_CUSTOM_TYPES_API_TOKEN,
         typePrefix: 'prefix',
+        linkResolver: require('./src/linkResolver').linkResolver,
         schemas: {
           kitchen_sink: require('./schemas/kitchen_sink.json'),
         },
