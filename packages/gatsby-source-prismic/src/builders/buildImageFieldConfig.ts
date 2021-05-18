@@ -14,6 +14,7 @@ import { buildImageBaseFieldConfigMap } from './buildImageBaseFieldConfigMap'
 import {
   Dependencies,
   FieldConfigCreator,
+  PrismicAPIImageField,
   PrismicFieldType,
   PrismicSchemaImageField,
   PrismicSchemaImageThumbnail,
@@ -85,7 +86,13 @@ export const buildImageFieldConfig: FieldConfigCreator<PrismicSchemaImageField> 
         buildObjectType({
           name: scope.nodeHelpers.createTypeName([...path, 'ImageType']),
           fields: scope.thumbnailsTypeName
-            ? { ...scope.baseFields, thumbnails: scope.thumbnailsTypeName }
+            ? {
+                ...scope.baseFields,
+                thumbnails: {
+                  type: scope.thumbnailsTypeName,
+                  resolve: (source: PrismicAPIImageField) => source,
+                },
+              }
             : scope.baseFields,
         }),
       ),

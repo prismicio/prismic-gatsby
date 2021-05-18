@@ -138,7 +138,10 @@ test('creates field-specific thumbnail types', async (t) => {
       config: sinon.match({
         name: 'PrismicPrefixFooDataImageImageType',
         fields: {
-          thumbnails: 'PrismicPrefixFooDataImageImageThumbnailsType',
+          thumbnails: {
+            type: 'PrismicPrefixFooDataImageImageThumbnailsType',
+            resolve: sinon.match.func,
+          },
         },
       }),
     }),
@@ -207,4 +210,35 @@ test('localFile field resolves to null if image is not present', async (t) => {
   const res = await resolver(field)
 
   t.true(res === null)
+})
+
+test('thumbnail field resolves thumbnails', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+
+  pluginOptions.schemas = {
+    foo: {
+      Main: {
+        image: {
+          type: PrismicFieldType.Image,
+          config: {
+            thumbnails: [{ name: 'Mobile', width: 1000 }],
+          },
+        },
+      },
+    },
+  }
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+  const call = findCreateTypesCall(
+    'PrismicPrefixFooDataImageImageType',
+    gatsbyContext.actions.createTypes as sinon.SinonStub,
+  )
+  const field = { url: 'url', mobile: { url: 'mobile-url' } }
+  const resolver = call.config.fields.thumbnails.resolve
+  const res = await resolver(field)
+
+  t.true(res.mobile === field.mobile)
 })
