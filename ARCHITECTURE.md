@@ -113,6 +113,13 @@ The plugin options will be referenced during client-side preview sessions.
 
 ### During a Preview Session
 
+When an editor clicks a preview button in the Prismic interface, a new window is
+opened that redirects to a specific page within the Gatsby site. This page is
+called a "preview resolver" and directs editors to the correct page within the
+site.
+
+The preview resolver page performs the following actions:
+
 1. Determine if a preview session is active by checking for the presence of a
    Prismic-specific cookie. This cookie is set after a user clicks the preview
    button within the Prismic editor. Continue if present.
