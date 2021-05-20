@@ -30,7 +30,7 @@ Prismic, you can check out
 For full documentation, see each plugin's package.
 
 - [**gatsby-source-prismic**](./packages/gatsby-source-prismic): Gatsby source
-  plugin for building websites using prismic.io as a data source
+  plugin for building websites using Prismic as a data source
 - [**gatsby-plugin-prismic-previews**](./packages/gatsby-plugin-prismic-previews):
   Gatsby plugin for integrating client-side Prismic Previews
 
