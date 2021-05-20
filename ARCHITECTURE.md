@@ -49,6 +49,19 @@ The following actions occur during webhook events.
 
 #### `api-update` Webhook
 
+This webhook may fire anytime a user, depending on the user's webhook
+preferences:
+
+- Publishes a document
+- Unpublishes a document
+- Creates a release (a collection of changes)
+- Edits a release
+- Deletes a release
+- Creates a tag (label for a document)
+- Deletes a tag (label for a document)
+
+If those actions are enabled for the webhook, the following occurs:
+
 1. Validate the webhook in the `sourceNodes` Gatsby Node API.
 1. Fetch documents referenced in the webhook from the Prismic repository.
 1. Compute the necessary delta operations needed to incorporate the webhook
@@ -59,6 +72,10 @@ The Gatsby node store is now equivalent to a fresh bootstrap. A full Prismic
 repository content fetch was not needed.
 
 #### `test-trigger` Webhook
+
+This webhook fires anytime a user clicks a "Trigger It" button for a webhook. It
+allows a user to test if webhooks is being received within the Gatsby site
+without performing any content action.
 
 1. Log a success message.
 
