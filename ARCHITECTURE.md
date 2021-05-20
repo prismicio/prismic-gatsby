@@ -49,8 +49,8 @@ The following actions occur during webhook events.
 
 #### `api-update` Webhook
 
-This webhook may fire anytime a user, depending on the user's webhook
-preferences:
+This webhook may fire anytime a user performs one of the following editor
+actions, depending on the user's webhook preferences:
 
 - Publishes a document
 - Unpublishes a document
