@@ -9,16 +9,15 @@ new people joining the project to help out.
 
 The Gatsby + Prismic integration is currently composed of two plugins.
 
-- [**gatsby-source-prismic**](./packages/gatsby-source-prismic): Gatsby source
-  plugin for building websites using Prismic as a data source
+- [**gatsby-source-prismic**](./packages/gatsby-source-prismic): Sources data
+  from a Prismic content repository and makes it available to a Gatsby site.
 - [**gatsby-plugin-prismic-previews**](./packages/gatsby-plugin-prismic-previews):
-  Gatsby plugin for integrating client-side Prismic Previews
+  An optional enhancement that allows website content editors to preview content
+  changes before publishing.
 
-`gatsby-source-prismic` is required to bring data from a Prismic content
-repository into a Gatsby site.
-
-`gatsby-plugin-prismic-previews` is an optional enhancement that allows website
-content editors to preview content changes before publishing.
+Note that `gatsby-plugin-prismic-previews` performs previews completely
+client-side and is separate from Gatsby Cloud. `gatsby-source-prismic` provides
+support for Gatsby Cloud and its preview service.
 
 ## gatsby-source-prismic
 
