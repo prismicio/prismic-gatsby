@@ -58,7 +58,7 @@ actions, depending on the user's webhook preferences:
 - Edits a release
 - Deletes a release
 - Creates a tag (label for a document)
-- Deletes a tag (label for a document)
+- Deletes a tag
 
 If those actions are enabled for the webhook, the following occurs:
 
