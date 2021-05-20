@@ -74,7 +74,7 @@ repository content fetch was not needed.
 #### `test-trigger` Webhook
 
 This webhook fires anytime a user clicks a "Trigger It" button for a webhook. It
-allows a user to test if webhooks is being received within the Gatsby site
+allows a user to test if webhooks are being received within the Gatsby site
 without performing any content action.
 
 1. Log a success message.
