@@ -3,6 +3,8 @@ import * as imgixGatsbyHelpers from '@imgix/gatsby/dist/pluginHelpers.browser'
 import * as RE from 'fp-ts/ReaderEither'
 import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
+import * as S from 'fp-ts/Semigroup'
+import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
 
 import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
@@ -49,9 +51,23 @@ const buildImageProxyValue = (
         RE.fromOption(() => new Error(sprintf('Missing height'))),
       ),
     ),
+    RE.bindW('existingImageImgixParams', (env) =>
+      pipe(
+        new URL(env.url),
+        (url) => [...url.searchParams.entries()],
+        R.fromFoldable(S.last<string>(), A.Foldable),
+        RE.right,
+      ),
+    ),
+    RE.bind('mergedImageImgixParams', (env) =>
+      RE.of({
+        ...env.existingImageImgixParams,
+        ...env.imageImgixParams,
+      }),
+    ),
     RE.bind('args', (env) =>
       RE.of({
-        imgixParams: env.imageImgixParams,
+        imgixParams: env.mergedImageImgixParams,
         placeholderImgixParams: env.imagePlaceholderImgixParams,
       }),
     ),
@@ -83,7 +99,7 @@ const buildImageProxyValue = (
             width: env.sourceWidth,
             height: env.sourceHeight,
           },
-          defaultParams: env.imageImgixParams,
+          defaultParams: env.mergedImageImgixParams,
           resolverArgs: {},
         }),
       ),
