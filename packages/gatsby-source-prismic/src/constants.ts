@@ -97,7 +97,7 @@ export const WEBHOOK_SECRET_MISMATCH_MSG =
  * Message displayed to the user when a `test-trigger` webhook is received.
  */
 export const WEBHOOK_TEST_TRIGGER_SUCCESS_MSG =
-  'Success! Received a test trigger webhook.'
+  'Success! Received a test trigger webhook. When changes to your content are saved, Gatsby will automatically fetch the changes.'
 
 /**
  * Message displayed to the user when a repository cannot be accessed.
