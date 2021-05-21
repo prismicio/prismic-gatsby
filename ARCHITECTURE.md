@@ -44,7 +44,14 @@ The following actions occur during Gatsby's bootstrap phase.
 
 ### Gatsby Cloud Integration
 
-The following actions occur during webhook events.
+In Prismic, a user will setup two webhooks in their content repository:
+
+1. **Builds**: This webhook will trigger a full site rebuild.
+2. **Gatsby Cloud Previews**: This webhook will trigger a content delta update
+   event.
+
+The following webhook actions are for the second type of webhook (i.e. specific
+to Gatsby Cloud Previews).
 
 #### `api-update` Webhook
 
@@ -76,7 +83,12 @@ This webhook fires anytime a user clicks a "Trigger It" button for a webhook. It
 allows a user to test if webhooks are being received within the Gatsby site
 without performing any content action.
 
+The following occurs:
+
 1. Log a success message.
+
+No content actions are taken during this webhook as the webhook contains no
+delta information.
 
 ## gatsby-plugin-prismic-previews
 
