@@ -20,6 +20,7 @@ import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
   PluginOptions,
+  PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
   PrismicRepositoryConfigs,
   usePrismicPreviewBootstrap,
@@ -479,6 +480,87 @@ test.serial('image', async (t) => {
     ),
   )
 })
+
+test.serial(
+  'image retains existing URL parameters unless replaced by gatsby-plugin-image or gatsby-image',
+  async (t) => {
+    const gatsbyContext = createGatsbyContext()
+    const pluginOptions = createPluginOptions(t)
+    const config = createRepositoryConfigs(pluginOptions)
+
+    // We want to leave `rect` untouched. We're adding the `w=1` parameter to
+    // ensure that it is replaced by the resolver to properly support responsive
+    // images.
+    const originalUrl = new URL(
+      'https://example.com/image.png?rect=0,0,100,200&w=1',
+    )
+    const doc = createPrismicAPIDocument({
+      image: {
+        dimensions: { width: 400, height: 300 },
+        alt: 'alt',
+        copyright: 'copyright',
+        url: originalUrl.toString(),
+      },
+    })
+    const queryResponse = createPrismicAPIQueryResponse([doc])
+
+    const result = await performPreview(
+      t,
+      // @ts-expect-error - Partial gatsbyContext provided
+      gatsbyContext,
+      pluginOptions,
+      config,
+      queryResponse,
+      '822e45b2918cabfa88ea9d2f5600eab7.json',
+      {
+        type: gatsbyPrismic.PrismicSpecialType.Document,
+        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+        'type.data.image': gatsbyPrismic.PrismicFieldType.Image,
+      },
+    )
+
+    const node = result.current.context[0].nodes[
+      doc.id
+    ] as PrismicAPIDocumentNodeInput<{
+      image: {
+        url: string
+        fixed: { src: string }
+        fluid: { src: string }
+        gatsbyImageData: { images: { fallback: { src: string } } }
+      }
+    }>
+
+    const urlUrl = new URL(node.data.image.url)
+    t.is(urlUrl.searchParams.get('rect'), originalUrl.searchParams.get('rect'))
+    t.is(urlUrl.searchParams.get('w'), originalUrl.searchParams.get('w'))
+
+    const fixedSrcUrl = new URL(node.data.image.fixed.src)
+    t.is(
+      fixedSrcUrl.searchParams.get('rect'),
+      originalUrl.searchParams.get('rect'),
+    )
+    t.not(fixedSrcUrl.searchParams.get('w'), originalUrl.searchParams.get('w'))
+
+    const fluidSrcUrl = new URL(node.data.image.fluid.src)
+    t.is(
+      fluidSrcUrl.searchParams.get('rect'),
+      originalUrl.searchParams.get('rect'),
+    )
+    t.not(fluidSrcUrl.searchParams.get('w'), originalUrl.searchParams.get('w'))
+
+    const gatsbyImageDataSrcUrl = new URL(
+      node.data.image.gatsbyImageData.images.fallback.src,
+    )
+    t.is(
+      gatsbyImageDataSrcUrl.searchParams.get('rect'),
+      originalUrl.searchParams.get('rect'),
+    )
+    t.not(
+      gatsbyImageDataSrcUrl.searchParams.get('w'),
+      originalUrl.searchParams.get('w'),
+    )
+  },
+)
 
 test.serial('group', async (t) => {
   const gatsbyContext = createGatsbyContext()

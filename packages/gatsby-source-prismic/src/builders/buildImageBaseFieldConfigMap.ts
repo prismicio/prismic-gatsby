@@ -2,7 +2,11 @@ import * as gqlc from 'graphql-compose'
 import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as imgixGatsby from '@imgix/gatsby/dist/pluginHelpers'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
+import * as O from 'fp-ts/Option'
+import * as S from 'fp-ts/Semigroup'
+import * as A from 'fp-ts/Array'
+import * as R from 'fp-ts/Record'
+import { constNull, pipe } from 'fp-ts/function'
 
 import { Dependencies, PrismicAPIImageField } from '../types'
 
@@ -36,6 +40,65 @@ const resolveHeight = (source: PrismicAPIImageField): number | undefined =>
   source.dimensions?.height
 
 /**
+ * The minimum required GraphQL argument properties for an `@imgix/gatsby` field.
+ */
+interface ImgixGatsbyFieldArgsLike {
+  imgixParams: Record<string, string | number | boolean>
+}
+
+/**
+ * Modifies an `@imgix/gatsby` GraphQL field config to retain existing Imgix
+ * parameters set on the source URL.
+ *
+ * This is needed if the source URL contains parameters like `rect` (crops an
+ * image). Without this config enhancer, the `rect` parameter would be removed.
+ *
+ * @param fieldConfig GraphQL field config object to be enhanced.
+ *
+ * @returns `fieldConfig` with the ability to retain existing Imgix parameters on the source URL.
+ */
+const withExistingURLImgixParameters = <
+  TContext,
+  TArgs extends ImgixGatsbyFieldArgsLike,
+>(
+  fieldConfig: gqlc.ObjectTypeComposerFieldConfigAsObjectDefinition<
+    PrismicAPIImageField,
+    TContext,
+    TArgs
+  >,
+): typeof fieldConfig => ({
+  ...fieldConfig,
+  resolve: (source, args, ...rest) =>
+    pipe(
+      O.Do,
+      O.bind('url', () =>
+        O.fromNullable(source.url ? new URL(source.url) : null),
+      ),
+      O.bind('existingImgixParams', (scope) =>
+        pipe(
+          [...scope.url.searchParams.entries()],
+          R.fromFoldable(S.last<string>(), A.Foldable),
+          O.of,
+        ),
+      ),
+      O.map((scope) =>
+        fieldConfig.resolve?.(
+          source,
+          {
+            ...args,
+            imgixParams: {
+              ...scope.existingImgixParams,
+              ...args.imgixParams,
+            },
+          },
+          ...rest,
+        ),
+      ),
+      O.getOrElseW(constNull),
+    ),
+})
+
+/**
  * Builds a GraphQL field configuration object to be used as part of another
  * Image field GraphQL configuration object. For example, this base
  * configuration object could be added to a config for the thumbnails of an
@@ -61,12 +124,20 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
       }),
     ),
   ),
-  RTE.bind('urlField', (scope) => RTE.right(scope.imgixTypes.fields.url)),
-  RTE.bind('fixedField', (scope) => RTE.right(scope.imgixTypes.fields.fixed)),
-  RTE.bind('fluidField', (scope) => RTE.right(scope.imgixTypes.fields.fluid)),
+  RTE.bind('urlField', (scope) =>
+    RTE.right(withExistingURLImgixParameters(scope.imgixTypes.fields.url)),
+  ),
+  RTE.bind('fixedField', (scope) =>
+    RTE.right(withExistingURLImgixParameters(scope.imgixTypes.fields.fixed)),
+  ),
+  RTE.bind('fluidField', (scope) =>
+    RTE.right(withExistingURLImgixParameters(scope.imgixTypes.fields.fluid)),
+  ),
   RTE.bind('gatsbyImageDataField', (scope) =>
     pipe(
-      RTE.right(scope.imgixTypes.fields.gatsbyImageData),
+      RTE.right(
+        withExistingURLImgixParameters(scope.imgixTypes.fields.gatsbyImageData),
+      ),
       // This field is 'JSON!' by default (i.e. non-nullable). If an image is
       // not set in Prismic, however, this field throws a GraphQL error saying a
       // non-nullable field was returned a null value. This should not happen
