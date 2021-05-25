@@ -32,7 +32,7 @@
     "prismic"
   ],
   "dependencies": {
-    "@imgix/gatsby": "^1.6.3",
+    "@imgix/gatsby": "^1.6.6",
     "@reach/dialog": "^0.15.0",
     "camel-case": "^4.1.2",
     "chalk": "^4.1.1",
