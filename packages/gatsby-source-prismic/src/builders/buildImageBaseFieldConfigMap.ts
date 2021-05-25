@@ -2,7 +2,11 @@ import * as gqlc from 'graphql-compose'
 import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as imgixGatsby from '@imgix/gatsby/dist/pluginHelpers'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
+import * as O from 'fp-ts/Option'
+import * as S from 'fp-ts/Semigroup'
+import * as A from 'fp-ts/Array'
+import * as R from 'fp-ts/Record'
+import { constNull, pipe } from 'fp-ts/function'
 
 import { Dependencies, PrismicAPIImageField } from '../types'
 
@@ -64,28 +68,34 @@ const withExistingURLImgixParameters = <
   >,
 ): typeof fieldConfig => ({
   ...fieldConfig,
-  resolve: (source, args, ...rest) => {
-    if (!fieldConfig.resolve || !source.url) {
-      return null
-    }
-
-    const url = new URL(source.url)
-
-    const existingImgixParams: ImgixGatsbyFieldArgsLike['imgixParams'] = {}
-    for (const [key, value] of url.searchParams.entries()) {
-      existingImgixParams[key] = value
-    }
-
-    const argsWithExistingImgixParams = {
-      ...args,
-      imgixParams: {
-        ...existingImgixParams,
-        ...args.imgixParams,
-      },
-    }
-
-    return fieldConfig.resolve(source, argsWithExistingImgixParams, ...rest)
-  },
+  resolve: (source, args, ...rest) =>
+    pipe(
+      O.Do,
+      O.bind('url', () =>
+        O.fromNullable(source.url ? new URL(source.url) : null),
+      ),
+      O.bind('existingImgixParams', (scope) =>
+        pipe(
+          [...scope.url.searchParams.entries()],
+          R.fromFoldable(S.last<string>(), A.Foldable),
+          O.of,
+        ),
+      ),
+      O.map((scope) =>
+        fieldConfig.resolve?.(
+          source,
+          {
+            ...args,
+            imgixParams: {
+              ...scope.existingImgixParams,
+              ...args.imgixParams,
+            },
+          },
+          ...rest,
+        ),
+      ),
+      O.getOrElseW(constNull),
+    ),
 })
 
 /**
