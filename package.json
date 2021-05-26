@@ -12,9 +12,8 @@
   },
   "workspaces": {
     "packages": [
-      "packages/gatsby-source-prismic",
-      "packages/gatsby-plugin-prismic-previews",
-      "packages/*"
+      "packages/*",
+      "test-site"
     ],
     "nohoist": [
       "**/husky",
@@ -39,6 +38,7 @@
     "gatsby": "^3.5.0",
     "gatsby-plugin-utils": "^1.5.0",
     "husky": "^6.0.0",
+    "lerna": "^4.0.0",
     "msw": "^0.28.2",
     "multi-semantic-release": "^2.8.0",
     "postcss": "^8.2.15",
