@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "4.0.0-alpha.11",
+  "version": "4.0.0-alpha.12",
   "description": "Gatsby source plugin for building websites using Prismic as a data source",
   "license": "MIT",
   "main": "./dist/index.js",
