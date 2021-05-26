@@ -3,6 +3,14 @@
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
 
+> **A public beta for the next version of the plugin is in progress!**
+>
+> If you're starting a new project or have the ability to upgrade an existing
+> project, please try out the `gatsby-source-prismic` V4 Beta.
+>
+> **[See the `beta` branch](https://github.com/angeloashmore/gatsby-source-prismic/tree/beta)**
+> for more information.
+
 ## Table of Contents
 
 - [Features](#features)
