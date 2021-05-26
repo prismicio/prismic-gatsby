@@ -80,6 +80,37 @@ You need to update your `package.json` to use the latest version of
 }
 ```
 
+### Add `gatsby-plugin-image`
+
+`gatsby-plugin-image`, Gatsby's image processing plugin, is a dependency of
+`gatsby-source-prismic`. First, install the plugin.
+
+```sh
+npm install gatsby-plugin-image
+```
+
+Or if you use Yarn:
+
+```sh
+yarn add gatsby-plugin-image
+```
+
+Then add it to your your `gatsby-config.js` file.
+
+```diff
+// gatsby-config.js
+
+  plugins: [
+    {
+      resolve: 'gatsby-source-prismic',
+      options: {
+        // Your options...
+      },
+    },
++   'gatsby-plugin-image',
+  ]
+```
+
 ### Add `gatsby-plugin-prismic-previews`
 
 If your site implements Prismic content previews, preview functionality has been
