@@ -19,7 +19,8 @@ This plugin is used to pull CMS data into Gatsby using Prismic's REST API.
 
 - Multiple repository support
 - Validate plugin options
-- Automatic Custom Types schema fetching (via the beta [Custom Types API](https://prismic.io/docs/technologies/custom-types-api))
+- Automatic Custom Types schema fetching (via the beta
+  [Custom Types API](https://prismic.io/docs/technologies/custom-types-api))
 - [gatsby-plugin-image][gatsby-plugin-image] support
 - [GraphQuery][prismic-graphquery] support (replacement for fetchLinks option)
 - Serve media files from Link fields locally via localFile field
@@ -120,13 +121,13 @@ moved to its own plugin called [`gatsby-plugin-prismic-previews`][gppp]. See the
 section below for more details.
 
 ```sh
-npm install gatsby-plugin-prismic-previews
+npm install gatsby-plugin-prismic-previews@beta
 ```
 
 Or if you use Yarn:
 
 ```sh
-yarn add gatsby-plugin-prismic-previews
+yarn add gatsby-plugin-prismic-previews@beta
 ```
 
 ## Handling breaking changes
