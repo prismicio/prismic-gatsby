@@ -8,13 +8,17 @@
     "clean": "yarn workspaces run clean",
     "test": "yarn workspaces run test",
     "build": "yarn workspaces run build",
-    "release": "multi-semantic-release --dry-run --ignore-packages=packages/test-site"
+    "publish:canary": "lerna publish --canary",
+    "publish:alpha": "lerna publish --dist-tag alpha",
+    "publish:beta": "lerna publish --dist-tag beta",
+    "publish:latest": "lerna publish"
   },
   "workspaces": {
     "packages": [
       "packages/gatsby-source-prismic",
       "packages/gatsby-plugin-prismic-previews",
-      "packages/*"
+      "packages/*",
+      "test-site"
     ],
     "nohoist": [
       "**/husky",
@@ -24,8 +28,6 @@
   "devDependencies": {
     "@commitlint/cli": "^12.1.1",
     "@commitlint/config-conventional": "^12.1.1",
-    "@semantic-release/changelog": "^5.0.1",
-    "@semantic-release/git": "^9.0.0",
     "@types/sinon": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
@@ -39,8 +41,8 @@
     "gatsby": "^3.5.0",
     "gatsby-plugin-utils": "^1.5.0",
     "husky": "^6.0.0",
+    "lerna": "^4.0.0",
     "msw": "^0.28.2",
-    "multi-semantic-release": "^2.8.0",
     "postcss": "^8.2.15",
     "postcss-import": "^14.0.2",
     "prettier": "^2.3.0",
@@ -62,44 +64,6 @@
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
-    ]
-  },
-  "release": {
-    "branches": [
-      "main",
-      {
-        "name": "next",
-        "channel": "next",
-        "prerelease": "rc"
-      },
-      {
-        "name": "beta",
-        "channel": "beta",
-        "prerelease": true
-      },
-      {
-        "name": "alpha",
-        "channel": "alpha",
-        "prerelease": true
-      }
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "src/**",
-            "package.json",
-            "CHANGELOG.md"
-          ],
-          "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes} [skip ci]"
-        }
-      ],
-      "@semantic-release/github"
     ]
   }
 }
