@@ -1,3 +1,15 @@
+> **You are viewing the Beta branch of the Gatsby + Prismic integration**
+>
+> A public beta is currently in progress for `gatsby-source-prismic` V4 and the
+> new `gatsby-plugin-prismic-previews`.
+>
+> If you're starting a new project or have the ability to upgrade an existing
+> project, please try out the Beta packages.
+>
+> See the
+> [**Migrating from V3 to V4**](https://github.com/angeloashmore/gatsby-source-prismic/blob/beta/packages/gatsby-source-prismic/docs/migrating-from-v3-to-v4.md)
+> guide for more information.
+
 <div align="center">
   <br/>
   <div>
