@@ -18,13 +18,13 @@ Integrate live [Prismic Previews][prismic-previews] into a static
 ## Install
 
 ```sh
-npm install --save gatsby-plugin-prismic-previews gatsby-source-prismic gatsby-plugin-image
+npm install --save gatsby-plugin-prismic-previews@beta gatsby-source-prismic@beta gatsby-plugin-image
 ```
 
 Or if you use Yarn:
 
 ```sh
-yarn add gatsby-plugin-prismic-previews gatsby-source-prismic gatsby-plugin-image
+yarn add gatsby-plugin-prismic-previews@beta gatsby-source-prismic@beta gatsby-plugin-image
 ```
 
 Note that [`gatsby-source-prismic`][gsp] and

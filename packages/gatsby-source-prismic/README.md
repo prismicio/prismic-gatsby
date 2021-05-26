@@ -20,13 +20,13 @@ repositories.
 ## Install
 
 ```sh
-npm install --save gatsby-source-prismic gatsby-plugin-image
+npm install --save gatsby-source-prismic@beta gatsby-plugin-image
 ```
 
 Or if you use Yarn:
 
 ```sh
-yarn add gatsby-source-prismic gatsby-plugin-image
+yarn add gatsby-source-prismic@beta gatsby-plugin-image
 ```
 
 Please note that [`gatsby-plugin-image`][gatsby-plugin-image] is a required peer

@@ -75,7 +75,7 @@ You need to update your `package.json` to use the latest version of
 
 {
   "dependencies": {
-    "gatsby-source-prismic": "^4.0.0"
+    "gatsby-source-prismic": "^4.0.0-beta.0"
   }
 }
 ```
