@@ -56,7 +56,11 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicSpecialType.Document: {
           return pipe(
             value,
-            refineFieldValue(documentFieldProxy.valueRefinement, env.type),
+            refineFieldValue(
+              documentFieldProxy.valueRefinement,
+              env.type,
+              path,
+            ),
             RE.chainW((value) => documentFieldProxy.proxyValue(path, value)),
           )
         }
@@ -64,7 +68,11 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicSpecialType.DocumentData: {
           return pipe(
             value,
-            refineFieldValue(documentDataFieldProxy.valueRefinement, env.type),
+            refineFieldValue(
+              documentDataFieldProxy.valueRefinement,
+              env.type,
+              path,
+            ),
             RE.chainW((value) =>
               documentDataFieldProxy.proxyValue(path, value),
             ),
@@ -74,7 +82,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Group: {
           return pipe(
             value,
-            refineFieldValue(groupFieldProxy.valueRefinement, env.type),
+            refineFieldValue(groupFieldProxy.valueRefinement, env.type, path),
             RE.chain((value) => groupFieldProxy.proxyValue(path, value)),
           )
         }
@@ -82,7 +90,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Slices: {
           return pipe(
             value,
-            refineFieldValue(slicesFieldProxy.valueRefinement, env.type),
+            refineFieldValue(slicesFieldProxy.valueRefinement, env.type, path),
             RE.chain((value) => slicesFieldProxy.proxyValue(path, value)),
           )
         }
@@ -90,7 +98,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Slice: {
           return pipe(
             value,
-            refineFieldValue(sliceFieldProxy.valueRefinement, env.type),
+            refineFieldValue(sliceFieldProxy.valueRefinement, env.type, path),
             RE.chain((value) => sliceFieldProxy.proxyValue(path, value)),
           )
         }
@@ -98,7 +106,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Link: {
           return pipe(
             value,
-            refineFieldValue(linkFieldProxy.valueRefinement, env.type),
+            refineFieldValue(linkFieldProxy.valueRefinement, env.type, path),
             RE.chain(linkFieldProxy.proxyValue),
           )
         }
@@ -106,7 +114,7 @@ export const proxyDocumentSubtree = (
         case gatsbyPrismic.PrismicFieldType.Image: {
           return pipe(
             value,
-            refineFieldValue(imageFieldProxy.valueRefinement, env.type),
+            refineFieldValue(imageFieldProxy.valueRefinement, env.type, path),
             RE.chain(imageFieldProxy.proxyValue),
           )
         }
@@ -117,6 +125,7 @@ export const proxyDocumentSubtree = (
             refineFieldValue(
               structuredTextFieldProxy.valueRefinement,
               env.type,
+              path,
             ),
             RE.chain(structuredTextFieldProxy.proxyValue),
           )
