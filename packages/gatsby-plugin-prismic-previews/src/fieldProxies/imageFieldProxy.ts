@@ -10,6 +10,7 @@ import { pipe } from 'fp-ts/function'
 import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 import { refineFieldValue } from '../lib/refineFieldValue'
 import { sprintf } from '../lib/sprintf'
+import { sanitizeImageURL } from '../lib/sanitizeImageURL'
 
 import { PRISMIC_API_IMAGE_FIELDS } from '../constants'
 
@@ -74,7 +75,7 @@ const buildImageProxyValue = (
     RE.bind('fixed', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildFixedObject({
-          url: env.url,
+          url: sanitizeImageURL(env.url),
           args: { ...env.args, width: 400 },
           sourceWidth: env.sourceWidth,
           sourceHeight: env.sourceHeight,
