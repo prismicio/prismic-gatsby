@@ -2,6 +2,34 @@
 
 ## Handling breaking changes
 
+### Update `gatsby-browser.js` and `gatsby-ssr.js` files
+
+In your `gatsby-browser.js` and `gatsby-ssr.js` files, update the
+`PreviewStoreProvider` import to the `PrismicPreviewProvider` import. The new
+provider does not accept any props.
+
+In addition to updating the context provider, a CSS file must be imported to
+style the preview system's interface. Users of your app will only see an
+interface during a preview session.
+
+```diff
+  // gatsby-browser.js AND gatsby-ssr.js
+
+  import * as React from 'react'
+- import { PreviewStoreProvider } from 'gatsby-source-prismic'
++ import { PrismicPreviewProvider } from 'gatsby-plugin-prismic-previews'
+
++ import 'gatsby-plugin-prismic-previews/dist/styles.css'
+
+  export const wrapRootElement = ({ element }) => (
+-   <PreviewStoreProvider>{element}</PreviewStoreProvider>
++   <PrismicPreviewProvider>{element}</PrismicPreviewProvider>
+  )
+```
+
+If you have multiple repositories in your app, a single provider will be shared
+among all repositories.
+
 ### Update `withPreview` to `withPrismicPreview`
 
 In your preview-enabled page components or templates, update the `withPreview()`

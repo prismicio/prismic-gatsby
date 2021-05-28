@@ -120,6 +120,9 @@ Once the plugin is configured in `gatsby-config.js`, your app will need to be
 conneted to the plugin's system. The following files will need to be created or
 edited:
 
+- [**Gatsby Browser and SSR files**](#context-providers)<br/>Hooks into Gatsby
+  for a shared React context provider and styling.
+
 - [**Link Resolver function**](#link-resolver-function)<br/>A function used to
   determine a document's URL within your app.
 
@@ -131,6 +134,50 @@ edited:
 
 - [**404 Not Found page**](#404-not-found-page)<br/>Your app's 404 page which
   will be used to displays previews for unpublished documents.
+
+### Context provider
+
+During a preview session, all content from your Prismic repository will be
+fetched and stored in a shared React context. This context also contains
+settings used by the preview system, like your plugin options.
+
+Your app also needs to import a CSS file for the preview system's interface.
+Users of your app will only see an interface during a preview session.
+
+The following code must be added to your app's `gatsby-browser.js` and
+`gatsby-ssr.js` files.
+
+```javascript
+// src/gatsby-browser.js
+
+import * as React from 'react'
+import { PrismicPreviewProvider } from 'gatsby-plugin-prismic-previews'
+
+// Styling for the preview modals.
+import 'gatsby-plugin-prismic-previews/dist/styles.css'
+
+// Adds a shared React Context for Prismic preview sessions.
+export const wrapRootElement = ({ element }) => (
+  <PrismicPreviewProvider>{element}</PrismicPreviewProvider>
+)
+```
+
+The same contents should be added to `gatsby-ssr.js`.
+
+```javascript
+// src/gatsby-ssr.js
+
+import * as React from 'react'
+import { PrismicPreviewProvider } from 'gatsby-plugin-prismic-previews'
+
+// Styling for the preview modals.
+import 'gatsby-plugin-prismic-previews/dist/styles.css'
+
+// Adds a shared React Context for Prismic preview sessions.
+export const wrapRootElement = ({ element }) => (
+  <PrismicPreviewProvider>{element}</PrismicPreviewProvider>
+)
+```
 
 ### Link Resolver function
 
