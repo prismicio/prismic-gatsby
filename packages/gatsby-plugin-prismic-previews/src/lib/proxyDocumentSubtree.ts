@@ -115,7 +115,7 @@ export const proxyDocumentSubtree = (
           return pipe(
             value,
             refineFieldValue(imageFieldProxy.valueRefinement, env.type, path),
-            RE.chain(imageFieldProxy.proxyValue),
+            RE.chain((value) => imageFieldProxy.proxyValue(value, path)),
           )
         }
 
