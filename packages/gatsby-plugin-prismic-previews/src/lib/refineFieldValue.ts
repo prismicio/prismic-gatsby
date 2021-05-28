@@ -4,7 +4,7 @@ import { Refinement } from 'fp-ts/function'
 
 import { FIELD_VALUE_TYPE_PATH_MISMATCH_MSG } from '../constants'
 import { sprintf } from './sprintf'
-import { dotPath } from './dotPath'
+import { arrowPath } from './arrowPath'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const refineFieldValue = <A, B extends A>(
@@ -18,7 +18,7 @@ export const refineFieldValue = <A, B extends A>(
       new Error(
         sprintf(
           FIELD_VALUE_TYPE_PATH_MISMATCH_MSG,
-          dotPath(path),
+          arrowPath(path),
           intendedType,
         ),
       ),

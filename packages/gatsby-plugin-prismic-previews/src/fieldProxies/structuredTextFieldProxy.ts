@@ -8,6 +8,8 @@ import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 export const valueRefinement = (
   value: unknown,
 ): value is gatsbyPrismic.PrismicAPIStructuredTextField =>
+  // We must be very loose here. An image element, for example, does not contain
+  // a `text` property.
   Array.isArray(value) && value.every((element) => 'type' in element)
 
 interface StructuredTextProxyValue {

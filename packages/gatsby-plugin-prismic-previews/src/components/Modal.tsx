@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Dialog from '@reach/dialog'
+import { DialogOverlay, DialogContent } from '@reach/dialog'
 import clsx from 'clsx'
 
 const CloseSVG = (props: React.SVGProps<SVGSVGElement>): JSX.Element => (
@@ -60,42 +60,46 @@ export const Modal = ({
   'aria-label': ariaLabel,
 }: ModalProps): JSX.Element => {
   return (
-    <Dialog
+    <DialogOverlay
       isOpen={isOpen}
       onDismiss={onDismiss}
-      aria-label={ariaLabel}
-      className="gppp-root gppp-w-full gppp-max-w-34rem gppp-mx-auto gppp-mt-20vh"
+      className="gppp-z-max gppp-bg-black gppp-bg-opacity-60 gppp-fixed gppp-inset-0 gppp-overflow-auto"
     >
-      <div
-        className={clsx(
-          'gppp-rounded-lg gppp-shadow-lg gppp-px-7 gppp-py-8 gppp-relative sm:gppp-px-10',
-          variant === 'base' && 'gppp-bg-white gppp-text-slate-30',
-          variant === 'red' && 'gppp-bg-red-40 gppp-text-white',
-        )}
-        data-gatsby-plugin-prismic-previews-repository-name={repositoryName}
+      <DialogContent
+        aria-label={ariaLabel}
+        className="gppp-root gppp-w-full gppp-max-w-34rem gppp-mx-auto gppp-mt-20vh"
       >
-        <div className="gppp-grid gppp-gap-7">
-          <PrismicLogo
-            fillWhite={variant === 'red'}
-            className="gppp-block gppp-mx-auto gppp-w-11 gppp-h-11"
-          />
-          <div>{children}</div>
-        </div>
-
-        <button
+        <div
           className={clsx(
-            'gppp-absolute gppp-top-5 gppp-right-5 gppp-transition  sm:gppp-top-6 sm:gppp-right-6 gppp-p-2 gppp--m-2',
-            variant === 'base' &&
-              'gppp-text-slate-90 hover:gppp-text-slate-60 focus:gppp-text-slate-60',
-            variant === 'red' &&
-              'gppp-text-red-80 hover:gppp-text-white focus:gppp-text-white',
+            'gppp-rounded-lg gppp-shadow-lg gppp-px-7 gppp-py-8 gppp-relative sm:gppp-px-10',
+            variant === 'base' && 'gppp-bg-white gppp-text-slate-30',
+            variant === 'red' && 'gppp-bg-red-40 gppp-text-white',
           )}
-          onClick={onDismiss}
+          data-gatsby-plugin-prismic-previews-repository-name={repositoryName}
         >
-          <span className="gppp-sr-only">Close modal</span>
-          <CloseSVG className="gppp-w-5 gppp-h-5" />
-        </button>
-      </div>
-    </Dialog>
+          <div className="gppp-grid gppp-gap-7">
+            <PrismicLogo
+              fillWhite={variant === 'red'}
+              className="gppp-block gppp-mx-auto gppp-w-11 gppp-h-11"
+            />
+            <div>{children}</div>
+          </div>
+
+          <button
+            className={clsx(
+              'gppp-absolute gppp-top-5 gppp-right-5 gppp-transition  sm:gppp-top-6 sm:gppp-right-6 gppp-p-2 gppp--m-2',
+              variant === 'base' &&
+                'gppp-text-slate-90 hover:gppp-text-slate-60 focus:gppp-text-slate-60',
+              variant === 'red' &&
+                'gppp-text-red-80 hover:gppp-text-white focus:gppp-text-white',
+            )}
+            onClick={onDismiss}
+          >
+            <span className="gppp-sr-only">Close modal</span>
+            <CloseSVG className="gppp-w-5 gppp-h-5" />
+          </button>
+        </div>
+      </DialogContent>
+    </DialogOverlay>
   )
 }

@@ -8,6 +8,7 @@ module.exports = {
   important: true,
   theme: {
     colors: {
+      black: '#000',
       white: '#fff',
       transparent: 'transparent',
       debug: '#f0f',
@@ -72,6 +73,9 @@ module.exports = {
       },
       maxWidth: {
         '34rem': '34rem',
+      },
+      zIndex: {
+        max: 2147483647,
       },
     },
   },
