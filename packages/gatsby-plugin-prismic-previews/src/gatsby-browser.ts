@@ -8,4 +8,5 @@
  */
 
 export { onClientEntry } from './on-client-entry'
-export { wrapRootElement } from './wrap-root-element'
+// TODO: Temporarily disabling automatic provider injection as it doesn't seem to work
+// export { wrapRootElement } from './wrap-root-element'
