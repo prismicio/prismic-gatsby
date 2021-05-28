@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.5](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2021-05-28)
+
+
+### Bug Fixes
+
+* disable automatic PrismicPreviewProvider injection ([7638988](https://github.com/angeloashmore/gatsby-source-prismic/commit/7638988aa6aea4d2ac6bdba3eacc6c8156691107))
+
+
+
+
+
 # [4.0.0-beta.4](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2021-05-28)
 
 **Note:** Version bump only for package @prismicio/gatsby
