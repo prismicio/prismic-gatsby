@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2021-05-28)
+
+
+### Bug Fixes
+
+* support images in Rich Text previews ([3234a83](https://github.com/angeloashmore/gatsby-source-prismic/commit/3234a8396693ce2250287dd46c106a39d34f9a88))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2021-05-28)
 
 
