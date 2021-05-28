@@ -10,4 +10,4 @@
  * @deprecated This is a temporary solution until the Prismic API properly handles spaces in filenames.
  */
 // TODO: Remove once the Prismic API properly handles spaces in filenames
-export const sanitizeImageURL = (url: string): string => url.replace(/+/g, ' ')
+export const sanitizeImageURL = (url: string): string => url.replace(/\+/g, ' ')
