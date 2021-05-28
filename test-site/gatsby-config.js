@@ -17,6 +17,7 @@ module.exports = {
         linkResolver: require('./src/linkResolver').linkResolver,
         schemas: {
           kitchen_sink: require('./schemas/kitchen_sink.json'),
+          without_uid: require('./schemas/without_uid.json'),
         },
       },
     },

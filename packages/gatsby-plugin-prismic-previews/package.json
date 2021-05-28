@@ -87,5 +87,6 @@
       "TS_NODE_IGNORE": "(?:^|/)node_modules(?!/ky)/"
     },
     "verbose": true
-  }
+  },
+  "gitHead": "003aa29c7336f9ccc5de1e529f3cba5934d183eb"
 }
