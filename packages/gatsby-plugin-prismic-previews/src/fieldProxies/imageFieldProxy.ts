@@ -126,6 +126,7 @@ const buildImageProxyValue = (
 
 export const proxyValue = (
   fieldValue: gatsbyPrismic.PrismicAPIImageField,
+  path: string[],
 ): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, ImageProxyValue> =>
   pipe(
     fieldValue,
@@ -136,7 +137,11 @@ export const proxyValue = (
     RE.bind('baseFields', (fields) =>
       pipe(
         fields.right,
-        refineFieldValue(valueRefinement, gatsbyPrismic.PrismicFieldType.Image),
+        refineFieldValue(
+          valueRefinement,
+          gatsbyPrismic.PrismicFieldType.Image,
+          path,
+        ),
         RE.chain((baseFields) => buildImageProxyValue(baseFields)),
       ),
     ),
@@ -149,6 +154,7 @@ export const proxyValue = (
             refineFieldValue(
               valueRefinement,
               gatsbyPrismic.PrismicFieldType.Image,
+              path,
             ),
             RE.chain((baseFields) => buildImageProxyValue(baseFields)),
           ),
