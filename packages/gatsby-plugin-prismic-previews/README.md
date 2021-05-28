@@ -135,7 +135,7 @@ edited:
 - [**404 Not Found page**](#404-not-found-page)<br/>Your app's 404 page which
   will be used to displays previews for unpublished documents.
 
-### Context provider
+### Gatsby Browser and SSR files
 
 During a preview session, all content from your Prismic repository will be
 fetched and stored in a shared React context. This context also contains
