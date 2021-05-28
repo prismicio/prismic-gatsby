@@ -120,8 +120,8 @@ Once the plugin is configured in `gatsby-config.js`, your app will need to be
 conneted to the plugin's system. The following files will need to be created or
 edited:
 
-- [**Gatsby Browser and SSR files**](#context-providers)<br/>Hooks into Gatsby
-  for a shared React context provider and styling.
+- [**Gatsby Browser and SSR files**](#gatsby-browser-and-ssr-files)<br/>Hooks
+  into Gatsby for a shared React context provider and styling.
 
 - [**Link Resolver function**](#link-resolver-function)<br/>A function used to
   determine a document's URL within your app.
