@@ -8,8 +8,7 @@ import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 export const valueRefinement = (
   value: unknown,
 ): value is gatsbyPrismic.PrismicAPIStructuredTextField =>
-  Array.isArray(value) &&
-  value.every((element) => 'type' in element && 'text' in element)
+  Array.isArray(value) && value.every((element) => 'type' in element)
 
 interface StructuredTextProxyValue {
   html: string
