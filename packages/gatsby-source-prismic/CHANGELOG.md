@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.6](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2021-05-28)
+
+
+### Bug Fixes
+
+* manually handle spaces in image URLs ([2acad02](https://github.com/angeloashmore/gatsby-source-prismic/commit/2acad02975f9a0562e02b1586d5e8afea5e89d5d))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2021-05-28)
 
 **Note:** Version bump only for package gatsby-source-prismic
