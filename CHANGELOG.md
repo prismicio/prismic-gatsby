@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.7](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.6...v4.0.0-beta.7) (2021-05-28)
+
+
+### Bug Fixes
+
+* use properly escaped regex ([020717e](https://github.com/angeloashmore/gatsby-source-prismic/commit/020717e8521b2571a8b1b17ee9fedbef0107b58f))
+
+
+
+
+
 # [4.0.0-beta.6](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2021-05-28)
 
 
