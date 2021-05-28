@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.1](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2021-05-28)
+
+
+### Bug Fixes
+
+* pass path to image field proxy ([89ade0e](https://github.com/angeloashmore/gatsby-source-prismic/commit/89ade0e8660edce7cd3461f3337efda757302ead))
+* pass path to image proxy ([6a84bc9](https://github.com/angeloashmore/gatsby-source-prismic/commit/6a84bc91ee3919f4f78062a43bee17ffe44b7017))
+
+
+### Features
+
+* print failed field refinement path ([78d88cf](https://github.com/angeloashmore/gatsby-source-prismic/commit/78d88cf8d1764db9e0d25965752328a365d2dc01))
+
+
+
+
+
 # [4.0.0-beta.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-alpha.12...v4.0.0-beta.0) (2021-05-26)
 
 **Note:** Version bump only for package gatsby-plugin-prismic-previews
