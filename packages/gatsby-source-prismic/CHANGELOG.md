@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.8](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.7...v4.0.0-beta.8) (2021-05-29)
+
+
+### Bug Fixes
+
+* decode image URLs ([85deba5](https://github.com/angeloashmore/gatsby-source-prismic/commit/85deba5b05a7a37d5c343c05a3b1137c00988a22))
+
+
+
+
+
 # [4.0.0-beta.7](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.6...v4.0.0-beta.7) (2021-05-28)
 
 
