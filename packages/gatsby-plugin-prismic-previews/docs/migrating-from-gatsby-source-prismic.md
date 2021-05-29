@@ -47,7 +47,7 @@ the function as described below.
   }
 
 - export default withPreview(Page)
-+ export default withPrismicPreviewResolver(Page, [
++ export default withPreview(Page, [
 +   {
 +     repositoryName: 'your-repository-name',
 +     linkResolver,
@@ -82,7 +82,7 @@ at `/src/pages/preview.js`.
 -   repositoryName: 'your-repository-name',
 -   linkResolver,
 - })
-+ export default withPrismicPreviewResolver(Page, [
++ export default withPrismicPreviewResolver(PreviewPage, [
 +   {
 +     repositoryName: 'your-repository-name',
 +     linkResolver,
