@@ -47,7 +47,7 @@ the function as described below.
   }
 
 - export default withPreview(Page)
-+ export default withPreview(Page, [
++ export default withPrismicPreview(Page, [
 +   {
 +     repositoryName: 'your-repository-name',
 +     linkResolver,
