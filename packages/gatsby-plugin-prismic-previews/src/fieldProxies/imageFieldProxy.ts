@@ -85,7 +85,7 @@ const buildImageProxyValue = (
     RE.bind('fluid', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildFluidObject({
-          url: env.url,
+          url: sanitizeImageURL(env.url),
           args: { ...env.args, maxWidth: 800 },
           sourceWidth: env.sourceWidth,
           sourceHeight: env.sourceHeight,
@@ -95,7 +95,7 @@ const buildImageProxyValue = (
     RE.bind('gatsbyImageData', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildGatsbyImageDataObject({
-          url: env.url,
+          url: sanitizeImageURL(env.url),
           dimensions: {
             width: env.sourceWidth,
             height: env.sourceHeight,
