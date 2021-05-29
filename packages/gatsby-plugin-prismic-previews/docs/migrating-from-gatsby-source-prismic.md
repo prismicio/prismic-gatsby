@@ -47,9 +47,12 @@ the function as described below.
   }
 
 - export default withPreview(Page)
-+ export default withPrismicPreview(Page, {
-+   'your-repository-name': { linkResolver }
-+ })
++ export default withPrismicPreviewResolver(Page, [
++   {
++     repositoryName: 'your-repository-name',
++     linkResolver,
++   },
++ ])
 ```
 
 In most cases, you will need to add your repository name, Link Resolver, and, if
@@ -79,9 +82,12 @@ at `/src/pages/preview.js`.
 -   repositoryName: 'your-repository-name',
 -   linkResolver,
 - })
-+ export default withPrismicPreviewResolver(Page, {
-+   'your-repository-name': { linkResolver }
-+ })
++ export default withPrismicPreviewResolver(Page, [
++   {
++     repositoryName: 'your-repository-name',
++     linkResolver,
++   },
++ ])
 ```
 
 In most cases, you will only need to move your repository name to the function's
@@ -130,16 +136,16 @@ the template is wrapped with
 -     blog_post: BlogPostTemplate,
 -   },
 - })
-+ export default withUnpublishedPreview(
-+   NotFoundPage,
-+   { 'your-repository-name': { linkResolver } },
++ export default withUnpublishedPreview(NotFoundPage, [
 +   {
++     repositoryname: 'your-repository-name',
++     linkResolver,
 +     componentResolver: componentResolverFromMap({
 +       page: PageTemplate,
 +       blog_post: BlogPostTemplate,
 +     }),
 +   },
-+ )
++ ])
 ```
 
 See the
