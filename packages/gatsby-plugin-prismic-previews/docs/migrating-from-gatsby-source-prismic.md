@@ -136,7 +136,7 @@ the template is wrapped with
 -     blog_post: BlogPostTemplate,
 -   },
 - })
-+ export default withUnpublishedPreview(NotFoundPage, [
++ export default withPrismicUnpublishedPreview(NotFoundPage, [
 +   {
 +     repositoryname: 'your-repository-name',
 +     linkResolver,
