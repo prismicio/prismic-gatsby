@@ -9,6 +9,7 @@ import { isPlainObject } from './lib/isPlainObject'
 import { UnknownRecord } from './types'
 import { PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
+import { isProxy } from './lib/isProxy'
 
 /**
  * Recursively finds previewable data and replaces data if a previewed version
@@ -22,6 +23,16 @@ const findAndReplacePreviewables =
   (nodes: PrismicContextState['nodes']) =>
   (nodeOrLeaf: unknown): unknown => {
     if (isPlainObject(nodeOrLeaf)) {
+      // If the value is a proxy, we can't reliably replace properties since
+      // property keys could be synthetic. We opt to ignore the object
+      // completely.
+      //
+      // At the time of writing this comment, Proxies are only present in Link
+      // fields. We can safely opt out of merging preview data in this case.
+      if (isProxy(nodeOrLeaf)) {
+        return nodeOrLeaf
+      }
+
       const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
         | string
         | undefined

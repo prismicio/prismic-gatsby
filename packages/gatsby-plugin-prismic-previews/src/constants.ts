@@ -7,6 +7,12 @@ import chalk from 'chalk'
 export const VERSION = '4.0.0'
 
 /**
+ * Symbol used to identify if a value is a proxy. Attach this to proxies (done
+ * automatically via `lib/createGetProxy`).
+ */
+export const IS_PROXY = Symbol('IS_PROXY')
+
+/**
  * Prismic API document fields returned for image fields that are **not**
  * thumbnails.
  *
