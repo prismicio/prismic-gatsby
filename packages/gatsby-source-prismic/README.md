@@ -604,10 +604,10 @@ eliminating the need to download and resize images on your computer or server.
 To access image processing in your queries, you need to use this pattern, where
 `...ImageFragment` is one of the following fragments:
 
-- `GatsbyPrismicImageFixed`
-- `GatsbyPrismicImageFixed_noBase64`
-- `GatsbyPrismicImageFluid`
-- `GatsbyPrismicImageFluid_noBase64`
+- `GatsbyImgixFixed`
+- `GatsbyImgixFixed_noBase64`
+- `GatsbyImgixFluid`
+- `GatsbyImgixFluid_noBase64`
 
 Learn about the different types of responsive images and fragments from
 [`gatsby-image`'s official docs][gatsby-image-types].
@@ -642,7 +642,7 @@ Full example:
         data {
           imageFieldName {
             fluid(maxWidth: 1000, maxHeight: 800) {
-              ...GatsbyPrismicImageFluid
+              ...GatsbyImgixFluid
             }
           }
         }

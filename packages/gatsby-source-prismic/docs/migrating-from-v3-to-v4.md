@@ -424,6 +424,31 @@ To get the same data you would receive in a GraphQL query while in
   }
 ```
 
+### Use Imgix's `gatsby-image` fragments
+
+In V3, using the [`gatsby-image`][gatsby-image] integration with Imgix URLs
+required the use of specific fragments.
+
+In V4, these fragments are deprecated and replaced by Imgix's official
+`gatsby-image` fragments. See the following list for conversions. The previous
+fragments will continue to be included in V4, but will be removed in V5.
+
+| Old                                         | New                         |
+| ------------------------------------------- | --------------------------- |
+| `GatsbyPrismicImageFixed`                   | `GatsbyImgixFixed`          |
+| `GatsbyPrismicImageFixed_noBase64`          | `GatsbyImgixFixed_noBase64` |
+| `GatsbyPrismicImageFixed_withWebp`          | `GatsbyImgixFixed`          |
+| `GatsbyPrismicImageFixed_withWebp_noBase64` | `GatsbyImgixFixed_noBase64` |
+| `GatsbyPrismicImageFluid`                   | `GatsbyImgixFluid`          |
+| `GatsbyPrismicImageFluid_noBase64`          | `GatsbyImgixFluid_noBase64` |
+| `GatsbyPrismicImageFluid_withWebp`          | `GatsbyImgixFluid`          |
+| `GatsbyPrismicImageFluid_withWebp_noBase64` | `GatsbyImgixFluid_noBase64` |
+
+Note that `gatsby-image` itself is deprecated and replaced by
+`gatsby-plugin-image`. You may choose to upgrade to gatsby-plugin-image by
+querying for an image field's `gatsbyImageData` field and passing the result to
+the `GatsbyImage` component.
+
 [gsp]: ../
 [gppp]: ../../gatsby-plugin-prismic-previews
 [prismic-graphquery]: https://prismic.io/docs/technologies/graphquery-rest-api
@@ -438,3 +463,4 @@ To get the same data you would receive in a GraphQL query while in
 [prismic-integration-field]: https://prismic.io/feature/integration-field
 [github]: https://github.com/angeloashmore/gatsby-source-prismic/issues
 [prismic-community]: https://community.prismic.io/
+[gatsby-image]: https://www.gatsbyjs.com/plugins/gatsby-image/
