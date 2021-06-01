@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.12](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.11...v4.0.0-beta.12) (2021-06-01)
+
+
+### Bug Fixes
+
+* support Node.js 12 fs module ([e120087](https://github.com/angeloashmore/gatsby-source-prismic/commit/e120087f47a36bc24ea2d85b3fa714fcc0a23a9e))
+
+
+
+
+
 # [4.0.0-beta.11](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.10...v4.0.0-beta.11) (2021-06-01)
 
 
