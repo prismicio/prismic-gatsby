@@ -27,6 +27,7 @@ import {
   usePrismicPreviewContext,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
+import { IS_PROXY } from '../src/constants'
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
@@ -262,11 +263,15 @@ test.serial('alternative languages', async (t) => {
       ...doc.alternate_languages[0],
       // @ts-expect-error - This is not part of the base Prismic document type
       raw: doc.alternate_languages[0],
+      // Sorry, this is an implementation detail but we need it pass tests.
+      [IS_PROXY]: true,
     },
     {
       ...doc.alternate_languages[1],
       // @ts-expect-error - This is not part of the base Prismic document type
       raw: doc.alternate_languages[1],
+      // Sorry, this is an implementation detail but we need it pass tests.
+      [IS_PROXY]: true,
     },
   ])
 
@@ -353,6 +358,8 @@ test.serial('link', async (t) => {
     url: config[0].linkResolver(linkedDoc),
     localFile: null,
     raw: doc.data.doc_link,
+    // Sorry, this is an implementation detail but we need it pass tests.
+    [IS_PROXY]: true,
   })
 
   // We must test the document field separately since it is only accessible
@@ -367,6 +374,8 @@ test.serial('link', async (t) => {
       publicURL: doc.data.media_link.url,
     },
     raw: doc.data.media_link,
+    // Sorry, this is an implementation detail but we need it pass tests.
+    [IS_PROXY]: true,
   })
 })
 
