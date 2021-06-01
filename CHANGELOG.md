@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.10](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.9...v4.0.0-beta.10) (2021-06-01)
+
+
+### Bug Fixes
+
+* update gatsby-image fragments for @imgix/gatsby ([0ebf59e](https://github.com/angeloashmore/gatsby-source-prismic/commit/0ebf59e308830611377c4b4aa661f7b699d7e54d))
+
+
+
+
+
 # [4.0.0-beta.9](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.8...v4.0.0-beta.9) (2021-05-29)
 
 
