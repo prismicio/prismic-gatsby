@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.13](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.12...v4.0.0-beta.13) (2021-06-01)
+
+
+### Bug Fixes
+
+* **previews:** restore content relation document field ([7eebe51](https://github.com/angeloashmore/gatsby-source-prismic/commit/7eebe51ee0fbc9abf2c92411f19dd91329686e99))
+
+
+
+
+
 # [4.0.0-beta.12](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.11...v4.0.0-beta.12) (2021-06-01)
 
 
