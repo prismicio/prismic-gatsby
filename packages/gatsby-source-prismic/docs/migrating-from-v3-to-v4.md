@@ -445,9 +445,9 @@ fragments will continue to be included in V4, but will be removed in V5.
 | `GatsbyPrismicImageFluid_withWebp_noBase64` | `GatsbyImgixFluid_noBase64` |
 
 Note that `gatsby-image` itself is deprecated and replaced by
-`gatsby-plugin-image`. You may choose to upgrade to gatsby-plugin-image by
-querying for an image field's `gatsbyImageData` field and passing the result to
-the `GatsbyImage` component.
+[gatsby-plugin-image][gatsby-plugin-image]. You may choose to upgrade to
+gatsby-plugin-image by querying for an image field's `gatsbyImageData` field and
+passing the result to the `GatsbyImage` component.
 
 [gsp]: ../
 [gppp]: ../../gatsby-plugin-prismic-previews
