@@ -1,6 +1,6 @@
 import * as gatsby from 'gatsby'
 import * as prismic from 'ts-prismic'
-import * as fs from 'fs/promises'
+import { promises as fs } from 'fs'
 import {
   DEFAULT_IMGIX_PARAMS,
   DEFAULT_LANG,
