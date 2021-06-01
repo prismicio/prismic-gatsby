@@ -33,6 +33,7 @@ import {
   withPrismicPreview,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
+import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 
 const nodeHelpers = createNodeHelpers({
   typePrefix: 'Prismic prefix',
@@ -167,6 +168,58 @@ test.serial('merges data if preview data is available', async (t) => {
     createTypePathsMockedRequest('a9101d270279c16322571b8448d7a329.json', {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+    }),
+  )
+
+  // Need to use the query results nodes rather than new documents to ensure
+  // the IDs match.
+  const staticData = {
+    previewable: { ...queryResponseNodes[0] },
+    nonPreviewable: { ...queryResponseNodes[1] },
+  }
+  staticData.previewable._previewable = queryResponseNodes[0].prismicId
+  // Marking this data as "old" and should be replaced during the merge.
+  staticData.previewable.uid = 'old'
+
+  const pageProps = createPageProps(staticData)
+  const config = createRepositoryConfigs(pluginOptions)
+  const tree = createTree(pageProps, config)
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await onClientEntry(gatsbyContext, pluginOptions)
+  const result = tlr.render(tree)
+
+  await tlr.waitFor(() =>
+    assert.ok(
+      result.getByTestId('data').textContent !==
+        result.getByTestId('prismicPreviewOriginalData').textContent,
+    ),
+  )
+
+  const propData = JSON.parse(result.getByTestId('data').textContent ?? '{}')
+  const mergedData = { ...staticData, previewable: queryResponseNodes[0] }
+  t.deepEqual(propData, mergedData)
+})
+
+test.serial('handles custom types without a data field', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+
+  const ref = createPreviewRef(pluginOptions.repositoryName)
+  cookie.set(prismic.cookie.preview, ref)
+
+  const queryResponse = createPrismicAPIQueryResponse()
+  const queryResponseNodes = queryResponse.results.map(
+    (doc) =>
+      nodeHelpers.createNodeFactory(doc.type)(
+        doc,
+      ) as PrismicAPIDocumentNodeInput,
+  )
+
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse, { ref }))
+  server.use(
+    createTypePathsMockedRequest('eac4669530f66bef76da4016f1111055.json', {
+      type: gatsbyPrismic.PrismicSpecialType.Document,
     }),
   )
 

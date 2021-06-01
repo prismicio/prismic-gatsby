@@ -1,5 +1,6 @@
 import * as prismic from 'ts-prismic'
 import * as RE from 'fp-ts/ReaderEither'
+import * as R from 'fp-ts/Record'
 import { pipe } from 'fp-ts/function'
 
 import {
@@ -23,7 +24,15 @@ export const proxyValue = (
   pipe(
     RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bind('data', () =>
-      proxyDocumentSubtree([...path, 'data'], fieldValue.data),
+      pipe(
+        fieldValue.data,
+        RE.fromPredicate(
+          (data) => !R.isEmpty(data),
+          () => new Error('Document does not have a data field'),
+        ),
+        RE.chain((data) => proxyDocumentSubtree([...path, 'data'], data)),
+        RE.orElseW(() => RE.right(fieldValue.data)),
+      ),
     ),
     RE.bind('url', (env) =>
       // This doesn't use `prismic-dom`'s `Link.url` function because this

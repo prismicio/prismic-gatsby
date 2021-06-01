@@ -18,6 +18,7 @@ module.exports = {
         schemas: {
           kitchen_sink: require('./schemas/kitchen_sink.json'),
           without_uid: require('./schemas/without_uid.json'),
+          without_data: require('./schemas/without_data.json'),
         },
       },
     },
