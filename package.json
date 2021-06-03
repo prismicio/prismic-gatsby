@@ -2,7 +2,7 @@
   "name": "@prismicio/gatsby",
   "private": true,
   "engines": {
-    "node": ">=12.22"
+    "node": ">=12.13.0"
   },
   "scripts": {
     "clean": "yarn workspaces run clean",
