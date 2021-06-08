@@ -18,7 +18,6 @@ const common = {
   outdir: path.resolve(__dirname, './dist'),
   bundle: true,
   sourcemap: true,
-  minify: process.env.NODE_ENV === 'production',
   watch: isWatchMode,
   external: [
     ...Object.keys(pkg.devDependencies),

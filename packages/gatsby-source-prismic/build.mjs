@@ -20,7 +20,6 @@ await esbuild.build({
   sourcemap: true,
   platform: 'node',
   target: 'node10.23',
-  minify: process.env.NODE_ENV === 'production',
   watch: isWatchMode,
   external: [
     ...Object.keys(pkg.devDependencies),
