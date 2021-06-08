@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.14](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.13...v4.0.0-beta.14) (2021-06-08)
+
+
+### Bug Fixes
+
+* **previews:** add __typename to match GraphQL API ([cf75c7a](https://github.com/angeloashmore/gatsby-source-prismic/commit/cf75c7af0589c848b2faf385e8ffee48a347fd36))
+
+
+
+
+
 # [4.0.0-beta.13](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.12...v4.0.0-beta.13) (2021-06-01)
 
 
