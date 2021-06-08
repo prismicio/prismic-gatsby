@@ -93,3 +93,15 @@ export const TYPE_PATHS_MISSING_BROWSER_MSG =
  */
 export const FIELD_VALUE_TYPE_PATH_MISMATCH_MSG =
   'Field value at "%s" does not match the type declared in its type path: %s'
+
+/**
+ * Message used when a repository configuration is not provided.
+ */
+export const MISSING_REPOSITORY_CONFIG_MSG =
+  'A configuration object could not be found for repository "%s". Check that the repository is configured in your app\'s %s.'
+
+/**
+ * Message used when repository plugin options are not provided.
+ */
+export const MISSING_PLUGIN_OPTIONS_MSG =
+  'Plugin options could not be found for repository "%s". Check that the repository is configured in your app\'s gatsby-config.js'

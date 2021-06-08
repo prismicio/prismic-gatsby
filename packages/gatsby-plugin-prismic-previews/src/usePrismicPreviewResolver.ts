@@ -14,10 +14,15 @@ import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefReposito
 import { getCookie } from './lib/getCookie'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
+import { sprintf } from './lib/sprintf'
 
 import { LinkResolver, PrismicRepositoryConfigs } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { PrismicContextActionType, PrismicContextState } from './context'
+import {
+  MISSING_PLUGIN_OPTIONS_MSG,
+  MISSING_REPOSITORY_CONFIG_MSG,
+} from './constants'
 
 export type UsePrismicPreviewResolverFn = () => Promise<void>
 
@@ -132,7 +137,11 @@ const previewResolverProgram: RTE.ReaderTaskEither<
       RTE.fromOption(
         () =>
           new Error(
-            `A configuration object could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's usePrismicPreviewResolver.`,
+            sprintf(
+              MISSING_REPOSITORY_CONFIG_MSG,
+              env.repositoryName,
+              'withPrismicPreviewResolver',
+            ),
           ),
       ),
     ),
@@ -144,9 +153,7 @@ const previewResolverProgram: RTE.ReaderTaskEither<
       R.lookup(env.repositoryName),
       RTE.fromOption(
         () =>
-          new Error(
-            `Plugin options could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's gatsby-config.js`,
-          ),
+          new Error(sprintf(MISSING_PLUGIN_OPTIONS_MSG, env.repositoryName)),
       ),
     ),
   ),

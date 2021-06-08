@@ -12,6 +12,7 @@ import { createNodeHelpers } from 'gatsby-node-helpers'
 import { GLOBAL_TYPE_PREFIX, PrismicTypePathType } from 'gatsby-source-prismic'
 import md5 from 'tiny-hashes/md5'
 
+import { defaultFieldTransformer } from './lib/defaultFieldTransformer'
 import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 import { fetchTypePaths } from './lib/fetchTypePaths'
 import { getCookie } from './lib/getCookie'
@@ -19,6 +20,7 @@ import { isPreviewSession } from './lib/isPreviewSession'
 import { proxyDocumentNodeInput } from './lib/proxyDocumentNodeInput'
 import { queryAllDocuments } from './lib/queryAllDocuments'
 import { serializePath } from './lib/serializePath'
+import { sprintf } from './lib/sprintf'
 
 import {
   Mutable,
@@ -29,7 +31,10 @@ import {
 } from './types'
 import { PrismicContextActionType, PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
-import { defaultFieldTransformer } from './lib/defaultFieldTransformer'
+import {
+  MISSING_REPOSITORY_CONFIG_MSG,
+  MISSING_PLUGIN_OPTIONS_MSG,
+} from './constants'
 
 export type UsePrismicPreviewBootstrapFn = () => void
 
@@ -149,7 +154,11 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
       RTE.fromOption(
         () =>
           new Error(
-            `A configuration object could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's usePrismicPreviewResolver.`,
+            sprintf(
+              MISSING_REPOSITORY_CONFIG_MSG,
+              env.repositoryName,
+              'withPrismicPreview and withPrismicUnpublishedPreview',
+            ),
           ),
       ),
     ),
@@ -161,9 +170,7 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
       R.lookup(env.repositoryName),
       RTE.fromOption(
         () =>
-          new Error(
-            `Plugin options could not be found for repository "${env.repositoryName}". Check that the repository is configured in your app's gatsby-config.js`,
-          ),
+          new Error(sprintf(MISSING_PLUGIN_OPTIONS_MSG, env.repositoryName)),
       ),
     ),
   ),
