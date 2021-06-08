@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.16](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.15...v4.0.0-beta.16) (2021-06-08)
+
+
+### Bug Fixes
+
+* **previews:** use better missing config message ([732e061](https://github.com/angeloashmore/gatsby-source-prismic/commit/732e061aef66bd5409cfe57e403b83cdc5eb5b28))
+
+
+
+
+
 # [4.0.0-beta.15](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.14...v4.0.0-beta.15) (2021-06-08)
 
 **Note:** Version bump only for package @prismicio/gatsby
