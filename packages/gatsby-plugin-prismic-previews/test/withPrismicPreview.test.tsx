@@ -33,7 +33,6 @@ import {
   withPrismicPreview,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 
 const nodeHelpers = createNodeHelpers({
   typePrefix: 'Prismic prefix',
@@ -197,7 +196,13 @@ test.serial('merges data if preview data is available', async (t) => {
   )
 
   const propData = JSON.parse(result.getByTestId('data').textContent ?? '{}')
-  const mergedData = { ...staticData, previewable: queryResponseNodes[0] }
+  const mergedData = {
+    ...staticData,
+    previewable: {
+      __typename: 'PrismicPrefixType',
+      ...queryResponseNodes[0],
+    },
+  }
   t.deepEqual(propData, mergedData)
 })
 
@@ -249,6 +254,12 @@ test.serial('handles custom types without a data field', async (t) => {
   )
 
   const propData = JSON.parse(result.getByTestId('data').textContent ?? '{}')
-  const mergedData = { ...staticData, previewable: queryResponseNodes[0] }
+  const mergedData = {
+    ...staticData,
+    previewable: {
+      __typename: 'PrismicPrefixType',
+      ...queryResponseNodes[0],
+    },
+  }
   t.deepEqual(propData, mergedData)
 })

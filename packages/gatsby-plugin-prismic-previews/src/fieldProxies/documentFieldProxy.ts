@@ -45,8 +45,10 @@ export const proxyValue = (
     RE.bind('alternative_languages', () =>
       alternativeLanguagesFieldProxy.proxyValue(fieldValue.alternate_languages),
     ),
+    RE.bind('__typename', (env) => RE.of(env.nodeHelpers.createTypeName(path))),
     RE.map((env) => ({
       ...fieldValue,
+      __typename: env.__typename,
       url: env.url,
       alternate_languages: env.alternative_languages,
       data: env.data,

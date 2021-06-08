@@ -207,10 +207,22 @@ test.serial(
     t.true(result.current.bootstrap[0].error === undefined)
     t.true(result.current.context[0].isBootstrapped)
     t.deepEqual(result.current.context[0].nodes, {
-      [queryResponsePage1Nodes[0].prismicId]: queryResponsePage1Nodes[0],
-      [queryResponsePage1Nodes[1].prismicId]: queryResponsePage1Nodes[1],
-      [queryResponsePage2Nodes[0].prismicId]: queryResponsePage2Nodes[0],
-      [queryResponsePage2Nodes[1].prismicId]: queryResponsePage2Nodes[1],
+      [queryResponsePage1Nodes[0].prismicId]: {
+        __typename: 'PrismicPrefixType',
+        ...queryResponsePage1Nodes[0],
+      },
+      [queryResponsePage1Nodes[1].prismicId]: {
+        __typename: 'PrismicPrefixType',
+        ...queryResponsePage1Nodes[1],
+      },
+      [queryResponsePage2Nodes[0].prismicId]: {
+        __typename: 'PrismicPrefixType',
+        ...queryResponsePage2Nodes[0],
+      },
+      [queryResponsePage2Nodes[1].prismicId]: {
+        __typename: 'PrismicPrefixType',
+        ...queryResponsePage2Nodes[1],
+      },
     })
   },
 )

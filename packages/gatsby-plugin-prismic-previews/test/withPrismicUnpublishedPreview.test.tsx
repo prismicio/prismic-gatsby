@@ -220,8 +220,14 @@ test.serial('merges data if preview data is available', async (t) => {
   const propData = JSON.parse(result.getByTestId('data').textContent ?? '{}')
   const mergedData = {
     ...staticData,
-    previewable: queryResponseNodes[0],
-    prismicPrefixType: queryResponseNodes[0],
+    previewable: {
+      __typename: 'PrismicPrefixType',
+      ...queryResponseNodes[0],
+    },
+    prismicPrefixType: {
+      __typename: 'PrismicPrefixType',
+      ...queryResponseNodes[0],
+    },
   }
   t.deepEqual(propData, mergedData)
 })

@@ -120,6 +120,7 @@ test.serial('document', async (t) => {
 
   const node = result.current.context[0].nodes[doc.id]
 
+  t.true(node.__typename === 'PrismicPrefixType')
   t.true(node.url === config[0].linkResolver(doc))
 })
 
@@ -671,6 +672,7 @@ test.serial('slices', async (t) => {
   // are unique between all slices in the array.
   t.deepEqual(node.data.slices, [
     {
+      __typename: 'PrismicPrefixTypeDataSlicesFoo',
       id: '95a74515ba477142af5ef01d6325b04b',
       slice_type: 'foo',
       primary: {
@@ -683,6 +685,7 @@ test.serial('slices', async (t) => {
       items: [],
     },
     {
+      __typename: 'PrismicPrefixTypeDataSlicesBar',
       id: 'e07c44a80a6a422612456328100ceed9',
       slice_type: 'bar',
       primary: {},

@@ -55,8 +55,10 @@ export const proxyValue = (
         ]),
       ),
     ),
+    RE.bind('__typename', (env) => RE.of(env.nodeHelpers.createTypeName(path))),
     RE.map((env) => ({
       ...fieldValue,
+      __typename: env.__typename,
       id: env.id,
       primary: env.primary,
       items: env.items,
