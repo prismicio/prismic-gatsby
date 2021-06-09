@@ -111,6 +111,7 @@ const buildImageProxyValue = (
     ),
     RE.bind('localFile', (env) =>
       RE.of({
+        publicURL: env.url,
         childImageSharp: {
           fixed: env.fixed,
           fluid: env.fluid,
