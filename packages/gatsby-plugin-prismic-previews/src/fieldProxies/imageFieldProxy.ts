@@ -9,10 +9,11 @@ import { pipe } from 'fp-ts/function'
 
 import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 import { refineFieldValue } from '../lib/refineFieldValue'
-import { sprintf } from '../lib/sprintf'
 import { sanitizeImageURL } from '../lib/sanitizeImageURL'
+import { sprintf } from '../lib/sprintf'
 
 import { PRISMIC_API_IMAGE_FIELDS } from '../constants'
+import { stripURLQueryParameters } from '../lib/stripURLQueryParameters'
 
 interface ImageProxyValue extends gatsbyPrismic.PrismicAPIImageField {
   thumbnails: Record<string, gatsbyPrismic.PrismicAPIImageField>
@@ -39,6 +40,9 @@ const buildImageProxyValue = (
         O.fromNullable(fieldValue.url),
         RE.fromOption(() => new Error(sprintf('Missing image URL'))),
       ),
+    ),
+    RE.bindW('sanitizedURL', (env) =>
+      pipe(stripURLQueryParameters(env.url), sanitizeImageURL, RE.right),
     ),
     RE.bindW('sourceWidth', () =>
       pipe(
@@ -75,7 +79,7 @@ const buildImageProxyValue = (
     RE.bind('fixed', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildFixedObject({
-          url: sanitizeImageURL(env.url),
+          url: env.sanitizedURL,
           args: { ...env.args, width: 400 },
           sourceWidth: env.sourceWidth,
           sourceHeight: env.sourceHeight,
@@ -85,7 +89,7 @@ const buildImageProxyValue = (
     RE.bind('fluid', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildFluidObject({
-          url: sanitizeImageURL(env.url),
+          url: env.sanitizedURL,
           args: { ...env.args, maxWidth: 800 },
           sourceWidth: env.sourceWidth,
           sourceHeight: env.sourceHeight,
@@ -95,7 +99,7 @@ const buildImageProxyValue = (
     RE.bind('gatsbyImageData', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildGatsbyImageDataObject({
-          url: sanitizeImageURL(env.url),
+          url: env.sanitizedURL,
           dimensions: {
             width: env.sourceWidth,
             height: env.sourceHeight,

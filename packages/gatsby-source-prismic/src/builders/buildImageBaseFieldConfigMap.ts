@@ -9,6 +9,7 @@ import * as R from 'fp-ts/Record'
 import { constNull, pipe } from 'fp-ts/function'
 
 import { sanitizeImageURL } from '../lib/sanitizeImageURL'
+import { stripURLQueryParameters } from '../lib/stripURLParameters'
 
 import { Dependencies, PrismicAPIImageField } from '../types'
 
@@ -20,7 +21,9 @@ import { Dependencies, PrismicAPIImageField } from '../types'
  * @returns The URL of the image if an image is provided, `null` otherwise.
  */
 const resolveUrl = (source: PrismicAPIImageField): string | null =>
-  source.url ? sanitizeImageURL(source.url) : source.url
+  source.url
+    ? sanitizeImageURL(stripURLQueryParameters(source.url))
+    : source.url
 
 /**
  * Returns the width of an image from the value of an Image field.

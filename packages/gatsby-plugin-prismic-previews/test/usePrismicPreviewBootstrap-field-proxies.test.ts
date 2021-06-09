@@ -541,10 +541,18 @@ test.serial(
     }>
 
     const urlUrl = new URL(node.data.image.url)
+    t.is(
+      node.data.image.url,
+      'https://example.com/image.png?rect=0,0,100,200&w=1',
+    )
     t.is(urlUrl.searchParams.get('rect'), originalUrl.searchParams.get('rect'))
     t.is(urlUrl.searchParams.get('w'), originalUrl.searchParams.get('w'))
 
     const fixedSrcUrl = new URL(node.data.image.fixed.src)
+    t.is(
+      node.data.image.fixed.src,
+      'https://example.com/image.png?ixlib=gatsbyFP&fit=crop&rect=0%2C0%2C100%2C200&w=400&q=100&h=300',
+    )
     t.is(
       fixedSrcUrl.searchParams.get('rect'),
       originalUrl.searchParams.get('rect'),
@@ -553,6 +561,10 @@ test.serial(
 
     const fluidSrcUrl = new URL(node.data.image.fluid.src)
     t.is(
+      node.data.image.fluid.src,
+      'https://example.com/image.png?ixlib=gatsbyFP&fit=crop&rect=0%2C0%2C100%2C200&w=800&q=100&h=undefined',
+    )
+    t.is(
       fluidSrcUrl.searchParams.get('rect'),
       originalUrl.searchParams.get('rect'),
     )
@@ -560,6 +572,10 @@ test.serial(
 
     const gatsbyImageDataSrcUrl = new URL(
       node.data.image.gatsbyImageData.images.fallback.src,
+    )
+    t.is(
+      node.data.image.gatsbyImageData.images.fallback.src,
+      'https://example.com/image.png?ixlib=gatsbyFP&rect=0%2C0%2C100%2C200&w=400&q=100&h=300',
     )
     t.is(
       gatsbyImageDataSrcUrl.searchParams.get('rect'),
