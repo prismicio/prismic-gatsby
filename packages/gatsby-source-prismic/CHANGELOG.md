@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.17](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.16...v4.0.0-beta.17) (2021-06-09)
+
+
+### Bug Fixes
+
+* prepare imgix URLs by removing query params ([3178489](https://github.com/angeloashmore/gatsby-source-prismic/commit/3178489761b5720bde60845a71296a9955f027da))
+
+
+
+
+
 # [4.0.0-beta.15](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.14...v4.0.0-beta.15) (2021-06-08)
 
 **Note:** Version bump only for package gatsby-source-prismic
