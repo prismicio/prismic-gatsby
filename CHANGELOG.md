@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.18](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.17...v4.0.0-beta.18) (2021-06-09)
+
+
+### Features
+
+* **previews:** add `localFile.publicURL` to images ([d52af64](https://github.com/angeloashmore/gatsby-source-prismic/commit/d52af6427c0e564906ed3303392338df03963d36))
+
+
+
+
+
 # [4.0.0-beta.17](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.16...v4.0.0-beta.17) (2021-06-09)
 
 
