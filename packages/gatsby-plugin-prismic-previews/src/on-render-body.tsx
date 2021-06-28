@@ -14,14 +14,14 @@ import { PluginOptions } from './types'
 const getToolbarScriptURL = (
   repositoryName: string,
   type: PluginOptions['toolbar'],
-): string => {
+): URL => {
   switch (type) {
     case 'new': {
-      return `https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}&new=true`
+      return new URL(`https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}&new=true`)
     }
 
     case 'legacy': {
-      return `https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}`
+      return new URL(`https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}`)
     }
   }
 }
@@ -39,12 +39,27 @@ export const onRenderBody: NonNullable<gatsby.GatsbySSR['onRenderBody']> =
     gatsbyContext: gatsby.RenderBodyArgs,
     pluginOptions: PluginOptions,
   ) => {
+    const toolbarScriptUrl = getToolbarScriptURL(
+      pluginOptions.repositoryName,
+      pluginOptions.toolbar,
+    )
+
+    gatsbyContext.setHeadComponents([
+      <link
+        rel="preconnect"
+        key="preconnect-prismic-toolbar"
+        href={toolbarScriptUrl.origin}
+      />,
+      <link
+        rel="dns-prefetch"
+        key="dns-prefetch-prismic-toolbar"
+        href={toolbarScriptUrl.origin}
+      />,
+    ])
+
     gatsbyContext.setPostBodyComponents([
       <script
-        src={getToolbarScriptURL(
-          pluginOptions.repositoryName,
-          pluginOptions.toolbar,
-        )}
+        src={toolbarScriptUrl.href}
         defer={true}
         key={`gatsby-plugin-prismic-previews-toolbar-${pluginOptions.repositoryName}`}
       />,
