@@ -55,7 +55,7 @@ export const onRenderBody: NonNullable<gatsby.GatsbySSR['onRenderBody']> =
         key="dns-prefetch-prismic-toolbar"
         href={toolbarScriptUrl.origin}
       />,
-    ]);
+    ])
 
     gatsbyContext.setPostBodyComponents([
       <script
