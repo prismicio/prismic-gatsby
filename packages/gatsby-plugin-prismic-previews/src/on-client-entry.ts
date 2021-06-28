@@ -6,6 +6,8 @@ import { setPrismicWindowEndpoint } from './lib/setPrismicWindowEndpoint'
 import { setPluginOptionsOnWindow } from './lib/setPluginOptionsOnWindow'
 
 import { PluginOptions } from './types'
+import { sprintf } from './lib/sprintf'
+import { MISSING_STYLES_MSG } from './constants'
 
 interface OnClientEntryProgramEnv {
   pluginOptions: PluginOptions
@@ -62,6 +64,35 @@ export const setWindowPluginOptions: RTE.ReaderTaskEither<
 )
 
 /**
+ * Sets the plugin's options on a window using a predefined identifier.
+ */
+export const checkStyles = (
+  stylesheetName: string,
+): RTE.ReaderTaskEither<OnClientEntryProgramEnv, Error, void> =>
+  process.env.NODE_ENV === 'development' && typeof window !== 'undefined'
+    ? pipe(
+        RTE.Do,
+        RTE.chain(
+          RTE.fromPredicate(
+            () =>
+              parseInt(
+                window
+                  .getComputedStyle(document.body)
+                  .getPropertyValue(`--gppp-${stylesheetName}`),
+              ) !== 1,
+            () => new Error('Styles are correctly setup'),
+          ),
+        ),
+        RTE.chainFirst(() =>
+          RTE.fromIO(() =>
+            console.warn(sprintf(MISSING_STYLES_MSG, stylesheetName)),
+          ),
+        ),
+        RTE.map(constVoid),
+      )
+    : RTE.right(void 0)
+
+/**
  * To be executed in the `onClientEntry` API.
  */
 export const onClientEntryProgram: RTE.ReaderTaskEither<
@@ -69,7 +100,7 @@ export const onClientEntryProgram: RTE.ReaderTaskEither<
   Error,
   void
 > = pipe(
-  [setupLegacyToolbar, setWindowPluginOptions],
+  [setupLegacyToolbar, setWindowPluginOptions, checkStyles('styles')],
   RTE.sequenceArray,
   RTE.map(constVoid),
 )

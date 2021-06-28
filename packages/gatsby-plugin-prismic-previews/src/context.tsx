@@ -7,6 +7,7 @@ import { pipe } from 'fp-ts/function'
 import {
   COOKIE_ACCESS_TOKEN_NAME,
   WINDOW_PLUGIN_OPTIONS_KEY,
+  WINDOW_PROVIDER_PRESENCE_KEY,
 } from './constants'
 import {
   PluginOptions,
@@ -16,6 +17,12 @@ import {
 import { getCookie } from './lib/getCookie'
 import { sprintf } from './lib/sprintf'
 import { ssrPluginOptionsStore } from './lib/setPluginOptionsOnWindow'
+
+declare global {
+  interface Window {
+    [WINDOW_PROVIDER_PRESENCE_KEY]: boolean
+  }
+}
 
 /**
  * Populate a plugin options' `accessToken` value with one stored in a persisted
@@ -215,6 +222,10 @@ export const PrismicPreviewProvider = ({
 }: PrismicProviderProps): JSX.Element => {
   const initialState = createInitialState()()
   const reducerTuple = React.useReducer(contextReducer, initialState)
+
+  React.useLayoutEffect(() => {
+    window[WINDOW_PROVIDER_PRESENCE_KEY] = true
+  }, [])
 
   return (
     <PrismicContext.Provider value={reducerTuple}>

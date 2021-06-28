@@ -58,6 +58,13 @@ export const WINDOW_PLUGIN_OPTIONS_KEY =
   '__GATSBY_PLUGIN_PRISMIC_PREVIEWS_PLUGIN_OPTIONS__'
 
 /**
+ * Identifier used to store plugin options on `window` to pass to other parts
+ * of the preview system.
+ */
+export const WINDOW_PROVIDER_PRESENCE_KEY =
+  '__GATSBY_PLUGIN_PRISMIC_PREVIEWS_PROVIDER_PRESENCE__'
+
+/**
  * Name of the locally stored Prismic repository access token.
  */
 export const COOKIE_ACCESS_TOKEN_NAME =
@@ -105,3 +112,18 @@ export const MISSING_REPOSITORY_CONFIG_MSG =
  */
 export const MISSING_PLUGIN_OPTIONS_MSG =
   'Plugin options could not be found for repository "%s". Check that the repository is configured in your app\'s gatsby-config.js'
+
+/**
+ * Message used when required CSS stylesheets are not imported.
+ */
+export const MISSING_STYLES_MSG = `gatsby-plugin-prismic-previews styles not found. Add the following line to your app (typically gatsby-browser.js and gatsby-ssr.js):
+
+import 'gatsby-plugin-prismic-previews/dist/%s.css'`
+
+/**
+ * Message used when the required context provider is not added.
+ */
+export const MISSING_PROVIDER_MSG = `A <PrismicPreviewProvider> was not found in your app. Add <PrismicPreviewProvider> to your app's gatsby-browser.js and gatsby-ssr.js wrapRootElement exports.
+
+See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/#wrapRootElement
+See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/#wrapRootElement`
