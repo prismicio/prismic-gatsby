@@ -1,4 +1,5 @@
 import * as gatsby from 'gatsby'
+import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as A from 'fp-ts/Array'
@@ -16,10 +17,7 @@ import { createTypePath } from '../lib/createTypePath'
 import {
   Dependencies,
   FieldConfigCreator,
-  PrismicSchemaSlice,
-  PrismicAPISliceField,
   PrismicFieldType,
-  PrismicSchemaSlicesField,
   UnknownRecord,
 } from '../types'
 
@@ -38,7 +36,8 @@ import {
  */
 const buildSliceChoiceType = (
   path: string[],
-  schema: PrismicSchemaSlice,
+  schema: prismicT.CustomTypeModelSlice,
+  // schema: PrismicSchemaSlice,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
@@ -117,7 +116,7 @@ const buildSliceChoiceType = (
  */
 const buildSliceTypes = (
   path: string[],
-  choices: Record<string, PrismicSchemaSlice>,
+  choices: prismicT.CustomTypeModelSliceZoneField['config']['choices'],
 ): RTE.ReaderTaskEither<
   Dependencies,
   never,
@@ -125,6 +124,12 @@ const buildSliceTypes = (
 > =>
   pipe(
     choices,
+    // TODO: We only support standard Slices. SharedSlices will not be supported
+    // until Slice Machine is integrated.
+    R.filter(
+      (slice): slice is prismicT.CustomTypeModelSlice =>
+        slice.type === prismicT.CustomTypeModelSliceType.Slice,
+    ),
     R.mapWithIndex((sliceName, sliceSchema) =>
       buildSliceChoiceType(pipe(path, A.append(sliceName)), sliceSchema),
     ),
@@ -144,7 +149,7 @@ const buildSliceTypes = (
  *
  * @returns GraphQL field configuration object.
  */
-export const buildSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField> =
+export const buildSlicesFieldConfig: FieldConfigCreator<prismicT.CustomTypeModelSliceZoneField> =
   (path, schema) =>
     pipe(
       RTE.ask<Dependencies>(),
@@ -158,7 +163,7 @@ export const buildSlicesFieldConfig: FieldConfigCreator<PrismicSchemaSlicesField
             buildUnionType({
               name: deps.nodeHelpers.createTypeName([...path, 'SlicesType']),
               types,
-              resolveType: (source: PrismicAPISliceField) =>
+              resolveType: (source: prismicT.Slice) =>
                 deps.nodeHelpers.createTypeName([...path, source.slice_type]),
             }),
           ),

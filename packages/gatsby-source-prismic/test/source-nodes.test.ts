@@ -358,8 +358,7 @@ test('integration fields are normalized to inferred nodes', async (t) => {
       sinon.match({
         prismicId: docWithIntegrationId.data.slices[0].primary.integration.id,
         internal: sinon.match({
-          type:
-            'PrismicPrefixFooDataSlicesIntegrationPrimaryIntegrationIntegrationType',
+          type: 'PrismicPrefixFooDataSlicesIntegrationPrimaryIntegrationIntegrationType',
         }),
       }),
     ),
@@ -370,8 +369,7 @@ test('integration fields are normalized to inferred nodes', async (t) => {
       sinon.match({
         prismicId: docWithIntegrationId.data.slices[0].items[0].integration.id,
         internal: sinon.match({
-          type:
-            'PrismicPrefixFooDataSlicesIntegrationItemsIntegrationIntegrationType',
+          type: 'PrismicPrefixFooDataSlicesIntegrationItemsIntegrationIntegrationType',
         }),
       }),
     ),

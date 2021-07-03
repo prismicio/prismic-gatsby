@@ -1,6 +1,8 @@
 import * as msw from 'msw'
 import * as prismic from 'ts-prismic'
 
+import { createAuthorizationHeader } from './createAuthorizationHeader'
+
 import { PluginOptions } from '../../src'
 
 const resolveURL = (apiEndpoint: string, to: string): string => {
@@ -32,11 +34,8 @@ export const createAPIQueryMockedRequest = (
     (req, res, ctx) => {
       const resolvedSearchParams = {
         ref: 'master',
-        lang: pluginOptions.lang,
-        page: 1,
         pageSize: 100,
         ...searchParams,
-        access_token: searchParams.accessToken ?? pluginOptions.accessToken,
       }
 
       const searchParamsMatch = Object.keys(resolvedSearchParams).every(
@@ -45,10 +44,24 @@ export const createAPIQueryMockedRequest = (
           resolvedSearchParams[key as keyof APIQueryParams]?.toString(),
       )
 
-      if (searchParamsMatch) {
+      if (
+        (searchParamsMatch &&
+          req.headers.get('Authorization') ===
+            createAuthorizationHeader(
+              searchParams.accessToken ?? pluginOptions.accessToken,
+            )) ||
+        !pluginOptions.accessToken
+      ) {
         return res(ctx.json(queryResponse))
       } else {
-        return res(ctx.status(401))
+        return res(
+          ctx.status(403),
+          ctx.json({
+            error: '[MOCK ERROR]',
+            oauth_initiate: 'oauth_initiate',
+            oauth_token: 'oauth_token',
+          }),
+        )
       }
     },
   )

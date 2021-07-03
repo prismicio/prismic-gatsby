@@ -1,6 +1,7 @@
 import * as gatsby from 'gatsby'
 import * as gatsbyFs from 'gatsby-source-filesystem'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
+import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
@@ -10,6 +11,7 @@ import * as struct from 'fp-ts/struct'
 import * as string from 'fp-ts/string'
 import { constVoid, pipe } from 'fp-ts/function'
 import got from 'got'
+import fetch from 'node-fetch'
 
 import { sprintf } from './lib/sprintf'
 import { throwError } from './lib/throwError'
@@ -20,7 +22,6 @@ import {
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
   MISSING_SCHEMAS_MSG,
   MISSING_SCHEMA_MSG,
-  COULD_NOT_ACCESS_MSG,
   DEFAULT_CUSTOM_TYPES_API_ENDPOINT,
 } from './constants'
 import {
@@ -28,16 +29,15 @@ import {
   JoiValidationError,
   PluginOptions,
   PrismicCustomTypeApiResponse,
-  PrismicSchema,
 } from './types'
 
 const getSchemasFromCustomTypeApiResponse = (
   response: PrismicCustomTypeApiResponse,
 ) =>
-  R.fromFoldableMap(struct.getAssignSemigroup<PrismicSchema>(), A.Foldable)(
-    response,
-    (item) => [item.id, item.json],
-  )
+  R.fromFoldableMap(
+    struct.getAssignSemigroup<prismicT.CustomTypeModel>(),
+    A.Foldable,
+  )(response, (item) => [item.id, item.json])
 
 /**
  * To be execuring during the `external` phase of `pluginOptionsSchema`.
@@ -122,23 +122,36 @@ const externalValidationProgram = (
 > =>
   pipe(
     RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
-    RTE.bind('repositoryURL', (deps) =>
+    RTE.bind('client', (deps) =>
       RTE.right(
-        prismic.buildRepositoryURL(
-          deps.pluginOptions.apiEndpoint,
-          deps.pluginOptions.accessToken,
+        prismic.createClient(
+          deps.pluginOptions.apiEndpoint ??
+            prismic.getEndpoint(deps.pluginOptions.repositoryName),
+          {
+            fetch,
+            accessToken: deps.pluginOptions.accessToken,
+          },
         ),
       ),
+    ),
+    RTE.chainFirst((scope) =>
+      RTE.fromIO(() => {
+        if (scope.pluginOptions.releaseID) {
+          scope.client.queryContentFromReleaseByID(
+            scope.pluginOptions.releaseID,
+          )
+        }
+      }),
     ),
     RTE.bind('repository', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
-          () => got(scope.repositoryURL).json<prismic.Response.Repository>(),
-          () =>
+          () => scope.client.getRepository(),
+          (error) =>
             new Joi.ValidationError(
               'Failed repository request',
-              [{ message: COULD_NOT_ACCESS_MSG }],
-              scope.repositoryURL,
+              [{ message: (error as Error).message }],
+              scope.client.endpoint,
             ),
         ),
       ),
@@ -185,7 +198,7 @@ export const pluginOptionsSchema: NonNullable<
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
     apiEndpoint: Joi.string().default((parent) =>
-      prismic.defaultEndpoint(parent.repositoryName),
+      prismic.getEndpoint(parent.repositoryName),
     ),
     customTypesApiToken: Joi.string(),
     customTypesApiEndpoint: Joi.string().default(

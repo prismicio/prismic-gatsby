@@ -1,6 +1,8 @@
 import * as msw from 'msw'
 import * as prismic from 'ts-prismic'
 
+import { createAuthorizationHeader } from './createAuthorizationHeader'
+
 import { PluginOptions } from '../../src'
 
 const DEFAULT_RESPONSE: prismic.Response.Repository = {
@@ -37,11 +39,19 @@ export const createAPIRepositoryMockedRequest = (
 ): msw.RestHandler =>
   msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
     if (
-      req.url.searchParams.get('access_token') === pluginOptions.accessToken ||
+      req.headers.get('Authorization') ===
+        createAuthorizationHeader(pluginOptions.accessToken) ||
       !pluginOptions.accessToken
     ) {
       return res(ctx.json({ ...DEFAULT_RESPONSE, ...overrides }))
     } else {
-      return res(ctx.status(401))
+      return res(
+        ctx.status(403),
+        ctx.json({
+          error: '[MOCK ERROR]',
+          oauth_initiate: 'oauth_initiate',
+          oauth_token: 'oauth_token',
+        }),
+      )
     }
   })

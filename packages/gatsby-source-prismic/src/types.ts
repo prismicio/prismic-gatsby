@@ -1,10 +1,11 @@
 import * as gatsby from 'gatsby'
 import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as imgixGatsby from '@imgix/gatsby'
+import * as prismic from '@prismicio/client'
+import * as prismicH from '@prismicio/helpers'
+import * as prismicT from '@prismicio/types'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as prismic from 'ts-prismic'
-import * as PrismicDOM from 'prismic-dom'
 import { NodeHelpers } from 'gatsby-node-helpers'
 
 export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
@@ -18,6 +19,12 @@ export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
   unknown
 >
 
+export type IterableElement<TargetIterable> = TargetIterable extends Iterable<
+  infer ElementType
+>
+  ? ElementType
+  : never
+
 export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
 >
@@ -30,6 +37,7 @@ export interface TypePath {
 export type TypePathNode = TypePath & gatsby.Node
 
 export interface Dependencies {
+  prismicClient: prismic.Client
   createTypes: gatsby.Actions['createTypes']
   createNode: gatsby.Actions['createNode']
   buildObjectType: gatsby.NodePluginSchema['buildObjectType']
@@ -65,9 +73,9 @@ export interface PluginOptions extends gatsby.PluginOptions {
   graphQuery?: string
   fetchLinks?: string[]
   lang: string
-  linkResolver?: (doc: prismic.Document) => string
-  htmlSerializer?: typeof PrismicDOM.HTMLSerializer
-  schemas: Record<string, PrismicSchema>
+  linkResolver?: prismicH.LinkResolverFunction
+  htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer
+  schemas: Record<string, prismicT.CustomTypeModel>
   imageImgixParams: imgixGatsby.ImgixUrlParams
   imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams
   typePrefix?: string
@@ -78,7 +86,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
 }
 
 export type FieldConfigCreator<
-  TSchema extends PrismicSchemaField = PrismicSchemaField,
+  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField,
 > = (
   path: string[],
   schema: TSchema,
@@ -214,7 +222,9 @@ export interface PrismicAPIEmbedField extends UnknownRecord {
   embed_url: string
 }
 
-export interface PrismicAPIDocumentNode extends prismic.Document, gatsby.Node {
+export interface PrismicAPIDocumentNode
+  extends prismicT.PrismicDocument,
+    gatsby.Node {
   prismicId: string
 }
 
@@ -299,9 +309,11 @@ interface PrismicWebhookExperimentVariation {
 
 export type PrismicCustomTypeApiResponse = PrismicCustomTypeApiCustomType[]
 
-export interface PrismicCustomTypeApiCustomType {
+export interface PrismicCustomTypeApiCustomType<
+  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel,
+> {
   id: string
   label: string
   repeatable: boolean
-  json: PrismicSchema
+  json: Model
 }

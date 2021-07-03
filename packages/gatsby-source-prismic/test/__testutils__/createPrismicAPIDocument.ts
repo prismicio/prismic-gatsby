@@ -13,7 +13,6 @@ export const createPrismicAPIDocument = <TData = Record<string, unknown>>(
   return {
     id,
     uid: id,
-    url: 'url',
     type: 'type',
     href: 'href',
     tags: ['tag'],

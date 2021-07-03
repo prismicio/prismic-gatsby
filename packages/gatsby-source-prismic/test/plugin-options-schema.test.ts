@@ -1,7 +1,7 @@
 import test from 'ava'
 import * as msw from 'msw'
 import * as mswn from 'msw/node'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
 import {
   testPluginOptionsSchema,
   Joi,
@@ -14,6 +14,7 @@ import { createCustomTypesAPIMockedRequest } from './__testutils__/createCustomT
 
 import { PluginOptions, PrismicCustomTypeApiResponse } from '../src'
 import { pluginOptionsSchema } from '../src/plugin-options-schema'
+import { createAuthorizationHeader } from './__testutils__/createAuthorizationHeader'
 
 const server = mswn.setupServer()
 test.before(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -42,16 +43,21 @@ test.serial('passes on valid options', async (t) => {
   }
 
   server.use(
-    msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) =>
-      req.url.searchParams.get('access_token') === pluginOptions.accessToken
-        ? res(
-            ctx.json({
-              types: { page: 'Page' },
-              refs: [{ ref: 'master', isMasterRef: true }],
-            }),
-          )
-        : res(ctx.status(401)),
-    ),
+    msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
+      if (
+        req.headers.get('Authorization') ===
+        createAuthorizationHeader(pluginOptions.accessToken)
+      ) {
+        return res(
+          ctx.json({
+            types: { page: 'Page' },
+            refs: [{ ref: 'master', isMasterRef: true }],
+          }),
+        )
+      } else {
+        return res(ctx.status(403))
+      }
+    }),
   )
 
   server.use(createCustomTypesAPIMockedRequest(pluginOptions, []))
@@ -158,7 +164,7 @@ test.serial('checks that all schemas are provided', async (t) => {
     customTypesApiEndpoint: 'https://example.com',
     schemas: { page: kitchenSinkSchemaFixture },
   }
-  const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
+  const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
 
   server.use(
     msw.rest.get(apiEndpoint, (_req, res, ctx) =>
@@ -187,7 +193,7 @@ test.serial(
       customTypesApiToken: 'customTypesApiToken',
       customTypesApiEndpoint: 'https://example.com',
     }
-    const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
+    const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
 
     const customType1 = createCustomTypesAPICustomType()
     const customType2 = createCustomTypesAPICustomType()
@@ -249,7 +255,7 @@ test.serial(
         [customTypeInAPI2.id]: customTypeNotInAPI.json,
       },
     }
-    const apiEndpoint = prismic.defaultEndpoint(pluginOptions.repositoryName)
+    const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
 
     server.use(
       msw.rest.get(apiEndpoint, (_req, res, ctx) =>
