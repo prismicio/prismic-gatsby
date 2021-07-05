@@ -11,11 +11,7 @@ import { pipe } from 'fp-ts/function'
 import {
   Dependencies,
   PrismicAPIDocumentNode,
-  // PrismicSchema,
-  // PrismicSchemaField,
-  // PrismicAPIDocumentNode,
   PrismicSpecialType,
-  // PrismicSchemaTab,
 } from '../types'
 import {
   PREVIEWABLE_NODE_ID_FIELD,

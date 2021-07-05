@@ -1,5 +1,5 @@
 import * as msw from 'msw'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
 
 import { createAuthorizationHeader } from './createAuthorizationHeader'
 
@@ -26,7 +26,7 @@ interface APIQueryParams extends prismic.QueryParams {
 
 export const createAPIQueryMockedRequest = (
   pluginOptions: PluginOptions,
-  queryResponse: prismic.Response.Query,
+  queryResponse: prismic.Query,
   searchParams: APIQueryParams = {},
 ): msw.RestHandler =>
   msw.rest.get(

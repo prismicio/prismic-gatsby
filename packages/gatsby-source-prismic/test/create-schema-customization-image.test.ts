@@ -2,12 +2,12 @@ import test from 'ava'
 import * as sinon from 'sinon'
 import * as msw from 'msw'
 import * as mswn from 'msw/node'
+import * as prismicT from '@prismicio/types'
 
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { findCreateTypesCall } from './__testutils__/findCreateTypesCall'
 
-import { PrismicFieldType } from '../src'
 import { createSchemaCustomization } from '../src/gatsby-node'
 
 test('creates base types', async (t) => {
@@ -71,7 +71,10 @@ test('creates field-specific image type', async (t) => {
   pluginOptions.schemas = {
     foo: {
       Main: {
-        image: { type: PrismicFieldType.Image, config: {} },
+        image: {
+          type: prismicT.CustomTypeModelFieldType.Image,
+          config: { label: 'Image', constraint: {}, thumbnails: [] },
+        },
       },
     },
   }
@@ -122,9 +125,11 @@ test('creates field-specific thumbnail types', async (t) => {
     foo: {
       Main: {
         image: {
-          type: PrismicFieldType.Image,
+          type: prismicT.CustomTypeModelFieldType.Image,
           config: {
-            thumbnails: [{ name: 'Mobile', width: 1000 }],
+            label: 'Image',
+            constraint: {},
+            thumbnails: [{ name: 'Mobile', width: 1000, height: null }],
           },
         },
       },
@@ -169,7 +174,10 @@ test('localFile field resolves to remote node if image is present', async (t) =>
   pluginOptions.schemas = {
     foo: {
       Main: {
-        image: { type: PrismicFieldType.Image, config: {} },
+        image: {
+          type: prismicT.CustomTypeModelFieldType.Image,
+          config: { label: 'Image', constraint: {}, thumbnails: [] },
+        },
       },
     },
   }
@@ -195,7 +203,10 @@ test('localFile field resolves to null if image is not present', async (t) => {
   pluginOptions.schemas = {
     foo: {
       Main: {
-        image: { type: PrismicFieldType.Image, config: {} },
+        image: {
+          type: prismicT.CustomTypeModelFieldType.Image,
+          config: { label: 'Image', constraint: {}, thumbnails: [] },
+        },
       },
     },
   }
@@ -222,9 +233,11 @@ test('thumbnail field resolves thumbnails', async (t) => {
     foo: {
       Main: {
         image: {
-          type: PrismicFieldType.Image,
+          type: prismicT.CustomTypeModelFieldType.Image,
           config: {
-            thumbnails: [{ name: 'Mobile', width: 1000 }],
+            label: 'Image',
+            constraint: {},
+            thumbnails: [{ name: 'Mobile', width: 1000, height: null }],
           },
         },
       },
@@ -252,7 +265,10 @@ test('existing image URL parameters are persisted unless replaced in gatsby-plug
   pluginOptions.schemas = {
     foo: {
       Main: {
-        image: { type: PrismicFieldType.Image, config: {} },
+        image: {
+          type: prismicT.CustomTypeModelFieldType.Image,
+          config: { label: 'Image', constraint: {}, thumbnails: [] },
+        },
       },
     },
   }

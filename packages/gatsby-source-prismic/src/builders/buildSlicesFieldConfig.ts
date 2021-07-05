@@ -14,12 +14,7 @@ import { createType } from '../lib/createType'
 import { createTypes } from '../lib/createTypes'
 import { createTypePath } from '../lib/createTypePath'
 
-import {
-  Dependencies,
-  FieldConfigCreator,
-  PrismicFieldType,
-  UnknownRecord,
-} from '../types'
+import { Dependencies, FieldConfigCreator, UnknownRecord } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Slice zone's Slice. Both
@@ -41,7 +36,9 @@ const buildSliceChoiceType = (
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Slice)),
+    RTE.chainFirst(() =>
+      createTypePath(path, prismicT.CustomTypeModelSliceType.Slice),
+    ),
     RTE.chain((deps) =>
       pipe(
         {} as Record<
@@ -153,7 +150,9 @@ export const buildSlicesFieldConfig: FieldConfigCreator<prismicT.CustomTypeModel
   (path, schema) =>
     pipe(
       RTE.ask<Dependencies>(),
-      RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Slices)),
+      RTE.chainFirst(() =>
+        createTypePath(path, prismicT.CustomTypeModelFieldType.Slices),
+      ),
       RTE.chain((deps) =>
         pipe(
           buildSliceTypes(path, schema.config.choices),

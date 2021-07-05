@@ -110,7 +110,10 @@ export type PrismicSchemaField =
   | PrismicSchemaGroupField
   | PrismicSchemaSlicesField
 
-export type PrismicTypePathType = PrismicSpecialType | PrismicFieldType
+export type PrismicTypePathType =
+  | PrismicSpecialType
+  | prismicT.CustomTypeModelFieldType
+  | prismicT.CustomTypeModelSliceType
 
 export enum PrismicSpecialType {
   Document = 'Document',

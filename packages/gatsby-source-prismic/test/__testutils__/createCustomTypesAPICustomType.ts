@@ -1,6 +1,7 @@
 import * as crypto from 'crypto'
+import * as prismicT from '@prismicio/types'
 
-import { PrismicCustomTypeApiCustomType, PrismicFieldType } from '../../src'
+import { PrismicCustomTypeApiCustomType } from '../../src'
 
 export const createCustomTypesAPICustomType = (
   customType?: Partial<PrismicCustomTypeApiCustomType>,
@@ -16,7 +17,10 @@ export const createCustomTypesAPICustomType = (
     repeatable: true,
     json: {
       Main: {
-        foo: { type: PrismicFieldType.Text, config: {} },
+        foo: {
+          type: prismicT.CustomTypeModelFieldType.Text,
+          config: { label: 'Foo' },
+        },
       },
     },
     ...customType,

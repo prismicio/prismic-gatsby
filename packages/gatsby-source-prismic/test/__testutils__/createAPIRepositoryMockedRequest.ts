@@ -1,11 +1,11 @@
 import * as msw from 'msw'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
 
 import { createAuthorizationHeader } from './createAuthorizationHeader'
 
 import { PluginOptions } from '../../src'
 
-const DEFAULT_RESPONSE: prismic.Response.Repository = {
+const DEFAULT_RESPONSE: prismic.Repository = {
   types: { foo: 'Foo' },
   refs: [
     {
@@ -25,7 +25,8 @@ const DEFAULT_RESPONSE: prismic.Response.Repository = {
   ],
   bookmarks: {},
   tags: [],
-  licence: 'license',
+  forms: {},
+  license: 'license',
   languages: [{ id: 'fr-fr', name: 'fr-fr' }],
   experiments: {},
   oauth_initiate: 'oauth_initiate',
@@ -35,7 +36,7 @@ const DEFAULT_RESPONSE: prismic.Response.Repository = {
 
 export const createAPIRepositoryMockedRequest = (
   pluginOptions: PluginOptions,
-  overrides?: Partial<prismic.Response.Repository>,
+  overrides?: Partial<prismic.Repository>,
 ): msw.RestHandler =>
   msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
     if (

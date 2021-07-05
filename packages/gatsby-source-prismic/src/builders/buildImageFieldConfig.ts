@@ -12,7 +12,7 @@ import { createTypePath } from '../lib/createTypePath'
 
 import { buildImageBaseFieldConfigMap } from './buildImageBaseFieldConfigMap'
 
-import { Dependencies, FieldConfigCreator, PrismicFieldType } from '../types'
+import { Dependencies, FieldConfigCreator } from '../types'
 
 /**
  * Creates a GraphQL type containing fields for thumbnails of an Image field.
@@ -70,7 +70,9 @@ export const buildImageFieldConfig: FieldConfigCreator<prismicT.CustomTypeModelI
   (path, schema) =>
     pipe(
       RTE.ask<Dependencies>(),
-      RTE.chainFirst(() => createTypePath(path, PrismicFieldType.Image)),
+      RTE.chainFirst(() =>
+        createTypePath(path, prismicT.CustomTypeModelFieldType.Image),
+      ),
       RTE.bind('thumbnailsTypeName', () =>
         ReadonlyA.isEmpty(schema.config?.thumbnails ?? [])
           ? RTE.right(undefined)
