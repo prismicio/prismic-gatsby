@@ -143,6 +143,11 @@ const externalValidationProgram = (
         }
       }),
     ),
+    RTE.map((x) => {
+      console.log(x.client)
+
+      return x
+    }),
     RTE.bind('repository', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(

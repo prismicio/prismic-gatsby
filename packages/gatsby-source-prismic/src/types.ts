@@ -8,8 +8,6 @@ import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { NodeHelpers } from 'gatsby-node-helpers'
 
-export type ResolveType<T> = T extends PromiseLike<infer U> ? U : T
-
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P]
 }
@@ -96,20 +94,6 @@ export type FieldConfigCreator<
   gqlc.ObjectTypeComposerFieldConfigDefinition<unknown, unknown>
 >
 
-export interface PrismicSchema {
-  [tabName: string]: PrismicSchemaTab
-}
-
-export interface PrismicSchemaTab {
-  [fieldName: string]: PrismicSchemaField
-}
-
-export type PrismicSchemaField =
-  | PrismicSchemaStandardField
-  | PrismicSchemaImageField
-  | PrismicSchemaGroupField
-  | PrismicSchemaSlicesField
-
 export type PrismicTypePathType =
   | PrismicSpecialType
   | prismicT.CustomTypeModelFieldType
@@ -121,121 +105,10 @@ export enum PrismicSpecialType {
   Unknown = 'Unknown',
 }
 
-export enum PrismicFieldType {
-  Boolean = 'Boolean',
-  Color = 'Color',
-  Date = 'Date',
-  Embed = 'Embed',
-  GeoPoint = 'GeoPoint',
-  Group = 'Group',
-  Image = 'Image',
-  IntegrationFields = 'IntegrationFields',
-  Link = 'Link',
-  Number = 'Number',
-  Select = 'Select',
-  Slice = 'Slice',
-  Slices = 'Slices',
-  StructuredText = 'StructuredText',
-  Text = 'Text',
-  Timestamp = 'Timestamp',
-  UID = 'UID',
-}
-
-interface PrismicSchemaStandardField {
-  type: Exclude<PrismicFieldType, 'Image' | 'Group' | 'Slice' | 'Slices'>
-  config: {
-    label?: string
-    placeholder?: string
-  }
-}
-
-export interface PrismicSchemaImageField {
-  type: PrismicFieldType.Image
-  config: {
-    label?: string
-    thumbnails?: PrismicSchemaImageThumbnail[]
-  }
-}
-
-export interface PrismicSchemaImageThumbnail {
-  name: string
-  width?: number
-  height?: number
-}
-
-export interface PrismicSchemaGroupField {
-  type: PrismicFieldType.Group
-  config: {
-    label?: string
-    placeholder?: string
-    fields: Record<string, PrismicSchemaStandardField | PrismicSchemaImageField>
-  }
-}
-
-export interface PrismicSchemaSlicesField {
-  type: PrismicFieldType.Slices
-  config: {
-    labels?: Record<string, string[]>
-    choices: Record<string, PrismicSchemaSlice>
-  }
-}
-
-export interface PrismicSchemaSlice {
-  type: PrismicFieldType.Slice
-  'non-repeat': Record<string, PrismicSchemaStandardField>
-  repeat: Record<string, PrismicSchemaStandardField>
-}
-
-export type PrismicAPILinkField = {
-  link_type: 'Any' | 'Document' | 'Media' | 'Web'
-  isBroken: boolean
-  url?: string
-  target?: string
-  size?: number
-  id?: string
-  type?: string
-  tags?: string[]
-  lang?: string
-  slug?: string
-  uid?: string
-}
-
-export type PrismicAPIAlternateLanguageField = {
-  id: string
-  uid?: string
-  type: string
-  lang: string
-}
-
-export type PrismicAPIImageField = {
-  dimensions: { width: number; height: number } | null
-  alt: string | null
-  copyright: string | null
-  url: string | null
-  [key: string]: unknown
-}
-
-export type PrismicAPIStructuredTextField = {
-  type: string
-  text: string
-  spans: { [key: string]: unknown }
-}[]
-
-export interface PrismicAPIEmbedField extends UnknownRecord {
-  embed_url: string
-}
-
 export interface PrismicAPIDocumentNode
   extends prismicT.PrismicDocument,
     gatsby.Node {
   prismicId: string
-}
-
-export type PrismicAPISliceField = {
-  slice_type: string
-  slice_label: string
-  items: UnknownRecord[]
-  primary: UnknownRecord
 }
 
 export type PrismicWebhookBody =

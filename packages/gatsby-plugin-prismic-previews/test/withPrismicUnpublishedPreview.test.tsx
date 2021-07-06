@@ -2,7 +2,8 @@ import test from 'ava'
 import * as assert from 'assert'
 import * as mswNode from 'msw/node'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
+import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
 import * as gatsby from 'gatsby'
 import * as React from 'react'
@@ -172,16 +173,31 @@ test.serial('merges data if preview data is available', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
+  const repositoryConfigs = createRepositoryConfigs(pluginOptions)
+
   const ref = createPreviewRef(pluginOptions.repositoryName)
   cookie.set(prismic.cookie.preview, ref)
 
   const queryResponse = createPrismicAPIQueryResponse()
-  const queryResponseNodes = queryResponse.results.map(
-    (doc) =>
-      nodeHelpers.createNodeFactory(doc.type)(
-        doc,
-      ) as PrismicAPIDocumentNodeInput,
-  )
+  const queryResponseNodes = queryResponse.results.map((doc) => {
+    const node = nodeHelpers.createNodeFactory(doc.type)(
+      doc,
+    ) as PrismicAPIDocumentNodeInput
+
+    return {
+      ...node,
+      url: prismicH.asLink(
+        prismicH.documentToLinkField(doc),
+        repositoryConfigs[0].linkResolver,
+      ),
+      alternate_languages: node.alternate_languages.map(
+        (alternativeLanguage) => ({
+          ...alternativeLanguage,
+          raw: alternativeLanguage,
+        }),
+      ),
+    }
+  })
 
   // We'll use the first node as an unpublished preview. The unpublished HOC
   // should see this URL and find the node with a matching URL.
@@ -201,12 +217,12 @@ test.serial('merges data if preview data is available', async (t) => {
     previewable: { ...queryResponseNodes[0] },
     nonPreviewable: { ...queryResponseNodes[1] },
   }
+  // @ts-expect-error - _previewable doesn't exist on standard PrismicDocument
   staticData.previewable._previewable = queryResponseNodes[0].prismicId
   // Marking this data as "old" and should be replaced during the merge.
   staticData.previewable.uid = 'old'
 
   const pageProps = createPageProps(staticData)
-  const repositoryConfigs = createRepositoryConfigs(pluginOptions)
   const tree = createTree(pageProps, repositoryConfigs)
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -234,11 +250,11 @@ test.serial('merges data if preview data is available', async (t) => {
 
 test('componentResolverFromMap returns componentResolver', (t) => {
   const fooDoc = { ...createPrismicAPIDocument(), type: 'foo' }
-  const fooNode = createPrismicAPIDocumentNodeInput(undefined, fooDoc)
+  const fooNode = createPrismicAPIDocumentNodeInput({}, fooDoc)
   const FooComp = () => <div />
 
   const barDoc = { ...createPrismicAPIDocument(), type: 'bar' }
-  const barNode = createPrismicAPIDocumentNodeInput(undefined, barDoc)
+  const barNode = createPrismicAPIDocumentNodeInput({}, barDoc)
   const BarComp = () => <div />
 
   const componentResolver = componentResolverFromMap({

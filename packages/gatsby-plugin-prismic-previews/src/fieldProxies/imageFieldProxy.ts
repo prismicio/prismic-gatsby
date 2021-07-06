@@ -1,4 +1,4 @@
-import * as gatsbyPrismic from 'gatsby-source-prismic'
+import * as prismicT from '@prismicio/types'
 import * as imgixGatsbyHelpers from '@imgix/gatsby/dist/pluginHelpers.browser'
 import * as RE from 'fp-ts/ReaderEither'
 import * as R from 'fp-ts/Record'
@@ -15,24 +15,18 @@ import { sprintf } from '../lib/sprintf'
 import { PRISMIC_API_IMAGE_FIELDS } from '../constants'
 import { stripURLQueryParameters } from '../lib/stripURLQueryParameters'
 
-interface ImageProxyValue extends gatsbyPrismic.PrismicAPIImageField {
-  thumbnails: Record<string, gatsbyPrismic.PrismicAPIImageField>
+interface ImageProxyValue extends prismicT.ImageField {
+  thumbnails: Record<string, prismicT.ImageField>
 }
 
-export const valueRefinement = (
-  value: unknown,
-): value is gatsbyPrismic.PrismicAPIImageField =>
+export const valueRefinement = (value: unknown): value is prismicT.ImageField =>
   // Unfortunately, we can't check for specific properties here since it's
   // possible for the object to be empty if an image was never set.
   typeof value === 'object' && value !== null
 
 const buildImageProxyValue = (
-  fieldValue: gatsbyPrismic.PrismicAPIImageField,
-): RE.ReaderEither<
-  ProxyDocumentSubtreeEnv,
-  Error,
-  gatsbyPrismic.PrismicAPIImageField
-> =>
+  fieldValue: prismicT.ImageField,
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, prismicT.ImageField> =>
   pipe(
     RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bindW('url', () =>
@@ -131,7 +125,7 @@ const buildImageProxyValue = (
   )
 
 export const proxyValue = (
-  fieldValue: gatsbyPrismic.PrismicAPIImageField,
+  fieldValue: prismicT.ImageField,
   path: string[],
 ): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, ImageProxyValue> =>
   pipe(
@@ -145,7 +139,7 @@ export const proxyValue = (
         fields.right,
         refineFieldValue(
           valueRefinement,
-          gatsbyPrismic.PrismicFieldType.Image,
+          prismicT.CustomTypeModelFieldType.Image,
           path,
         ),
         RE.chain((baseFields) => buildImageProxyValue(baseFields)),
@@ -159,7 +153,7 @@ export const proxyValue = (
             thumbnailFields,
             refineFieldValue(
               valueRefinement,
-              gatsbyPrismic.PrismicFieldType.Image,
+              prismicT.CustomTypeModelFieldType.Image,
               path,
             ),
             RE.chain((baseFields) => buildImageProxyValue(baseFields)),

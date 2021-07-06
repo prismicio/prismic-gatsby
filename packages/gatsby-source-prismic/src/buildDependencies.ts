@@ -29,6 +29,11 @@ export const buildDependencies = (
   const prismicClient = prismic.createClient(prismicEndpoint, {
     fetch,
     accessToken: pluginOptions.accessToken,
+    defaultParams: {
+      lang: pluginOptions.lang,
+      fetchLinks: pluginOptions.fetchLinks,
+      graphQuery: pluginOptions.graphQuery,
+    },
   })
 
   if (pluginOptions.releaseID) {

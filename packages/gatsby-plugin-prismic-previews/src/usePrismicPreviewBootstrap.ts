@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as RE from 'fp-ts/ReaderEither'
 import * as TE from 'fp-ts/TaskEither'
@@ -18,7 +18,6 @@ import { fetchTypePaths } from './lib/fetchTypePaths'
 import { getCookie } from './lib/getCookie'
 import { isPreviewSession } from './lib/isPreviewSession'
 import { proxyDocumentNodeInput } from './lib/proxyDocumentNodeInput'
-import { queryAllDocuments } from './lib/queryAllDocuments'
 import { serializePath } from './lib/serializePath'
 import { sprintf } from './lib/sprintf'
 
@@ -27,7 +26,6 @@ import {
   PrismicAPIDocumentNodeInput,
   PrismicRepositoryConfigs,
   TypePathsStore,
-  UnknownRecord,
 } from './types'
 import { PrismicContextActionType, PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
@@ -105,7 +103,7 @@ interface UsePrismicPreviewBootstrapProgramEnv {
   ): IO.IO<void>
 
   createNodeId(input: string): string
-  createContentDigest(input: string | UnknownRecord): string
+  createContentDigest<T>(input: T): string
 
   pluginOptionsStore: PrismicContextState['pluginOptionsStore']
   repositoryConfigs: PrismicRepositoryConfigs
@@ -211,16 +209,31 @@ const previewBootstrapProgram: RTE.ReaderTaskEither<
     RTE.fromIO(env.appendTypePaths(env.repositoryName, env.typePaths)),
   ),
 
+  RTE.bind('prismicClient', (env) =>
+    RTE.right(
+      prismic.createClient(
+        env.repositoryPluginOptions.apiEndpoint ??
+          prismic.getEndpoint(env.repositoryName),
+        {
+          accessToken: env.repositoryPluginOptions.accessToken,
+          defaultParams: {
+            lang: env.repositoryPluginOptions.lang,
+            fetchLinks: env.repositoryPluginOptions.fetchLinks,
+            graphQuery: env.repositoryPluginOptions.graphQuery,
+          },
+        },
+      ),
+    ),
+  ),
+
   RTE.bindW('nodes', (env) =>
     pipe(
-      () =>
-        queryAllDocuments({
-          apiEndpoint: env.repositoryPluginOptions.apiEndpoint,
-          lang: env.repositoryPluginOptions.lang,
-          fetchLinks: env.repositoryPluginOptions.fetchLinks,
-          graphQuery: env.repositoryPluginOptions.graphQuery,
-          accessToken: env.repositoryPluginOptions.accessToken,
-        }),
+      RTE.fromTaskEither(
+        TE.tryCatch(
+          () => env.prismicClient.getAll(),
+          (error) => error as Error,
+        ),
+      ),
       RTE.map(
         A.map(
           (doc) =>
@@ -341,8 +354,7 @@ export const usePrismicPreviewBootstrap = (
             serializePath(path)
           ],
         createNodeId: (input: string) => md5(input),
-        createContentDigest: (input: string | UnknownRecord) =>
-          md5(JSON.stringify(input)),
+        createContentDigest: <T>(input: T) => md5(JSON.stringify(input)),
       }),
       TE.fold(
         (error) =>

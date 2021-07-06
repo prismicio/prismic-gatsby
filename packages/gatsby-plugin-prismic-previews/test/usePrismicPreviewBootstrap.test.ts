@@ -2,7 +2,8 @@ import test from 'ava'
 import * as msw from 'msw'
 import * as mswNode from 'msw/node'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
+import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { createNodeHelpers } from 'gatsby-node-helpers'
@@ -27,6 +28,8 @@ import {
   PrismicRepositoryConfigs,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
+import { createAuthorizationHeader } from './__testutils__/createAuthorizationHeader'
+import { IS_PROXY } from '../src/constants'
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
@@ -126,7 +129,18 @@ test.serial(
 
       return {
         ...node,
-        url: config[0].linkResolver(doc),
+        url: prismicH.asLink(
+          prismicH.documentToLinkField(doc),
+          config[0].linkResolver,
+        ),
+        alternate_languages: node.alternate_languages.map(
+          (alternativeLanguage) => ({
+            ...alternativeLanguage,
+            raw: alternativeLanguage,
+            // Sorry, this is an implementation detail but we need it pass tests.
+            [IS_PROXY]: true,
+          }),
+        ),
       }
     })
 
@@ -137,7 +151,18 @@ test.serial(
 
       return {
         ...node,
-        url: config[0].linkResolver(doc),
+        url: prismicH.asLink(
+          prismicH.documentToLinkField(doc),
+          config[0].linkResolver,
+        ),
+        alternate_languages: node.alternate_languages.map(
+          (alternativeLanguage) => ({
+            ...alternativeLanguage,
+            raw: alternativeLanguage,
+            // Sorry, this is an implementation detail but we need it pass tests.
+            [IS_PROXY]: true,
+          }),
+        ),
       }
     })
 
@@ -150,8 +175,8 @@ test.serial(
         resolveURL(pluginOptions.apiEndpoint, './documents/search'),
         (req, res, ctx) => {
           if (
-            req.url.searchParams.get('access_token') ===
-              pluginOptions.accessToken &&
+            req.headers.get('Authorization') ===
+              createAuthorizationHeader(pluginOptions.accessToken) &&
             req.url.searchParams.get('ref') === ref &&
             req.url.searchParams.get('lang') === pluginOptions.lang &&
             req.url.searchParams.get('graphQuery') ===
@@ -159,15 +184,20 @@ test.serial(
             req.url.searchParams.get('pageSize') === '100'
           ) {
             switch (req.url.searchParams.get('page')) {
-              case '1':
-                return res(ctx.json(queryResponsePage1))
               case '2':
                 return res(ctx.json(queryResponsePage2))
               default:
-                return res(ctx.status(401))
+                return res(ctx.json(queryResponsePage1))
             }
           } else {
-            return res(ctx.status(401))
+            return res(
+              ctx.status(403),
+              ctx.json({
+                error: '[MOCK ERROR]',
+                oauth_initiate: 'oauth_initiate',
+                oauth_token: 'oauth_token',
+              }),
+            )
           }
         },
       ),
@@ -252,20 +282,18 @@ test.serial('fails if already bootstrapped', async (t) => {
       resolveURL(pluginOptions.apiEndpoint, './documents/search'),
       (req, res, ctx) => {
         if (
-          req.url.searchParams.get('access_token') ===
-            pluginOptions.accessToken &&
+          req.headers.get('Authorization') ===
+            createAuthorizationHeader(pluginOptions.accessToken) &&
           req.url.searchParams.get('ref') === ref &&
           req.url.searchParams.get('lang') === pluginOptions.lang &&
           req.url.searchParams.get('graphQuery') === pluginOptions.graphQuery &&
           req.url.searchParams.get('pageSize') === '100'
         ) {
           switch (req.url.searchParams.get('page')) {
-            case '1':
-              return res(ctx.json(queryResponsePage1))
             case '2':
               return res(ctx.json(queryResponsePage2))
             default:
-              return res(ctx.status(401))
+              return res(ctx.json(queryResponsePage1))
           }
         } else {
           return res(ctx.status(401))

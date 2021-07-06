@@ -1,7 +1,7 @@
 import test from 'ava'
 import * as mswNode from 'msw/node'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
 import * as cookie from 'es-cookie'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { createNodeHelpers } from 'gatsby-node-helpers'

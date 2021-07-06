@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
+import * as prismic from '@prismicio/client'
 import * as IOE from 'fp-ts/IOEither'
 import { constVoid, pipe } from 'fp-ts/function'
-import { HTTPError } from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { isPreviewSession } from './lib/isPreviewSession'
@@ -106,8 +106,7 @@ export const withPrismicPreview = <
       switch (bootstrapState.state) {
         case 'FAILED': {
           if (
-            bootstrapState.error instanceof HTTPError &&
-            bootstrapState.error.response.status === 401 &&
+            bootstrapState.error instanceof prismic.ForbiddenError &&
             contextState.activeRepositoryName &&
             contextState.pluginOptionsStore[contextState.activeRepositoryName]
               .promptForAccessToken

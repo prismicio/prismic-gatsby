@@ -1,5 +1,6 @@
 import * as React from 'react'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
+import * as prismicH from '@prismicio/helpers'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
@@ -7,16 +8,14 @@ import * as A from 'fp-ts/Array'
 import * as R from 'fp-ts/Record'
 import * as IO from 'fp-ts/IO'
 import { constVoid, pipe } from 'fp-ts/function'
-import ky from 'ky'
 
-import { buildQueryParams } from './lib/buildQueryParams'
 import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 import { getCookie } from './lib/getCookie'
 import { getURLSearchParam } from './lib/getURLSearchParam'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
 import { sprintf } from './lib/sprintf'
 
-import { LinkResolver, PrismicRepositoryConfigs } from './types'
+import { PrismicRepositoryConfigs } from './types'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { PrismicContextActionType, PrismicContextState } from './context'
 import {
@@ -161,42 +160,33 @@ const previewResolverProgram: RTE.ReaderTaskEither<
   // Start resolving.
   RTE.chainFirst((env) => RTE.fromIO(env.beginResolving)),
 
-  RTE.bind(
-    'params',
-    (env) => () =>
-      buildQueryParams({
-        lang: env.repositoryPluginOptions.lang,
-        fetchLinks: env.repositoryPluginOptions.fetchLinks,
-        graphQuery: env.repositoryPluginOptions.graphQuery,
-        accessToken: env.repositoryPluginOptions.accessToken,
-      }),
-  ),
-  RTE.bind('url', (env) =>
+  RTE.bind('prismicClient', (env) =>
     RTE.right(
-      prismic.buildQueryURL(
-        env.repositoryPluginOptions.apiEndpoint,
-        env.previewRef,
-        prismic.predicate.at('document.id', env.documentId),
-        env.params,
+      prismic.createClient(
+        env.repositoryPluginOptions.apiEndpoint ??
+          prismic.getEndpoint(env.repositoryName),
+        {
+          accessToken: env.repositoryPluginOptions.accessToken,
+          defaultParams: {
+            lang: env.repositoryPluginOptions.lang,
+            fetchLinks: env.repositoryPluginOptions.fetchLinks,
+            graphQuery: env.repositoryPluginOptions.graphQuery,
+          },
+        },
       ),
-    ),
-  ),
-  RTE.bind('res', (env) =>
-    RTE.fromTaskEither(
-      TE.tryCatch(
-        () => ky(env.url).json<prismic.Response.Query>(),
-        (error) => error as Error,
-      ),
-    ),
-  ),
-  RTE.bindW('document', (env) =>
-    pipe(
-      A.head(env.res.results),
-      RTE.fromOption(() => new Error('Document could not be found.')),
     ),
   ),
   RTE.bind('path', (env) =>
-    RTE.right(env.repositoryConfig.linkResolver(env.document)),
+    RTE.fromTaskEither(
+      TE.tryCatch(
+        () =>
+          env.prismicClient.resolvePreviewURL({
+            linkResolver: env.repositoryConfig.linkResolver,
+            defaultURL: '/',
+          }),
+        (error) => error as Error,
+      ),
+    ),
   ),
 
   // End resolving.
@@ -210,7 +200,7 @@ export type UsePrismicPreviewResolverRepositoryConfig = {
    * Link Resolver for the repository. This should be the same Link Resolver
    * provided to `gatsby-source-prismic`'s plugin options.
    */
-  linkResolver: LinkResolver
+  linkResolver: prismicH.LinkResolverFunction
 }
 
 /**

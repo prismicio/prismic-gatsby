@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
+import * as prismic from '@prismicio/client'
 import * as IOE from 'fp-ts/IOEither'
 import { pipe } from 'fp-ts/function'
-import { HTTPError } from 'ky'
 
 import { getComponentDisplayName } from './lib/getComponentDisplayName'
 import { isPreviewResolverSession } from './lib/isPreviewResolverSession'
@@ -96,7 +96,9 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
       switch (resolverState.state) {
         case 'RESOLVED': {
           if ((config.autoRedirect ?? true) && resolverState.path) {
-            ;(config.navigate ?? gatsby.navigate)(resolverState.path)
+            const navigate = config.navigate ?? gatsby.navigate
+
+            navigate(resolverState.path)
           }
 
           break
@@ -104,8 +106,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 
         case 'FAILED': {
           if (
-            resolverState.error instanceof HTTPError &&
-            resolverState.error.response.status === 401 &&
+            resolverState.error instanceof prismic.ForbiddenError &&
             contextState.activeRepositoryName &&
             contextState.pluginOptionsStore[contextState.activeRepositoryName]
               .promptForAccessToken
