@@ -1,4 +1,4 @@
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
 import * as IOE from 'fp-ts/IOEither'
 import { constTrue, pipe } from 'fp-ts/function'
 

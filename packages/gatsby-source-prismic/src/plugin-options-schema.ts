@@ -10,7 +10,6 @@ import * as R from 'fp-ts/Record'
 import * as struct from 'fp-ts/struct'
 import * as string from 'fp-ts/string'
 import { constVoid, pipe } from 'fp-ts/function'
-import got from 'got'
 import fetch from 'node-fetch'
 
 import { sprintf } from './lib/sprintf'
@@ -75,10 +74,16 @@ const externalCustomTypeFetchingProgram = (
     RTE.bindW('response', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
-          () =>
-            got(scope.pluginOptions.customTypesApiEndpoint, {
-              headers: scope.headers,
-            }).json<PrismicCustomTypeApiResponse>(),
+          async () => {
+            const res = await fetch(
+              scope.pluginOptions.customTypesApiEndpoint,
+              {
+                headers: scope.headers,
+              },
+            )
+
+            return (await res.json()) as PrismicCustomTypeApiResponse
+          },
           () =>
             new Joi.ValidationError(
               'Failed Custom Type API Request',
@@ -143,11 +148,6 @@ const externalValidationProgram = (
         }
       }),
     ),
-    RTE.map((x) => {
-      console.log(x.client)
-
-      return x
-    }),
     RTE.bind('repository', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(

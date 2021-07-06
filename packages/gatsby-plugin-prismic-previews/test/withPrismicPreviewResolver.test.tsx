@@ -2,7 +2,8 @@ import test from 'ava'
 import * as sinon from 'sinon'
 import * as assert from 'assert'
 import * as mswNode from 'msw/node'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
+import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
 import * as gatsby from 'gatsby'
 import * as React from 'react'
@@ -184,7 +185,10 @@ test.serial('redirects to path on valid preview', async (t) => {
 
   t.true(
     (config.navigate as sinon.SinonStub).calledWith(
-      hookConfig[0].linkResolver(doc),
+      prismicH.asLink(
+        prismicH.documentToLinkField(doc),
+        hookConfig[0].linkResolver,
+      ),
     ),
   )
 })
@@ -227,7 +231,10 @@ test.serial(
 
     t.true(
       result.getByTestId('prismicPreviewPath').textContent ===
-        hookConfig[0].linkResolver(doc),
+        prismicH.asLink(
+          prismicH.documentToLinkField(doc),
+          hookConfig[0].linkResolver,
+        ),
     )
     t.true((config.navigate as sinon.SinonStub).notCalled)
   },

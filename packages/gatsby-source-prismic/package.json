@@ -34,11 +34,9 @@
     "@prismicio/helpers": "^2.0.0-alpha.4",
     "@prismicio/types": "^0.1.1",
     "camel-case": "^4.1.2",
-    "fetch-h2": "^3.0.0",
     "fp-ts": "^2.10.5",
     "gatsby-node-helpers": "^1.2.1",
     "gatsby-source-filesystem": "^3.5.0",
-    "got": "^11.8.1",
     "tiny-hashes": "^1.0.1"
   },
   "peerDependencies": {

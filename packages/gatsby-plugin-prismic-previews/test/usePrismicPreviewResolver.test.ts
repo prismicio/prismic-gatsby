@@ -1,6 +1,6 @@
 import test from 'ava'
 import * as mswNode from 'msw/node'
-import * as prismic from 'ts-prismic'
+import * as prismic from '@prismicio/client'
 import * as cookie from 'es-cookie'
 import { renderHook } from '@testing-library/react-hooks'
 import globalJsdom from 'global-jsdom'
