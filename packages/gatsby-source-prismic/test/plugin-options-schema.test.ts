@@ -11,10 +11,10 @@ import {
 import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
 import { createCustomTypesAPICustomType } from './__testutils__/createCustomTypesAPICustomType'
 import { createCustomTypesAPIMockedRequest } from './__testutils__/createCustomTypesAPIMockedRequest'
+import { isValidAccessToken } from './__testutils__/isValidAccessToken'
 
 import { PluginOptions, PrismicCustomTypeApiResponse } from '../src'
 import { pluginOptionsSchema } from '../src/plugin-options-schema'
-import { createAuthorizationHeader } from './__testutils__/createAuthorizationHeader'
 
 const server = mswn.setupServer()
 test.before(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -44,10 +44,7 @@ test.serial('passes on valid options', async (t) => {
 
   server.use(
     msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
-      if (
-        req.headers.get('Authorization') ===
-        createAuthorizationHeader(pluginOptions.accessToken)
-      ) {
+      if (isValidAccessToken(pluginOptions.accessToken, req)) {
         return res(
           ctx.json({
             types: { page: 'Page' },

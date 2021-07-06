@@ -1,7 +1,7 @@
 import * as msw from 'msw'
 import * as prismic from '@prismicio/client'
 
-import { createAuthorizationHeader } from './createAuthorizationHeader'
+import { isValidAccessToken } from './isValidAccessToken'
 
 import { PluginOptions } from '../../src'
 
@@ -39,11 +39,7 @@ export const createAPIRepositoryMockedRequest = (
   overrides?: Partial<prismic.Repository>,
 ): msw.RestHandler =>
   msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
-    if (
-      req.headers.get('Authorization') ===
-        createAuthorizationHeader(pluginOptions.accessToken) ||
-      !pluginOptions.accessToken
-    ) {
+    if (isValidAccessToken(pluginOptions.accessToken, req)) {
       return res(ctx.json({ ...DEFAULT_RESPONSE, ...overrides }))
     } else {
       return res(

@@ -1,7 +1,7 @@
 import * as msw from 'msw'
 import * as prismic from '@prismicio/client'
 
-import { createAuthorizationHeader } from './createAuthorizationHeader'
+import { isValidAccessToken } from './isValidAccessToken'
 import { resolveURL } from './resolveURL'
 
 import { PluginOptions } from '../../src'
@@ -33,12 +33,11 @@ export const createAPIQueryMockedRequest = (
       )
 
       if (
-        (searchParamsMatch &&
-          req.headers.get('Authorization') ===
-            createAuthorizationHeader(
-              searchParams.accessToken ?? pluginOptions.accessToken,
-            )) ||
-        !pluginOptions.accessToken
+        searchParamsMatch &&
+        isValidAccessToken(
+          searchParams.accessToken ?? pluginOptions.accessToken,
+          req,
+        )
       ) {
         return res(ctx.json(queryResponse))
       } else {

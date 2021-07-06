@@ -16,6 +16,7 @@ import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
+import { isValidAccessToken } from './__testutils__/isValidAccessToken'
 import { polyfillKy } from './__testutils__/polyfillKy'
 import { resolveURL } from './__testutils__/resolveURL'
 
@@ -28,7 +29,6 @@ import {
   PrismicRepositoryConfigs,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
-import { createAuthorizationHeader } from './__testutils__/createAuthorizationHeader'
 import { IS_PROXY } from '../src/constants'
 
 const createRepositoryConfigs = (
@@ -175,8 +175,7 @@ test.serial(
         resolveURL(pluginOptions.apiEndpoint, './documents/search'),
         (req, res, ctx) => {
           if (
-            req.headers.get('Authorization') ===
-              createAuthorizationHeader(pluginOptions.accessToken) &&
+            isValidAccessToken(pluginOptions.accessToken, req) &&
             req.url.searchParams.get('ref') === ref &&
             req.url.searchParams.get('lang') === pluginOptions.lang &&
             req.url.searchParams.get('graphQuery') ===
@@ -282,8 +281,7 @@ test.serial('fails if already bootstrapped', async (t) => {
       resolveURL(pluginOptions.apiEndpoint, './documents/search'),
       (req, res, ctx) => {
         if (
-          req.headers.get('Authorization') ===
-            createAuthorizationHeader(pluginOptions.accessToken) &&
+          isValidAccessToken(pluginOptions.accessToken, req) &&
           req.url.searchParams.get('ref') === ref &&
           req.url.searchParams.get('lang') === pluginOptions.lang &&
           req.url.searchParams.get('graphQuery') === pluginOptions.graphQuery &&
