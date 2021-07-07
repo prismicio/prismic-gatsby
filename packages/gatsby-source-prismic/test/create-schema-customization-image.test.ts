@@ -268,14 +268,14 @@ test('existing image URL parameters are persisted unless replaced in gatsby-plug
   // We're adding the `w=1` parameter to ensure that it is replaced by the
   // resolver to properly support responsive images.
   const originalUrl = new URL(
-    'https://example.com/image%402x.png?rect=0,0,100,200&sat=100&w=1',
+    'https://example.com/image.png?rect=0,0,100,200&sat=100&w=1',
   )
   const field = { url: originalUrl.toString() }
   const imgixParams = { sat: 50 }
 
   const server = mswn.setupServer(
     msw.rest.get(
-      `https://example.com/image@2x.png`,
+      `${originalUrl.origin}${originalUrl.pathname}`,
       (req, res, ctx) => {
         const params = req.url.searchParams
 
@@ -347,4 +347,75 @@ test('existing image URL parameters are persisted unless replaced in gatsby-plug
     gatsbyImageDataSrcUrl.searchParams.get('w'),
     originalUrl.searchParams.get('w'),
   )
+})
+
+test('image URL are properly decoded', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+
+  pluginOptions.schemas = {
+    foo: {
+      Main: {
+        image: { type: PrismicFieldType.Image, config: {} },
+      },
+    },
+  }
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+  const call = findCreateTypesCall(
+    'PrismicPrefixFooDataImageImageType',
+    gatsbyContext.actions.createTypes as sinon.SinonStub,
+  )
+
+  const originalUrl = new URL(
+    'https://example.com/image%402x.png',
+  )
+  const field = { url: originalUrl.toString() }
+
+  const server = mswn.setupServer(
+    msw.rest.get(
+      `https://example.com/image@2x.png`,
+      (req, res, ctx) => {
+        const params = req.url.searchParams
+
+        if (params.get('fm') === 'json') {
+          return res(
+            ctx.json({
+              'Content-Type': 'image/png',
+              PixelWidth: 200,
+              PixelHeight: 100,
+            }),
+          )
+        } else {
+          t.fail(
+            'Forcing a failure due to an unhandled request for Imgix image metadata',
+          )
+
+          return
+        }
+      },
+    ),
+  )
+  server.listen({ onUnhandledRequest: 'error' })
+  t.teardown(() => {
+    server.close()
+  })
+
+  const urlRes = await call.config.fields.url.resolve(field)
+  const urlUrl = new URL(urlRes)
+  t.is(urlUrl.pathname, '/image@2x.png')
+
+  const fixedRes = await call.config.fields.fixed.resolve(field)
+  const fixedSrcUrl = new URL(fixedRes.src)
+  t.is(fixedSrcUrl.pathname, '/image@2x.png')
+
+  const fluidRes = await call.config.fields.fluid.resolve(field)
+  const fluidSrcUrl = new URL(fluidRes.src)
+  t.is(fluidSrcUrl.pathname, '/image@2x.png')
+
+  const gatsbyImageDataRes = await call.config.fields.gatsbyImageData.resolve(field)
+  const gatsbyImageDataSrcUrl = new URL(gatsbyImageDataRes.images.fallback.src)
+  t.is(gatsbyImageDataSrcUrl.pathname, '/image@2x.png')
 })
