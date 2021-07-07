@@ -268,14 +268,14 @@ test('existing image URL parameters are persisted unless replaced in gatsby-plug
   // We're adding the `w=1` parameter to ensure that it is replaced by the
   // resolver to properly support responsive images.
   const originalUrl = new URL(
-    'https://example.com/image.png?rect=0,0,100,200&sat=100&w=1',
+    'https://example.com/image%402x.png?rect=0,0,100,200&sat=100&w=1',
   )
   const field = { url: originalUrl.toString() }
   const imgixParams = { sat: 50 }
 
   const server = mswn.setupServer(
     msw.rest.get(
-      `${originalUrl.origin}${originalUrl.pathname}`,
+      `https://example.com/image@2x.png`,
       (req, res, ctx) => {
         const params = req.url.searchParams
 
