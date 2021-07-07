@@ -102,10 +102,6 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
         ? 'null'
         : props.isPrismicPreview.toString()}
     </div>
-    <div data-testid="prismicPreviewState">{props.prismicPreviewState}</div>
-    <div data-testid="prismicPreviewError">
-      {props.prismicPreviewError?.message}
-    </div>
     <div data-testid="prismicPreviewOriginalData">
       {JSON.stringify(props.prismicPreviewOriginalData)}
     </div>

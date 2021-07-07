@@ -7,7 +7,8 @@ import * as prismic from '@prismicio/client'
 import * as prismicT from '@prismicio/types'
 import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
-import { renderHook, act } from '@testing-library/react-hooks'
+import * as assert from 'assert'
+import { renderHook, act, cleanup } from '@testing-library/react-hooks'
 import browserEnv from 'browser-env'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
@@ -24,6 +25,7 @@ import {
   PluginOptions,
   PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
+  PrismicPreviewState,
   PrismicRepositoryConfigs,
   usePrismicPreviewBootstrap,
   usePrismicPreviewContext,
@@ -46,10 +48,16 @@ test.before(() => {
   polyfillKy()
   browserEnv(['window', 'document'])
   server.listen({ onUnhandledRequest: 'error' })
+  window.requestAnimationFrame = function (callback) {
+    return setTimeout(callback, 0)
+  }
   globalThis.__PATH_PREFIX__ = 'https://example.com'
 })
 test.beforeEach(() => {
   clearAllCookies()
+})
+test.afterEach(() => {
+  cleanup()
 })
 test.after(() => {
   server.close()
@@ -58,7 +66,7 @@ test.after(() => {
 // Opting out of defining a return type here since this is just a test.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const performPreview = async (
-  t: ExecutionContext,
+  _t: ExecutionContext,
   gatsbyContext: gatsby.BrowserPluginArgs,
   pluginOptions: PluginOptions,
   repositoryConfigs: PrismicRepositoryConfigs,
@@ -73,7 +81,7 @@ const performPreview = async (
   server.use(createTypePathsMockedRequest(typePathsFilename, typePaths))
 
   await onClientEntry(gatsbyContext, pluginOptions)
-  const { result, waitForValueToChange } = renderHook(
+  const { result, waitFor } = renderHook(
     () => {
       const context = usePrismicPreviewContext()
       const bootstrap = usePrismicPreviewBootstrap(repositoryConfigs)
@@ -83,18 +91,21 @@ const performPreview = async (
     { wrapper: PrismicPreviewProvider },
   )
 
-  t.true(result.current.bootstrap[0].state === 'INIT')
-
   act(() => {
-    const [, bootstrapPreview] = result.current.bootstrap
-    bootstrapPreview()
+    result.current.bootstrap()
   })
 
-  await waitForValueToChange(() => result.current.bootstrap[0].state)
-  t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPING')
-
-  await waitForValueToChange(() => result.current.bootstrap[0].state)
-  t.true(result.current.bootstrap[0].state === 'BOOTSTRAPPED')
+  await waitFor(() =>
+    assert.ok(
+      result.current.context[0].previewState ===
+        PrismicPreviewState.BOOTSTRAPPING,
+    ),
+  )
+  await waitFor(() =>
+    assert.ok(
+      result.current.context[0].previewState === PrismicPreviewState.ACTIVE,
+    ),
+  )
 
   return result
 }

@@ -34,7 +34,6 @@ import {
   withPrismicPreview,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
-import { IS_PROXY } from '../src/constants'
 
 const nodeHelpers = createNodeHelpers({
   typePrefix: 'Prismic prefix',
@@ -80,10 +79,6 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
       {props.isPrismicPreview === null
         ? 'null'
         : props.isPrismicPreview.toString()}
-    </div>
-    <div data-testid="prismicPreviewState">{props.prismicPreviewState}</div>
-    <div data-testid="prismicPreviewError">
-      {props.prismicPreviewError?.message}
     </div>
     <div data-testid="prismicPreviewOriginalData">
       {JSON.stringify(props.prismicPreviewOriginalData)}
