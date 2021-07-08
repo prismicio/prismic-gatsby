@@ -41,7 +41,8 @@ const buildImageProxyValue = (
         RE.fromOption(() => new Error(sprintf('Missing image URL'))),
       ),
     ),
-    RE.bindW('sanitizedURL', (env) =>
+    RE.bindW('sanitizedURL', (env) => RE.right(sanitizeImageURL(env.url))),
+    RE.bindW('sanitizedURLBase', (env) =>
       pipe(stripURLQueryParameters(env.url), sanitizeImageURL, RE.right),
     ),
     RE.bindW('sourceWidth', () =>
@@ -79,7 +80,7 @@ const buildImageProxyValue = (
     RE.bind('fixed', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildFixedObject({
-          url: env.sanitizedURL,
+          url: env.sanitizedURLBase,
           args: { ...env.args, width: 400 },
           sourceWidth: env.sourceWidth,
           sourceHeight: env.sourceHeight,
@@ -89,7 +90,7 @@ const buildImageProxyValue = (
     RE.bind('fluid', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildFluidObject({
-          url: env.sanitizedURL,
+          url: env.sanitizedURLBase,
           args: { ...env.args, maxWidth: 800 },
           sourceWidth: env.sourceWidth,
           sourceHeight: env.sourceHeight,
@@ -99,7 +100,7 @@ const buildImageProxyValue = (
     RE.bind('gatsbyImageData', (env) =>
       RE.of(
         imgixGatsbyHelpers.buildGatsbyImageDataObject({
-          url: env.sanitizedURL,
+          url: env.sanitizedURLBase,
           dimensions: {
             width: env.sourceWidth,
             height: env.sourceHeight,
@@ -121,6 +122,7 @@ const buildImageProxyValue = (
     ),
     RE.map((env) => ({
       ...fieldValue,
+      url: env.sanitizedURL,
       fixed: env.fixed,
       fluid: env.fluid,
       gatsbyImageData: env.gatsbyImageData,
