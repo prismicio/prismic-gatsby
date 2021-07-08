@@ -267,7 +267,10 @@ test.serial(
     pluginOptions.schemas = {
       foo: {
         Main: {
-          image: { type: PrismicFieldType.Image, config: {} },
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: { label: 'Image', constraint: {}, thumbnails: [] },
+          },
         },
       },
     }

@@ -672,11 +672,13 @@ test.serial('image URL is properly decoded', async (t) => {
     'https://example.com/image@2x with spaces and plus signs &.png',
   )
   const doc = createPrismicAPIDocument({
-    image: {
-      dimensions: { width: 400, height: 300 },
-      alt: 'alt',
-      copyright: 'copyright',
-      url: originalUrl.toString(),
+    data: {
+      image: {
+        dimensions: { width: 400, height: 300 },
+        alt: 'alt',
+        copyright: 'copyright',
+        url: originalUrl.toString(),
+      },
     },
   })
   const queryResponse = createPrismicAPIQueryResponse([doc])
@@ -696,6 +698,7 @@ test.serial('image URL is properly decoded', async (t) => {
     },
   )
 
+  // @ts-expect-error - The provided type does not match since we change its shape during the proxy process.
   const node = result.current.context[0].nodes[
     doc.id
   ] as PrismicAPIDocumentNodeInput<{
