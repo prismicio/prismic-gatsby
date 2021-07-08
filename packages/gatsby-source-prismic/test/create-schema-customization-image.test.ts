@@ -354,7 +354,7 @@ test.serial(
   },
 )
 
-test.serial('image URL are properly decoded', async (t) => {
+test.serial('image URL is properly decoded', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
