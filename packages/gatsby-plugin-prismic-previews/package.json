@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-prismic-previews",
-  "version": "4.0.0-beta.20",
+  "version": "4.0.0-beta.21",
   "description": "Gatsby plugin for integrating client-side Prismic previews support",
   "license": "MIT",
   "main": "./dist/index.js",

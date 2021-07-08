@@ -1,9 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./",
     "resolveJsonModule": true,
     "jsx": "react"
   },
-  "include": ["src"],
+  "include": ["src"]
 }

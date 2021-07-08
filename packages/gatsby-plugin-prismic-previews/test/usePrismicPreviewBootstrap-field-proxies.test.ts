@@ -655,6 +655,73 @@ test.serial(
   },
 )
 
+test.serial('image URL is properly decoded', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+  const config = createRepositoryConfigs(pluginOptions)
+
+  // This example URL contains the following characters:
+  // - @
+  // - &
+  // - spaces as "%20"
+  // - spaces as "+"
+  const originalUrl = new URL(
+    'https://example.com/image%402x%20with%20spaces+and+plus+signs+&.png',
+  )
+  const decodedUrl = new URL(
+    'https://example.com/image@2x with spaces and plus signs &.png',
+  )
+  const doc = createPrismicAPIDocument({
+    image: {
+      dimensions: { width: 400, height: 300 },
+      alt: 'alt',
+      copyright: 'copyright',
+      url: originalUrl.toString(),
+    },
+  })
+  const queryResponse = createPrismicAPIQueryResponse([doc])
+
+  const result = await performPreview(
+    t,
+    // @ts-expect-error - Partial gatsbyContext provided
+    gatsbyContext,
+    pluginOptions,
+    config,
+    queryResponse,
+    '4d8f043474b0c49cf5967510279f45a2.json',
+    {
+      type: gatsbyPrismic.PrismicSpecialType.Document,
+      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      'type.data.image': gatsbyPrismic.PrismicFieldType.Image,
+    },
+  )
+
+  const node = result.current.context[0].nodes[
+    doc.id
+  ] as PrismicAPIDocumentNodeInput<{
+    image: {
+      url: string
+      fixed: { src: string }
+      fluid: { src: string }
+      gatsbyImageData: { images: { fallback: { src: string } } }
+    }
+  }>
+
+  const urlUrl = new URL(node.data.image.url)
+  t.is(urlUrl.pathname, decodedUrl.pathname)
+
+  const fixedSrcUrl = new URL(node.data.image.fixed.src)
+  t.is(fixedSrcUrl.pathname, decodedUrl.pathname)
+
+  const fluidSrcUrl = new URL(node.data.image.fluid.src)
+  t.is(fluidSrcUrl.pathname, decodedUrl.pathname)
+
+  const gatsbyImageDataSrcUrl = new URL(
+    node.data.image.gatsbyImageData.images.fallback.src,
+  )
+  t.is(gatsbyImageDataSrcUrl.pathname, decodedUrl.pathname)
+})
+
 test.serial('group', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
