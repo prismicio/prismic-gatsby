@@ -124,20 +124,19 @@ test.serial('fails on invalid customTypesApiToken', async (t) => {
     customTypesApiToken: 'customTypesApiToken',
   }
 
-  // Intentionally making a failed 401 response.
+  // Intentionally making a failed 403 response.
   server.use(
     msw.rest.get(
       'https://customtypes.prismic.io/customtypes',
-      (_req, res, ctx) => res(ctx.status(401)),
+      (_req, res, ctx) =>
+        res(ctx.status(403), ctx.json({ message: '[MOCK FORBIDDEN ERROR]' })),
     ),
   )
 
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
   t.false(res.isValid)
-  t.deepEqual(res.errors, [
-    'The Custom Type API could not be accessed. Please check that the customTypesApiToken provided is valid.',
-  ])
+  t.deepEqual(res.errors, ['[MOCK FORBIDDEN ERROR]'])
 })
 
 test.serial('allows only one of qraphQuery or fetchLinks', async (t) => {

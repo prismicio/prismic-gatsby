@@ -31,6 +31,7 @@
   "dependencies": {
     "@imgix/gatsby": "^1.6.9",
     "@prismicio/client": "^6.0.0-alpha.8",
+    "@prismicio/custom-types-client": "^0.0.1",
     "@prismicio/helpers": "^2.0.0-alpha.4",
     "@prismicio/types": "^0.1.1",
     "camel-case": "^4.1.2",

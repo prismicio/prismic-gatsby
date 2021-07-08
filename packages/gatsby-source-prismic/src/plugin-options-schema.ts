@@ -2,6 +2,7 @@ import * as gatsby from 'gatsby'
 import * as gatsbyFs from 'gatsby-source-filesystem'
 import * as prismic from '@prismicio/client'
 import * as prismicT from '@prismicio/types'
+import * as prismicCustomTypes from '@prismicio/custom-types-client'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
@@ -21,17 +22,11 @@ import {
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
   MISSING_SCHEMAS_MSG,
   MISSING_SCHEMA_MSG,
-  DEFAULT_CUSTOM_TYPES_API_ENDPOINT,
 } from './constants'
-import {
-  Dependencies,
-  JoiValidationError,
-  PluginOptions,
-  PrismicCustomTypeApiResponse,
-} from './types'
+import { Dependencies, JoiValidationError, PluginOptions } from './types'
 
 const getSchemasFromCustomTypeApiResponse = (
-  response: PrismicCustomTypeApiResponse,
+  response: prismicCustomTypes.CustomType[],
 ) =>
   R.fromFoldableMap(
     struct.getAssignSemigroup<prismicT.CustomTypeModel>(),
@@ -65,46 +60,37 @@ const externalCustomTypeFetchingProgram = (
           'No customTypesApiToken provided (skipping Custom Types API fetching)',
         ),
     ),
-    RTE.bind('headers', (scope) =>
-      RTE.of({
-        repository: scope.pluginOptions.repositoryName,
-        Authorization: `Bearer ${scope.pluginOptions.customTypesApiToken}`,
-      }),
+    RTE.bind('client', (scope) =>
+      RTE.of(
+        prismicCustomTypes.createClient({
+          repositoryName: scope.pluginOptions.repositoryName,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          token: scope.pluginOptions.customTypesApiToken!,
+          endpoint: scope.pluginOptions.customTypesApiEndpoint,
+          fetch,
+        }),
+      ),
     ),
-    RTE.bindW('response', (scope) =>
+    RTE.bindW('fetchedSchemas', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
-          async () => {
-            const res = await fetch(
-              scope.pluginOptions.customTypesApiEndpoint,
-              {
-                headers: scope.headers,
-              },
-            )
-
-            return (await res.json()) as PrismicCustomTypeApiResponse
-          },
-          () =>
+          async () => await scope.client.getAll(),
+          (error) =>
             new Joi.ValidationError(
               'Failed Custom Type API Request',
-              [
-                {
-                  message:
-                    'The Custom Type API could not be accessed. Please check that the customTypesApiToken provided is valid.',
-                },
-              ],
+              [error as Error],
               scope.pluginOptions,
             ),
         ),
       ),
     ),
-    RTE.bind('fetchedSchemas', (scope) =>
-      RTE.of(getSchemasFromCustomTypeApiResponse(scope.response)),
+    RTE.bind('schemas', (scope) =>
+      RTE.of(getSchemasFromCustomTypeApiResponse(scope.fetchedSchemas)),
     ),
     RTE.map((scope) => ({
       ...scope.pluginOptions,
       schemas: {
-        ...scope.fetchedSchemas,
+        ...scope.schemas,
         ...scope.pluginOptions.schemas,
       },
     })),
@@ -206,9 +192,7 @@ export const pluginOptionsSchema: NonNullable<
       prismic.getEndpoint(parent.repositoryName),
     ),
     customTypesApiToken: Joi.string(),
-    customTypesApiEndpoint: Joi.string().default(
-      DEFAULT_CUSTOM_TYPES_API_ENDPOINT,
-    ),
+    customTypesApiEndpoint: Joi.string(),
     releaseID: Joi.string(),
     fetchLinks: Joi.array().items(Joi.string().required()),
     graphQuery: Joi.string(),
@@ -225,8 +209,8 @@ export const pluginOptionsSchema: NonNullable<
     createRemoteFileNode: Joi.function().default(
       () => gatsbyFs.createRemoteFileNode,
     ),
-    transformFieldName: Joi.function().default(
-      () => (fieldName: string) => fieldName.replace(/-/g, '_'),
+    transformFieldName: Joi.function().default(() => (fieldName: string) =>
+      fieldName.replace(/-/g, '_'),
     ),
   })
     .or('schemas', 'customTypesApiToken')

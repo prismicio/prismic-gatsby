@@ -16,9 +16,9 @@ module.exports = {
         typePrefix: 'prefix',
         linkResolver: require('./src/linkResolver').linkResolver,
         schemas: {
-          kitchen_sink: require('./schemas/kitchen_sink.json'),
-          without_uid: require('./schemas/without_uid.json'),
-          without_data: require('./schemas/without_data.json'),
+          // kitchen_sink: require('./schemas/kitchen_sink.json'),
+          // without_uid: require('./schemas/without_uid.json'),
+          // without_data: require('./schemas/without_data.json'),
           not_used: {},
           test: {},
         },
@@ -28,7 +28,7 @@ module.exports = {
       resolve: 'gatsby-plugin-prismic-previews',
       options: {
         repositoryName: process.env.GATSBY_PRISMIC_REPOSITORY_NAME,
-        // accessToken: process.env.PRISMIC_ACCESS_TOKEN,
+        accessToken: process.env.PRISMIC_ACCESS_TOKEN,
         typePrefix: 'prefix',
       },
     },

@@ -215,7 +215,7 @@ test('embed fields are normalized to inferred nodes', async (t) => {
   )
 })
 
-test.only('integration fields are normalized to inferred nodes', async (t) => {
+test('integration fields are normalized to inferred nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const docWithIntegrationId = createPrismicAPIDocument({
@@ -395,7 +395,8 @@ test.only('integration fields are normalized to inferred nodes', async (t) => {
         // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
         prismicId: docWithIntegrationId.data.slices[0].primary.integration.id,
         internal: sinon.match({
-          type: 'PrismicPrefixFooDataSlicesIntegrationPrimaryIntegrationIntegrationType',
+          type:
+            'PrismicPrefixFooDataSlicesIntegrationPrimaryIntegrationIntegrationType',
         }),
       }),
     ),
@@ -407,7 +408,8 @@ test.only('integration fields are normalized to inferred nodes', async (t) => {
         // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
         prismicId: docWithIntegrationId.data.slices[0].items[0].integration.id,
         internal: sinon.match({
-          type: 'PrismicPrefixFooDataSlicesIntegrationItemsIntegrationIntegrationType',
+          type:
+            'PrismicPrefixFooDataSlicesIntegrationItemsIntegrationIntegrationType',
         }),
       }),
     ),

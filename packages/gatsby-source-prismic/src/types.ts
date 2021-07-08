@@ -66,7 +66,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   accessToken?: string
   apiEndpoint: string
   customTypesApiToken?: string
-  customTypesApiEndpoint: string
+  customTypesApiEndpoint?: string
   releaseID?: string
   graphQuery?: string
   fetchLinks?: string[]
