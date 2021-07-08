@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.21](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.20...v4.0.0-beta.21) (2021-07-08)
+
+
+### Bug Fixes
+
+* properly decode image URLs ([#405](https://github.com/angeloashmore/gatsby-source-prismic/issues/405)) ([6df0059](https://github.com/angeloashmore/gatsby-source-prismic/commit/6df00597389a2743b70760a6449655615f92299c))
+
+
+### Features
+
+* **previews:** warn when provider and styles are missing ([87c4f7b](https://github.com/angeloashmore/gatsby-source-prismic/commit/87c4f7b21f65e1a2c8c15c850ca57fa60912032e))
+
+
+
+
+
 # [4.0.0-beta.20](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.19...v4.0.0-beta.20) (2021-06-28)
 
 **Note:** Version bump only for package gatsby-plugin-prismic-previews
