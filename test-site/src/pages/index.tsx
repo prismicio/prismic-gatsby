@@ -23,20 +23,22 @@ const HomePage = ({
   const [state] = usePrismicPreviewContext()
   const [token] = usePrismicPreviewAccessToken(repoName)
 
+  console.log(data.homeKitchenSink.data.body[0].items[0])
+
   return (
     <div>
       <GatsbyImageOld
         fluid={
-          data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
-            ?.first_option_repeat_image.fluid
+          data.homeKitchenSink.data.body[0].items[0]?.first_option_repeat_image
+            .fluid
         }
       />
-      {data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
-        ?.first_option_repeat_image.gatsbyImageData && (
+      {data.homeKitchenSink.data.body[0].items[0]?.first_option_repeat_image
+        .gatsbyImageData && (
         <GatsbyImage
           image={
-            data.allPrismicPrefixKitchenSink.nodes[1].data.body[0].items[0]
-              .first_option_repeat_image.gatsbyImageData
+            data.homeKitchenSink.data.body[0].items[0].first_option_repeat_image
+              .gatsbyImageData
           }
           alt=""
         />
@@ -67,6 +69,23 @@ export default withPrismicPreview(HomePage, repositoryConfigs)
 
 export const query = graphql`
   {
+    homeKitchenSink: prismicPrefixKitchenSink(uid: { eq: "home" }) {
+      _previewable
+      data {
+        body {
+          ... on PrismicPrefixKitchenSinkDataBodyFirstOption {
+            items {
+              first_option_repeat_image {
+                fluid(maxWidth: 1000) {
+                  ...GatsbyImgixFluid
+                }
+                gatsbyImageData(layout: FULL_WIDTH)
+              }
+            }
+          }
+        }
+      }
+    }
     allPrismicPrefixKitchenSink {
       nodes {
         _previewable
