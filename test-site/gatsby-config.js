@@ -16,9 +16,9 @@ module.exports = {
         typePrefix: 'prefix',
         linkResolver: require('./src/linkResolver').linkResolver,
         schemas: {
-          // kitchen_sink: require('./schemas/kitchen_sink.json'),
-          // without_uid: require('./schemas/without_uid.json'),
-          // without_data: require('./schemas/without_data.json'),
+          kitchen_sink: require('./schemas/kitchen_sink.json'),
+          without_uid: require('./schemas/without_uid.json'),
+          without_data: require('./schemas/without_data.json'),
           not_used: {},
           test: {},
         },
