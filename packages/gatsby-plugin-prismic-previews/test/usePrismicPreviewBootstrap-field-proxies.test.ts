@@ -694,7 +694,7 @@ test.serial('image URL is properly decoded', async (t) => {
     {
       type: gatsbyPrismic.PrismicSpecialType.Document,
       'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
-      'type.data.image': gatsbyPrismic.PrismicFieldType.Image,
+      'type.data.image': prismicT.CustomTypeModelFieldType.Image,
     },
   )
 
