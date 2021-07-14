@@ -36,7 +36,7 @@ export const toFieldConfig = (
   schema: prismicT.CustomTypeModelField,
 ): RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   gqlc.ObjectTypeComposerFieldConfigDefinition<unknown, unknown>
 > => {
   switch (schema.type) {

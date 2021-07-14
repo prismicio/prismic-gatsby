@@ -26,7 +26,7 @@ import {
 export const buildSharedSliceVariationType = (
   path: string[],
   variationModel: prismicT.SharedSliceModelVariation,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
+): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
@@ -65,7 +65,7 @@ export const buildSharedSliceVariationType = (
               ]),
             ),
         R.sequence(RTE.ApplicativeSeq),
-        RTE.chainFirst(
+        RTE.chainFirstW(
           flow(
             R.collect((_, type) => type),
             createTypes,
@@ -78,7 +78,7 @@ export const buildSharedSliceVariationType = (
               : getTypeName(type),
           ),
         ),
-        RTE.chain((fields) =>
+        RTE.chainW((fields) =>
           buildObjectType({
             name: deps.nodeHelpers.createTypeName(path),
             fields: {
@@ -121,7 +121,7 @@ export const buildSharedSliceVariationTypes = (
   variations: prismicT.SharedSliceModel['variations'],
 ): RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   gatsby.GatsbyGraphQLObjectType[]
 > =>
   pipe(

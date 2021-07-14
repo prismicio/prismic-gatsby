@@ -103,28 +103,32 @@ const externalCustomTypeFetchingProgram = (
       ),
     ),
     RTE.bindW('sharedSlices', (scope) =>
-      RTE.fromTaskEither(
-        TE.tryCatch(
-          async () => await scope.client.getAllSharedSlices(),
-          (error) =>
-            new Joi.ValidationError(
-              'Failed Custom Type API Request',
-              [error as Error],
-              scope.pluginOptions,
-            ),
+      pipe(
+        RTE.fromTaskEither(
+          TE.tryCatch(
+            async () => await scope.client.getAllSharedSlices(),
+            (error) =>
+              new Joi.ValidationError(
+                'Failed Custom Type API Request',
+                [error as Error],
+                scope.pluginOptions,
+              ),
+          ),
         ),
+        RTE.orElse(() => RTE.right([] as prismicT.SharedSliceModel[])),
       ),
     ),
+    // TODO: Properly merge these by checking IDs.
     RTE.map((scope) => ({
       ...scope.pluginOptions,
-      customTypeModels: {
+      customTypeModels: [
         ...scope.customTypes,
         ...scope.pluginOptions.customTypeModels,
-      },
-      sharedSliceModels: {
+      ],
+      sharedSliceModels: [
         ...scope.sharedSlices,
         ...scope.pluginOptions.sharedSliceModels,
-      },
+      ],
     })),
   )
 

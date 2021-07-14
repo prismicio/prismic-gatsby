@@ -40,7 +40,7 @@ import {
 const buildSliceType = (
   path: string[],
   model: prismicT.CustomTypeModelSlice,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
+): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
@@ -76,7 +76,7 @@ const buildSliceType = (
               ]),
             ),
         R.sequence(RTE.ApplicativeSeq),
-        RTE.chainFirst(
+        RTE.chainFirstW(
           flow(
             R.collect((_, type) => type),
             createTypes,
@@ -89,7 +89,7 @@ const buildSliceType = (
               : getTypeName(type),
           ),
         ),
-        RTE.chain((fields) =>
+        RTE.chainW((fields) =>
           buildObjectType({
             name: deps.nodeHelpers.createTypeName(path),
             fields: {
@@ -146,7 +146,7 @@ const buildSliceTypes = (
         ),
         R.sequence(RTE.ApplicativeSeq),
         RTE.map(R.collect((_, type) => type)),
-        RTE.chainFirst(createTypes),
+        RTE.chainFirstW(createTypes),
         RTE.map(A.map(getTypeName)),
       ),
     ),

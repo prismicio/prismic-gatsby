@@ -72,7 +72,7 @@ export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
  */
 const createCustomTypes: RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   gatsby.GatsbyGraphQLObjectType[]
 > = pipe(
   RTE.asks((deps: Dependencies) => deps.pluginOptions.customTypeModels),
@@ -87,7 +87,7 @@ const createCustomTypes: RTE.ReaderTaskEither<
  */
 const createSharedSlices: RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   gatsby.GatsbyGraphQLUnionType[]
 > = pipe(
   RTE.asks((deps: Dependencies) => deps.pluginOptions.sharedSliceModels),
@@ -101,14 +101,14 @@ const createSharedSlices: RTE.ReaderTaskEither<
  */
 const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   void
 > = pipe(
   RTE.ask<Dependencies>(),
   RTE.chainFirst(() => createBaseTypes),
   RTE.chainFirst(() => createSharedSlices),
-  RTE.bind('customTypeTypes', () => createCustomTypes),
-  RTE.chainFirst((scope) => createAllDocumentTypesType(scope.customTypeTypes)),
+  RTE.bindW('customTypeTypes', () => createCustomTypes),
+  RTE.chainFirstW((scope) => createAllDocumentTypesType(scope.customTypeTypes)),
   RTE.map(constVoid),
 )
 

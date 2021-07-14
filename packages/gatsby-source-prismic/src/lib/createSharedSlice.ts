@@ -13,7 +13,7 @@ import { buildUnionType } from './buildUnionType'
 
 export const createSharedSlice = (
   sharedSliceModel: prismicT.SharedSliceModel,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLUnionType> =>
+): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLUnionType> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('variationTypes', () =>
@@ -22,11 +22,11 @@ export const createSharedSlice = (
           [sharedSliceModel.id],
           sharedSliceModel.variations,
         ),
-        RTE.chainFirst(createTypes),
+        RTE.chainFirstW(createTypes),
         RTE.map(A.map(getTypeName)),
       ),
     ),
-    RTE.chain((scope) =>
+    RTE.chainW((scope) =>
       buildUnionType({
         name: scope.nodeHelpers.createTypeName([sharedSliceModel.id]),
         types: scope.variationTypes,

@@ -13,6 +13,7 @@ import {
   Dependencies,
   PrismicAPIDocumentNode,
   PrismicSpecialType,
+  TypePathKind,
 } from '../types'
 import {
   PREVIEWABLE_NODE_ID_FIELD,
@@ -72,7 +73,11 @@ const buildDataFieldConfigMap = (
       () => new Error('No data fields in schema'),
     ),
     RTE.chainFirstW(() =>
-      createTypePath([customTypeName, 'data'], PrismicSpecialType.DocumentData),
+      createTypePath(
+        TypePathKind.CustomType,
+        [customTypeName, 'data'],
+        PrismicSpecialType.DocumentData,
+      ),
     ),
     RTE.bindW('fieldConfigMap', () =>
       buildFieldConfigMap([customTypeName, 'data'], fields),
@@ -119,7 +124,7 @@ const buildDataFieldConfigMap = (
  */
 export const createCustomType = (
   customType: prismicCustomTypes.CustomType,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
+): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('fields', () => RTE.right(collectFields(customType))),
@@ -133,10 +138,10 @@ export const createCustomType = (
     RTE.bind('rootFieldConfigMap', (scope) =>
       buildFieldConfigMap([customType.id], scope.partitionedFields.right),
     ),
-    RTE.bind('dataFieldConfigMap', (scope) =>
+    RTE.bindW('dataFieldConfigMap', (scope) =>
       buildDataFieldConfigMap(customType.id, scope.partitionedFields.left),
     ),
-    RTE.chain((scope) =>
+    RTE.chainW((scope) =>
       buildObjectType({
         name: scope.nodeHelpers.createTypeName(customType.id),
         fields: {
@@ -179,8 +184,12 @@ export const createCustomType = (
         extensions: { infer: false },
       }),
     ),
-    RTE.chainFirst(createType),
-    RTE.chainFirst(() =>
-      createTypePath([customType.id], PrismicSpecialType.Document),
+    RTE.chainFirstW(createType),
+    RTE.chainFirstW(() =>
+      createTypePath(
+        TypePathKind.CustomType,
+        [customType.id],
+        PrismicSpecialType.Document,
+      ),
     ),
   )
