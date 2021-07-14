@@ -286,7 +286,7 @@ export const pluginOptionsSchema: NonNullable<
       () => (fieldName: string) => fieldName.replace(/-/g, '_'),
     ),
   })
-    .or('schemas', 'customTypesApiToken')
+    .or('customTypesApiToken', 'customTypeModels', 'schemas')
     .oxor('fetchLinks', 'graphQuery')
     .external(
       async (pluginOptions: PluginOptions) =>
