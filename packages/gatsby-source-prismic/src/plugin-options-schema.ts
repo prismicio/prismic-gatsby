@@ -115,7 +115,6 @@ const externalCustomTypeFetchingProgram = (
               ),
           ),
         ),
-        RTE.orElse(() => RTE.right([] as prismicT.SharedSliceModel[])),
       ),
     ),
     // TODO: Properly merge these by checking IDs.

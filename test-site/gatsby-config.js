@@ -15,13 +15,13 @@ module.exports = {
         customTypesApiToken: process.env.PRISMIC_CUSTOM_TYPES_API_TOKEN,
         typePrefix: 'prefix',
         linkResolver: require('./src/linkResolver').linkResolver,
-        schemas: {
-          kitchen_sink: require('./schemas/kitchen_sink.json'),
-          without_uid: require('./schemas/without_uid.json'),
-          without_data: require('./schemas/without_data.json'),
-          not_used: {},
-          test: {},
-        },
+        // schemas: {
+        //   kitchen_sink: require('./schemas/kitchen_sink.json'),
+        //   without_uid: require('./schemas/without_uid.json'),
+        //   without_data: require('./schemas/without_data.json'),
+        //   not_used: {},
+        //   test: {},
+        // },
       },
     },
     {

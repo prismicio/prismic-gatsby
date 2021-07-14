@@ -2673,10 +2673,10 @@
   dependencies:
     "@prismicio/helpers" "^2.0.0-alpha.3"
 
-"@prismicio/custom-types-client@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@prismicio/custom-types-client/-/custom-types-client-0.0.2.tgz#38f0964307485cae4ed4bc23c017ce4a676f44e0"
-  integrity sha512-B3K/hO7CNHWm/S5J2pM7Hk+UhhxBvMbwRkaUMd5JBijDKshkKK7EFVB9wCpBEY6hiZZ+73BiAbGMriHg5ZuRsQ==
+"@prismicio/custom-types-client@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@prismicio/custom-types-client/-/custom-types-client-0.0.3.tgz#6790e0b9984137dac5dd62db8778529ecd5e69f7"
+  integrity sha512-eLAgPmPJ2Yzwr9NJ9429OrTcKCZaS9RAa4WpiXcxfaZDaXEminD7XvaB8zWO7H2+ONXU4sJaVC/7x6Ps2cuFgw==
 
 "@prismicio/helpers@^2.0.0-alpha.3", "@prismicio/helpers@^2.0.0-alpha.4":
   version "2.0.0-alpha.5"
