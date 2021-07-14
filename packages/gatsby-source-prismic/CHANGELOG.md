@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-slice-machine.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.22...v4.0.0-slice-machine.0) (2021-07-14)
+
+
+### Bug Fixes
+
+* allow only providing customTypeModels ([f499499](https://github.com/angeloashmore/gatsby-source-prismic/commit/f499499178dafa062c2e9a73c4016c2b247fc0fc))
+* correctly pull Shared Slice models ([1b205cb](https://github.com/angeloashmore/gatsby-source-prismic/commit/1b205cb7bb6aa5c8035f46af547145362fd083cc))
+* ts types ([b75c2d3](https://github.com/angeloashmore/gatsby-source-prismic/commit/b75c2d31db6d191338f40908e9d5dfac7bb515ff))
+
+
+### Features
+
+* add Shared Slice support ([d15ec71](https://github.com/angeloashmore/gatsby-source-prismic/commit/d15ec71fd9dfd44bfdd8a272b71598b3d2f0114a))
+
+
+
+
+
 # [4.0.0-beta.22](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.21...v4.0.0-beta.22) (2021-07-13)
 
 
