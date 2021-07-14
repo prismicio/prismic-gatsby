@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function'
 
 import { createTypePath } from '../lib/createTypePath'
 
-import { FieldConfigCreator } from '../types'
+import { FieldConfigCreator, TypePathKind } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Select Custom Type field.
@@ -18,6 +18,10 @@ import { FieldConfigCreator } from '../types'
  */
 export const buildSelectFieldConfig: FieldConfigCreator = (path) =>
   pipe(
-    createTypePath(path, prismicT.CustomTypeModelFieldType.Select),
+    createTypePath(
+      TypePathKind.CustomType,
+      path,
+      prismicT.CustomTypeModelFieldType.Select,
+    ),
     RTE.map(() => 'String'),
   )

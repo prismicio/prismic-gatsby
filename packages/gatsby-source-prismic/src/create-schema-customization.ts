@@ -1,9 +1,8 @@
 import * as gatsby from 'gatsby'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as R from 'fp-ts/Record'
-import * as A from 'fp-ts/Array'
 import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
+import * as A from 'fp-ts/Array'
 import { pipe, constVoid } from 'fp-ts/function'
 
 import { createAllDocumentTypesType } from './lib/createAllDocumentTypesType'
@@ -19,12 +18,14 @@ import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
 import { buildLinkType } from './builders/buildLinkType'
 import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
 import { buildSliceInterface } from './builders/buildSliceInterface'
+import { buildSharedSliceInterface } from './builders/buildSharedSliceInterface'
 import { buildStructuredTextType } from './builders/buildStructuredTextType'
 import { buildTypePathType } from './builders/buildTypePathType'
 
 import { Dependencies, Mutable, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
 import { buildAlternateLanguageType } from './builders/buildAlternateLanguageType'
+import { createSharedSlice } from './lib/createSharedSlice'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
@@ -47,6 +48,7 @@ export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
           buildLinkType,
           buildLinkTypeEnumType,
           buildSliceInterface,
+          buildSharedSliceInterface,
           buildStructuredTextType,
           buildTypePathType,
         ],
@@ -65,18 +67,33 @@ export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
   )
 
 /**
- * Create types for all repository custom types using the JSON schemas provided
- * at `pluginOptions.schemas`.
+ * Create types for all Custom Types using the JSON models provided at
+ * `pluginOptions.customTypeModels`.
  */
 const createCustomTypes: RTE.ReaderTaskEither<
   Dependencies,
   never,
   gatsby.GatsbyGraphQLObjectType[]
 > = pipe(
-  RTE.asks((deps: Dependencies) => deps.pluginOptions.schemas),
-  RTE.map(R.mapWithIndex(createCustomType)),
-  RTE.chain(R.sequence(RTE.ApplicativeSeq)),
-  RTE.map(R.collect((_, value) => value)),
+  RTE.asks((deps: Dependencies) => deps.pluginOptions.customTypeModels),
+  RTE.map(A.map(createCustomType)),
+  RTE.chain(RTE.sequenceArray),
+  RTE.map((types) => types as Mutable<typeof types>),
+)
+
+/**
+ * Create types for all Shared Slices using the JSON models provided at
+ * `pluginOptions.sharedSliceModels`.
+ */
+const createSharedSlices: RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  gatsby.GatsbyGraphQLUnionType[]
+> = pipe(
+  RTE.asks((deps: Dependencies) => deps.pluginOptions.sharedSliceModels),
+  RTE.map(A.map(createSharedSlice)),
+  RTE.chain(RTE.sequenceArray),
+  RTE.map((types) => types as Mutable<typeof types>),
 )
 
 /**
@@ -89,8 +106,9 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
 > = pipe(
   RTE.ask<Dependencies>(),
   RTE.chainFirst(() => createBaseTypes),
-  RTE.bind('types', () => createCustomTypes),
-  RTE.chainFirst((scope) => createAllDocumentTypesType(scope.types)),
+  RTE.chainFirst(() => createSharedSlices),
+  RTE.bind('customTypeTypes', () => createCustomTypes),
+  RTE.chainFirst((scope) => createAllDocumentTypesType(scope.customTypeTypes)),
   RTE.map(constVoid),
 )
 

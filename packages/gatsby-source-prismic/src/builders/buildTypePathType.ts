@@ -20,6 +20,7 @@ export const buildTypePathType: RTE.ReaderTaskEither<
     buildObjectType({
       name: deps.nodeHelpers.createTypeName('TypePathType'),
       fields: {
+        kind: 'String!',
         path: '[String!]!',
         type: 'String!',
       },

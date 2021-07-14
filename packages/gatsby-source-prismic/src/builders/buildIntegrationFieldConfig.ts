@@ -7,7 +7,7 @@ import { createType } from '../lib/createType'
 import { createTypePath } from '../lib/createTypePath'
 import { getTypeName } from '../lib/getTypeName'
 
-import { Dependencies, FieldConfigCreator } from '../types'
+import { Dependencies, FieldConfigCreator, TypePathKind } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for an Integration Fields Custom
@@ -28,7 +28,11 @@ export const buildIntegrationFieldConfig: FieldConfigCreator = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
-      createTypePath(path, prismicT.CustomTypeModelFieldType.IntegrationFields),
+      createTypePath(
+        TypePathKind.CustomType,
+        path,
+        prismicT.CustomTypeModelFieldType.IntegrationFields,
+      ),
     ),
     RTE.chain(() => buildInferredNodeType([...path, 'IntegrationType'])),
     RTE.chainFirst(createType),

@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function'
 
 import { createTypePath } from '../lib/createTypePath'
 
-import { Dependencies, FieldConfigCreator } from '../types'
+import { Dependencies, FieldConfigCreator, TypePathKind } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for an Embed Custom Type field.
@@ -24,7 +24,11 @@ export const buildEmbedFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
-      createTypePath(path, prismicT.CustomTypeModelFieldType.Embed),
+      createTypePath(
+        TypePathKind.CustomType,
+        path,
+        prismicT.CustomTypeModelFieldType.Embed,
+      ),
     ),
     RTE.map((deps) => ({
       type: deps.nodeHelpers.createTypeName('EmbedType'),

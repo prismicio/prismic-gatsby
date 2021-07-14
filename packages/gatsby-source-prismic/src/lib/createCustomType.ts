@@ -2,6 +2,7 @@ import * as gatsby from 'gatsby'
 import * as gqlc from 'graphql-compose'
 import * as prismicT from '@prismicio/types'
 import * as prismicH from '@prismicio/helpers'
+import * as prismicCustomTypes from '@prismicio/custom-types-client'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
@@ -34,10 +35,10 @@ import { requiredTypeName } from './requiredTypeName'
  * @returns Record of fields for the Custom Type.
  */
 const collectFields = (
-  schema: prismicT.CustomTypeModel,
+  schema: prismicCustomTypes.CustomType,
 ): Record<string, prismicT.CustomTypeModelField> =>
   pipe(
-    schema,
+    schema.json,
     R.collect((_, value) => value),
     S.concatAll(struct.getAssignSemigroup<prismicT.CustomTypeModelTab>())({}),
   )
@@ -112,17 +113,16 @@ const buildDataFieldConfigMap = (
  * root-level typepath for the Custom Type.
  *
  * @param name API ID of the Custom Type
- * @param schema Schema definition for the Custom Type.
+ * @param customType Schema definition for the Custom Type.
  *
  * @returns GraphQL type for the Custom Type.
  */
 export const createCustomType = (
-  name: string,
-  schema: prismicT.CustomTypeModel,
+  customType: prismicCustomTypes.CustomType,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.bind('fields', () => RTE.right(collectFields(schema))),
+    RTE.bind('fields', () => RTE.right(collectFields(customType))),
     RTE.bind('partitionedFields', (scope) =>
       pipe(
         scope.fields,
@@ -131,14 +131,14 @@ export const createCustomType = (
       ),
     ),
     RTE.bind('rootFieldConfigMap', (scope) =>
-      buildFieldConfigMap([name], scope.partitionedFields.right),
+      buildFieldConfigMap([customType.id], scope.partitionedFields.right),
     ),
     RTE.bind('dataFieldConfigMap', (scope) =>
-      buildDataFieldConfigMap(name, scope.partitionedFields.left),
+      buildDataFieldConfigMap(customType.id, scope.partitionedFields.left),
     ),
     RTE.chain((scope) =>
       buildObjectType({
-        name: scope.nodeHelpers.createTypeName(name),
+        name: scope.nodeHelpers.createTypeName(customType.id),
         fields: {
           ...scope.rootFieldConfigMap,
           ...scope.dataFieldConfigMap,
@@ -180,5 +180,7 @@ export const createCustomType = (
       }),
     ),
     RTE.chainFirst(createType),
-    RTE.chainFirst(() => createTypePath([name], PrismicSpecialType.Document)),
+    RTE.chainFirst(() =>
+      createTypePath([customType.id], PrismicSpecialType.Document),
+    ),
   )

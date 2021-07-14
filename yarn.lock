@@ -2699,6 +2699,11 @@
   resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.1.tgz#1a9026100844a6f92012fdbd39087cf5ab4fde5f"
   integrity sha512-iwEAmV2mbwbbevRCJkM99OHO0LwKGiVgD6p5OwTFvxCKnuzJ43ISCSxHQnD3P6YaPYqqxfJ7qCe/Fa02C2kXMw==
 
+"@prismicio/types@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.4.tgz#47a30f63b0a2db4bce3d759211b78450b1b3cdab"
+  integrity sha512-f0H13NOcIwrn5bVuJ27uB/HZsqye+AZvHMzy2Z5zsupxAzhXwNx4uWxgNH9m9NHAX7X79ndjpNwlbAU59GBwqA==
+
 "@reach/dialog@^0.15.2":
   version "0.15.2"
   resolved "https://registry.yarnpkg.com/@reach/dialog/-/dialog-0.15.2.tgz#46e797db436d32a7e33c315992643c49471ea512"
