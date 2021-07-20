@@ -58,6 +58,7 @@ limitations under the License.
 
 [prismic]: https://prismic.io
 [gatsby]: https://www.gatsbyjs.com/
+[prismic-previews]: https://prismic.io/docs/core-concepts/preview-setup
 [gatsby-source-prismic]: https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages/gatsby-source-prismic
 [prismic-toolbar]: https://prismic.io/docs/technologies/previews-and-the-prismic-toolbar-javascript
 [gatsby-cloud]: https://www.gatsbyjs.com/products/cloud/
