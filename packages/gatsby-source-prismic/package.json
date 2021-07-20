@@ -21,10 +21,10 @@
     "prepare": "yarn build",
     "test": "ava"
   },
-  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages/gatsby-source-prismic",
+  "homepage": "https://github.com/prismicio/gatsby/tree/main/packages/gatsby-source-prismic",
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com/angeloashmore/gatsby-source-prismic.git"
+    "url": "ssh://git@github.com/prismicio/gatsby.git"
   },
   "keywords": [
     "gatsby",
