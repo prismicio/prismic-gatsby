@@ -59,7 +59,7 @@ limitations under the License.
 [gatsby]: https://www.gatsbyjs.com/
 [prismic-slices]: https://prismic.io/docs/core-concepts/slices
 [gatsby-plugin-image]: https://www.gatsbyjs.com/plugins/gatsby-plugin-image/
-[gatsby-plugin-prismic-previews]: https://github.com/prismicio/gatsby/packages/gatsby-plugin-prismic-previews
+[gatsby-plugin-prismic-previews]: https://github.com/angeloashmore/gatsby-source-prismic/packages/gatsby-plugin-prismic-previews
 [gatsby-transformer-sharp]: https://www.gatsbyjs.com/plugins/gatsby-transformer-sharp/
 [imgix]: https://imgix.com/
 [prismic-previews]: https://prismic.io/docs/core-concepts/preview-setup
@@ -70,14 +70,14 @@ limitations under the License.
 <!-- TODO: Replace link with a more useful one if available -->
 
 [prismic-docs]: https://prismic.io/docs/technologies/gatsby
-[changelog]: https://github.com/prismicio/gatsby/CHANGELOG.md
+[changelog]: https://github.com/angeloashmore/gatsby-source-prismic/CHANGELOG.md
 
 <!-- TODO: Replace link with a more useful one if available -->
 
 [forum-question]: https://community.prismic.io
-[repo-bug-report]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=bug&template=bug_report.md&title=
-[repo-feature-request]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
-[repo-pull-requests]: https://github.com/prismicio/gatsby/pulls
+[repo-bug-report]: https://github.com/angeloashmore/gatsby-source-prismic/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/angeloashmore/gatsby-source-prismic/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/angeloashmore/gatsby-source-prismic/pulls
 
 <!-- Badges -->
 
@@ -85,10 +85,10 @@ limitations under the License.
 [npm-version-href]: https://npmjs.com/package/gatsby-source-prismic
 [npm-downloads-src]: https://img.shields.io/npm/dm/gatsby-source-prismic.svg
 [npm-downloads-href]: https://npmjs.com/package/gatsby-source-prismic
-[github-actions-ci-src]: https://github.com/prismicio/gatsby/workflows/ci/badge.svg
-[github-actions-ci-href]: https://github.com/prismicio/gatsby/actions?query=workflow%3Aci
-[codecov-src]: https://img.shields.io/codecov/c/github/prismicio/gatsby.svg
-[codecov-href]: https://codecov.io/gh/prismicio/gatsby
+[github-actions-ci-src]: https://github.com/angeloashmore/gatsby-source-prismic/workflows/ci/badge.svg
+[github-actions-ci-href]: https://github.com/angeloashmore/gatsby-source-prismic/actions?query=workflow%3Aci
+[codecov-src]: https://img.shields.io/codecov/c/github/angeloashmore/gatsby-source-prismic.svg
+[codecov-href]: https://codecov.io/gh/angeloashmore/gatsby-source-prismic
 [conventional-commits-src]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg
 [conventional-commits-href]: https://conventionalcommits.org
 [license-src]: https://img.shields.io/npm/l/gatsby-source-prismic.svg
