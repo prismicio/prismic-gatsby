@@ -16,7 +16,8 @@ assignees: ''
 
 ### Versions
 
-- package_name: <!-- ex: v0.1.0 -->
+- gatsby-source-prismic: <!-- ex: v0.1.0 -->
+- gatsby-plugin-prismic-previews: <!-- (if used) ex: v0.1.0 -->
 - node: <!-- ex: v12.14.0 -->
 
 ### Reproduction
