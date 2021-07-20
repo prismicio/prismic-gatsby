@@ -59,7 +59,7 @@ limitations under the License.
 [gatsby]: https://www.gatsbyjs.com/
 [prismic-slices]: https://prismic.io/docs/core-concepts/slices
 [gatsby-plugin-image]: https://www.gatsbyjs.com/plugins/gatsby-plugin-image/
-[gatsby-plugin-prismic-previews]: https://github.com/angeloashmore/gatsby-source-prismic/packages/gatsby-plugin-prismic-previews
+[gatsby-plugin-prismic-previews]: https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages/gatsby-plugin-prismic-previews
 [gatsby-transformer-sharp]: https://www.gatsbyjs.com/plugins/gatsby-transformer-sharp/
 [imgix]: https://imgix.com/
 [prismic-previews]: https://prismic.io/docs/core-concepts/preview-setup
@@ -70,7 +70,7 @@ limitations under the License.
 <!-- TODO: Replace link with a more useful one if available -->
 
 [prismic-docs]: https://prismic.io/docs/technologies/gatsby
-[changelog]: https://github.com/angeloashmore/gatsby-source-prismic/CHANGELOG.md
+[changelog]: https://github.com/angeloashmore/gatsby-source-prismic/blob/main/CHANGELOG.md
 
 <!-- TODO: Replace link with a more useful one if available -->
 

@@ -58,14 +58,14 @@ limitations under the License.
 
 [prismic]: https://prismic.io
 [gatsby]: https://www.gatsbyjs.com/
-[gatsby-source-prismic]: https://www.gatsbyjs.com/plugins/gatsby-source-prismic
+[gatsby-source-prismic]: https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages/gatsby-source-prismic
 [prismic-toolbar]: https://prismic.io/docs/technologies/previews-and-the-prismic-toolbar-javascript
 [gatsby-cloud]: https://www.gatsbyjs.com/products/cloud/
 
 <!-- TODO: Replace link with a more useful one if available -->
 
 [prismic-docs]: https://prismic.io/docs/technologies/gatsby
-[changelog]: https://github.com/angeloashmore/gatsby-source-prismic/CHANGELOG.md
+[changelog]: https://github.com/angeloashmore/gatsby-source-prismic/blob/main/CHANGELOG.md
 
 <!-- TODO: Replace link with a more useful one if available -->
 
