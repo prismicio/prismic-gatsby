@@ -2,7 +2,8 @@
   "name": "gatsby-plugin-prismic-previews",
   "version": "4.0.0-beta.22",
   "description": "Gatsby plugin for integrating client-side Prismic previews support",
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "author": "Prismic <contact@prismic.io> (https://prismic.io)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "style": "./dist/styles.css",
@@ -24,8 +25,11 @@
     "storybook": "start-storybook --quiet -p 6006",
     "test": "ava"
   },
-  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
-  "repository": "github:angeloashmore/gatsby-source-prismic",
+  "homepage": "https://github.com/prismicio/gatsby/packages/gatsby-plugin-prismic-previews",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/prismicio/gatsby.git"
+  },
   "keywords": [
     "gatsby",
     "gatsby-plugin",

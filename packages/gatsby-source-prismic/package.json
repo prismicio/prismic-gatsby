@@ -2,7 +2,8 @@
   "name": "gatsby-source-prismic",
   "version": "4.0.0-beta.22",
   "description": "Gatsby source plugin for building websites using Prismic as a data source",
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "author": "Prismic <contact@prismic.io> (https://prismic.io)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -20,8 +21,11 @@
     "prepare": "yarn build",
     "test": "ava"
   },
-  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic",
-  "repository": "github:angeloashmore/gatsby-source-prismic",
+  "homepage": "https://github.com/prismicio/gatsby/packages/gatsby-source-prismic",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/prismicio/gatsby.git"
+  },
   "keywords": [
     "gatsby",
     "gatsby-plugin",

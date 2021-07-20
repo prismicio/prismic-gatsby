@@ -58,7 +58,6 @@
     "semi": false,
     "singleQuote": true,
     "trailingComma": "all",
-    "proseWrap": "always",
     "printWidth": 80
   },
   "commitlint": {
