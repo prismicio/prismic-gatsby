@@ -11,7 +11,7 @@
     "publish:canary": "lerna publish --canary",
     "publish:alpha": "lerna publish --dist-tag alpha --preid alpha",
     "publish:beta": "lerna publish --dist-tag beta --preid beta",
-    "publish:latest": "lerna publish"
+    "publish:latest": "lerna publish --dist-tag latest"
   },
   "workspaces": {
     "packages": [
