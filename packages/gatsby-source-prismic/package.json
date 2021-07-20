@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "4.0.0-beta.22",
+  "version": "4.0.0",
   "description": "Gatsby source plugin for building websites using Prismic as a data source",
   "license": "Apache-2.0",
   "author": "Prismic <contact@prismic.io> (https://prismic.io)",

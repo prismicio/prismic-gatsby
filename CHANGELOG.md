@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.6...v4.0.0) (2021-07-20)
+
+
+### Features
+
+* v4.0.0 ([#408](https://github.com/angeloashmore/gatsby-source-prismic/issues/408)) ([407887f](https://github.com/angeloashmore/gatsby-source-prismic/commit/407887f2a039346420d4238beb8866dd33d230f8)), closes [#334](https://github.com/angeloashmore/gatsby-source-prismic/issues/334) [#335](https://github.com/angeloashmore/gatsby-source-prismic/issues/335) [#349](https://github.com/angeloashmore/gatsby-source-prismic/issues/349) [#350](https://github.com/angeloashmore/gatsby-source-prismic/issues/350) [#352](https://github.com/angeloashmore/gatsby-source-prismic/issues/352) [#353](https://github.com/angeloashmore/gatsby-source-prismic/issues/353) [#359](https://github.com/angeloashmore/gatsby-source-prismic/issues/359) [#360](https://github.com/angeloashmore/gatsby-source-prismic/issues/360) [#351](https://github.com/angeloashmore/gatsby-source-prismic/issues/351) [#364](https://github.com/angeloashmore/gatsby-source-prismic/issues/364) [#371](https://github.com/angeloashmore/gatsby-source-prismic/issues/371) [#375](https://github.com/angeloashmore/gatsby-source-prismic/issues/375) [#383](https://github.com/angeloashmore/gatsby-source-prismic/issues/383) [#405](https://github.com/angeloashmore/gatsby-source-prismic/issues/405) [#406](https://github.com/angeloashmore/gatsby-source-prismic/issues/406)
+
+
+
+
+
 # [4.0.0-beta.22](https://github.com/angeloashmore/gatsby-source-prismic/compare/v4.0.0-beta.21...v4.0.0-beta.22) (2021-07-13)
 
 
