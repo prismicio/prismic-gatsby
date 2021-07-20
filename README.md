@@ -23,8 +23,8 @@ Or if you want to dive straight into some code and see an example site using Pri
 
 For full documentation, see each plugin's package.
 
-- [**gatsby-source-prismic**](https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages/gatsby-source-prismic): Gatsby source plugin for building websites using Prismic as a data source
-- [**gatsby-plugin-prismic-previews**](https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages/gatsby-plugin-prismic-previews): Gatsby plugin for integrating client-side Prismic Previews
+- [**gatsby-source-prismic**](https://github.com/prismicio/gatsby/tree/main/packages/gatsby-source-prismic): Gatsby source plugin for building websites using Prismic as a data source
+- [**gatsby-plugin-prismic-previews**](https://github.com/prismicio/gatsby/tree/main/packages/gatsby-plugin-prismic-previews): Gatsby plugin for integrating client-side Prismic Previews
 
 ## How to Contribute
 
@@ -40,18 +40,18 @@ Whether you're helping us fix bugs, improve the docs, or spread the word, we'd l
 
 ### A note on how this repository is organized
 
-This repository is a monorepo managed using Yarn workspaces. This means there are [multiple packages](https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages) managed in this codebase, even though we publish them to NPM as separate packages.
+This repository is a monorepo managed using Yarn workspaces. This means there are [multiple packages](https://github.com/prismicio/gatsby/tree/main/packages) managed in this codebase, even though we publish them to NPM as separate packages.
 
 <!-- Links -->
 
 [gatsby]: https://gatsbyjs.com/
 [prismic]: https://prismic.io/
-[new-issue]: https://github.com/angeloashmore/gatsby-source-prismic/issues/new
-[pull-requests]: https://github.com/angeloashmore/gatsby-source-prismic/pulls
+[new-issue]: https://github.com/prismicio/gatsby/issues/new
+[pull-requests]: https://github.com/prismicio/gatsby/pulls
 
 <!-- TODO: Replace link with a more useful one if available -->
 
 [forum-question]: https://community.prismic.io
-[repo-bug-report]: https://github.com/angeloashmore/gatsby-source-prismic/issues/new?assignees=&labels=bug&template=bug_report.md&title=
-[repo-feature-request]: https://github.com/angeloashmore/gatsby-source-prismic/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
-[repo-pull-requests]: https://github.com/angeloashmore/gatsby-source-prismic/pulls
+[repo-bug-report]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/prismicio/gatsby/pulls
