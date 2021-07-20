@@ -1,0 +1,51 @@
+{
+  "name": "gatsby-starter-prismic",
+  "private": true,
+  "description": "A simple starter to get up and developing quickly with Gatsby and Prismic",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "gatsby build",
+    "develop": "gatsby develop",
+    "gen": "graphql-codegen --config graphql-codegen.yml",
+    "format": "prettier --write \"**/*.{js,tsx,ts,tsx,json,md}\"",
+    "start": "gatsby develop",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean",
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+  },
+  "license": "MIT",
+  "author": "Angelo Ashmore",
+  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic/tree/master/starters/gatsby-starter-prismic",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angeloashmore/gatsby-source-prismic"
+  },
+  "bugs": {
+    "url": "https://github.com/angeloashmore/gatsby-source-prismic/issues"
+  },
+  "keywords": [
+    "gatsby"
+  ],
+  "dependencies": {
+    "gatsby": "^3.1.2",
+    "gatsby-plugin-catch-links": "^3.1.0",
+    "gatsby-plugin-image": "^1.4.1",
+    "gatsby-plugin-prismic-previews": "^4.0.0-alpha.7",
+    "gatsby-plugin-react-helmet-async": "^1.2.0",
+    "gatsby-source-prismic": "^4.0.0-alpha.8",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-helmet-async": "^1.0.9"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^1.21.4",
+    "@graphql-codegen/typescript": "^1.22.0",
+    "@graphql-codegen/typescript-operations": "^1.17.16",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "dotenv": "^9.0.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "^2.2.1"
+  }
+}

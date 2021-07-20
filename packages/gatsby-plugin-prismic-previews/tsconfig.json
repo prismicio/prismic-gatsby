@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "allowJs": true
+  },
+  "include": ["src", "test", "types", ".storybook"]
+}
