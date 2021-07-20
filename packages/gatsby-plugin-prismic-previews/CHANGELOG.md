@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.1](https://github.com/prismicio/gatsby/compare/v4.0.0...v4.0.1) (2021-07-20)
+
+**Note:** Version bump only for package gatsby-plugin-prismic-previews
+
+
+
+
+
 # [4.0.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.6...v4.0.0) (2021-07-20)
 
 
