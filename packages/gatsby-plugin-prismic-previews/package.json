@@ -25,7 +25,7 @@
     "storybook": "start-storybook --quiet -p 6006",
     "test": "ava"
   },
-  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic/packages/gatsby-plugin-prismic-previews",
+  "homepage": "https://github.com/angeloashmore/gatsby-source-prismic/tree/main/packages/gatsby-plugin-prismic-previews",
   "repository": {
     "type": "git",
     "url": "ssh://git@github.com/angeloashmore/gatsby-source-prismic.git"
