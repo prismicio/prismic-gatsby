@@ -27,7 +27,7 @@ export const buildFieldConfigMap = (
   fieldSchemas: Record<string, prismicT.CustomTypeModelField>,
 ): RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   gqlc.ObjectTypeComposerFieldConfigMapDefinition<unknown, unknown>
 > =>
   pipe(

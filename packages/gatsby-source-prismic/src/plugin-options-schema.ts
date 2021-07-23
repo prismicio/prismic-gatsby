@@ -8,7 +8,6 @@ import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
 import * as A from 'fp-ts/Array'
 import * as R from 'fp-ts/Record'
-import * as struct from 'fp-ts/struct'
 import * as string from 'fp-ts/string'
 import { constVoid, pipe } from 'fp-ts/function'
 import fetch from 'node-fetch'
@@ -25,13 +24,32 @@ import {
 } from './constants'
 import { Dependencies, JoiValidationError, PluginOptions } from './types'
 
-const getSchemasFromCustomTypeApiResponse = (
-  response: prismicCustomTypes.CustomType[],
-) =>
-  R.fromFoldableMap(
-    struct.getAssignSemigroup<prismicT.CustomTypeModel>(),
-    A.Foldable,
-  )(response, (item) => [item.id, item.json])
+/**
+ * Converts a Custom Type model to a mocked Custom Type API response object.
+ * This is used as a way to ease migration from the `schemas` plugin option to
+ * the `customTypeModels` plugin option.
+ *
+ * The `label`, `status`, and `repeatable` fields will **not** represent the
+ * actual values from the Prismic repository. They will contain placeholder
+ * values since that data is not available from just the Custom Type model.
+ *
+ * @param id API ID of the Custom Type.
+ * @param model Model for the Custom Type.
+ *
+ * @returns The Custom Type model as if it came from the
+ */
+const customTypeModelToCustomType = (
+  id: string,
+  model: prismicT.CustomTypeModel,
+): prismicCustomTypes.CustomType => ({
+  id,
+  json: model,
+  // The following values are treated as filler values since we don't have this
+  // metadata. They do **not** accurately represent the Custom Type.
+  label: id,
+  status: true,
+  repeatable: true,
+})
 
 /**
  * To be execuring during the `external` phase of `pluginOptionsSchema`.
@@ -71,7 +89,7 @@ const externalCustomTypeFetchingProgram = (
         }),
       ),
     ),
-    RTE.bindW('fetchedSchemas', (scope) =>
+    RTE.bindW('customTypes', (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
           async () => await scope.client.getAll(),
@@ -84,15 +102,32 @@ const externalCustomTypeFetchingProgram = (
         ),
       ),
     ),
-    RTE.bind('schemas', (scope) =>
-      RTE.of(getSchemasFromCustomTypeApiResponse(scope.fetchedSchemas)),
+    RTE.bindW('sharedSlices', (scope) =>
+      pipe(
+        RTE.fromTaskEither(
+          TE.tryCatch(
+            async () => await scope.client.getAllSharedSlices(),
+            (error) =>
+              new Joi.ValidationError(
+                'Failed Custom Type API Request',
+                [error as Error],
+                scope.pluginOptions,
+              ),
+          ),
+        ),
+      ),
     ),
+    // TODO: Properly merge these by checking IDs.
     RTE.map((scope) => ({
       ...scope.pluginOptions,
-      schemas: {
-        ...scope.schemas,
-        ...scope.pluginOptions.schemas,
-      },
+      customTypeModels: [
+        ...scope.customTypes,
+        ...scope.pluginOptions.customTypeModels,
+      ],
+      sharedSliceModels: [
+        ...scope.sharedSlices,
+        ...scope.pluginOptions.sharedSliceModels,
+      ],
     })),
   )
 
@@ -147,8 +182,12 @@ const externalValidationProgram = (
         ),
       ),
     ),
-    RTE.bind('schemaTypes', (scope) =>
-      pipe(scope.pluginOptions.schemas, R.keys, (types) => RTE.right(types)),
+    RTE.bindW('schemaTypes', (scope) =>
+      pipe(
+        scope.pluginOptions.customTypeModels,
+        A.map((model) => model.id),
+        RTE.right,
+      ),
     ),
     RTE.bind('missingSchemas', (scope) =>
       pipe(
@@ -200,6 +239,40 @@ export const pluginOptionsSchema: NonNullable<
     linkResolver: Joi.function(),
     htmlSerializer: Joi.function(),
     schemas: Joi.object(),
+    // If a user provides `schemas`, the default value will be converted from
+    // `schemas` to something that appears to be from the Custom Types API.
+    customTypeModels: Joi.array()
+      .items(
+        Joi.object({
+          id: Joi.string().required(),
+          json: Joi.object().required(),
+        }).unknown(),
+      )
+      .default((parent) =>
+        pipe(
+          parent.schemas || {},
+          R.collect(
+            (id, schema) => [id, schema] as [string, prismicT.CustomTypeModel],
+          ),
+          A.map(([id, model]) => customTypeModelToCustomType(id, model)),
+        ),
+      ),
+    sharedSliceModels: Joi.array()
+      .items(
+        Joi.object({
+          id: Joi.string().required(),
+          variations: Joi.array()
+            .items(
+              Joi.object({
+                id: Joi.string().required(),
+                primary: Joi.object(),
+                items: Joi.object(),
+              }).unknown(),
+            )
+            .required(),
+        }).unknown(),
+      )
+      .default([]),
     imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
     imagePlaceholderImgixParams: Joi.object().default(
       DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
@@ -209,11 +282,11 @@ export const pluginOptionsSchema: NonNullable<
     createRemoteFileNode: Joi.function().default(
       () => gatsbyFs.createRemoteFileNode,
     ),
-    transformFieldName: Joi.function().default(() => (fieldName: string) =>
-      fieldName.replace(/-/g, '_'),
+    transformFieldName: Joi.function().default(
+      () => (fieldName: string) => fieldName.replace(/-/g, '_'),
     ),
   })
-    .or('schemas', 'customTypesApiToken')
+    .or('customTypesApiToken', 'customTypeModels', 'schemas')
     .oxor('fetchLinks', 'graphQuery')
     .external(
       async (pluginOptions: PluginOptions) =>

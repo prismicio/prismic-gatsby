@@ -30,7 +30,7 @@ export const buildGroupFieldConfig: FieldConfigCreator<prismicT.CustomTypeModelG
         createTypePath(path, prismicT.CustomTypeModelFieldType.Group),
       ),
       RTE.chain(() => buildSchemaRecordType(path, schema.config.fields)),
-      RTE.chainFirst(createType),
+      RTE.chainFirstW(createType),
       RTE.map(getTypeName),
       RTE.map(listTypeName),
     )

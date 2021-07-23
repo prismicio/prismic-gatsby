@@ -3,6 +3,9 @@ import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as A from 'fp-ts/Array'
+import * as ReadonlyA from 'fp-ts/ReadonlyArray'
+import * as E from 'fp-ts/Either'
+import * as O from 'fp-ts/Option'
 import { pipe, flow, identity } from 'fp-ts/function'
 
 import { buildObjectType } from '../lib/buildObjectType'
@@ -13,6 +16,7 @@ import { listTypeName } from '../lib/listTypeName'
 import { createType } from '../lib/createType'
 import { createTypes } from '../lib/createTypes'
 import { createTypePath } from '../lib/createTypePath'
+import { requiredTypeName } from '../lib/requiredTypeName'
 
 import { Dependencies, FieldConfigCreator, UnknownRecord } from '../types'
 
@@ -25,15 +29,14 @@ import { Dependencies, FieldConfigCreator, UnknownRecord } from '../types'
  * This function registers a typepath for the field.
  *
  * @param path Path to the Slice zone.
- * @param schema Schema definition for the Slice.
+ * @param model Schema definition for the Slice.
  *
  * @returns GraphQL object type.
  */
-const buildSliceChoiceType = (
+const buildSliceType = (
   path: string[],
-  schema: prismicT.CustomTypeModelSlice,
-  // schema: PrismicSchemaSlice,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
+  model: prismicT.CustomTypeModelSlice,
+): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
@@ -49,23 +52,23 @@ const buildSliceChoiceType = (
             gatsby.GatsbyGraphQLObjectType
           >
         >,
-        R.isEmpty(schema['non-repeat'])
+        R.isEmpty(model['non-repeat'])
           ? identity
           : R.upsertAt(
               'primary',
-              buildSchemaRecordType([...path, 'primary'], schema['non-repeat']),
+              buildSchemaRecordType([...path, 'primary'], model['non-repeat']),
             ),
-        R.isEmpty(schema.repeat)
+        R.isEmpty(model.repeat)
           ? identity
           : R.upsertAt(
               'items',
-              buildSchemaRecordType([...path, 'items'], schema.repeat, [
+              buildSchemaRecordType([...path, 'items'], model.repeat, [
                 ...path,
                 'item',
               ]),
             ),
         R.sequence(RTE.ApplicativeSeq),
-        RTE.chainFirst(
+        RTE.chainFirstW(
           flow(
             R.collect((_, type) => type),
             createTypes,
@@ -78,7 +81,7 @@ const buildSliceChoiceType = (
               : getTypeName(type),
           ),
         ),
-        RTE.chain((fields) =>
+        RTE.chainW((fields) =>
           buildObjectType({
             name: deps.nodeHelpers.createTypeName(path),
             fields: {
@@ -92,6 +95,11 @@ const buildSliceChoiceType = (
                   ]),
               },
               slice_type: 'String!',
+              // slice_type: deps.nodeHelpers.createTypeName([
+              //   // The enum's name is one level above the given path.
+              //   ...path.slice(0, -1),
+              //   'SliceType',
+              // ]),
               slice_label: 'String',
             },
             interfaces: [deps.globalNodeHelpers.createTypeName('SliceType')],
@@ -114,24 +122,82 @@ const buildSliceChoiceType = (
 const buildSliceTypes = (
   path: string[],
   choices: prismicT.CustomTypeModelSliceZoneField['config']['choices'],
-): RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  gatsby.GatsbyGraphQLObjectType[]
-> =>
+): RTE.ReaderTaskEither<Dependencies, Error, string[]> =>
   pipe(
-    choices,
-    // TODO: We only support standard Slices. SharedSlices will not be supported
-    // until Slice Machine is integrated.
-    R.filter(
-      (slice): slice is prismicT.CustomTypeModelSlice =>
-        slice.type === prismicT.CustomTypeModelSliceType.Slice,
+    RTE.ask<Dependencies>(),
+    RTE.bindW('sliceModels', () =>
+      pipe(
+        choices,
+        R.filter(
+          (slice): slice is prismicT.CustomTypeModelSlice =>
+            slice.type === prismicT.CustomTypeModelSliceType.Slice,
+        ),
+        RTE.right,
+      ),
     ),
-    R.mapWithIndex((sliceName, sliceSchema) =>
-      buildSliceChoiceType(pipe(path, A.append(sliceName)), sliceSchema),
+    RTE.bindW('sliceTypeNames', (scope) =>
+      pipe(
+        scope.sliceModels,
+        R.mapWithIndex((sliceName, sliceModel) =>
+          buildSliceType([...path, sliceName], sliceModel),
+        ),
+        R.sequence(RTE.ApplicativeSeq),
+        RTE.map(R.collect((_, type) => type)),
+        RTE.chainFirstW(createTypes),
+        RTE.map(A.map(getTypeName)),
+      ),
     ),
-    R.sequence(RTE.ApplicativeSeq),
-    RTE.map(R.collect((_, type) => type)),
+    RTE.bindW('sharedSliceModels', () =>
+      pipe(
+        choices,
+        R.filter(
+          (slice): slice is prismicT.CustomTypeModelSharedSlice =>
+            slice.type === prismicT.CustomTypeModelSliceType.SharedSlice,
+        ),
+        RTE.right,
+      ),
+    ),
+    RTE.bindW('sharedSliceTypesNames', (scope) =>
+      pipe(
+        scope.sharedSliceModels,
+        R.keys,
+        A.map((sharedSliceId) =>
+          pipe(
+            scope.pluginOptions.sharedSliceModels,
+            A.findFirst(
+              (sharedSliceModel) => sharedSliceModel.id === sharedSliceId,
+            ),
+            E.fromOption(
+              () =>
+                new Error(
+                  `Could not find a Shared Slice model for a Shared Slice named "${sharedSliceId}"`,
+                ),
+            ),
+          ),
+        ),
+        A.sequence(E.Applicative),
+        RTE.fromEither,
+        RTE.map(
+          A.map((sharedSliceModel) =>
+            pipe(
+              sharedSliceModel.variations,
+              ReadonlyA.map((variation) =>
+                scope.nodeHelpers.createTypeName([
+                  sharedSliceModel.id,
+                  variation.id,
+                ]),
+              ),
+            ),
+          ),
+        ),
+        RTE.map(ReadonlyA.flatten),
+        RTE.map(ReadonlyA.toArray),
+      ),
+    ),
+    RTE.map((scope) => [
+      ...scope.sliceTypeNames,
+      ...scope.sharedSliceTypesNames,
+    ]),
   )
 
 /**
@@ -156,19 +222,36 @@ export const buildSlicesFieldConfig: FieldConfigCreator<prismicT.CustomTypeModel
       RTE.chain((deps) =>
         pipe(
           buildSliceTypes(path, schema.config.choices),
-          RTE.chainFirst(createTypes),
-          RTE.map(A.map(getTypeName)),
-          RTE.chain((types) =>
+          RTE.chainW((types) =>
             buildUnionType({
               name: deps.nodeHelpers.createTypeName([...path, 'SlicesType']),
               types,
-              resolveType: (source: prismicT.Slice) =>
-                deps.nodeHelpers.createTypeName([...path, source.slice_type]),
+              resolveType: (source: prismicT.Slice | prismicT.SharedSlice) =>
+                pipe(
+                  source,
+                  O.fromPredicate(
+                    (source): source is prismicT.SharedSlice =>
+                      'variation' in source,
+                  ),
+                  O.map((source) =>
+                    deps.nodeHelpers.createTypeName([
+                      source.slice_type,
+                      source.variation,
+                    ]),
+                  ),
+                  O.getOrElse(() =>
+                    deps.nodeHelpers.createTypeName([
+                      ...path,
+                      source.slice_type,
+                    ]),
+                  ),
+                ),
             }),
           ),
-          RTE.chainFirst(createType),
-          RTE.map(getTypeName),
-          RTE.map(listTypeName),
+          RTE.chainFirstW(createType),
+          RTE.map(
+            flow(getTypeName, requiredTypeName, listTypeName, requiredTypeName),
+          ),
         ),
       ),
     )

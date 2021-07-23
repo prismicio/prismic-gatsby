@@ -4,6 +4,7 @@ import * as imgixGatsby from '@imgix/gatsby'
 import * as prismic from '@prismicio/client'
 import * as prismicH from '@prismicio/helpers'
 import * as prismicT from '@prismicio/types'
+import * as prismicCustomTypes from '@prismicio/custom-types-client'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { NodeHelpers } from 'gatsby-node-helpers'
@@ -73,7 +74,20 @@ export interface PluginOptions extends gatsby.PluginOptions {
   lang: string
   linkResolver?: prismicH.LinkResolverFunction
   htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer
+  /**
+   * A record of all Custom Type API IDs mapped to their models.
+   *
+   * @deprecated Use the `customTypeModels` plugin option.
+   */
   schemas: Record<string, prismicT.CustomTypeModel>
+  /**
+   * A list of all Custom Types models using the Custom Types API object shape.
+   */
+  customTypeModels: prismicCustomTypes.CustomType[]
+  /**
+   * A list of all Shared Slice models.
+   */
+  sharedSliceModels: prismicT.SharedSliceModel[]
   imageImgixParams: imgixGatsby.ImgixUrlParams
   imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams
   typePrefix?: string
@@ -90,7 +104,7 @@ export type FieldConfigCreator<
   schema: TSchema,
 ) => RTE.ReaderTaskEither<
   Dependencies,
-  never,
+  Error,
   gqlc.ObjectTypeComposerFieldConfigDefinition<unknown, unknown>
 >
 
@@ -102,6 +116,7 @@ export type PrismicTypePathType =
 export enum PrismicSpecialType {
   Document = 'Document',
   DocumentData = 'DocumentData',
+  SharedSliceVariation = 'SharedSliceVariation',
   Unknown = 'Unknown',
 }
 

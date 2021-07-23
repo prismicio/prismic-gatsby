@@ -21,11 +21,11 @@ export const buildSchemaRecordType = (
   path: string[],
   record: Record<string, prismicT.CustomTypeModelField>,
   typeName: string | string[] = path,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
+): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('fields', () => buildFieldConfigMap(path, record)),
-    RTE.chain((scope) =>
+    RTE.chainW((scope) =>
       buildObjectType({
         name: scope.nodeHelpers.createTypeName(typeName),
         fields: scope.fields,
