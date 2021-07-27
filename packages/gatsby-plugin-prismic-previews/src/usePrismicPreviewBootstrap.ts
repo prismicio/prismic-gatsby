@@ -67,9 +67,10 @@ export const usePrismicPreviewBootstrap = (
 
   return React.useCallback(async (): Promise<void> => {
     if (
-      (contextState.previewState !== PrismicPreviewState.IDLE &&
-        contextState.previewState !== PrismicPreviewState.RESOLVED) ||
-      contextState.isBootstrapped
+      (contextStateRef.current.previewState !== PrismicPreviewState.IDLE &&
+        contextStateRef.current.previewState !==
+          PrismicPreviewState.RESOLVED) ||
+      contextStateRef.current.isBootstrapped
     ) {
       // No op. Bootstrapping should only happen once.
       return
@@ -257,8 +258,6 @@ export const usePrismicPreviewBootstrap = (
     repositoryConfigs,
     contextState.repositoryConfigs,
     contextState.pluginOptionsStore,
-    contextState.previewState,
-    contextState.isBootstrapped,
     contextDispatch,
   ])
 }
