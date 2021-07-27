@@ -36,6 +36,169 @@ test('creates nodes', async (t) => {
   }
 })
 
+test('field names are normalized using transformFieldName option', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+  const doc = createPrismicAPIDocument({
+    data: {
+      'with-dashes': {
+        embed_url: 'https://youtube.com/1',
+      } as prismicT.EmbedField,
+      group: [
+        {
+          'with-dashes': {
+            embed_url: 'https://youtube.com/2',
+          } as prismicT.EmbedField,
+        },
+      ],
+      slices: [
+        {
+          slice_type: 'with-dashes',
+          slice_label: '',
+          primary: {
+            'with-dashes': {
+              embed_url: 'https://youtube.com/3',
+            } as prismicT.EmbedField,
+          },
+          items: [
+            {
+              'with-dashes': {
+                embed_url: 'https://youtube.com/4',
+              } as prismicT.EmbedField,
+            },
+          ],
+        },
+      ],
+    },
+  })
+  const queryResponse = createPrismicAPIQueryResponse([doc])
+
+  pluginOptions.schemas = {
+    type: {
+      Main: {
+        'with-dashes': {
+          type: prismicT.CustomTypeModelFieldType.Embed,
+          config: { label: 'Embed' },
+        },
+        group: {
+          type: prismicT.CustomTypeModelFieldType.Group,
+          config: {
+            label: 'Group',
+            fields: {
+              'with-dashes': {
+                type: prismicT.CustomTypeModelFieldType.Embed,
+                config: { label: 'Embed' },
+              },
+            },
+          },
+        },
+        slices: {
+          type: prismicT.CustomTypeModelFieldType.Slices,
+          fieldset: 'Slice zone',
+          config: {
+            labels: {},
+            choices: {
+              'with-dashes': {
+                type: prismicT.CustomTypeModelSliceType.Slice,
+                fieldset: 'Slice zone',
+                description: '',
+                icon: '',
+                display: prismicT.CustomTypeModelSliceDisplay.List,
+                repeat: {
+                  'with-dashes': {
+                    type: prismicT.CustomTypeModelFieldType.Embed,
+                    config: { label: 'Embed' },
+                  },
+                },
+                'non-repeat': {
+                  'with-dashes': {
+                    type: prismicT.CustomTypeModelFieldType.Embed,
+                    config: { label: 'Embed' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  }
+
+  server.use(createAPIRepositoryMockedRequest(pluginOptions))
+  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await sourceNodes(gatsbyContext, pluginOptions)
+
+  const createNodeStub = gatsbyContext.actions.createNode as sinon.SinonStub
+
+  t.true(
+    createNodeStub.calledWith(
+      sinon.match({
+        prismicId: doc.id,
+        data: {
+          with_dashes: sinon.match.string,
+          group: [{ with_dashes: sinon.match.string }],
+          slices: [
+            sinon.match({
+              slice_type: 'with-dashes',
+              primary: { with_dashes: sinon.match.string },
+              items: [{ with_dashes: sinon.match.string }],
+            }),
+          ],
+        },
+      }),
+    ),
+  )
+
+  t.true(
+    createNodeStub.calledWith(
+      sinon.match({
+        embed_url: doc.data['with-dashes'].embed_url,
+        internal: sinon.match({
+          type: 'PrismicPrefixEmbedType',
+        }),
+      }),
+    ),
+  )
+
+  t.true(
+    createNodeStub.calledWith(
+      sinon.match({
+        embed_url: doc.data.group[0]['with-dashes'].embed_url,
+        internal: sinon.match({
+          type: 'PrismicPrefixEmbedType',
+        }),
+      }),
+    ),
+  )
+
+  t.true(
+    createNodeStub.calledWith(
+      sinon.match({
+        embed_url: doc.data.slices[0].primary['with-dashes'].embed_url,
+        internal: sinon.match({
+          type: 'PrismicPrefixEmbedType',
+        }),
+      }),
+    ),
+  )
+
+  t.true(
+    createNodeStub.calledWith(
+      sinon.match({
+        embed_url: doc.data.slices[0].items[0]['with-dashes'].embed_url,
+        internal: sinon.match({
+          type: 'PrismicPrefixEmbedType',
+        }),
+      }),
+    ),
+  )
+})
+
 test('uses apiEndpoint plugin option if provided', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
@@ -220,14 +383,12 @@ test('integration fields are normalized to inferred nodes', async (t) => {
   const pluginOptions = createPluginOptions(t)
   const docWithIntegrationId = createPrismicAPIDocument({
     data: {
-      // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
       integration: {
         id: 1,
         foo: 'bar',
       },
       group: [
         {
-          // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
           integration: {
             id: 2,
             foo: 'bar',
@@ -236,7 +397,6 @@ test('integration fields are normalized to inferred nodes', async (t) => {
       ],
       slices: [
         {
-          // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
           slice_type: 'integration',
           primary: {
             integration: {
@@ -259,7 +419,6 @@ test('integration fields are normalized to inferred nodes', async (t) => {
   })
   const docWithoutIntegrationId = createPrismicAPIDocument({
     data: {
-      // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
       integration: {
         foo: 'bar',
       },
@@ -368,7 +527,6 @@ test('integration fields are normalized to inferred nodes', async (t) => {
   t.true(
     createNodeStub.calledWith(
       sinon.match({
-        // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
         prismicId: docWithIntegrationId.data.integration.id,
         internal: sinon.match({
           type: 'PrismicPrefixFooDataIntegrationIntegrationType',
@@ -380,7 +538,6 @@ test('integration fields are normalized to inferred nodes', async (t) => {
   t.true(
     createNodeStub.calledWith(
       sinon.match({
-        // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
         prismicId: docWithIntegrationId.data.group[0].integration.id,
         internal: sinon.match({
           type: 'PrismicPrefixFooDataGroupIntegrationIntegrationType',
@@ -392,11 +549,9 @@ test('integration fields are normalized to inferred nodes', async (t) => {
   t.true(
     createNodeStub.calledWith(
       sinon.match({
-        // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
         prismicId: docWithIntegrationId.data.slices[0].primary.integration.id,
         internal: sinon.match({
-          type:
-            'PrismicPrefixFooDataSlicesIntegrationPrimaryIntegrationIntegrationType',
+          type: 'PrismicPrefixFooDataSlicesIntegrationPrimaryIntegrationIntegrationType',
         }),
       }),
     ),
@@ -405,11 +560,9 @@ test('integration fields are normalized to inferred nodes', async (t) => {
   t.true(
     createNodeStub.calledWith(
       sinon.match({
-        // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
         prismicId: docWithIntegrationId.data.slices[0].items[0].integration.id,
         internal: sinon.match({
-          type:
-            'PrismicPrefixFooDataSlicesIntegrationItemsIntegrationIntegrationType',
+          type: 'PrismicPrefixFooDataSlicesIntegrationItemsIntegrationIntegrationType',
         }),
       }),
     ),
@@ -419,7 +572,6 @@ test('integration fields are normalized to inferred nodes', async (t) => {
     createNodeStub.calledWith(
       sinon.match({
         prismicId: gatsbyContext.createContentDigest?.(
-          // @ts-expect-error - Integration fields are not supported yet in @prismicio/types
           docWithoutIntegrationId.data.integration,
         ),
         internal: sinon.match({

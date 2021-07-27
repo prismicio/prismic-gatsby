@@ -24,12 +24,19 @@ const KitchenSinkPage = (
           <Link to="/about">About</Link>
         </li>
       </ul>
-      <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
-        <code>{props.prismicPreviewState}</code>
-      </pre>
       <hr />
       <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
         <code>isPrismicPreview: {props.isPrismicPreview?.toString()}</code>
+      </pre>
+      <hr />
+      <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
+        <code>
+          {JSON.stringify(
+            props.data.prismicPrefixKitchenSink.data.with_dashes_title,
+            null,
+            2,
+          )}
+        </code>
       </pre>
       <hr />
       <pre
@@ -57,12 +64,7 @@ const KitchenSinkPage = (
         }}
       >
         <code>
-          {JSON.stringify(
-            props.data.prismicPrefixKitchenSink.data.body[0]?.primary
-              .first_option_nonrepeat_content_relationship.document,
-            null,
-            2,
-          )}
+          {JSON.stringify(props.data.prismicPrefixKitchenSink, null, 2)}
         </code>
       </pre>
       <hr />
@@ -107,6 +109,11 @@ export const query = graphql`
       data {
         title {
           html
+        }
+        with_dashes_title {
+          html
+          text
+          raw
         }
         body {
           ... on PrismicPrefixKitchenSinkDataBodyFirstOption {
