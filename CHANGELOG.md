@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.3](https://github.com/prismicio/gatsby/compare/v4.0.2...v4.0.3) (2021-07-28)
+
+
+### Bug Fixes
+
+* **previews:** catch error when a field type cannot be found ([352c923](https://github.com/prismicio/gatsby/commit/352c9238c51166863134aed823ae609807be6b01))
+
+
+
+
+
 ## [4.0.2](https://github.com/prismicio/gatsby/compare/v4.0.1...v4.0.2) (2021-07-27)
 
 
