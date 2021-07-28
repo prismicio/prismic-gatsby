@@ -18,6 +18,9 @@ export const valueRefinement = (
 ): value is prismic.PrismicDocument =>
   typeof value === 'object' && value !== null
 
+// Error used to identify when a document does not contain a `data` field.
+class NoDataFieldError extends Error {}
+
 export const proxyValue = (
   path: string[],
   fieldValue: prismic.PrismicDocument,
@@ -29,10 +32,14 @@ export const proxyValue = (
         fieldValue.data,
         RE.fromPredicate(
           (data) => !R.isEmpty(data),
-          () => new Error('Document does not have a data field'),
+          () => new NoDataFieldError('Document does not have a data field'),
         ),
         RE.chain((data) => proxyDocumentSubtree([...path, 'data'], data)),
-        RE.orElseW(() => RE.right(fieldValue.data)),
+        RE.orElseW((error) =>
+          error instanceof NoDataFieldError
+            ? RE.right(fieldValue.data)
+            : RE.left(error),
+        ),
       ),
     ),
     RE.bind('url', (env) =>
