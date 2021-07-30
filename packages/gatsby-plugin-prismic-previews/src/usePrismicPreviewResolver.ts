@@ -36,7 +36,7 @@ export const usePrismicPreviewResolver = (
   }, [contextState])
 
   return React.useCallback(async (): Promise<void> => {
-    if (contextState.previewState !== PrismicPreviewState.IDLE) {
+    if (contextStateRef.current.previewState !== PrismicPreviewState.IDLE) {
       // No op. Resolving should only happen at IDLE.
       return
     }
@@ -151,7 +151,6 @@ export const usePrismicPreviewResolver = (
   }, [
     contextDispatch,
     contextState.pluginOptionsStore,
-    contextState.previewState,
     contextState.repositoryConfigs,
     repositoryConfigs,
   ])

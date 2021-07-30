@@ -342,6 +342,166 @@ test('creates type path nodes', async (t) => {
     'kitchen_sink.data.second_tab_select': 'Select',
     'kitchen_sink.data.second_tab_timestamp': 'Timestamp',
     'kitchen_sink.data.second_tab_title': 'StructuredText',
+    'kitchen_sink.data.with_dashes_body': 'Slices',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option': 'Slice',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option': 'Slice',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_boolean': 'Boolean',
+    'kitchen_sink.data.with_dashes_color': 'Color',
+    'kitchen_sink.data.with_dashes_content_relationship': 'Link',
+    'kitchen_sink.data.with_dashes_date': 'Date',
+    'kitchen_sink.data.with_dashes_embed': 'Embed',
+    'kitchen_sink.data.with_dashes_geopoint': 'GeoPoint',
+    'kitchen_sink.data.with_dashes_group': 'Group',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_boolean': 'Boolean',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_color': 'Color',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_date': 'Date',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_embed': 'Embed',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_image': 'Image',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_key_text': 'Text',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_link': 'Link',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_number': 'Number',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_select': 'Select',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_image': 'Image',
+    'kitchen_sink.data.with_dashes_key_text': 'Text',
+    'kitchen_sink.data.with_dashes_link': 'Link',
+    'kitchen_sink.data.with_dashes_link_to_media': 'Link',
+    'kitchen_sink.data.with_dashes_number': 'Number',
+    'kitchen_sink.data.with_dashes_rich_text': 'StructuredText',
+    'kitchen_sink.data.with_dashes_select': 'Select',
+    'kitchen_sink.data.with_dashes_timestamp': 'Timestamp',
+    'kitchen_sink.data.with_dashes_title': 'StructuredText',
     'kitchen_sink.data.select': 'Select',
     'kitchen_sink.data.timestamp': 'Timestamp',
     'kitchen_sink.data.title': 'StructuredText',
@@ -701,6 +861,166 @@ test('field names with dashes are transformed with underscores by default', asyn
     'kitchen_sink.data.second_tab_select': 'Select',
     'kitchen_sink.data.second_tab_timestamp': 'Timestamp',
     'kitchen_sink.data.second_tab_title': 'StructuredText',
+    'kitchen_sink.data.with_dashes_body': 'Slices',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option': 'Slice',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.items.with_dashes_first_option_repeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_first_option.primary.with_dashes_first_option_nonrepeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option': 'Slice',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.items.with_dashes_second_option_repeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_boolean':
+      'Boolean',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_color':
+      'Color',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_date':
+      'Date',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_embed':
+      'Embed',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_image':
+      'Image',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_key_text':
+      'Text',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_link':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_number':
+      'Number',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_select':
+      'Select',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_body.with-dashes_second_option.primary.with_dashes_second_option_nonrepeat_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_boolean': 'Boolean',
+    'kitchen_sink.data.with_dashes_color': 'Color',
+    'kitchen_sink.data.with_dashes_content_relationship': 'Link',
+    'kitchen_sink.data.with_dashes_date': 'Date',
+    'kitchen_sink.data.with_dashes_embed': 'Embed',
+    'kitchen_sink.data.with_dashes_geopoint': 'GeoPoint',
+    'kitchen_sink.data.with_dashes_group': 'Group',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_boolean': 'Boolean',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_color': 'Color',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_content_relationship':
+      'Link',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_date': 'Date',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_embed': 'Embed',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_geopoint':
+      'GeoPoint',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_image': 'Image',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_key_text': 'Text',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_link': 'Link',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_link_to_media':
+      'Link',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_number': 'Number',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_rich_text':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_select': 'Select',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_timestamp':
+      'Timestamp',
+    'kitchen_sink.data.with_dashes_group.with_dashes_group_title':
+      'StructuredText',
+    'kitchen_sink.data.with_dashes_image': 'Image',
+    'kitchen_sink.data.with_dashes_key_text': 'Text',
+    'kitchen_sink.data.with_dashes_link': 'Link',
+    'kitchen_sink.data.with_dashes_link_to_media': 'Link',
+    'kitchen_sink.data.with_dashes_number': 'Number',
+    'kitchen_sink.data.with_dashes_rich_text': 'StructuredText',
+    'kitchen_sink.data.with_dashes_select': 'Select',
+    'kitchen_sink.data.with_dashes_timestamp': 'Timestamp',
+    'kitchen_sink.data.with_dashes_title': 'StructuredText',
     'kitchen_sink.data.select': 'Select',
     'kitchen_sink.data.timestamp': 'Timestamp',
     'kitchen_sink.data.title': 'StructuredText',

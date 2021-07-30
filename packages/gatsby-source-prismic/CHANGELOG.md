@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.2](https://github.com/prismicio/gatsby/compare/v4.0.1...v4.0.2) (2021-07-27)
+
+
+### Bug Fixes
+
+* correctly resolve fields with transformed names ([#415](https://github.com/prismicio/gatsby/issues/415)) ([1c7907f](https://github.com/prismicio/gatsby/commit/1c7907f420e22b99d3c6009d85c443e2a00fa414))
+
+
+
+
+
 ## [4.0.1](https://github.com/prismicio/gatsby/compare/v4.0.0...v4.0.1) (2021-07-20)
 
 **Note:** Version bump only for package gatsby-source-prismic

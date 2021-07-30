@@ -10,6 +10,7 @@ import { Dependencies, PrismicSpecialType, UnknownRecord } from '../types'
 
 import { getTypePath } from './getTypePath'
 import { createNodeOfType } from './createNodeOfType'
+import { mapRecordIndices } from './mapRecordIndices'
 
 /**
  * Determines if a value is a record.
@@ -95,11 +96,17 @@ const normalizeDocumentRecord = (
   value: UnknownRecord,
 ): RTE.ReaderTaskEither<Dependencies, never, UnknownRecord> =>
   pipe(
-    value,
-    R.mapWithIndex((prop, propValue) =>
-      normalizeDocumentSubtree([...path, prop], propValue),
+    RTE.ask<Dependencies>(),
+    RTE.chain((deps) =>
+      pipe(
+        value,
+        mapRecordIndices(deps.pluginOptions.transformFieldName),
+        R.mapWithIndex((prop, propValue) =>
+          normalizeDocumentSubtree([...path, prop], propValue),
+        ),
+        R.sequence(RTE.ApplicativeSeq),
+      ),
     ),
-    R.sequence(RTE.ApplicativeSeq),
   )
 
 /**
