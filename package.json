@@ -9,6 +9,7 @@
     "test": "yarn workspaces run test",
     "build": "yarn workspaces run build",
     "publish:canary": "lerna publish --canary",
+    "publish:slicemachine": "lerna publish --dist-tag slicemachine --preid slicemachine",
     "publish:alpha": "lerna publish --dist-tag alpha --preid alpha",
     "publish:beta": "lerna publish --dist-tag beta --preid beta",
     "publish:latest": "lerna publish --dist-tag latest"
