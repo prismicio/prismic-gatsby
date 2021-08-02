@@ -86,7 +86,7 @@ const buildDataFieldConfigMap = (
     RTE.chainFirstW(createType),
     RTE.map(getTypeName),
     RTE.map((typeName) => ({
-      data: typeName,
+      data: pipe(typeName, requiredTypeName),
       dataRaw: {
         type: 'JSON!',
         resolve: (source: PrismicAPIDocumentNode) => source.data,
