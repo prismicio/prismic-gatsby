@@ -2,7 +2,7 @@ import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
-import { Dependencies } from '../types'
+import { Dependencies, TypePathKind } from '../types'
 import { normalizeDocumentSubtree } from './normalizeDocumentSubtree'
 
 /**
@@ -30,7 +30,7 @@ export const normalizeDocument = (
   doc: prismicT.PrismicDocument,
 ): RTE.ReaderTaskEither<Dependencies, Error, prismicT.PrismicDocument> =>
   pipe(
-    normalizeDocumentSubtree([doc.type], doc),
+    normalizeDocumentSubtree(TypePathKind.CustomType, [doc.type], doc),
     RTE.chainW(
       RTE.fromPredicate(
         documentRefinement,

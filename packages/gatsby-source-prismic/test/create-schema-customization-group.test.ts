@@ -11,68 +11,74 @@ test('creates types with each field', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        group: {
-          type: prismicT.CustomTypeModelFieldType.Group,
-          config: {
-            label: 'Group',
-            fields: {
-              boolean: {
-                type: prismicT.CustomTypeModelFieldType.Boolean,
-                config: { label: 'Boolean' },
-              },
-              color: {
-                type: prismicT.CustomTypeModelFieldType.Color,
-                config: { label: 'Color' },
-              },
-              date: {
-                type: prismicT.CustomTypeModelFieldType.Date,
-                config: { label: 'Date' },
-              },
-              embed: {
-                type: prismicT.CustomTypeModelFieldType.Embed,
-                config: { label: 'Embed' },
-              },
-              geo_point: {
-                type: prismicT.CustomTypeModelFieldType.GeoPoint,
-                config: { label: 'GeoPoint' },
-              },
-              image: {
-                type: prismicT.CustomTypeModelFieldType.Image,
-                config: { label: 'Image', constraint: {}, thumbnails: [] },
-              },
-              link: {
-                type: prismicT.CustomTypeModelFieldType.Link,
-                config: { label: 'Link' },
-              },
-              number: {
-                type: prismicT.CustomTypeModelFieldType.Number,
-                config: { label: 'Number' },
-              },
-              select: {
-                type: prismicT.CustomTypeModelFieldType.Select,
-                config: { label: 'Select', options: ['Option 1'] },
-              },
-              structured_text: {
-                type: prismicT.CustomTypeModelFieldType.StructuredText,
-                config: { label: 'StructuredText', multi: '' },
-              },
-              text: {
-                type: prismicT.CustomTypeModelFieldType.Text,
-                config: { label: 'Text' },
-              },
-              timestamp: {
-                type: prismicT.CustomTypeModelFieldType.Timestamp,
-                config: { label: 'Timestamp' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          group: {
+            type: prismicT.CustomTypeModelFieldType.Group,
+            config: {
+              label: 'Group',
+              fields: {
+                boolean: {
+                  type: prismicT.CustomTypeModelFieldType.Boolean,
+                  config: { label: 'Boolean' },
+                },
+                color: {
+                  type: prismicT.CustomTypeModelFieldType.Color,
+                  config: { label: 'Color' },
+                },
+                date: {
+                  type: prismicT.CustomTypeModelFieldType.Date,
+                  config: { label: 'Date' },
+                },
+                embed: {
+                  type: prismicT.CustomTypeModelFieldType.Embed,
+                  config: { label: 'Embed' },
+                },
+                geo_point: {
+                  type: prismicT.CustomTypeModelFieldType.GeoPoint,
+                  config: { label: 'GeoPoint' },
+                },
+                image: {
+                  type: prismicT.CustomTypeModelFieldType.Image,
+                  config: { label: 'Image', constraint: {}, thumbnails: [] },
+                },
+                link: {
+                  type: prismicT.CustomTypeModelFieldType.Link,
+                  config: { label: 'Link' },
+                },
+                number: {
+                  type: prismicT.CustomTypeModelFieldType.Number,
+                  config: { label: 'Number' },
+                },
+                select: {
+                  type: prismicT.CustomTypeModelFieldType.Select,
+                  config: { label: 'Select', options: ['Option 1'] },
+                },
+                structured_text: {
+                  type: prismicT.CustomTypeModelFieldType.StructuredText,
+                  config: { label: 'StructuredText', multi: '' },
+                },
+                text: {
+                  type: prismicT.CustomTypeModelFieldType.Text,
+                  config: { label: 'Text' },
+                },
+                timestamp: {
+                  type: prismicT.CustomTypeModelFieldType.Timestamp,
+                  config: { label: 'Timestamp' },
+                },
               },
             },
           },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)

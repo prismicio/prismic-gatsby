@@ -9,11 +9,15 @@ import {
 } from 'gatsby-plugin-utils'
 
 import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
+import kitchenSinkSharedSliceSchemaFixture from './__fixtures__/kitchenSinkSharedSliceSchema.json'
 import { createCustomTypesAPICustomType } from './__testutils__/createCustomTypesAPICustomType'
 import { createCustomTypesAPIMockedRequest } from './__testutils__/createCustomTypesAPIMockedRequest'
+import { createCustomTypesAPISharedSlice } from './__testutils__/createCustomTypesAPISharedSlice'
+import { createCustomTypesAPISharedSlicesMockedRequest } from './__testutils__/createCustomTypesAPISharedSlicesMockedRequest'
 import { isValidAccessToken } from './__testutils__/isValidAccessToken'
+import { resolveURL } from './__testutils__/resolveURL'
 
-import { PluginOptions, PrismicCustomTypeApiResponse } from '../src'
+import { PluginOptions } from '../src'
 import { pluginOptionsSchema } from '../src/plugin-options-schema'
 
 const server = mswn.setupServer()
@@ -26,14 +30,15 @@ test.serial('passes on valid options', async (t) => {
     repositoryName: 'string',
     accessToken: 'string',
     customTypesApiToken: 'string',
-    customTypesApiEndpoint: 'https://example-customTypesApiEndpoint.com',
+    customTypesApiEndpoint: 'https://example-custom-types-api-endpoint.com',
     apiEndpoint: 'https://example-apiEndpoint.com',
     releaseID: 'string',
     graphQuery: 'string',
     lang: 'string',
     linkResolver: (): void => void 0,
     htmlSerializer: (): void => void 0,
-    schemas: { page: kitchenSinkSchemaFixture },
+    customTypeModels: [kitchenSinkSchemaFixture],
+    sharedSliceModels: [kitchenSinkSharedSliceSchemaFixture],
     imageImgixParams: { q: 100 },
     imagePlaceholderImgixParams: { q: 100 },
     typePrefix: 'string',
@@ -47,7 +52,7 @@ test.serial('passes on valid options', async (t) => {
       if (isValidAccessToken(pluginOptions.accessToken, req)) {
         return res(
           ctx.json({
-            types: { page: 'Page' },
+            types: { kitchen_sink: 'Kitchen Sink' },
             refs: [{ ref: 'master', isMasterRef: true }],
           }),
         )
@@ -55,6 +60,21 @@ test.serial('passes on valid options', async (t) => {
         return res(ctx.status(403))
       }
     }),
+  )
+
+  server.use(
+    msw.rest.get(pluginOptions.customTypesApiEndpoint, (_req, res, ctx) => {
+      return res(ctx.json([]))
+    }),
+  )
+
+  server.use(
+    msw.rest.get(
+      resolveURL(pluginOptions.customTypesApiEndpoint, '/slices'),
+      (_req, res, ctx) => {
+        return res(ctx.json([]))
+      },
+    ),
   )
 
   server.use(createCustomTypesAPIMockedRequest(pluginOptions, []))
@@ -70,10 +90,7 @@ test.serial('fails on missing options', async (t) => {
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
   t.false(res.isValid)
-  t.deepEqual(res.errors, [
-    '"repositoryName" is required',
-    '"value" must contain at least one of [schemas, customTypesApiToken]',
-  ])
+  t.deepEqual(res.errors, ['"repositoryName" is required'])
 })
 
 test.serial('fails on invalid options', async (t) => {
@@ -89,6 +106,8 @@ test.serial('fails on invalid options', async (t) => {
     linkResolver: Symbol(),
     htmlSerializer: Symbol(),
     schemas: Symbol(),
+    customTypeModels: Symbol(),
+    sharedSliceModels: Symbol(),
     imageImgixParams: Symbol(),
     imagePlaceholderImgixParams: Symbol(),
     typePrefix: Symbol(),
@@ -110,6 +129,8 @@ test.serial('fails on invalid options', async (t) => {
     '"linkResolver" must be of type function',
     '"htmlSerializer" must be of type function',
     '"schemas" must be of type object',
+    '"customTypeModels" must be an array',
+    '"sharedSliceModels" must be an array',
     '"imageImgixParams" must be of type object',
     '"imagePlaceholderImgixParams" must be of type object',
     '"typePrefix" must be a string',
@@ -182,7 +203,7 @@ test.serial('checks that all schemas are provided', async (t) => {
 })
 
 test.serial(
-  'populates schemas if customTypesApiToken is provided',
+  'populates customTypeModels if customTypesApiToken is provided',
   async (t) => {
     const pluginOptions = {
       repositoryName: 'qwerty',
@@ -193,10 +214,11 @@ test.serial(
 
     const customType1 = createCustomTypesAPICustomType()
     const customType2 = createCustomTypesAPICustomType()
-    const customTypesResponse: PrismicCustomTypeApiResponse = [
-      customType1,
-      customType2,
-    ]
+    const customTypesResponse = [customType1, customType2]
+
+    const sharedSlice1 = createCustomTypesAPISharedSlice()
+    const sharedSlice2 = createCustomTypesAPISharedSlice()
+    const sharedSlicesResponse = [sharedSlice1, sharedSlice2]
 
     server.use(
       msw.rest.get(apiEndpoint, (_req, res, ctx) =>
@@ -213,6 +235,10 @@ test.serial(
 
     server.use(
       createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
+      createCustomTypesAPISharedSlicesMockedRequest(
+        pluginOptions,
+        sharedSlicesResponse,
+      ),
     )
 
     const schema = pluginOptionsSchema({ Joi })
@@ -221,10 +247,7 @@ test.serial(
       pluginOptions,
     )) as PluginOptions
 
-    t.deepEqual(res.schemas, {
-      [customType1.id]: customType1.json,
-      [customType2.id]: customType2.json,
-    })
+    t.deepEqual(res.customTypeModels, customTypesResponse)
   },
 )
 
@@ -234,22 +257,24 @@ test.serial(
     const customTypeNotInAPI = createCustomTypesAPICustomType()
     const customTypeInAPI1 = createCustomTypesAPICustomType()
     const customTypeInAPI2 = createCustomTypesAPICustomType()
-    const customTypesResponse: PrismicCustomTypeApiResponse = [
-      customTypeInAPI1,
-      customTypeInAPI2,
-    ]
+    const customTypesResponse = [customTypeInAPI1, customTypeInAPI2]
+
+    const sharedSliceInAPI1 = createCustomTypesAPISharedSlice()
+    const sharedSliceInAPI2 = createCustomTypesAPISharedSlice()
+    const sharedSlicesResponse = [sharedSliceInAPI1, sharedSliceInAPI2]
 
     const pluginOptions = {
       repositoryName: 'qwerty',
       customTypesApiToken: 'customTypesApiToken',
       customTypesApiEndpoint: 'https://example.com',
-      schemas: {
-        [customTypeNotInAPI.id]: customTypeNotInAPI.json,
+      customTypeModels: [
+        customTypeNotInAPI,
+
         // Note that we are going to replace customTypeInAPI2 with
         // customTypeNotInAPI, in which customTypeInAPI2 is part of the API
         // response. The test at the end checks for this.
-        [customTypeInAPI2.id]: customTypeNotInAPI.json,
-      },
+        { ...customTypeNotInAPI, id: customTypeInAPI2.id },
+      ],
     }
     const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
 
@@ -268,6 +293,10 @@ test.serial(
 
     server.use(
       createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
+      createCustomTypesAPISharedSlicesMockedRequest(
+        pluginOptions,
+        sharedSlicesResponse,
+      ),
     )
 
     const schema = pluginOptionsSchema({ Joi })
@@ -276,18 +305,18 @@ test.serial(
       pluginOptions,
     )) as PluginOptions
 
-    t.deepEqual(res.schemas, {
-      // We are testing that a schema provided in the plugin options, but not
-      // provided by the API, can be provided explicitly.
-      [customTypeNotInAPI.id]: customTypeNotInAPI.json,
-
-      // This custom type was not provided in the plugin options, but is provided
-      // by the API.
-      [customTypeInAPI1.id]: customTypeInAPI1.json,
+    // TODO: Properly allow overriding types by checking IDs. Prefer models passed via options.
+    t.deepEqual(res.customTypeModels, [
+      // These custom types were not provided in the plugin options, but is
+      // provided by the API.
+      customTypeInAPI1,
+      customTypeInAPI2,
 
       // We are testing that a schema provided by the API can be overridden by
       // one provided in plugin options.
-      [customTypeInAPI2.id]: customTypeNotInAPI.json,
-    })
+      customTypeNotInAPI,
+
+      { ...customTypeNotInAPI, id: customTypeInAPI2.id },
+    ])
   },
 )

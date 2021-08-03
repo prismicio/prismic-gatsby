@@ -6,7 +6,12 @@ import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
 import { Stringable } from 'gatsby-node-helpers'
 
-import { Dependencies, PrismicSpecialType, UnknownRecord } from '../types'
+import {
+  Dependencies,
+  PrismicSpecialType,
+  TypePathKind,
+  UnknownRecord,
+} from '../types'
 
 import { getTypePath } from './getTypePath'
 import { createNodeOfType } from './createNodeOfType'
@@ -55,6 +60,18 @@ const sliceValueRefinement = (value: unknown): value is prismicT.Slice =>
   unknownRecordRefinement(value) && 'slice_type' in value
 
 /**
+ * Determines if a value is a Slice.
+ *
+ * @param value Value to check.
+ *
+ * @returns `true` if the value is a Slice, `false` otherwise.
+ */
+const sharedSliceValueRefinement = (
+  value: unknown,
+): value is prismicT.SharedSlice =>
+  slicesValueRefinement(value) && 'variation' in value
+
+/**
  * Determines if a value is a Slice Zone.
  *
  * @param value Value to check.
@@ -92,6 +109,7 @@ const stringableRefinement = (value: unknown): value is Stringable =>
  * @returns A normalized version of `value`.
  */
 const normalizeDocumentRecord = (
+  kind: TypePathKind,
   path: string[],
   value: UnknownRecord,
 ): RTE.ReaderTaskEither<Dependencies, never, UnknownRecord> =>
@@ -102,7 +120,7 @@ const normalizeDocumentRecord = (
         value,
         mapRecordIndices(deps.pluginOptions.transformFieldName),
         R.mapWithIndex((prop, propValue) =>
-          normalizeDocumentSubtree([...path, prop], propValue),
+          normalizeDocumentSubtree(kind, [...path, prop], propValue),
         ),
         R.sequence(RTE.ApplicativeSeq),
       ),
@@ -119,16 +137,32 @@ const normalizeDocumentRecord = (
  * @returns A normalized version of `value`.
  */
 export const normalizeDocumentSubtree = (
+  kind: TypePathKind,
   path: string[],
   value: unknown,
 ): RTE.ReaderTaskEither<Dependencies, never, unknown> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.bind('typePath', () => getTypePath(path)),
+    RTE.bind('typePath', () => getTypePath(kind, path)),
     RTE.bind('type', (env) => RTE.right(env.typePath.type)),
     RTE.chain((env) => {
       switch (env.typePath.type) {
-        case PrismicSpecialType.Document:
+        case PrismicSpecialType.Document: {
+          return pipe(
+            value,
+            RTE.fromPredicate(
+              unknownRecordRefinement,
+              () =>
+                new Error(
+                  `Field value does not match the type declared in its type path: ${env.type}`,
+                ),
+            ),
+            RTE.chainW((value) =>
+              normalizeDocumentRecord(TypePathKind.Field, path, value),
+            ),
+          )
+        }
+
         case PrismicSpecialType.DocumentData: {
           return pipe(
             value,
@@ -139,7 +173,9 @@ export const normalizeDocumentSubtree = (
                   `Field value does not match the type declared in its type path: ${env.type}`,
                 ),
             ),
-            RTE.chainW((value) => normalizeDocumentRecord(path, value)),
+            RTE.chainW((value) =>
+              normalizeDocumentRecord(TypePathKind.Field, path, value),
+            ),
           )
         }
 
@@ -153,7 +189,11 @@ export const normalizeDocumentSubtree = (
                   `Field value does not match the type declared in its type path: ${env.type}`,
                 ),
             ),
-            RTE.map(A.map((item) => normalizeDocumentRecord(path, item))),
+            RTE.map(
+              A.map((item) =>
+                normalizeDocumentRecord(TypePathKind.Field, path, item),
+              ),
+            ),
             RTE.chainW(RTE.sequenceArray),
           )
         }
@@ -170,7 +210,17 @@ export const normalizeDocumentSubtree = (
             ),
             RTE.map(
               A.map((item) =>
-                normalizeDocumentSubtree([...path, item.slice_type], item),
+                sharedSliceValueRefinement(item)
+                  ? normalizeDocumentSubtree(
+                      TypePathKind.SharedSliceVariation,
+                      [item.slice_type, item.variation],
+                      item,
+                    )
+                  : normalizeDocumentSubtree(
+                      TypePathKind.Field,
+                      [...path, item.slice_type],
+                      item,
+                    ),
               ),
             ),
             RTE.chainW(RTE.sequenceArray),
@@ -190,6 +240,7 @@ export const normalizeDocumentSubtree = (
             RTE.bindTo('value'),
             RTE.bindW('primary', (scope) =>
               normalizeDocumentRecord(
+                TypePathKind.Field,
                 [...path, 'primary'],
                 scope.value.primary,
               ),
@@ -198,7 +249,50 @@ export const normalizeDocumentSubtree = (
               pipe(
                 scope.value.items,
                 A.map((item) =>
-                  normalizeDocumentRecord([...path, 'items'], item),
+                  normalizeDocumentRecord(
+                    TypePathKind.Field,
+                    [...path, 'items'],
+                    item,
+                  ),
+                ),
+                RTE.sequenceArray,
+              ),
+            ),
+            RTE.map((scope) => ({
+              ...scope.value,
+              primary: scope.primary,
+              items: scope.items,
+            })),
+          )
+        }
+
+        case PrismicSpecialType.SharedSliceVariation: {
+          return pipe(
+            value,
+            RTE.fromPredicate(
+              sharedSliceValueRefinement,
+              () =>
+                new Error(
+                  `Field value does not match the type declared in its type path: ${env.type}`,
+                ),
+            ),
+            RTE.bindTo('value'),
+            RTE.bindW('primary', (scope) =>
+              normalizeDocumentRecord(
+                TypePathKind.Field,
+                [...path, 'primary'],
+                scope.value.primary,
+              ),
+            ),
+            RTE.bindW('items', (scope) =>
+              pipe(
+                scope.value.items,
+                A.map((item) =>
+                  normalizeDocumentRecord(
+                    TypePathKind.Field,
+                    [...path, 'items'],
+                    item,
+                  ),
                 ),
                 RTE.sequenceArray,
               ),

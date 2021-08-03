@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function'
 
 import { createTypePath } from '../lib/createTypePath'
 
-import { Dependencies, FieldConfigCreator } from '../types'
+import { Dependencies, FieldConfigCreator, TypePathKind } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a StructuredText Custom Type
@@ -21,7 +21,11 @@ export const buildStructuredTextFieldConfig: FieldConfigCreator = (path) =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
-      createTypePath(path, prismicT.CustomTypeModelFieldType.StructuredText),
+      createTypePath(
+        TypePathKind.Field,
+        path,
+        prismicT.CustomTypeModelFieldType.StructuredText,
+      ),
     ),
     RTE.map((deps) => deps.nodeHelpers.createTypeName('StructuredTextType')),
   )

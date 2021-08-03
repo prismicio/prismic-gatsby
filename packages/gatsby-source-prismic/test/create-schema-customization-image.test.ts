@@ -68,16 +68,22 @@ test('creates field-specific image type', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        image: {
-          type: prismicT.CustomTypeModelFieldType.Image,
-          config: { label: 'Image', constraint: {}, thumbnails: [] },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: { label: 'Image', constraint: {}, thumbnails: [] },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -121,20 +127,26 @@ test('creates field-specific thumbnail types', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        image: {
-          type: prismicT.CustomTypeModelFieldType.Image,
-          config: {
-            label: 'Image',
-            constraint: {},
-            thumbnails: [{ name: 'Mobile', width: 1000, height: null }],
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: {
+              label: 'Image',
+              constraint: {},
+              thumbnails: [{ name: 'Mobile', width: 1000, height: null }],
+            },
           },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -171,16 +183,22 @@ test('localFile field resolves to remote node if image is present', async (t) =>
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        image: {
-          type: prismicT.CustomTypeModelFieldType.Image,
-          config: { label: 'Image', constraint: {}, thumbnails: [] },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: { label: 'Image', constraint: {}, thumbnails: [] },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -200,16 +218,22 @@ test('localFile field resolves to null if image is not present', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        image: {
-          type: prismicT.CustomTypeModelFieldType.Image,
-          config: { label: 'Image', constraint: {}, thumbnails: [] },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: { label: 'Image', constraint: {}, thumbnails: [] },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -229,20 +253,26 @@ test('thumbnail field resolves thumbnails', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        image: {
-          type: prismicT.CustomTypeModelFieldType.Image,
-          config: {
-            label: 'Image',
-            constraint: {},
-            thumbnails: [{ name: 'Mobile', width: 1000, height: null }],
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: {
+              label: 'Image',
+              constraint: {},
+              thumbnails: [{ name: 'Mobile', width: 1000, height: null }],
+            },
           },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -264,16 +294,22 @@ test.serial(
     const gatsbyContext = createGatsbyContext()
     const pluginOptions = createPluginOptions(t)
 
-    pluginOptions.schemas = {
-      foo: {
-        Main: {
-          image: {
-            type: prismicT.CustomTypeModelFieldType.Image,
-            config: { label: 'Image', constraint: {}, thumbnails: [] },
+    pluginOptions.customTypeModels = [
+      {
+        label: 'Foo',
+        id: 'foo',
+        status: true,
+        repeatable: true,
+        json: {
+          Main: {
+            image: {
+              type: prismicT.CustomTypeModelFieldType.Image,
+              config: { label: 'Image', constraint: {}, thumbnails: [] },
+            },
           },
         },
       },
-    }
+    ]
 
     // @ts-expect-error - Partial gatsbyContext provided
     await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -374,16 +410,22 @@ test.serial('image URL is properly decoded', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        image: {
-          type: prismicT.CustomTypeModelFieldType.Image,
-          config: { label: 'Image', constraint: {}, thumbnails: [] },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: { label: 'Image', constraint: {}, thumbnails: [] },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)

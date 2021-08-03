@@ -11,16 +11,22 @@ test('uses inferred type with link extension', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        integration: {
-          type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-          config: { label: 'Integration', catalog: 'catalog' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          integration: {
+            type: prismicT.CustomTypeModelFieldType.IntegrationFields,
+            config: { label: 'Integration', catalog: 'catalog' },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -45,16 +51,22 @@ test('creates inferred type using path', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        integration: {
-          type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-          config: { label: 'Integration', catalog: 'catalog' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          integration: {
+            type: prismicT.CustomTypeModelFieldType.IntegrationFields,
+            config: { label: 'Integration', catalog: 'catalog' },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)

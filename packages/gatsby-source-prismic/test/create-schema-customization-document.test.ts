@@ -14,11 +14,17 @@ test('includes base fields', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {},
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {},
+      },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -63,20 +69,26 @@ test('includes UID field if included in the schema', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        uid: {
-          type: prismicT.CustomTypeModelFieldType.UID,
-          config: { label: 'UID' },
-        },
-        foo: {
-          type: prismicT.CustomTypeModelFieldType.Text,
-          config: { label: 'Foo' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          uid: {
+            type: prismicT.CustomTypeModelFieldType.UID,
+            config: { label: 'UID' },
+          },
+          foo: {
+            type: prismicT.CustomTypeModelFieldType.Text,
+            config: { label: 'Foo' },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -98,16 +110,22 @@ test('includes data fields if the schema contains fields', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        foo: {
-          type: prismicT.CustomTypeModelFieldType.Text,
-          config: { label: 'Foo' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          foo: {
+            type: prismicT.CustomTypeModelFieldType.Text,
+            config: { label: 'Foo' },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -118,7 +136,7 @@ test('includes data fields if the schema contains fields', async (t) => {
       config: sinon.match({
         name: 'PrismicPrefixFoo',
         fields: sinon.match({
-          data: 'PrismicPrefixFooDataType',
+          data: 'PrismicPrefixFooDataType!',
           dataRaw: {
             type: 'JSON!',
             resolve: sinon.match.func,
@@ -133,16 +151,22 @@ test('dataRaw field resolves to raw data object', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        foo: {
-          type: prismicT.CustomTypeModelFieldType.Text,
-          config: { label: 'Foo' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          foo: {
+            type: prismicT.CustomTypeModelFieldType.Text,
+            config: { label: 'Foo' },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -164,11 +188,17 @@ test('url field resolves using linkResolver', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {},
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {},
+      },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -189,11 +219,17 @@ test('_previewable field resolves to Prismic ID', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {},
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {},
+      },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -213,96 +249,102 @@ test('data field type includes all data fields', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        uid: {
-          type: prismicT.CustomTypeModelFieldType.UID,
-          config: { label: 'UID' },
-        },
-        boolean: {
-          type: prismicT.CustomTypeModelFieldType.Boolean,
-          config: { label: 'Boolean' },
-        },
-        color: {
-          type: prismicT.CustomTypeModelFieldType.Color,
-          config: { label: 'Color' },
-        },
-        date: {
-          type: prismicT.CustomTypeModelFieldType.Date,
-          config: { label: 'Date' },
-        },
-        embed: {
-          type: prismicT.CustomTypeModelFieldType.Embed,
-          config: { label: 'Embed' },
-        },
-        geo_point: {
-          type: prismicT.CustomTypeModelFieldType.GeoPoint,
-          config: { label: 'GeoPoint' },
-        },
-        image: {
-          type: prismicT.CustomTypeModelFieldType.Image,
-          config: { label: 'Image', constraint: {}, thumbnails: [] },
-        },
-        link: {
-          type: prismicT.CustomTypeModelFieldType.Link,
-          config: {
-            label: 'Link',
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          uid: {
+            type: prismicT.CustomTypeModelFieldType.UID,
+            config: { label: 'UID' },
           },
-        },
-        number: {
-          type: prismicT.CustomTypeModelFieldType.Number,
-          config: { label: 'Number' },
-        },
-        select: {
-          type: prismicT.CustomTypeModelFieldType.Select,
-          config: { label: 'Select', options: ['Option 1'] },
-        },
-        structured_text: {
-          type: prismicT.CustomTypeModelFieldType.StructuredText,
-          config: { label: 'StructuredText', multi: '' },
-        },
-        text: {
-          type: prismicT.CustomTypeModelFieldType.Text,
-          config: { label: 'Text' },
-        },
-        timestamp: {
-          type: prismicT.CustomTypeModelFieldType.Timestamp,
-          config: { label: 'Timestamp' },
-        },
-        group: {
-          type: prismicT.CustomTypeModelFieldType.Group,
-          config: {
-            label: 'Group',
-            fields: {
-              foo: {
-                type: prismicT.CustomTypeModelFieldType.Text,
-                config: { label: 'Foo' },
+          boolean: {
+            type: prismicT.CustomTypeModelFieldType.Boolean,
+            config: { label: 'Boolean' },
+          },
+          color: {
+            type: prismicT.CustomTypeModelFieldType.Color,
+            config: { label: 'Color' },
+          },
+          date: {
+            type: prismicT.CustomTypeModelFieldType.Date,
+            config: { label: 'Date' },
+          },
+          embed: {
+            type: prismicT.CustomTypeModelFieldType.Embed,
+            config: { label: 'Embed' },
+          },
+          geo_point: {
+            type: prismicT.CustomTypeModelFieldType.GeoPoint,
+            config: { label: 'GeoPoint' },
+          },
+          image: {
+            type: prismicT.CustomTypeModelFieldType.Image,
+            config: { label: 'Image', constraint: {}, thumbnails: [] },
+          },
+          link: {
+            type: prismicT.CustomTypeModelFieldType.Link,
+            config: {
+              label: 'Link',
+            },
+          },
+          number: {
+            type: prismicT.CustomTypeModelFieldType.Number,
+            config: { label: 'Number' },
+          },
+          select: {
+            type: prismicT.CustomTypeModelFieldType.Select,
+            config: { label: 'Select', options: ['Option 1'] },
+          },
+          structured_text: {
+            type: prismicT.CustomTypeModelFieldType.StructuredText,
+            config: { label: 'StructuredText', multi: '' },
+          },
+          text: {
+            type: prismicT.CustomTypeModelFieldType.Text,
+            config: { label: 'Text' },
+          },
+          timestamp: {
+            type: prismicT.CustomTypeModelFieldType.Timestamp,
+            config: { label: 'Timestamp' },
+          },
+          group: {
+            type: prismicT.CustomTypeModelFieldType.Group,
+            config: {
+              label: 'Group',
+              fields: {
+                foo: {
+                  type: prismicT.CustomTypeModelFieldType.Text,
+                  config: { label: 'Foo' },
+                },
               },
             },
           },
-        },
-        slices: {
-          type: prismicT.CustomTypeModelFieldType.Slices,
-          fieldset: 'Slice zone',
-          config: {
-            labels: {},
-            choices: {
-              foo: {
-                type: prismicT.CustomTypeModelSliceType.Slice,
-                icon: '',
-                display: prismicT.CustomTypeModelSliceDisplay.List,
-                fieldset: 'Slice zone',
-                description: '',
-                repeat: {},
-                'non-repeat': {},
+          slices: {
+            type: prismicT.CustomTypeModelFieldType.Slices,
+            fieldset: 'Slice zone',
+            config: {
+              labels: {},
+              choices: {
+                foo: {
+                  type: prismicT.CustomTypeModelSliceType.Slice,
+                  icon: '',
+                  display: prismicT.CustomTypeModelSliceDisplay.List,
+                  fieldset: 'Slice zone',
+                  description: '',
+                  repeat: {},
+                  'non-repeat': {},
+                },
               },
             },
           },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -323,7 +365,7 @@ test('data field type includes all data fields', async (t) => {
           link: 'PrismicPrefixLinkType',
           number: 'Float',
           select: 'String',
-          slices: '[PrismicPrefixFooDataSlicesSlicesType]',
+          slices: '[PrismicPrefixFooDataSlicesSlicesType!]!',
           structured_text: 'PrismicPrefixStructuredTextType',
           text: 'String',
           timestamp: { type: 'Date', extensions: { dateformat: {} } },

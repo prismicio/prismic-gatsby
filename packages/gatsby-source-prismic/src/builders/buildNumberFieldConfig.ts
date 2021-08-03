@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function'
 
 import { createTypePath } from '../lib/createTypePath'
 
-import { FieldConfigCreator } from '../types'
+import { FieldConfigCreator, TypePathKind } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Number Custom Type field.
@@ -18,6 +18,10 @@ import { FieldConfigCreator } from '../types'
  */
 export const buildNumberFieldConfig: FieldConfigCreator = (path) =>
   pipe(
-    createTypePath(path, prismicT.CustomTypeModelFieldType.Number),
+    createTypePath(
+      TypePathKind.Field,
+      path,
+      prismicT.CustomTypeModelFieldType.Number,
+    ),
     RTE.map(() => 'Float'),
   )

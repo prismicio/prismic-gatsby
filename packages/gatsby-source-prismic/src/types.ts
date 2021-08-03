@@ -28,7 +28,14 @@ export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
 >
 
+export enum TypePathKind {
+  CustomType = 'CustomType',
+  SharedSliceVariation = 'SharedSliceVariation',
+  Field = 'Field',
+}
+
 export interface TypePath {
+  kind: TypePathKind
   path: string[]
   type: PrismicTypePathType
 }
@@ -79,7 +86,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
    *
    * @deprecated Use the `customTypeModels` plugin option.
    */
-  schemas: Record<string, prismicT.CustomTypeModel>
+  schemas?: Record<string, prismicT.CustomTypeModel>
   /**
    * A list of all Custom Types models using the Custom Types API object shape.
    */

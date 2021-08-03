@@ -13,6 +13,7 @@ import {
   Dependencies,
   PrismicAPIDocumentNode,
   PrismicSpecialType,
+  TypePathKind,
 } from '../types'
 import {
   PREVIEWABLE_NODE_ID_FIELD,
@@ -72,7 +73,11 @@ const buildDataFieldConfigMap = (
       () => new Error('No data fields in schema'),
     ),
     RTE.chainFirstW(() =>
-      createTypePath([customTypeName, 'data'], PrismicSpecialType.DocumentData),
+      createTypePath(
+        TypePathKind.Field,
+        [customTypeName, 'data'],
+        PrismicSpecialType.DocumentData,
+      ),
     ),
     RTE.bindW('fieldConfigMap', () =>
       buildFieldConfigMap([customTypeName, 'data'], fields),
@@ -181,6 +186,10 @@ export const createCustomType = (
     ),
     RTE.chainFirstW(createType),
     RTE.chainFirstW(() =>
-      createTypePath([customType.id], PrismicSpecialType.Document),
+      createTypePath(
+        TypePathKind.CustomType,
+        [customType.id],
+        PrismicSpecialType.Document,
+      ),
     ),
   )

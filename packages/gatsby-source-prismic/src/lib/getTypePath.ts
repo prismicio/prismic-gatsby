@@ -1,7 +1,7 @@
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
-import { Dependencies, TypePathNode } from '../types'
+import { Dependencies, TypePathKind, TypePathNode } from '../types'
 
 import { dotPath } from './dotPath'
 
@@ -14,13 +14,17 @@ import { dotPath } from './dotPath'
  * @returns The TypePath with the given key, if available.
  */
 export const getTypePath = (
+  kind: TypePathKind,
   path: string[],
 ): RTE.ReaderTaskEither<Dependencies, Error, TypePathNode> =>
   pipe(
     RTE.ask<Dependencies>(),
     RTE.bind('nodeId', (scope) =>
       RTE.right(
-        scope.nodeHelpers.createNodeId(['TypePathType', path.toString()]),
+        scope.nodeHelpers.createNodeId([
+          'TypePathType',
+          [kind, ...path].toString(),
+        ]),
       ),
     ),
     RTE.chain((scope) =>
@@ -29,6 +33,8 @@ export const getTypePath = (
     RTE.filterOrElse(
       (result) => result != null,
       () =>
-        new Error(`Could not find a type path for path: "${dotPath(path)}"`),
+        new Error(
+          `Could not find a "${kind}" type path for path: "${dotPath(path)}"`,
+        ),
     ),
   )

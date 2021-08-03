@@ -18,7 +18,12 @@ import { createTypes } from '../lib/createTypes'
 import { createTypePath } from '../lib/createTypePath'
 import { requiredTypeName } from '../lib/requiredTypeName'
 
-import { Dependencies, FieldConfigCreator, UnknownRecord } from '../types'
+import {
+  Dependencies,
+  FieldConfigCreator,
+  TypePathKind,
+  UnknownRecord,
+} from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Slice zone's Slice. Both
@@ -40,7 +45,11 @@ const buildSliceType = (
   pipe(
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
-      createTypePath(path, prismicT.CustomTypeModelSliceType.Slice),
+      createTypePath(
+        TypePathKind.Field,
+        path,
+        prismicT.CustomTypeModelSliceType.Slice,
+      ),
     ),
     RTE.chain((deps) =>
       pipe(
@@ -77,8 +86,14 @@ const buildSliceType = (
         RTE.map(
           R.mapWithIndex((field, type) =>
             field === 'items'
-              ? pipe(type, getTypeName, listTypeName)
-              : getTypeName(type),
+              ? pipe(
+                  type,
+                  getTypeName,
+                  requiredTypeName,
+                  listTypeName,
+                  requiredTypeName,
+                )
+              : pipe(type, getTypeName, requiredTypeName),
           ),
         ),
         RTE.chainW((fields) =>
@@ -95,11 +110,6 @@ const buildSliceType = (
                   ]),
               },
               slice_type: 'String!',
-              // slice_type: deps.nodeHelpers.createTypeName([
-              //   // The enum's name is one level above the given path.
-              //   ...path.slice(0, -1),
-              //   'SliceType',
-              // ]),
               slice_label: 'String',
             },
             interfaces: [deps.globalNodeHelpers.createTypeName('SliceType')],
@@ -217,7 +227,11 @@ export const buildSlicesFieldConfig: FieldConfigCreator<prismicT.CustomTypeModel
     pipe(
       RTE.ask<Dependencies>(),
       RTE.chainFirst(() =>
-        createTypePath(path, prismicT.CustomTypeModelFieldType.Slices),
+        createTypePath(
+          TypePathKind.Field,
+          path,
+          prismicT.CustomTypeModelFieldType.Slices,
+        ),
       ),
       RTE.chain((deps) =>
         pipe(

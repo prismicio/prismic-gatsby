@@ -6,7 +6,12 @@ import { createTypePath } from '../lib/createTypePath'
 import { dotPath } from '../lib/dotPath'
 import { reportInfo } from '../lib/reportInfo'
 
-import { Dependencies, FieldConfigCreator, PrismicSpecialType } from '../types'
+import {
+  Dependencies,
+  FieldConfigCreator,
+  PrismicSpecialType,
+  TypePathKind,
+} from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Custom Type field with an
@@ -32,7 +37,9 @@ export const buildUnknownFieldConfig: FieldConfigCreator = (
 ) =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() => createTypePath(path, PrismicSpecialType.Unknown)),
+    RTE.chainFirst(() =>
+      createTypePath(TypePathKind.Field, path, PrismicSpecialType.Unknown),
+    ),
     RTE.chainFirst(() =>
       reportInfo(
         `An unknown field type "${schema.type}" was found at ${dotPath(

@@ -12,51 +12,60 @@ test('creates types for each slice choice', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        slices: {
-          type: prismicT.CustomTypeModelFieldType.Slices,
-          fieldset: 'Slice zone',
-          config: {
-            labels: {},
-            choices: {
-              foo: {
-                type: prismicT.CustomTypeModelSliceType.Slice,
-                fieldset: 'Slice zone',
-                description: '',
-                icon: '',
-                display: prismicT.CustomTypeModelSliceDisplay.List,
-                repeat: {
-                  repeat_text: {
-                    type: prismicT.CustomTypeModelFieldType.Text,
-                    config: { label: 'Text' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          slices: {
+            type: prismicT.CustomTypeModelFieldType.Slices,
+            fieldset: 'Slice zone',
+            config: {
+              labels: {},
+              choices: {
+                foo: {
+                  type: prismicT.CustomTypeModelSliceType.Slice,
+                  fieldset: 'Slice zone',
+                  description: '',
+                  icon: '',
+                  display: prismicT.CustomTypeModelSliceDisplay.List,
+                  repeat: {
+                    repeat_text: {
+                      type: prismicT.CustomTypeModelFieldType.Text,
+                      config: { label: 'Text' },
+                    },
+                  },
+                  'non-repeat': {
+                    non_repeat_text: {
+                      type: prismicT.CustomTypeModelFieldType.Text,
+                      config: { label: 'Text' },
+                    },
                   },
                 },
-                'non-repeat': {
-                  non_repeat_text: {
-                    type: prismicT.CustomTypeModelFieldType.Text,
-                    config: { label: 'Text' },
+                bar: {
+                  type: prismicT.CustomTypeModelSliceType.Slice,
+                  fieldset: 'Slice zone',
+                  description: '',
+                  icon: '',
+                  display: prismicT.CustomTypeModelSliceDisplay.List,
+                  repeat: {
+                    repeat_text: {
+                      type: prismicT.CustomTypeModelFieldType.Text,
+                      config: { label: 'Text' },
+                    },
+                  },
+                  'non-repeat': {
+                    non_repeat_text: {
+                      type: prismicT.CustomTypeModelFieldType.Text,
+                      config: { label: 'Text' },
+                    },
                   },
                 },
-              },
-              bar: {
-                type: prismicT.CustomTypeModelSliceType.Slice,
-                fieldset: 'Slice zone',
-                description: '',
-                icon: '',
-                display: prismicT.CustomTypeModelSliceDisplay.List,
-                repeat: {
-                  repeat_text: {
-                    type: prismicT.CustomTypeModelFieldType.Text,
-                    config: { label: 'Text' },
-                  },
-                },
-                'non-repeat': {
-                  non_repeat_text: {
-                    type: prismicT.CustomTypeModelFieldType.Text,
-                    config: { label: 'Text' },
-                  },
+                baz: {
+                  type: prismicT.CustomTypeModelSliceType.SharedSlice,
                 },
               },
             },
@@ -64,7 +73,55 @@ test('creates types for each slice choice', async (t) => {
         },
       },
     },
-  }
+  ]
+  pluginOptions.sharedSliceModels = [
+    {
+      type: prismicT.CustomTypeModelSliceType.SharedSlice,
+      name: 'Baz',
+      description: 'description',
+      id: 'baz',
+      variations: [
+        {
+          id: 'variation_1',
+          description: 'description',
+          name: 'Variation 1',
+          items: {
+            foo: {
+              type: prismicT.CustomTypeModelFieldType.Text,
+              config: { label: 'Foo' },
+            },
+          },
+          primary: {
+            foo: {
+              type: prismicT.CustomTypeModelFieldType.Text,
+              config: { label: 'Foo' },
+            },
+          },
+          docURL: 'docURL',
+          version: 'version',
+        },
+        {
+          id: 'variation_2',
+          description: 'description',
+          name: 'Variation 2',
+          items: {
+            foo: {
+              type: prismicT.CustomTypeModelFieldType.Text,
+              config: { label: 'Foo' },
+            },
+          },
+          primary: {
+            foo: {
+              type: prismicT.CustomTypeModelFieldType.Text,
+              config: { label: 'Foo' },
+            },
+          },
+          docURL: 'docURL',
+          version: 'version',
+        },
+      ],
+    },
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -77,6 +134,8 @@ test('creates types for each slice choice', async (t) => {
         types: [
           'PrismicPrefixFooDataSlicesBar',
           'PrismicPrefixFooDataSlicesFoo',
+          'PrismicPrefixBazVariation1',
+          'PrismicPrefixBazVariation2',
         ],
         resolveType: sinon.match.func,
       }),
@@ -89,8 +148,8 @@ test('creates types for each slice choice', async (t) => {
       config: sinon.match({
         name: 'PrismicPrefixFooDataSlicesFoo',
         fields: {
-          items: '[PrismicPrefixFooDataSlicesFooItem]',
-          primary: 'PrismicPrefixFooDataSlicesFooPrimary',
+          items: '[PrismicPrefixFooDataSlicesFooItem!]!',
+          primary: 'PrismicPrefixFooDataSlicesFooPrimary!',
           slice_type: 'String!',
           slice_label: 'String',
           id: sinon.match({
@@ -134,8 +193,8 @@ test('creates types for each slice choice', async (t) => {
       config: sinon.match({
         name: 'PrismicPrefixFooDataSlicesBar',
         fields: {
-          items: '[PrismicPrefixFooDataSlicesBarItem]',
-          primary: 'PrismicPrefixFooDataSlicesBarPrimary',
+          items: '[PrismicPrefixFooDataSlicesBarItem!]!',
+          primary: 'PrismicPrefixFooDataSlicesBarPrimary!',
           slice_type: 'String!',
           slice_label: 'String',
           id: sinon.match({
@@ -172,37 +231,147 @@ test('creates types for each slice choice', async (t) => {
       }),
     }),
   )
+
+  t.true(
+    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+      kind: 'UNION',
+      config: sinon.match({
+        name: 'PrismicPrefixBaz',
+        types: ['PrismicPrefixBazVariation1', 'PrismicPrefixBazVariation2'],
+        resolveType: sinon.match.func,
+      }),
+    }),
+  )
+
+  t.true(
+    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+      kind: 'OBJECT',
+      config: sinon.match({
+        name: 'PrismicPrefixBazVariation1',
+        fields: {
+          items: '[PrismicPrefixBazVariation1Item!]!',
+          primary: 'PrismicPrefixBazVariation1Primary!',
+          slice_type: 'String!',
+          slice_label: 'String',
+          variation: 'String!',
+          version: 'String!',
+          id: sinon.match({
+            type: 'ID!',
+            resolve: sinon.match.func,
+          }),
+        },
+        interfaces: ['PrismicSliceType', 'PrismicSharedSliceType'],
+        extensions: { infer: false },
+      }),
+    }),
+  )
+
+  t.true(
+    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+      kind: 'OBJECT',
+      config: sinon.match({
+        name: 'PrismicPrefixBazVariation1Item',
+        fields: {
+          foo: 'String',
+        },
+      }),
+    }),
+  )
+
+  t.true(
+    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+      kind: 'OBJECT',
+      config: sinon.match({
+        name: 'PrismicPrefixBazVariation1Primary',
+        fields: {
+          foo: 'String',
+        },
+      }),
+    }),
+  )
+
+  t.true(
+    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+      kind: 'OBJECT',
+      config: sinon.match({
+        name: 'PrismicPrefixBazVariation2',
+        fields: {
+          items: '[PrismicPrefixBazVariation2Item!]!',
+          primary: 'PrismicPrefixBazVariation2Primary!',
+          slice_type: 'String!',
+          slice_label: 'String',
+          variation: 'String!',
+          id: sinon.match({
+            type: 'ID!',
+            resolve: sinon.match.func,
+          }),
+        },
+        interfaces: ['PrismicSliceType', 'PrismicSharedSliceType'],
+        extensions: { infer: false },
+      }),
+    }),
+  )
+
+  t.true(
+    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+      kind: 'OBJECT',
+      config: sinon.match({
+        name: 'PrismicPrefixBazVariation2Item',
+        fields: {
+          foo: 'String',
+        },
+      }),
+    }),
+  )
+
+  t.true(
+    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+      kind: 'OBJECT',
+      config: sinon.match({
+        name: 'PrismicPrefixBazVariation2Primary',
+        fields: {
+          foo: 'String',
+        },
+      }),
+    }),
+  )
 })
 
 test('id field resolves to a unique id', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        slices: {
-          type: prismicT.CustomTypeModelFieldType.Slices,
-          fieldset: 'Slice zone',
-          config: {
-            labels: {},
-            choices: {
-              foo: {
-                type: prismicT.CustomTypeModelSliceType.Slice,
-                fieldset: 'Slice zone',
-                description: '',
-                icon: '',
-                display: prismicT.CustomTypeModelSliceDisplay.List,
-                repeat: {
-                  repeat_text: {
-                    type: prismicT.CustomTypeModelFieldType.Text,
-                    config: { label: 'Text' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          slices: {
+            type: prismicT.CustomTypeModelFieldType.Slices,
+            fieldset: 'Slice zone',
+            config: {
+              labels: {},
+              choices: {
+                foo: {
+                  type: prismicT.CustomTypeModelSliceType.Slice,
+                  fieldset: 'Slice zone',
+                  description: '',
+                  icon: '',
+                  display: prismicT.CustomTypeModelSliceDisplay.List,
+                  repeat: {
+                    repeat_text: {
+                      type: prismicT.CustomTypeModelFieldType.Text,
+                      config: { label: 'Text' },
+                    },
                   },
-                },
-                'non-repeat': {
-                  non_repeat_text: {
-                    type: prismicT.CustomTypeModelFieldType.Text,
-                    config: { label: 'Text' },
+                  'non-repeat': {
+                    non_repeat_text: {
+                      type: prismicT.CustomTypeModelFieldType.Text,
+                      config: { label: 'Text' },
+                    },
                   },
                 },
               },
@@ -211,7 +380,7 @@ test('id field resolves to a unique id', async (t) => {
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)

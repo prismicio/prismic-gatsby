@@ -16,6 +16,7 @@ import {
   Dependencies,
   Mutable,
   PrismicSpecialType,
+  TypePathKind,
   UnknownRecord,
 } from '../types'
 import { requiredTypeName } from '../lib/requiredTypeName'
@@ -23,7 +24,7 @@ import { requiredTypeName } from '../lib/requiredTypeName'
 /**
  * @returns GraphQL object type.
  */
-export const buildSharedSliceVariationType = (
+const buildSharedSliceVariationType = (
   path: string[],
   variationModel: prismicT.SharedSliceModelVariation,
 ): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
@@ -31,6 +32,7 @@ export const buildSharedSliceVariationType = (
     RTE.ask<Dependencies>(),
     RTE.chainFirst(() =>
       createTypePath(
+        TypePathKind.SharedSliceVariation,
         [...path, variationModel.id],
         PrismicSpecialType.SharedSliceVariation,
       ),
@@ -61,6 +63,7 @@ export const buildSharedSliceVariationType = (
               buildSchemaRecordType(
                 [...path, variationModel.id, 'items'],
                 variationModel.items,
+                [...path, variationModel.id, 'item'],
               ),
             ),
         R.sequence(RTE.ApplicativeSeq),
@@ -73,7 +76,13 @@ export const buildSharedSliceVariationType = (
         RTE.map(
           R.mapWithIndex((field, type) =>
             field === 'items'
-              ? pipe(type, getTypeName, listTypeName, requiredTypeName)
+              ? pipe(
+                  type,
+                  getTypeName,
+                  requiredTypeName,
+                  listTypeName,
+                  requiredTypeName,
+                )
               : pipe(type, getTypeName, requiredTypeName),
           ),
         ),
@@ -95,10 +104,6 @@ export const buildSharedSliceVariationType = (
               slice_label: 'String',
               version: 'String!',
               variation: 'String!',
-              // variation: pipe(
-              //   deps.nodeHelpers.createTypeName([...path, 'Variation']),
-              //   requiredTypeName,
-              // ),
             },
             interfaces: [
               deps.globalNodeHelpers.createTypeName('SliceType'),

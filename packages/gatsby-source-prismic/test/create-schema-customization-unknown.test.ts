@@ -10,17 +10,23 @@ test('uses JSON type', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        unknown: {
-          // @ts-expect-error - We purposely want to use a type outside the enum of know types.
-          type: 'unknown',
-          config: { label: 'Unknown' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          unknown: {
+            // @ts-expect-error - We purposely want to use a type outside the enum of know types.
+            type: 'unknown',
+            config: { label: 'Unknown' },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -45,17 +51,23 @@ test('prints message about unknown type', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        unknown: {
-          // @ts-expect-error - We purposely want to use a type outside the enum of know types.
-          type: 'unknown',
-          config: { label: 'Unknown' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          unknown: {
+            // @ts-expect-error - We purposely want to use a type outside the enum of know types.
+            type: 'unknown',
+            config: { label: 'Unknown' },
+          },
         },
       },
     },
-  }
+  ]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)

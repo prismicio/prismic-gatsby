@@ -73,47 +73,53 @@ test('field names are normalized using transformFieldName option', async (t) => 
   })
   const queryResponse = createPrismicAPIQueryResponse([doc])
 
-  pluginOptions.schemas = {
-    type: {
-      Main: {
-        'with-dashes': {
-          type: prismicT.CustomTypeModelFieldType.Embed,
-          config: { label: 'Embed' },
-        },
-        group: {
-          type: prismicT.CustomTypeModelFieldType.Group,
-          config: {
-            label: 'Group',
-            fields: {
-              'with-dashes': {
-                type: prismicT.CustomTypeModelFieldType.Embed,
-                config: { label: 'Embed' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Type',
+      id: 'type',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          'with-dashes': {
+            type: prismicT.CustomTypeModelFieldType.Embed,
+            config: { label: 'Embed' },
+          },
+          group: {
+            type: prismicT.CustomTypeModelFieldType.Group,
+            config: {
+              label: 'Group',
+              fields: {
+                'with-dashes': {
+                  type: prismicT.CustomTypeModelFieldType.Embed,
+                  config: { label: 'Embed' },
+                },
               },
             },
           },
-        },
-        slices: {
-          type: prismicT.CustomTypeModelFieldType.Slices,
-          fieldset: 'Slice zone',
-          config: {
-            labels: {},
-            choices: {
-              'with-dashes': {
-                type: prismicT.CustomTypeModelSliceType.Slice,
-                fieldset: 'Slice zone',
-                description: '',
-                icon: '',
-                display: prismicT.CustomTypeModelSliceDisplay.List,
-                repeat: {
-                  'with-dashes': {
-                    type: prismicT.CustomTypeModelFieldType.Embed,
-                    config: { label: 'Embed' },
+          slices: {
+            type: prismicT.CustomTypeModelFieldType.Slices,
+            fieldset: 'Slice zone',
+            config: {
+              labels: {},
+              choices: {
+                'with-dashes': {
+                  type: prismicT.CustomTypeModelSliceType.Slice,
+                  fieldset: 'Slice zone',
+                  description: '',
+                  icon: '',
+                  display: prismicT.CustomTypeModelSliceDisplay.List,
+                  repeat: {
+                    'with-dashes': {
+                      type: prismicT.CustomTypeModelFieldType.Embed,
+                      config: { label: 'Embed' },
+                    },
                   },
-                },
-                'non-repeat': {
-                  'with-dashes': {
-                    type: prismicT.CustomTypeModelFieldType.Embed,
-                    config: { label: 'Embed' },
+                  'non-repeat': {
+                    'with-dashes': {
+                      type: prismicT.CustomTypeModelFieldType.Embed,
+                      config: { label: 'Embed' },
+                    },
                   },
                 },
               },
@@ -122,7 +128,7 @@ test('field names are normalized using transformFieldName option', async (t) => 
         },
       },
     },
-  }
+  ]
 
   server.use(createAPIRepositoryMockedRequest(pluginOptions))
   server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
@@ -252,47 +258,53 @@ test('embed fields are normalized to inferred nodes', async (t) => {
   })
   const queryResponse = createPrismicAPIQueryResponse([doc])
 
-  pluginOptions.schemas = {
-    type: {
-      Main: {
-        embed: {
-          type: prismicT.CustomTypeModelFieldType.Embed,
-          config: { label: 'Embed' },
-        },
-        group: {
-          type: prismicT.CustomTypeModelFieldType.Group,
-          config: {
-            label: 'Group',
-            fields: {
-              embed: {
-                type: prismicT.CustomTypeModelFieldType.Embed,
-                config: { label: 'Embed' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Type',
+      id: 'type',
+      status: true,
+      repeatable: false,
+      json: {
+        Main: {
+          embed: {
+            type: prismicT.CustomTypeModelFieldType.Embed,
+            config: { label: 'Embed' },
+          },
+          group: {
+            type: prismicT.CustomTypeModelFieldType.Group,
+            config: {
+              label: 'Group',
+              fields: {
+                embed: {
+                  type: prismicT.CustomTypeModelFieldType.Embed,
+                  config: { label: 'Embed' },
+                },
               },
             },
           },
-        },
-        slices: {
-          type: prismicT.CustomTypeModelFieldType.Slices,
-          fieldset: 'Slice zone',
-          config: {
-            labels: {},
-            choices: {
-              embed: {
-                type: prismicT.CustomTypeModelSliceType.Slice,
-                fieldset: 'Slice zone',
-                description: '',
-                icon: '',
-                display: prismicT.CustomTypeModelSliceDisplay.List,
-                repeat: {
-                  embed: {
-                    type: prismicT.CustomTypeModelFieldType.Embed,
-                    config: { label: 'Embed' },
+          slices: {
+            type: prismicT.CustomTypeModelFieldType.Slices,
+            fieldset: 'Slice zone',
+            config: {
+              labels: {},
+              choices: {
+                embed: {
+                  type: prismicT.CustomTypeModelSliceType.Slice,
+                  fieldset: 'Slice zone',
+                  description: '',
+                  icon: '',
+                  display: prismicT.CustomTypeModelSliceDisplay.List,
+                  repeat: {
+                    embed: {
+                      type: prismicT.CustomTypeModelFieldType.Embed,
+                      config: { label: 'Embed' },
+                    },
                   },
-                },
-                'non-repeat': {
-                  embed: {
-                    type: prismicT.CustomTypeModelFieldType.Embed,
-                    config: { label: 'Embed' },
+                  'non-repeat': {
+                    embed: {
+                      type: prismicT.CustomTypeModelFieldType.Embed,
+                      config: { label: 'Embed' },
+                    },
                   },
                 },
               },
@@ -301,7 +313,7 @@ test('embed fields are normalized to inferred nodes', async (t) => {
         },
       },
     },
-  }
+  ]
 
   server.use(createAPIRepositoryMockedRequest(pluginOptions))
   server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
@@ -430,47 +442,53 @@ test('integration fields are normalized to inferred nodes', async (t) => {
     docWithoutIntegrationId,
   ])
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        integration: {
-          type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-          config: { label: 'Integration', catalog: 'catalog' },
-        },
-        group: {
-          type: prismicT.CustomTypeModelFieldType.Group,
-          config: {
-            label: 'Group',
-            fields: {
-              integration: {
-                type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-                config: { label: 'Integration', catalog: 'catalog' },
+  pluginOptions.customTypeModels = [
+    {
+      label: 'Foo',
+      id: 'foo',
+      status: true,
+      repeatable: true,
+      json: {
+        Main: {
+          integration: {
+            type: prismicT.CustomTypeModelFieldType.IntegrationFields,
+            config: { label: 'Integration', catalog: 'catalog' },
+          },
+          group: {
+            type: prismicT.CustomTypeModelFieldType.Group,
+            config: {
+              label: 'Group',
+              fields: {
+                integration: {
+                  type: prismicT.CustomTypeModelFieldType.IntegrationFields,
+                  config: { label: 'Integration', catalog: 'catalog' },
+                },
               },
             },
           },
-        },
-        slices: {
-          type: prismicT.CustomTypeModelFieldType.Slices,
-          fieldset: 'Slice zone',
-          config: {
-            labels: {},
-            choices: {
-              integration: {
-                type: prismicT.CustomTypeModelSliceType.Slice,
-                fieldset: 'Slice zone',
-                description: '',
-                icon: '',
-                display: prismicT.CustomTypeModelSliceDisplay.List,
-                repeat: {
-                  integration: {
-                    type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-                    config: { label: 'Integration', catalog: 'catalog' },
+          slices: {
+            type: prismicT.CustomTypeModelFieldType.Slices,
+            fieldset: 'Slice zone',
+            config: {
+              labels: {},
+              choices: {
+                integration: {
+                  type: prismicT.CustomTypeModelSliceType.Slice,
+                  fieldset: 'Slice zone',
+                  description: '',
+                  icon: '',
+                  display: prismicT.CustomTypeModelSliceDisplay.List,
+                  repeat: {
+                    integration: {
+                      type: prismicT.CustomTypeModelFieldType.IntegrationFields,
+                      config: { label: 'Integration', catalog: 'catalog' },
+                    },
                   },
-                },
-                'non-repeat': {
-                  integration: {
-                    type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-                    config: { label: 'Integration', catalog: 'catalog' },
+                  'non-repeat': {
+                    integration: {
+                      type: prismicT.CustomTypeModelFieldType.IntegrationFields,
+                      config: { label: 'Integration', catalog: 'catalog' },
+                    },
                   },
                 },
               },
@@ -479,7 +497,7 @@ test('integration fields are normalized to inferred nodes', async (t) => {
         },
       },
     },
-  }
+  ]
 
   server.use(createAPIRepositoryMockedRequest(pluginOptions))
   server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))

@@ -7,6 +7,7 @@ import { pipe } from 'fp-ts/function'
 
 import { Dependencies } from '../types'
 import { buildSharedSliceVariationTypes } from '../builders/buildSharedSliceVariationTypes'
+import { createType } from './createType'
 import { createTypes } from './createTypes'
 import { getTypeName } from './getTypeName'
 import { buildUnionType } from './buildUnionType'
@@ -51,4 +52,5 @@ export const createSharedSlice = (
           ),
       }),
     ),
+    RTE.chainFirstW(createType),
   )
