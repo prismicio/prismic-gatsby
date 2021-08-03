@@ -28,6 +28,10 @@ test('creates base type', async (t) => {
             type: 'String',
             resolve: sinon.match.func,
           }),
+          richText: sinon.match({
+            type: 'JSON',
+            resolve: sinon.match.func,
+          }),
           raw: sinon.match({
             type: 'JSON',
             resolve: sinon.match.func,
@@ -92,6 +96,24 @@ test('html field uses htmlSerializer if provided', async (t) => {
   const res = await resolver(field)
 
   t.true(res === 'htmlSerializer')
+})
+
+test('richText field resolves to richText value', async (t) => {
+  const gatsbyContext = createGatsbyContext()
+  const pluginOptions = createPluginOptions(t)
+
+  // @ts-expect-error - Partial gatsbyContext provided
+  await createSchemaCustomization(gatsbyContext, pluginOptions)
+
+  const call = findCreateTypesCall(
+    'PrismicPrefixStructuredTextType',
+    gatsbyContext.actions.createTypes as sinon.SinonStub,
+  )
+  const field = [{ type: 'paragraph', text: 'Rich Text', spans: [] }]
+  const resolver = call.config.fields.richText.resolve
+  const res = await resolver(field)
+
+  t.true(res === field)
 })
 
 test('raw field resolves to raw value', async (t) => {

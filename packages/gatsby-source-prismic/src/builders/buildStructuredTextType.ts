@@ -36,6 +36,7 @@ export const buildStructuredTextType: RTE.ReaderTaskEither<
               deps.pluginOptions.htmlSerializer,
             ),
         },
+        richText: { type: 'JSON', resolve: identity },
         raw: { type: 'JSON', resolve: identity },
       },
     }),

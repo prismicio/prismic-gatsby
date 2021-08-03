@@ -30,6 +30,7 @@ export const proxyValue = (
     RE.map((env) => ({
       html: env.html,
       text: env.text,
+      richText: fieldValue,
       raw: fieldValue,
     })),
   )
