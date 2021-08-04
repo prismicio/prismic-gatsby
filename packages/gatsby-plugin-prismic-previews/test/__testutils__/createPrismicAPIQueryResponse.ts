@@ -1,11 +1,17 @@
 import * as prismic from '@prismicio/client'
+import * as prismicT from '@prismicio/types'
 
 import { createPrismicAPIDocument } from './createPrismicAPIDocument'
 
-export const createPrismicAPIQueryResponse = (
-  docs = [createPrismicAPIDocument(), createPrismicAPIDocument()],
-  overrides?: Partial<prismic.Query>,
-): prismic.Query => ({
+export const createPrismicAPIQueryResponse = <
+  TDocument extends prismicT.PrismicDocument,
+>(
+  docs = [
+    createPrismicAPIDocument<TDocument['data']>(),
+    createPrismicAPIDocument<TDocument['data']>(),
+  ],
+  overrides?: Partial<prismic.Query<TDocument>>,
+): prismic.Query<TDocument> => ({
   page: 1,
   results_per_page: docs.length,
   results_size: docs.length,
@@ -13,6 +19,6 @@ export const createPrismicAPIQueryResponse = (
   total_pages: 1,
   next_page: '',
   prev_page: '',
-  results: docs,
+  results: docs as TDocument[],
   ...overrides,
 })

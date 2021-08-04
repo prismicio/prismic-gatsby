@@ -94,7 +94,8 @@ export const proxyDocumentSubtree = (
           )
         }
 
-        case prismicT.CustomTypeModelSliceType.Slice: {
+        case prismicT.CustomTypeModelSliceType.Slice:
+        case gatsbyPrismic.PrismicSpecialType.SharedSliceVariation: {
           return pipe(
             value,
             refineFieldValue(sliceFieldProxy.valueRefinement, env.type, path),

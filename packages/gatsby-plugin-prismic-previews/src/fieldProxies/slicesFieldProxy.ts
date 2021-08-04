@@ -17,6 +17,10 @@ export const valueRefinement = (value: unknown): value is prismicT.SliceZone =>
       'slice_type' in element,
   )
 
+const sharedSliceValueRefinement = (
+  value: prismicT.Slice,
+): value is prismicT.SharedSlice => 'variation' in value
+
 export const proxyValue = (
   path: string[],
   fieldValue: prismicT.SliceZone,
@@ -24,10 +28,15 @@ export const proxyValue = (
   pipe(
     fieldValue,
     A.map((fieldValueElement) =>
-      proxyDocumentSubtree(
-        [...path, fieldValueElement.slice_type],
-        fieldValueElement,
-      ),
+      sharedSliceValueRefinement(fieldValueElement)
+        ? proxyDocumentSubtree(
+            [fieldValueElement.slice_type, fieldValueElement.variation],
+            fieldValueElement,
+          )
+        : proxyDocumentSubtree(
+            [...path, fieldValueElement.slice_type],
+            fieldValueElement,
+          ),
     ),
     RE.sequenceArray,
   )

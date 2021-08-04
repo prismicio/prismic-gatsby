@@ -4,7 +4,7 @@ import md5 from 'tiny-hashes/md5'
 const createId = () => md5(Math.random().toString())
 
 export const createPrismicAPIDocument = <
-  TData extends prismicT.PrismicDocument['data'],
+  TData extends prismicT.PrismicDocument['data'] = Record<string, never>
 >(
   fields?: Partial<prismicT.PrismicDocument<TData>>,
 ): prismicT.PrismicDocument<TData> => {

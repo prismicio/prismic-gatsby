@@ -15,6 +15,7 @@ export const valueRefinement = (
 export interface StructuredTextProxyValue {
   html: string
   text: string
+  richText: prismicT.RichTextField
   raw: prismicT.RichTextField
 }
 

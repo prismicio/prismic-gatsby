@@ -32,7 +32,6 @@ import {
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 import { IS_PROXY } from '../src/constants'
-import { StructuredTextProxyValue } from '../src/fieldProxies/structuredTextFieldProxy'
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
@@ -162,7 +161,7 @@ test.serial(
             text: 'foo',
             spans: [],
           },
-        ],
+        ] as prismicT.RichTextField,
       },
     })
     const queryResponse = createPrismicAPIQueryResponse([doc])
@@ -185,14 +184,12 @@ test.serial(
 
     const node = result.current.context[0].nodes[doc.id]
 
-    t.deepEqual(
-      node.data.structured_text as unknown as StructuredTextProxyValue,
-      {
-        html: '<p>foo</p>',
-        text: 'foo',
-        raw: doc.data['structured-text'],
-      },
-    )
+    t.deepEqual(node.data.structured_text, {
+      html: '<p>foo</p>',
+      text: 'foo',
+      richText: doc.data['structured-text'],
+      raw: doc.data['structured-text'],
+    })
   },
 )
 
@@ -217,7 +214,7 @@ test.serial(
             text: 'foo',
             spans: [],
           },
-        ],
+        ] as prismicT.RichTextField,
       },
     })
     const queryResponse = createPrismicAPIQueryResponse([doc])
@@ -240,14 +237,12 @@ test.serial(
 
     const node = result.current.context[0].nodes[doc.id]
 
-    t.deepEqual(
-      node.data.structuredCUSTOMtext as unknown as StructuredTextProxyValue,
-      {
-        html: '<p>foo</p>',
-        text: 'foo',
-        raw: doc.data['structured-text'],
-      },
-    )
+    t.deepEqual(node.data.structuredCUSTOMtext, {
+      html: '<p>foo</p>',
+      text: 'foo',
+      richText: doc.data['structured-text'],
+      raw: doc.data['structured-text'],
+    })
   },
 )
 
@@ -340,7 +335,7 @@ test.serial('structured text', async (t) => {
           text: 'foo',
           spans: [],
         },
-      ],
+      ] as prismicT.RichTextField,
     },
   })
   const queryResponse = createPrismicAPIQueryResponse([doc])
@@ -363,14 +358,12 @@ test.serial('structured text', async (t) => {
 
   const node = result.current.context[0].nodes[doc.id]
 
-  t.deepEqual(
-    node.data.structured_text as unknown as StructuredTextProxyValue,
-    {
-      html: '<p>foo</p>',
-      text: 'foo',
-      raw: doc.data.structured_text,
-    },
-  )
+  t.deepEqual(node.data.structured_text, {
+    html: '<p>foo</p>',
+    text: 'foo',
+    richText: doc.data.structured_text,
+    raw: doc.data.structured_text,
+  })
 })
 
 test.serial('link', async (t) => {
@@ -595,7 +588,6 @@ test.serial(
       },
     )
 
-    // @ts-expect-error - The provided type does not match since we change its shape during the proxy process.
     const node = result.current.context[0].nodes[
       doc.id
     ] as PrismicAPIDocumentNodeInput<{
@@ -698,7 +690,6 @@ test.serial('image URL is properly decoded', async (t) => {
     },
   )
 
-  // @ts-expect-error - The provided type does not match since we change its shape during the proxy process.
   const node = result.current.context[0].nodes[
     doc.id
   ] as PrismicAPIDocumentNodeInput<{
@@ -740,7 +731,7 @@ test.serial('group', async (t) => {
               text: 'foo',
               spans: [],
             },
-          ],
+          ] as prismicT.RichTextField,
         },
         {
           structured_text: [
@@ -749,7 +740,7 @@ test.serial('group', async (t) => {
               text: 'bar',
               spans: [],
             },
-          ],
+          ] as prismicT.RichTextField,
         },
       ],
     },
@@ -775,28 +766,24 @@ test.serial('group', async (t) => {
 
   const node = result.current.context[0].nodes[doc.id]
 
-  t.deepEqual(
-    // @ts-expect-error - The provided type does not match since we change its shape during the proxy process.
-    node.data.group as unknown as prismicT.GroupField<{
-      structured_text: StructuredTextProxyValue
-    }>,
-    [
-      {
-        structured_text: {
-          html: '<p>foo</p>',
-          text: 'foo',
-          raw: doc.data.group[0].structured_text,
-        },
+  t.deepEqual(node.data.group, [
+    {
+      structured_text: {
+        html: '<p>foo</p>',
+        text: 'foo',
+        richText: doc.data.group[0].structured_text,
+        raw: doc.data.group[0].structured_text,
       },
-      {
-        structured_text: {
-          html: '<p>bar</p>',
-          text: 'bar',
-          raw: doc.data.group[1].structured_text,
-        },
+    },
+    {
+      structured_text: {
+        html: '<p>bar</p>',
+        text: 'bar',
+        richText: doc.data.group[1].structured_text,
+        raw: doc.data.group[1].structured_text,
       },
-    ],
-  )
+    },
+  ])
 })
 
 test.serial('slices', async (t) => {
@@ -846,12 +833,65 @@ test.serial('slices', async (t) => {
             },
           ],
         },
+        {
+          slice_type: 'baz',
+          slice_label: '',
+          variation: 'foo',
+          primary: {
+            structured_text: [
+              {
+                type: prismicT.RichTextNodeType.paragraph,
+                text: 'foo',
+                spans: [],
+              },
+            ],
+          },
+          items: [],
+        },
+        {
+          slice_type: 'baz',
+          slice_label: '',
+          variation: 'bar',
+          primary: {},
+          items: [
+            {
+              structured_text: [
+                {
+                  type: prismicT.RichTextNodeType.paragraph,
+                  text: 'foo',
+                  spans: [],
+                },
+              ],
+            },
+            {
+              structured_text: [
+                {
+                  type: prismicT.RichTextNodeType.paragraph,
+                  text: 'bar',
+                  spans: [],
+                },
+              ],
+            },
+          ],
+        },
       ] as prismicT.SliceZone<
         | prismicT.Slice<'foo', { structured_text: prismicT.RichTextField }>
         | prismicT.Slice<
             'bar',
             never,
             { structured_text: prismicT.RichTextField }
+          >
+        | prismicT.SharedSlice<
+            'baz',
+            | prismicT.SharedSliceVariation<
+                'foo',
+                { structured_text: prismicT.RichTextField }
+              >
+            | prismicT.SharedSliceVariation<
+                'bar',
+                never,
+                { structured_text: prismicT.RichTextField }
+              >
           >
       >,
     },
@@ -876,6 +916,12 @@ test.serial('slices', async (t) => {
       'type.data.slices.bar': prismicT.CustomTypeModelSliceType.Slice,
       'type.data.slices.bar.items.structured_text':
         prismicT.CustomTypeModelFieldType.StructuredText,
+      'baz.foo': gatsbyPrismic.PrismicSpecialType.SharedSliceVariation,
+      'baz.foo.primary.structured_text':
+        prismicT.CustomTypeModelFieldType.StructuredText,
+      'baz.bar': gatsbyPrismic.PrismicSpecialType.SharedSliceVariation,
+      'baz.bar.items.structured_text':
+        prismicT.CustomTypeModelFieldType.StructuredText,
     },
   )
 
@@ -894,6 +940,7 @@ test.serial('slices', async (t) => {
         structured_text: {
           html: '<p>foo</p>',
           text: 'foo',
+          richText: doc.data.slices[0].primary?.structured_text,
           raw: doc.data.slices[0].primary?.structured_text,
         },
       },
@@ -910,6 +957,7 @@ test.serial('slices', async (t) => {
           structured_text: {
             html: '<p>foo</p>',
             text: 'foo',
+            richText: doc.data.slices[1].items?.[0].structured_text,
             raw: doc.data.slices[1].items?.[0].structured_text,
           },
         },
@@ -917,6 +965,49 @@ test.serial('slices', async (t) => {
           structured_text: {
             html: '<p>bar</p>',
             text: 'bar',
+            richText: doc.data.slices[1].items?.[1].structured_text,
+            raw: doc.data.slices[1].items?.[1].structured_text,
+          },
+        },
+      ],
+    },
+    {
+      __typename: 'PrismicPrefixBazFoo',
+      id: '73321a57e4e41637e2b7bde941f69b6e',
+      slice_type: 'baz',
+      slice_label: '',
+      variation: 'foo',
+      primary: {
+        structured_text: {
+          html: '<p>foo</p>',
+          text: 'foo',
+          richText: doc.data.slices[0].primary?.structured_text,
+          raw: doc.data.slices[0].primary?.structured_text,
+        },
+      },
+      items: [],
+    },
+    {
+      __typename: 'PrismicPrefixBazBar',
+      id: '7eb00952963af878606417b3f7f5b2aa',
+      slice_type: 'baz',
+      slice_label: '',
+      variation: 'bar',
+      primary: {},
+      items: [
+        {
+          structured_text: {
+            html: '<p>foo</p>',
+            text: 'foo',
+            richText: doc.data.slices[1].items?.[0].structured_text,
+            raw: doc.data.slices[1].items?.[0].structured_text,
+          },
+        },
+        {
+          structured_text: {
+            html: '<p>bar</p>',
+            text: 'bar',
+            richText: doc.data.slices[1].items?.[1].structured_text,
             raw: doc.data.slices[1].items?.[1].structured_text,
           },
         },
