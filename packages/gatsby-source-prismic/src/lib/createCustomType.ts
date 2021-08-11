@@ -2,7 +2,6 @@ import * as gatsby from 'gatsby'
 import * as gqlc from 'graphql-compose'
 import * as prismicT from '@prismicio/types'
 import * as prismicH from '@prismicio/helpers'
-import * as prismicCustomTypes from '@prismicio/custom-types-client'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
@@ -36,7 +35,7 @@ import { requiredTypeName } from './requiredTypeName'
  * @returns Record of fields for the Custom Type.
  */
 const collectFields = (
-  schema: prismicCustomTypes.CustomType,
+  schema: prismicT.CustomTypeModel,
 ): Record<string, prismicT.CustomTypeModelField> =>
   pipe(
     schema.json,
@@ -123,7 +122,7 @@ const buildDataFieldConfigMap = (
  * @returns GraphQL type for the Custom Type.
  */
 export const createCustomType = (
-  customType: prismicCustomTypes.CustomType,
+  customType: prismicT.CustomTypeModel,
 ): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),

@@ -1,19 +1,19 @@
-import * as gatsby from 'gatsby'
-import * as gatsbyFs from 'gatsby-source-filesystem'
-import * as prismic from '@prismicio/client'
-import * as prismicT from '@prismicio/types'
-import * as prismicCustomTypes from '@prismicio/custom-types-client'
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as TE from 'fp-ts/TaskEither'
-import * as T from 'fp-ts/Task'
-import * as A from 'fp-ts/Array'
-import * as R from 'fp-ts/Record'
-import * as string from 'fp-ts/string'
-import { constVoid, pipe } from 'fp-ts/function'
-import fetch from 'node-fetch'
+import * as gatsby from "gatsby";
+import * as gatsbyFs from "gatsby-source-filesystem";
+import * as prismic from "@prismicio/client";
+import * as prismicT from "@prismicio/types";
+import * as prismicCustomTypes from "@prismicio/custom-types-client";
+import * as RTE from "fp-ts/ReaderTaskEither";
+import * as TE from "fp-ts/TaskEither";
+import * as T from "fp-ts/Task";
+import * as A from "fp-ts/Array";
+import * as R from "fp-ts/Record";
+import * as string from "fp-ts/string";
+import { constVoid, pipe } from "fp-ts/function";
+import fetch from "node-fetch";
 
-import { sprintf } from './lib/sprintf'
-import { throwError } from './lib/throwError'
+import { sprintf } from "./lib/sprintf";
+import { throwError } from "./lib/throwError";
 
 import {
   DEFAULT_IMGIX_PARAMS,
@@ -21,8 +21,8 @@ import {
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
   MISSING_SCHEMAS_MSG,
   MISSING_SCHEMA_MSG,
-} from './constants'
-import { Dependencies, JoiValidationError, PluginOptions } from './types'
+} from "./constants";
+import { Dependencies, JoiValidationError, PluginOptions } from "./types";
 
 /**
  * Converts a Custom Type model to a mocked Custom Type API response object.
@@ -34,22 +34,22 @@ import { Dependencies, JoiValidationError, PluginOptions } from './types'
  * values since that data is not available from just the Custom Type model.
  *
  * @param id API ID of the Custom Type.
- * @param model Model for the Custom Type.
+ * @param modelDefinition Model for the Custom Type.
  *
  * @returns The Custom Type model as if it came from the
  */
 const customTypeModelToCustomType = (
   id: string,
-  model: prismicT.CustomTypeModel,
-): prismicCustomTypes.CustomType => ({
+  modelDefinition: prismicT.CustomTypeModelDefinition
+): prismicT.CustomTypeModel => ({
   id,
-  json: model,
+  json: modelDefinition,
   // The following values are treated as filler values since we don't have this
   // metadata. They do **not** accurately represent the Custom Type.
   label: id,
   status: true,
   repeatable: true,
-})
+});
 
 /**
  * To be execuring during the `external` phase of `pluginOptionsSchema`.
@@ -63,22 +63,22 @@ const customTypeModelToCustomType = (
  * priority over automatically fetched ones.
  */
 const externalCustomTypeFetchingProgram = (
-  Joi: gatsby.PluginOptionsSchemaArgs['Joi'],
+  Joi: gatsby.PluginOptionsSchemaArgs["Joi"]
 ): RTE.ReaderTaskEither<
-  Pick<Dependencies, 'pluginOptions'>,
+  Pick<Dependencies, "pluginOptions">,
   Error,
   PluginOptions
 > =>
   pipe(
-    RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
+    RTE.ask<Pick<Dependencies, "pluginOptions">>(),
     RTE.filterOrElse(
       (deps) => Boolean(deps.pluginOptions.customTypesApiToken),
       () =>
         new Error(
-          'No customTypesApiToken provided (skipping Custom Types API fetching)',
-        ),
+          "No customTypesApiToken provided (skipping Custom Types API fetching)"
+        )
     ),
-    RTE.bind('client', (scope) =>
+    RTE.bind("client", (scope) =>
       RTE.of(
         prismicCustomTypes.createClient({
           repositoryName: scope.pluginOptions.repositoryName,
@@ -86,36 +86,36 @@ const externalCustomTypeFetchingProgram = (
           token: scope.pluginOptions.customTypesApiToken!,
           endpoint: scope.pluginOptions.customTypesApiEndpoint,
           fetch,
-        }),
-      ),
+        })
+      )
     ),
-    RTE.bindW('customTypes', (scope) =>
+    RTE.bindW("customTypes", (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
           async () => await scope.client.getAll(),
           (error) =>
             new Joi.ValidationError(
-              'Failed Custom Type API Request',
+              "Failed Custom Type API Request",
               [error as Error],
-              scope.pluginOptions,
-            ),
-        ),
-      ),
+              scope.pluginOptions
+            )
+        )
+      )
     ),
-    RTE.bindW('sharedSlices', (scope) =>
+    RTE.bindW("sharedSlices", (scope) =>
       pipe(
         RTE.fromTaskEither(
           TE.tryCatch(
             async () => await scope.client.getAllSharedSlices(),
             (error) =>
               new Joi.ValidationError(
-                'Failed Custom Type API Request',
+                "Failed Custom Type API Request",
                 [error as Error],
-                scope.pluginOptions,
-              ),
-          ),
-        ),
-      ),
+                scope.pluginOptions
+              )
+          )
+        )
+      )
     ),
     // TODO: Properly merge these by checking IDs.
     RTE.map((scope) => ({
@@ -128,8 +128,8 @@ const externalCustomTypeFetchingProgram = (
         ...scope.sharedSlices,
         ...scope.pluginOptions.sharedSliceModels,
       ],
-    })),
-  )
+    }))
+  );
 
 /**
  * To be executed during the `external` phase of `pluginOptionsSchema`.
@@ -140,15 +140,15 @@ const externalCustomTypeFetchingProgram = (
  * - Missing custom type schemas
  */
 const externalValidationProgram = (
-  Joi: gatsby.PluginOptionsSchemaArgs['Joi'],
+  Joi: gatsby.PluginOptionsSchemaArgs["Joi"]
 ): RTE.ReaderTaskEither<
-  Pick<Dependencies, 'pluginOptions'>,
+  Pick<Dependencies, "pluginOptions">,
   JoiValidationError,
   void
 > =>
   pipe(
-    RTE.ask<Pick<Dependencies, 'pluginOptions'>>(),
-    RTE.bind('client', (deps) =>
+    RTE.ask<Pick<Dependencies, "pluginOptions">>(),
+    RTE.bind("client", (deps) =>
       RTE.right(
         prismic.createClient(
           deps.pluginOptions.apiEndpoint ??
@@ -156,46 +156,46 @@ const externalValidationProgram = (
           {
             fetch,
             accessToken: deps.pluginOptions.accessToken,
-          },
-        ),
-      ),
+          }
+        )
+      )
     ),
     RTE.chainFirst((scope) =>
       RTE.fromIO(() => {
         if (scope.pluginOptions.releaseID) {
           scope.client.queryContentFromReleaseByID(
-            scope.pluginOptions.releaseID,
-          )
+            scope.pluginOptions.releaseID
+          );
         }
-      }),
+      })
     ),
-    RTE.bind('repository', (scope) =>
+    RTE.bind("repository", (scope) =>
       RTE.fromTaskEither(
         TE.tryCatch(
           () => scope.client.getRepository(),
           (error) =>
             new Joi.ValidationError(
-              'Failed repository request',
+              "Failed repository request",
               [{ message: (error as Error).message }],
-              scope.client.endpoint,
-            ),
-        ),
-      ),
+              scope.client.endpoint
+            )
+        )
+      )
     ),
-    RTE.bindW('schemaTypes', (scope) =>
+    RTE.bindW("schemaTypes", (scope) =>
       pipe(
         scope.pluginOptions.customTypeModels,
         A.map((model) => model.id),
-        RTE.right,
-      ),
+        RTE.right
+      )
     ),
-    RTE.bind('missingSchemas', (scope) =>
+    RTE.bind("missingSchemas", (scope) =>
       pipe(
         scope.repository.types,
         R.keys,
         A.difference(string.Eq)(scope.schemaTypes),
-        (missingSchemas) => RTE.right(missingSchemas),
-      ),
+        (missingSchemas) => RTE.right(missingSchemas)
+      )
     ),
     RTE.chainW(
       RTE.fromPredicate(
@@ -206,12 +206,12 @@ const externalValidationProgram = (
             scope.missingSchemas.map((missingSchema) => ({
               message: sprintf(MISSING_SCHEMA_MSG, missingSchema),
             })),
-            scope.schemaTypes,
-          ),
-      ),
+            scope.schemaTypes
+          )
+      )
     ),
-    RTE.map(constVoid),
-  )
+    RTE.map(constVoid)
+  );
 
 /**
  * Run during the bootstrap phase. Plugins can use this to define a schema for
@@ -220,15 +220,15 @@ const externalValidationProgram = (
  * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#pluginOptionsSchema
  */
 export const pluginOptionsSchema: NonNullable<
-  gatsby.GatsbyNode['pluginOptionsSchema']
+  gatsby.GatsbyNode["pluginOptionsSchema"]
 > = (args) => {
-  const { Joi } = args
+  const { Joi } = args;
 
   const schema = Joi.object({
     repositoryName: Joi.string().required(),
     accessToken: Joi.string(),
     apiEndpoint: Joi.string().default((parent) =>
-      prismic.getEndpoint(parent.repositoryName),
+      prismic.getEndpoint(parent.repositoryName)
     ),
     customTypesApiToken: Joi.string(),
     customTypesApiEndpoint: Joi.string(),
@@ -246,16 +246,19 @@ export const pluginOptionsSchema: NonNullable<
         Joi.object({
           id: Joi.string().required(),
           json: Joi.object().required(),
-        }).unknown(),
+        }).unknown()
       )
       .default((parent) =>
         pipe(
           parent.schemas || {},
           R.collect(
-            (id, schema) => [id, schema] as [string, prismicT.CustomTypeModel],
+            (id, schema) =>
+              [id, schema] as [string, prismicT.CustomTypeModelDefinition]
           ),
-          A.map(([id, model]) => customTypeModelToCustomType(id, model)),
-        ),
+          A.map(([id, modelDefinition]) =>
+            customTypeModelToCustomType(id, modelDefinition)
+          )
+        )
       ),
     sharedSliceModels: Joi.array()
       .items(
@@ -267,27 +270,27 @@ export const pluginOptionsSchema: NonNullable<
                 id: Joi.string().required(),
                 primary: Joi.object(),
                 items: Joi.object(),
-              }).unknown(),
+              }).unknown()
             )
             .required(),
-        }).unknown(),
+        }).unknown()
       )
       .default([]),
     imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
     imagePlaceholderImgixParams: Joi.object().default(
-      DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
+      DEFAULT_PLACEHOLDER_IMGIX_PARAMS
     ),
     typePrefix: Joi.string(),
     webhookSecret: Joi.string(),
     createRemoteFileNode: Joi.function().default(
-      () => gatsbyFs.createRemoteFileNode,
+      () => gatsbyFs.createRemoteFileNode
     ),
     transformFieldName: Joi.function().default(
-      () => (fieldName: string) => fieldName.replace(/-/g, '_'),
+      () => (fieldName: string) => fieldName.replace(/-/g, "_")
     ),
   })
-    .or('customTypesApiToken', 'customTypeModels', 'schemas')
-    .oxor('fetchLinks', 'graphQuery')
+    .or("customTypesApiToken", "customTypeModels", "schemas")
+    .oxor("fetchLinks", "graphQuery")
     .external(
       async (pluginOptions: PluginOptions) =>
         await pipe(
@@ -299,17 +302,17 @@ export const pluginOptionsSchema: NonNullable<
               error instanceof Joi.ValidationError
                 ? throwError(error)
                 : T.of(void 0),
-            (p) => T.of(p),
-          ),
-        )(),
+            (p) => T.of(p)
+          )
+        )()
     )
     .external(
       async (pluginOptions: PluginOptions) =>
         await pipe(
           externalValidationProgram(Joi)({ pluginOptions }),
-          TE.fold(throwError, () => T.of(void 0)),
-        )(),
-    )
+          TE.fold(throwError, () => T.of(void 0))
+        )()
+    );
 
-  return schema
-}
+  return schema;
+};
