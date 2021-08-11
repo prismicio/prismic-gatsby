@@ -34,7 +34,7 @@ import { requiredTypeName } from './requiredTypeName'
  * @returns Record of fields for the Custom Type.
  */
 const collectFields = (
-  schema: prismicT.CustomTypeModel,
+  schema: prismicT.CustomTypeModelDefinition,
 ): Record<string, prismicT.CustomTypeModelField> =>
   pipe(
     schema,
@@ -118,7 +118,7 @@ const buildDataFieldConfigMap = (
  */
 export const createCustomType = (
   name: string,
-  schema: prismicT.CustomTypeModel,
+  schema: prismicT.CustomTypeModelDefinition,
 ): RTE.ReaderTaskEither<Dependencies, never, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),

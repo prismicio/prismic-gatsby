@@ -26,10 +26,10 @@ import {
 import { Dependencies, JoiValidationError, PluginOptions } from './types'
 
 const getSchemasFromCustomTypeApiResponse = (
-  response: prismicCustomTypes.CustomType[],
+  response: prismicT.CustomTypeModel[],
 ) =>
   R.fromFoldableMap(
-    struct.getAssignSemigroup<prismicT.CustomTypeModel>(),
+    struct.getAssignSemigroup<prismicT.CustomTypeModelDefinition>(),
     A.Foldable,
   )(response, (item) => [item.id, item.json])
 
@@ -209,8 +209,8 @@ export const pluginOptionsSchema: NonNullable<
     createRemoteFileNode: Joi.function().default(
       () => gatsbyFs.createRemoteFileNode,
     ),
-    transformFieldName: Joi.function().default(() => (fieldName: string) =>
-      fieldName.replace(/-/g, '_'),
+    transformFieldName: Joi.function().default(
+      () => (fieldName: string) => fieldName.replace(/-/g, '_'),
     ),
   })
     .or('schemas', 'customTypesApiToken')

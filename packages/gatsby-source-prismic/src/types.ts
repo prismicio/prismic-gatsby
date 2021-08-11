@@ -73,7 +73,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   lang: string
   linkResolver?: prismicH.LinkResolverFunction
   htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer
-  schemas: Record<string, prismicT.CustomTypeModel>
+  schemas: Record<string, prismicT.CustomTypeModelDefinition>
   imageImgixParams: imgixGatsby.ImgixUrlParams
   imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams
   typePrefix?: string
@@ -84,7 +84,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
 }
 
 export type FieldConfigCreator<
-  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField,
+  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField
 > = (
   path: string[],
   schema: TSchema,
@@ -186,7 +186,7 @@ interface PrismicWebhookExperimentVariation {
 export type PrismicCustomTypeApiResponse = PrismicCustomTypeApiCustomType[]
 
 export interface PrismicCustomTypeApiCustomType<
-  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel,
+  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel
 > {
   id: string
   label: string
