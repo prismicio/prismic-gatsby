@@ -7,6 +7,7 @@ import * as prismicT from '@prismicio/types'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { NodeHelpers } from 'gatsby-node-helpers'
+import { Agent } from 'http'
 
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P]
@@ -26,6 +27,13 @@ export type IterableElement<TargetIterable> = TargetIterable extends Iterable<
 export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
 >
+
+export interface HttpOptions {
+  agent: {
+    http: Agent
+    https: Agent
+   }
+}
 
 export interface TypePath {
   path: string[]
@@ -58,6 +66,7 @@ export interface Dependencies {
   nodeHelpers: NodeHelpers
   pluginOptions: PluginOptions
   webhookBody?: unknown
+  httpOptions?: HttpOptions
   createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
 }
 

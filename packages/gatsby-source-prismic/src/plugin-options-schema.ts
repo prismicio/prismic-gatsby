@@ -200,6 +200,12 @@ export const pluginOptionsSchema: NonNullable<
     linkResolver: Joi.function(),
     htmlSerializer: Joi.function(),
     schemas: Joi.object(),
+    httpOptions: Joi.object({
+      agent: Joi.object({
+        http: Joi.object(),
+        https: Joi.object()
+      })
+    }),
     imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
     imagePlaceholderImgixParams: Joi.object().default(
       DEFAULT_PLACEHOLDER_IMGIX_PARAMS,

@@ -61,6 +61,7 @@ export const buildLinkType: RTE.ReaderTaskEither<
                   url: source.url,
                   store: deps.store,
                   cache: deps.cache,
+                  httpOptions: deps.pluginOptions?.httpOptions,
                   createNode: deps.createNode,
                   createNodeId: deps.createNodeId,
                   reporter: deps.reporter,

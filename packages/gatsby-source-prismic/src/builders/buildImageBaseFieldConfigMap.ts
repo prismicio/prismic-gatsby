@@ -173,6 +173,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
               url: source.url,
               store: scope.store,
               cache: scope.cache,
+              httpOptions: scope.pluginOptions.httpOptions,
               createNode: scope.createNode,
               createNodeId: scope.createNodeId,
               reporter: scope.reporter,

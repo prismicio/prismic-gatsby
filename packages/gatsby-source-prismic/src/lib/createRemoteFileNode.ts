@@ -27,6 +27,7 @@ export const createRemoteFileNode = (
               cache: deps.cache,
               createNode: deps.createNode,
               createNodeId: deps.createNodeId,
+              httpOptions: deps.pluginOptions?.httpOptions,
               reporter: deps.reporter,
             }),
           (e) => e as Error,
