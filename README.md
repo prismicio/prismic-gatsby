@@ -3,14 +3,6 @@
 Source plugin for pulling data into [Gatsby][gatsby] from [prismic.io][prismic]
 repositories.
 
-> **A public beta for the next version of the plugin is in progress!**
->
-> If you're starting a new project or have the ability to upgrade an existing
-> project, please try out the `gatsby-source-prismic` V4 Beta.
->
-> **[See the `beta` branch](https://github.com/angeloashmore/gatsby-source-prismic/tree/beta)**
-> for more information.
-
 ## Table of Contents
 
 - [Features](#features)
@@ -53,8 +45,8 @@ npm install --save gatsby-source-prismic
 Read the migration guide to learn why and how to upgrade from v2 to v3. Then
 read the previews guide to learn how to setup previews.
 
-- [Migrating from v2 to v3](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/migrating-from-v2-to-v3.md)
-- [Previews](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/previews.md)
+- [Migrating from v2 to v3](https://github.com/prismicio/gatsby/blob/v3/docs/migrating-from-v2-to-v3.md)
+- [Previews](https://github.com/prismicio/gatsby/blob/v3/docs/previews.md)
 
 ## How to use
 
@@ -94,9 +86,11 @@ plugins: [
       // provided to the function, as seen below. This allows you to use
       // different link resolver logic for each field if necessary.
       // See: https://prismic.io/docs/javascript/query-the-api/link-resolving
-      linkResolver: ({ node, key, value }) => (doc) => {
-        // Your link resolver
-      },
+      linkResolver:
+        ({ node, key, value }) =>
+        (doc) => {
+          // Your link resolver
+        },
 
       // Set a list of links to fetch and be made available in your link
       // resolver function.
@@ -112,14 +106,11 @@ plugins: [
       // provided to the function, as seen below. This allows you to use
       // different HTML serializer logic for each field if necessary.
       // See: https://prismic.io/docs/nodejs/beyond-the-api/html-serializer
-      htmlSerializer: ({ node, key, value }) => (
-        type,
-        element,
-        content,
-        children,
-      ) => {
-        // Your HTML serializer
-      },
+      htmlSerializer:
+        ({ node, key, value }) =>
+        (type, element, content, children) => {
+          // Your HTML serializer
+        },
 
       // Provide an object of Prismic custom type JSON schemas to load into
       // Gatsby. This is required.
@@ -673,7 +664,7 @@ retain the benefits of Gatsby's HTML pre-rendering while still providing the
 dynamic and rich content editing experience of a traditional server setup.
 
 For an in-depth guide on using previews, please refer to
-[this guide](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/previews.md).
+[this guide](https://github.com/prismicio/gatsby/blob/v3/docs/previews.md).
 
 ## Releases
 
@@ -712,7 +703,7 @@ will be listed here with their names.
 
 Note that a release build is totally compatible with the preview system
 explained in the
-[preview guide](https://github.com/angeloashmore/gatsby-source-prismic/blob/main/docs/previews.md).
+[preview guide](https://github.com/prismicio/gatsby/blob/v3/docs/previews.md).
 Using a `releaseID` is a way to view at once another version of your website,
 but under the hood it works the same way as the default build. So you can
 preview a draft of one document of your release just like you would do with the
