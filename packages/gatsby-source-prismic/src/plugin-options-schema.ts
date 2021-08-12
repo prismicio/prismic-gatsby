@@ -121,6 +121,7 @@ const externalValidationProgram = (
           {
             fetch,
             accessToken: deps.pluginOptions.accessToken,
+            httpOptions: deps.pluginOptions.httpOptions,
           },
         ),
       ),
