@@ -27,6 +27,10 @@ export type JoiValidationError = InstanceType<
   gatsby.PluginOptionsSchemaArgs['Joi']['ValidationError']
 >
 
+export type PrismicDocumentNodeInput<
+  TDocument extends prismicT.PrismicDocument = prismicT.PrismicDocument
+> = TDocument & gatsby.NodeInput & { prismicId: string }
+
 export enum TypePathKind {
   CustomType = 'CustomType',
   SharedSliceVariation = 'SharedSliceVariation',
@@ -40,6 +44,8 @@ export interface TypePath {
 }
 
 export type TypePathNode = TypePath & gatsby.Node
+
+export type TransformFieldNameFn = (fieldName: string) => string
 
 export interface Dependencies {
   prismicClient: prismic.Client
@@ -100,11 +106,11 @@ export interface PluginOptions extends gatsby.PluginOptions {
   webhookSecret?: string
   plugins: []
   createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
-  transformFieldName: (fieldName: string) => string
+  transformFieldName: TransformFieldNameFn
 }
 
 export type FieldConfigCreator<
-  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField,
+  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField
 > = (
   path: string[],
   schema: TSchema,
@@ -207,7 +213,7 @@ interface PrismicWebhookExperimentVariation {
 export type PrismicCustomTypeApiResponse = PrismicCustomTypeApiCustomType[]
 
 export interface PrismicCustomTypeApiCustomType<
-  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel,
+  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel
 > {
   id: string
   label: string
