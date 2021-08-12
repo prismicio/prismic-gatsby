@@ -193,6 +193,6 @@ See the [Previews Manual Setup](./previews-manual-setup.md) guide and the
 
 [react-hocs]: https://reactjs.org/docs/higher-order-components.html
 [useprismicpreview]:
-  https://github.com/angeloashmore/gatsby-source-prismic/blob/v3.1/docs/previews-api.md#useprismicpreview
+  https://github.com/prismicio/gatsby/blob/v3/docs/previews-api.md#usePrismicPreview
 [mergeprismicpreviewdata]:
-  https://github.com/angeloashmore/gatsby-source-prismic/blob/v3.1/docs/previews-api.md#mergeprismicpreviewdata
+  https://github.com/prismicio/gatsby/blob/v3/docs/previews-api.md#mergeprismicpreviewdata
