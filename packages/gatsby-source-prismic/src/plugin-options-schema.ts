@@ -203,8 +203,8 @@ export const pluginOptionsSchema: NonNullable<
     schemas: Joi.object(),
     httpOptions: Joi.object({
       agent: Joi.object({
-        http: Joi.object(),
-        https: Joi.object()
+        http: Joi.any(),
+        https: Joi.any()
       })
     }),
     imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
