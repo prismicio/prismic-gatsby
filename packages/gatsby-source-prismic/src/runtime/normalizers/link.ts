@@ -4,14 +4,18 @@ import * as prismicH from '@prismicio/helpers'
 import { PrismicDocumentNodeInput } from '../../types'
 
 import { createGetProxy } from '../createGetProxy'
+import { NormalizeConfig, NormalizerDependencies } from '../types'
 
-type LinkConfig<Value extends prismicT.LinkField> = {
-  value: Value
-  linkResolver?: prismicH.LinkResolverFunction
-  getNode(id: string): PrismicDocumentNodeInput | undefined
+export const isLinkField = (value: unknown): value is prismicT.LinkField => {
+  return typeof value === 'object' && value !== null && 'link_type' in value
 }
 
-type NormalizedLink<Value extends prismicT.LinkField> = Value & {
+export type NormalizeLinkConfig<
+  Value extends prismicT.LinkField = prismicT.LinkField,
+> = NormalizeConfig<Value> &
+  Pick<NormalizerDependencies, 'linkResolver' | 'getNode'>
+
+export type NormalizedLinkValue<Value extends prismicT.LinkField> = Value & {
   url?: string | null
   raw: Value
   document: PrismicDocumentNodeInput | null
@@ -21,9 +25,9 @@ type NormalizedLink<Value extends prismicT.LinkField> = Value & {
 }
 
 export const link = <Value extends prismicT.LinkField>(
-  config: LinkConfig<Value>,
-): NormalizedLink<Value> => {
-  const value: NormalizedLink<Value> = {
+  config: NormalizeLinkConfig<Value>,
+): NormalizedLinkValue<Value> => {
+  const value: NormalizedLinkValue<Value> = {
     ...config.value,
     url: prismicH.asLink(config.value, config.linkResolver),
     document: null,

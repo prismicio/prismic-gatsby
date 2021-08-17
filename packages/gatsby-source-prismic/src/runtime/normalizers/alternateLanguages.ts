@@ -1,24 +1,34 @@
 import * as prismicT from '@prismicio/types'
-import { IterableElement } from 'type-fest'
 
 import { PrismicDocumentNodeInput } from '../../types'
 import { createGetProxy } from '../createGetProxy'
+import { NormalizeConfig, NormalizerDependencies } from '../types'
 
-type AlternateLanguagesConfig = {
-  value: prismicT.PrismicDocument['alternate_languages']
-  getNode(id: string): PrismicDocumentNodeInput | undefined
+export const isAlternateLanguagesField = (
+  value: unknown,
+): value is prismicT.PrismicDocument['alternate_languages'] => {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (element) =>
+        typeof element === 'object' && element !== null && 'id' in element,
+    )
+  )
 }
 
-type NormalizedAlternateLanguages = (IterableElement<
+export type NormalizeAlternateLanguagesConfig = NormalizeConfig<
   prismicT.PrismicDocument['alternate_languages']
-> & {
+> &
+  Pick<NormalizerDependencies, 'getNode'>
+
+export type NormalizedAlternateLanguagesValue = (prismicT.AlternateLanguage & {
   document: PrismicDocumentNodeInput | null
-  raw: IterableElement<prismicT.PrismicDocument['alternate_languages']>
+  raw: prismicT.AlternateLanguage
 })[]
 
 export const alternateLanguages = (
-  config: AlternateLanguagesConfig,
-): NormalizedAlternateLanguages => {
+  config: NormalizeAlternateLanguagesConfig,
+): NormalizedAlternateLanguagesValue => {
   return config.value.map((alternateLanguage) => {
     const value = {
       ...alternateLanguage,

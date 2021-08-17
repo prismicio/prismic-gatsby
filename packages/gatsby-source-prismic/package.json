@@ -37,6 +37,7 @@
     "@prismicio/client": "^6.0.0-alpha.8",
     "@prismicio/custom-types-client": "^0.0.4",
     "@prismicio/helpers": "^2.0.0-alpha.5",
+    "@prismicio/mock": "^0.0.2",
     "@prismicio/types": "^0.1.6",
     "camel-case": "^4.1.2",
     "fp-ts": "^2.10.5",
