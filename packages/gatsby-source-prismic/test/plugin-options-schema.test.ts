@@ -40,6 +40,7 @@ test.serial('passes on valid options', async (t) => {
     webhookSecret: 'string',
     createRemoteFileNode: (): void => void 0,
     transformFieldName: (): void => void 0,
+    fetch: (): void => void 0,
   }
 
   server.use(
@@ -94,6 +95,7 @@ test.serial('fails on invalid options', async (t) => {
     typePrefix: Symbol(),
     webhookSecret: Symbol(),
     createRemoteFileNode: Symbol(),
+    fetch: Symbol(),
   }
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
@@ -115,6 +117,7 @@ test.serial('fails on invalid options', async (t) => {
     '"typePrefix" must be a string',
     '"webhookSecret" must be a string',
     '"createRemoteFileNode" must be of type function',
+    '"fetch" must be of type function',
   ])
 })
 

@@ -81,6 +81,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   plugins: []
   createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
   transformFieldName: (fieldName: string) => string
+  fetch?: (url: RequestInfo, options?: RequestInit) => Promise<Response>
 }
 
 export type FieldConfigCreator<

@@ -27,7 +27,7 @@ export const buildDependencies = (
     pluginOptions.apiEndpoint ??
     prismic.getEndpoint(pluginOptions.repositoryName)
   const prismicClient = prismic.createClient(prismicEndpoint, {
-    fetch,
+    fetch: pluginOptions.fetch ?? fetch,
     accessToken: pluginOptions.accessToken,
     defaultParams: {
       lang: pluginOptions.lang,

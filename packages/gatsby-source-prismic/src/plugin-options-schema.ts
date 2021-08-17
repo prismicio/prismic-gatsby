@@ -212,6 +212,7 @@ export const pluginOptionsSchema: NonNullable<
     transformFieldName: Joi.function().default(
       () => (fieldName: string) => fieldName.replace(/-/g, '_'),
     ),
+    fetch: Joi.function(),
   })
     .or('schemas', 'customTypesApiToken')
     .oxor('fetchLinks', 'graphQuery')
