@@ -4,6 +4,7 @@ import * as imgixGatsby from '@imgix/gatsby'
 import * as prismic from '@prismicio/client'
 import * as prismicH from '@prismicio/helpers'
 import * as prismicT from '@prismicio/types'
+import * as prismicCustomTypes from '@prismicio/custom-types-client'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { NodeHelpers } from 'gatsby-node-helpers'
@@ -81,7 +82,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   plugins: []
   createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
   transformFieldName: (fieldName: string) => string
-  fetch?: (url: RequestInfo, options?: RequestInit) => Promise<Response>
+  fetch: prismic.FetchLike & prismicCustomTypes.FetchLike
 }
 
 export type FieldConfigCreator<

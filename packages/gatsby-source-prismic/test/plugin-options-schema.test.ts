@@ -7,6 +7,7 @@ import {
   Joi,
   validateOptionsSchema,
 } from 'gatsby-plugin-utils'
+import fetch from 'node-fetch'
 
 import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
 import { createCustomTypesAPICustomType } from './__testutils__/createCustomTypesAPICustomType'
@@ -40,7 +41,7 @@ test.serial('passes on valid options', async (t) => {
     webhookSecret: 'string',
     createRemoteFileNode: (): void => void 0,
     transformFieldName: (): void => void 0,
-    fetch: (): void => void 0,
+    fetch,
   }
 
   server.use(
@@ -62,8 +63,8 @@ test.serial('passes on valid options', async (t) => {
 
   const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
 
-  t.true(res.isValid)
   t.deepEqual(res.errors, [])
+  t.true(res.isValid)
 })
 
 test.serial('fails on missing options', async (t) => {
