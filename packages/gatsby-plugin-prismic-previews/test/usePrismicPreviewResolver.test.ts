@@ -8,6 +8,7 @@ import browserEnv from 'browser-env'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
@@ -155,6 +156,7 @@ test.serial('resolves a path using the link resolver', async (t) => {
   cookie.set(prismic.cookie.preview, ref)
 
   server.use(
+    createAPIRepositoryMockedRequest(pluginOptions),
     createAPIQueryMockedRequest(pluginOptions, queryResponse, {
       ref,
       graphQuery: pluginOptions.graphQuery,

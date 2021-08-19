@@ -1,11 +1,11 @@
 import test from 'ava'
 import { renderHook, act, cleanup } from '@testing-library/react-hooks'
 import browserEnv from 'browser-env'
+import * as mock from '@prismicio/mock'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
 
 import {
   PrismicContextActionType,
@@ -41,11 +41,9 @@ test.serial('returns context with repository options', async (t) => {
   const context = result.current[0]
 
   t.true(context.isBootstrapped === false)
-  t.deepEqual(context.nodes, {})
   t.deepEqual(context.pluginOptionsStore, {
     [pluginOptions.repositoryName]: pluginOptions,
   })
-  t.deepEqual(context.typePathsStore, {})
 })
 
 test.serial(
@@ -109,7 +107,7 @@ test.serial('SetAccessToken action sets the access token', async (t) => {
   )
 })
 
-test.serial('AppendNodes action adds nodes', async (t) => {
+test.serial('AppendDocuments action adds documents', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
@@ -120,24 +118,30 @@ test.serial('AppendNodes action adds nodes', async (t) => {
   })
   const dispatch = result.current[1]
 
-  const nodes = [
-    createPrismicAPIDocumentNodeInput(),
-    createPrismicAPIDocumentNodeInput(),
+  const model = mock.model.customType()
+  const documents = [
+    mock.value.document({ model }),
+    mock.value.document({ model }),
   ]
+  result.current[0].runtimeStore[
+    pluginOptions.repositoryName
+  ].registerCustomTypeModels([model])
 
   act(() => {
     dispatch({
-      type: PrismicContextActionType.AppendNodes,
-      payload: { documents: nodes },
+      type: PrismicContextActionType.AppendDocuments,
+      payload: { repositoryName: pluginOptions.repositoryName, documents },
     })
   })
 
   const context = result.current[0]
 
-  t.deepEqual(context.nodes, {
-    [nodes[0].prismicId]: nodes[0],
-    [nodes[1].prismicId]: nodes[1],
-  })
+  t.deepEqual(
+    context.runtimeStore[pluginOptions.repositoryName].nodes.map(
+      (node) => node.prismicId,
+    ),
+    documents.map((document) => document.id),
+  )
 })
 
 test.serial(

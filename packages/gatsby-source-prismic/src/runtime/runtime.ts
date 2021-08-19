@@ -37,9 +37,9 @@ export const createRuntime = (config: RuntimeConfig = {}): Runtime => {
 }
 
 export class Runtime {
-  nodes: NormalizedPrismicDocumentNodeInput[] = []
-  typePaths: TypePath[] = []
-  subscribers: SubscriberFn[] = []
+  nodes: NormalizedPrismicDocumentNodeInput[]
+  typePaths: TypePath[]
+  subscribers: SubscriberFn[]
 
   config: SetRequired<
     RuntimeConfig,
@@ -54,10 +54,13 @@ export class Runtime {
     this.subscribers = []
 
     this.config = {
-      imageImgixParams: DEFAULT_IMGIX_PARAMS,
-      imagePlaceholderImgixParams: DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
-      transformFieldName: (fieldName: string) => fieldName.replace(/-/g, '_'),
       ...config,
+      imageImgixParams: config.imageImgixParams ?? DEFAULT_IMGIX_PARAMS,
+      imagePlaceholderImgixParams:
+        config.imagePlaceholderImgixParams ?? DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
+      transformFieldName:
+        config.transformFieldName ??
+        ((fieldName: string) => fieldName.replace(/-/g, '_')),
     }
 
     this.nodeHelpers = nodeHelpers.createNodeHelpers({
