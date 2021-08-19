@@ -1,1 +1,2 @@
-export { createRuntime } from './runtime'
+export { createRuntime, Runtime, RuntimeConfig } from './runtime'
+export { NormalizedPrismicDocumentNodeInput } from './types'

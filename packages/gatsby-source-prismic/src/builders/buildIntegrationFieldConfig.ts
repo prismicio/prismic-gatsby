@@ -1,13 +1,11 @@
-import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
 import { buildInferredNodeType } from '../lib/buildInferredNodeType'
 import { createType } from '../lib/createType'
-import { createTypePath } from '../lib/createTypePath'
 import { getTypeName } from '../lib/getTypeName'
 
-import { Dependencies, FieldConfigCreator, TypePathKind } from '../types'
+import { Dependencies, FieldConfigCreator } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for an Integration Fields Custom
@@ -27,13 +25,6 @@ export const buildIntegrationFieldConfig: FieldConfigCreator = (
 ) =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() =>
-      createTypePath(
-        TypePathKind.Field,
-        path,
-        prismicT.CustomTypeModelFieldType.IntegrationFields,
-      ),
-    ),
     RTE.chain(() => buildInferredNodeType([...path, 'IntegrationType'])),
     RTE.chainFirst(createType),
     RTE.map(getTypeName),

@@ -1,8 +1,6 @@
-import * as R from 'fp-ts/Record'
+import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
-
-import { PrismicAPIDocumentNodeInput } from '../types'
-import { PrismicContextState } from '../context'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 
 /**
  * Returns nodes from the node store with URLs that match the given path.
@@ -14,10 +12,9 @@ import { PrismicContextState } from '../context'
  */
 export const getNodesForPath = (
   path: string,
-  nodesStore: PrismicContextState['nodes'],
-): PrismicAPIDocumentNodeInput[] =>
+  runtime: gatsbyPrismic.Runtime,
+): gatsbyPrismic.NormalizedPrismicDocumentNodeInput[] =>
   pipe(
-    nodesStore,
-    R.filter((node) => node.url === path),
-    R.collect((_, node) => node),
+    runtime.nodes,
+    A.filter((node) => node.url === path),
   )

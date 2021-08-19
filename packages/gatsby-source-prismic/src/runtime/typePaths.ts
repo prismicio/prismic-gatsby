@@ -1,12 +1,18 @@
 import * as prismicT from '@prismicio/types'
 
-import { PrismicSpecialType, TypePath, TypePathKind } from '../types'
+import {
+  PrismicSpecialType,
+  TransformFieldNameFn,
+  TypePath,
+  TypePathKind,
+} from '../types'
 
 const fieldToTypePaths = <
   Model extends prismicT.CustomTypeModelField | prismicT.CustomTypeModelSlice
 >(
   path: string[],
   model: Model,
+  transformFieldName: TransformFieldNameFn,
 ): TypePath[] => {
   switch (model.type) {
     case prismicT.CustomTypeModelFieldType.UID: {
@@ -17,7 +23,11 @@ const fieldToTypePaths = <
       const fields = Object.entries(
         model.config.fields,
       ).flatMap(([fieldId, fieldModel]) =>
-        fieldToTypePaths([...path, fieldId], fieldModel),
+        fieldToTypePaths(
+          [...path, transformFieldName(fieldId)],
+          fieldModel,
+          transformFieldName,
+        ),
       )
 
       return [{ kind: TypePathKind.Field, type: model.type, path }, ...fields]
@@ -30,7 +40,11 @@ const fieldToTypePaths = <
             entry[1].type === prismicT.CustomTypeModelSliceType.Slice,
         )
         .flatMap(([choiceId, choiceModel]) =>
-          fieldToTypePaths([...path, choiceId], choiceModel),
+          fieldToTypePaths(
+            [...path, choiceId],
+            choiceModel,
+            transformFieldName,
+          ),
         )
 
       return [{ kind: TypePathKind.Field, type: model.type, path }, ...choices]
@@ -40,13 +54,21 @@ const fieldToTypePaths = <
       const primary = Object.entries(
         model['non-repeat'],
       ).flatMap(([fieldId, fieldModel]) =>
-        fieldToTypePaths([...path, 'primary', fieldId], fieldModel),
+        fieldToTypePaths(
+          [...path, 'primary', transformFieldName(fieldId)],
+          fieldModel,
+          transformFieldName,
+        ),
       )
 
       const items = Object.entries(
         model.repeat,
       ).flatMap(([fieldId, fieldModel]) =>
-        fieldToTypePaths([...path, 'items', fieldId], fieldModel),
+        fieldToTypePaths(
+          [...path, 'items', transformFieldName(fieldId)],
+          fieldModel,
+          transformFieldName,
+        ),
       )
 
       return [
@@ -72,6 +94,7 @@ export const customTypeModelToTypePaths = <
   Model extends prismicT.CustomTypeModel
 >(
   customTypeModel: Model,
+  transformFieldName: TransformFieldNameFn,
 ): TypePath[] => {
   const definition = customTypeModel.json
   const fieldModels = Object.assign({}, ...Object.values(definition)) as Record<
@@ -91,7 +114,11 @@ export const customTypeModelToTypePaths = <
 
   if (hasDataFields) {
     const data = Object.entries(fieldModels).flatMap(([fieldId, fieldModel]) =>
-      fieldToTypePaths([customTypeModel.id, 'data', fieldId], fieldModel),
+      fieldToTypePaths(
+        [customTypeModel.id, 'data', transformFieldName(fieldId)],
+        fieldModel,
+        transformFieldName,
+      ),
     )
 
     return [
@@ -112,14 +139,21 @@ export const sharedSliceModelToTypePaths = <
   Model extends prismicT.SharedSliceModel
 >(
   sharedSliceModel: Model,
+  transformFieldName: TransformFieldNameFn,
 ): TypePath[] => {
   return sharedSliceModel.variations.flatMap((variation) => {
     const primary = Object.entries(
       variation.primary,
     ).flatMap(([fieldId, fieldModel]) =>
       fieldToTypePaths(
-        [sharedSliceModel.id, variation.id, 'primary', fieldId],
+        [
+          sharedSliceModel.id,
+          variation.id,
+          'primary',
+          transformFieldName(fieldId),
+        ],
         fieldModel,
+        transformFieldName,
       ),
     )
 
@@ -127,8 +161,14 @@ export const sharedSliceModelToTypePaths = <
       variation.items,
     ).flatMap(([fieldId, fieldModel]) =>
       fieldToTypePaths(
-        [sharedSliceModel.id, variation.id, 'items', fieldId],
+        [
+          sharedSliceModel.id,
+          variation.id,
+          'items',
+          transformFieldName(fieldId),
+        ],
         fieldModel,
+        transformFieldName,
       ),
     )
 

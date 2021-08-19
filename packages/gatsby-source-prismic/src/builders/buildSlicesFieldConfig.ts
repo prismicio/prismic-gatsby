@@ -15,15 +15,9 @@ import { getTypeName } from '../lib/getTypeName'
 import { listTypeName } from '../lib/listTypeName'
 import { createType } from '../lib/createType'
 import { createTypes } from '../lib/createTypes'
-import { createTypePath } from '../lib/createTypePath'
 import { requiredTypeName } from '../lib/requiredTypeName'
 
-import {
-  Dependencies,
-  FieldConfigCreator,
-  TypePathKind,
-  UnknownRecord,
-} from '../types'
+import { Dependencies, FieldConfigCreator, UnknownRecord } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Slice zone's Slice. Both
@@ -44,13 +38,6 @@ const buildSliceType = (
 ): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() =>
-      createTypePath(
-        TypePathKind.Field,
-        path,
-        prismicT.CustomTypeModelSliceType.Slice,
-      ),
-    ),
     RTE.chain((deps) =>
       pipe(
         {} as Record<
@@ -222,50 +209,42 @@ const buildSliceTypes = (
  *
  * @returns GraphQL field configuration object.
  */
-export const buildSlicesFieldConfig: FieldConfigCreator<prismicT.CustomTypeModelSliceZoneField> =
-  (path, schema) =>
-    pipe(
-      RTE.ask<Dependencies>(),
-      RTE.chainFirst(() =>
-        createTypePath(
-          TypePathKind.Field,
-          path,
-          prismicT.CustomTypeModelFieldType.Slices,
-        ),
-      ),
-      RTE.chain((deps) =>
-        pipe(
-          buildSliceTypes(path, schema.config.choices),
-          RTE.chainW((types) =>
-            buildUnionType({
-              name: deps.nodeHelpers.createTypeName([...path, 'SlicesType']),
-              types,
-              resolveType: (source: prismicT.Slice | prismicT.SharedSlice) =>
-                pipe(
-                  source,
-                  O.fromPredicate(
-                    (source): source is prismicT.SharedSlice =>
-                      'variation' in source,
-                  ),
-                  O.map((source) =>
-                    deps.nodeHelpers.createTypeName([
-                      source.slice_type,
-                      source.variation,
-                    ]),
-                  ),
-                  O.getOrElse(() =>
-                    deps.nodeHelpers.createTypeName([
-                      ...path,
-                      source.slice_type,
-                    ]),
-                  ),
+export const buildSlicesFieldConfig: FieldConfigCreator<prismicT.CustomTypeModelSliceZoneField> = (
+  path,
+  schema,
+) =>
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.chain((deps) =>
+      pipe(
+        buildSliceTypes(path, schema.config.choices),
+        RTE.chainW((types) =>
+          buildUnionType({
+            name: deps.nodeHelpers.createTypeName([...path, 'SlicesType']),
+            types,
+            resolveType: (source: prismicT.Slice | prismicT.SharedSlice) =>
+              pipe(
+                source,
+                O.fromPredicate(
+                  (source): source is prismicT.SharedSlice =>
+                    'variation' in source,
                 ),
-            }),
-          ),
-          RTE.chainFirstW(createType),
-          RTE.map(
-            flow(getTypeName, requiredTypeName, listTypeName, requiredTypeName),
-          ),
+                O.map((source) =>
+                  deps.nodeHelpers.createTypeName([
+                    source.slice_type,
+                    source.variation,
+                  ]),
+                ),
+                O.getOrElse(() =>
+                  deps.nodeHelpers.createTypeName([...path, source.slice_type]),
+                ),
+              ),
+          }),
+        ),
+        RTE.chainFirstW(createType),
+        RTE.map(
+          flow(getTypeName, requiredTypeName, listTypeName, requiredTypeName),
         ),
       ),
-    )
+    ),
+  )

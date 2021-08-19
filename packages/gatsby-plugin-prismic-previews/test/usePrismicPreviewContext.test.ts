@@ -128,7 +128,7 @@ test.serial('AppendNodes action adds nodes', async (t) => {
   act(() => {
     dispatch({
       type: PrismicContextActionType.AppendNodes,
-      payload: { nodes },
+      payload: { documents: nodes },
     })
   })
 

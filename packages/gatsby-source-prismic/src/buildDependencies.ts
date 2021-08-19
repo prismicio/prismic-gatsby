@@ -5,6 +5,7 @@ import { createNodeHelpers } from 'gatsby-node-helpers'
 
 import { GLOBAL_TYPE_PREFIX } from './constants'
 import { Dependencies, PluginOptions } from './types'
+import { createRuntime } from './runtime'
 
 /**
  * Build the dependencies used by functions throughout the plugin.
@@ -76,5 +77,13 @@ export const buildDependencies = (
       createContentDigest: gatsbyContext.createContentDigest,
     }),
     createRemoteFileNode: pluginOptions.createRemoteFileNode,
+    runtime: createRuntime({
+      typePrefix: GLOBAL_TYPE_PREFIX,
+      linkResolver: pluginOptions.linkResolver,
+      imageImgixParams: pluginOptions.imageImgixParams,
+      imagePlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
+      htmlSerializer: pluginOptions.htmlSerializer,
+      transformFieldName: pluginOptions.transformFieldName,
+    }),
   }
 }

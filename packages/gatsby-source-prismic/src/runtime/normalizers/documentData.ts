@@ -1,4 +1,5 @@
 import * as prismicT from '@prismicio/types'
+
 import {
   NormalizeConfig,
   NormalizedValueMap,
@@ -13,11 +14,11 @@ export const isDocumentDataField = (
 }
 
 type NormalizeDocumentDataConfig<
-  Value extends prismicT.PrismicDocument['data'],
+  Value extends prismicT.PrismicDocument['data']
 > = NormalizeConfig<Value> & NormalizerDependencies
 
 export type NormalizedDocumentDataValue<
-  Value extends prismicT.PrismicDocument['data'] = prismicT.PrismicDocument['data'],
+  Value extends prismicT.PrismicDocument['data'] = prismicT.PrismicDocument['data']
 > = NormalizedValueMap<Value>
 
 export const documentData = <Value extends prismicT.PrismicDocument['data']>(
@@ -26,7 +27,11 @@ export const documentData = <Value extends prismicT.PrismicDocument['data']>(
   const result = {} as NormalizedDocumentDataValue<Value>
 
   for (const key in config.value) {
-    result[key] = normalize({
+    const transformedKey = config.transformFieldName(
+      key,
+    ) as keyof NormalizedDocumentDataValue<Value>
+
+    result[transformedKey] = normalize({
       ...config,
       value: config.value[key],
       path: [...config.path, key],

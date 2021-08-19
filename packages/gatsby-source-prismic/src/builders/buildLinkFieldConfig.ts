@@ -1,10 +1,7 @@
-import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
-import { createTypePath } from '../lib/createTypePath'
-
-import { Dependencies, FieldConfigCreator, TypePathKind } from '../types'
+import { Dependencies, FieldConfigCreator } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Link Custom Type field.
@@ -17,15 +14,8 @@ import { Dependencies, FieldConfigCreator, TypePathKind } from '../types'
  * @returns GraphQL field configuration object.
  */
 // TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
-export const buildLinkFieldConfig: FieldConfigCreator = (path) =>
+export const buildLinkFieldConfig: FieldConfigCreator = () =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() =>
-      createTypePath(
-        TypePathKind.Field,
-        path,
-        prismicT.CustomTypeModelFieldType.Link,
-      ),
-    ),
     RTE.map((deps) => deps.nodeHelpers.createTypeName('LinkType')),
   )

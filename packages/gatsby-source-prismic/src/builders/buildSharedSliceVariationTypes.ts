@@ -10,15 +10,8 @@ import { buildSchemaRecordType } from '../lib/buildSchemaRecordType'
 import { getTypeName } from '../lib/getTypeName'
 import { listTypeName } from '../lib/listTypeName'
 import { createTypes } from '../lib/createTypes'
-import { createTypePath } from '../lib/createTypePath'
 
-import {
-  Dependencies,
-  Mutable,
-  PrismicSpecialType,
-  TypePathKind,
-  UnknownRecord,
-} from '../types'
+import { Dependencies, Mutable, UnknownRecord } from '../types'
 import { requiredTypeName } from '../lib/requiredTypeName'
 
 /**
@@ -30,13 +23,6 @@ const buildSharedSliceVariationType = (
 ): RTE.ReaderTaskEither<Dependencies, Error, gatsby.GatsbyGraphQLObjectType> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chainFirst(() =>
-      createTypePath(
-        TypePathKind.SharedSliceVariation,
-        [...path, variationModel.id],
-        PrismicSpecialType.SharedSliceVariation,
-      ),
-    ),
     RTE.chain((deps) =>
       pipe(
         {} as Record<

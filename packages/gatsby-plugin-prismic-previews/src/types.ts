@@ -102,7 +102,7 @@ export type PrismicRepositoryConfig = {
    * @returns The React component to render. If no component is returned, the wrapped component will be rendered.
    */
   componentResolver?<P>(
-    nodes: PrismicAPIDocumentNodeInput[],
+    nodes: gatsbyPrismic.NormalizedPrismicDocumentNodeInput[],
   ): React.ComponentType<P> | undefined | null
 
   /**
@@ -116,7 +116,7 @@ export type PrismicRepositoryConfig = {
    * @returns The value that will be passed to the page's `data` prop.
    */
   dataResolver?<TData extends Record<string, unknown>>(
-    nodes: PrismicAPIDocumentNodeInput[],
+    nodes: gatsbyPrismic.NormalizedPrismicDocumentNodeInput[],
     data: TData,
   ): Record<string, unknown>
 }

@@ -7,9 +7,12 @@ import { pipe, constVoid } from 'fp-ts/function'
 
 import { createAllDocumentTypesType } from './lib/createAllDocumentTypesType'
 import { createCustomType } from './lib/createCustomType'
+import { createSharedSlice } from './lib/createSharedSlice'
+import { createTypePath } from './lib/createTypePath'
 import { createTypes } from './lib/createTypes'
 import { throwError } from './lib/throwError'
 
+import { buildAlternateLanguageType } from './builders/buildAlternateLanguageType'
 import { buildEmbedType } from './builders/buildEmbedType'
 import { buildGeoPointType } from './builders/buildGeoPointType'
 import { buildImageDimensionsType } from './builders/buildImageDimensionsType'
@@ -17,15 +20,13 @@ import { buildImageThumbnailType } from './builders/buildImageThumbnailType'
 import { buildImgixImageTypes } from './builders/buildImgixImageTypes'
 import { buildLinkType } from './builders/buildLinkType'
 import { buildLinkTypeEnumType } from './builders/buildLinkTypeEnumType'
-import { buildSliceInterface } from './builders/buildSliceInterface'
 import { buildSharedSliceInterface } from './builders/buildSharedSliceInterface'
+import { buildSliceInterface } from './builders/buildSliceInterface'
 import { buildStructuredTextType } from './builders/buildStructuredTextType'
 import { buildTypePathType } from './builders/buildTypePathType'
 
 import { Dependencies, Mutable, PluginOptions } from './types'
 import { buildDependencies } from './buildDependencies'
-import { buildAlternateLanguageType } from './builders/buildAlternateLanguageType'
-import { createSharedSlice } from './lib/createSharedSlice'
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
 
@@ -34,37 +35,40 @@ const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
  * repository-specific), while others are repository-specific, depending on
  * the type's use of custom plugin options.
  */
-export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.bind('baseTypes', () =>
-      pipe(
-        [
-          buildAlternateLanguageType,
-          buildEmbedType,
-          buildGeoPointType,
-          buildImageDimensionsType,
-          buildImageThumbnailType,
-          buildLinkType,
-          buildLinkTypeEnumType,
-          buildSliceInterface,
-          buildSharedSliceInterface,
-          buildStructuredTextType,
-          buildTypePathType,
-        ],
-        RTE.sequenceArray,
-      ),
+export const createBaseTypes: RTE.ReaderTaskEither<
+  Dependencies,
+  never,
+  void
+> = pipe(
+  RTE.ask<Dependencies>(),
+  RTE.bind('baseTypes', () =>
+    pipe(
+      [
+        buildAlternateLanguageType,
+        buildEmbedType,
+        buildGeoPointType,
+        buildImageDimensionsType,
+        buildImageThumbnailType,
+        buildLinkType,
+        buildLinkTypeEnumType,
+        buildSliceInterface,
+        buildSharedSliceInterface,
+        buildStructuredTextType,
+        buildTypePathType,
+      ],
+      RTE.sequenceArray,
     ),
-    RTE.bind('imgixTypes', () => buildImgixImageTypes),
-    RTE.map((scope) =>
-      GatsbyGraphQLTypeM.concat(
-        scope.baseTypes as Mutable<typeof scope.baseTypes>,
-        scope.imgixTypes,
-      ),
+  ),
+  RTE.bind('imgixTypes', () => buildImgixImageTypes),
+  RTE.map((scope) =>
+    GatsbyGraphQLTypeM.concat(
+      scope.baseTypes as Mutable<typeof scope.baseTypes>,
+      scope.imgixTypes,
     ),
-    RTE.chain(createTypes),
-    RTE.map(constVoid),
-  )
+  ),
+  RTE.chain(createTypes),
+  RTE.map(constVoid),
+)
 
 /**
  * Create types for all Custom Types using the JSON models provided at
@@ -96,6 +100,35 @@ const createSharedSlices: RTE.ReaderTaskEither<
   RTE.map((types) => types as Mutable<typeof types>),
 )
 
+const createTypePaths: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
+  RTE.ask<Dependencies>(),
+  RTE.chainFirst((scope) =>
+    RTE.right(
+      scope.runtime.registerCustomTypeModels(
+        scope.pluginOptions.customTypeModels,
+      ),
+    ),
+  ),
+  RTE.chainFirst((scope) =>
+    RTE.right(
+      scope.runtime.registerSharedSliceModels(
+        scope.pluginOptions.sharedSliceModels,
+      ),
+    ),
+  ),
+  RTE.bind('typePaths', (scope) => RTE.right(scope.runtime.typePaths)),
+  RTE.chainFirstW((scope) =>
+    pipe(
+      scope.typePaths,
+      A.map((typePath) =>
+        createTypePath(typePath.kind, typePath.path, typePath.type),
+      ),
+      RTE.sequenceArray,
+    ),
+  ),
+  RTE.map(constVoid),
+)
+
 /**
  * To be executed in the `createSchemaCustomization` API.
  */
@@ -109,6 +142,7 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
   RTE.chainFirst(() => createSharedSlices),
   RTE.bind('customTypeTypes', () => createCustomTypes),
   RTE.chainFirstW((scope) => createAllDocumentTypesType(scope.customTypeTypes)),
+  RTE.chainFirst(() => createTypePaths),
   RTE.map(constVoid),
 )
 

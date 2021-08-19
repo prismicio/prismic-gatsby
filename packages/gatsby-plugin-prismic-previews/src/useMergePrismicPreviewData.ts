@@ -1,13 +1,11 @@
 import * as React from 'react'
-import * as R from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-import { PREVIEWABLE_NODE_ID_FIELD } from 'gatsby-source-prismic'
+import { PREVIEWABLE_NODE_ID_FIELD, Runtime } from 'gatsby-source-prismic'
 
 import { isPlainObject } from './lib/isPlainObject'
 
 import { UnknownRecord } from './types'
-import { PrismicContextState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { isProxy } from './lib/isProxy'
 
@@ -20,7 +18,7 @@ import { isProxy } from './lib/isProxy'
  * @returns Function that accepts a node or node content to find and replace previewable content.
  */
 const findAndReplacePreviewables =
-  (nodes: PrismicContextState['nodes']) =>
+  (runtime: Runtime) =>
   (nodeOrLeaf: unknown): unknown => {
     if (isPlainObject(nodeOrLeaf)) {
       // If the value is a proxy, we can't reliably replace properties since
@@ -33,18 +31,16 @@ const findAndReplacePreviewables =
         return nodeOrLeaf
       }
 
-      const previewableValue = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as
-        | string
-        | undefined
-      if (previewableValue && nodes[previewableValue]) {
-        return nodes[previewableValue]
+      const nodeId = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as string | undefined
+      if (nodeId && runtime.hasNode(nodeId)) {
+        return runtime.getNode(nodeId)
       }
 
       // We didn't find a previewable field, so continue to iterate through all
       // properties to find it.
       const newNode = {} as typeof nodeOrLeaf
       for (const key in nodeOrLeaf) {
-        newNode[key] = findAndReplacePreviewables(nodes)(nodeOrLeaf[key])
+        newNode[key] = findAndReplacePreviewables(runtime)(nodeOrLeaf[key])
       }
 
       return newNode
@@ -53,7 +49,7 @@ const findAndReplacePreviewables =
     // Iterate all elements in the node to find the previewable value.
     if (Array.isArray(nodeOrLeaf)) {
       return (nodeOrLeaf as unknown[]).map((subnode) =>
-        findAndReplacePreviewables(nodes)(subnode),
+        findAndReplacePreviewables(runtime)(subnode),
       )
     }
 
@@ -78,13 +74,13 @@ const findAndReplacePreviewables =
  */
 const traverseAndReplace = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  nodes: PrismicContextState['nodes'],
+  runtime: Runtime,
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
-    nodes,
-    O.fromPredicate((nodes) => !R.isEmpty(nodes)),
+    runtime.nodes,
+    O.fromPredicate((nodes) => nodes.length > 0),
     O.map(() => staticData),
-    O.map(findAndReplacePreviewables(nodes)),
+    O.map(findAndReplacePreviewables(runtime)),
     O.fold(
       () => ({ data: staticData, isPreview: false as boolean }),
       (data) => ({ data: data as TStaticData, isPreview: true }),
@@ -131,10 +127,14 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   const [state] = usePrismicPreviewContext()
 
   return React.useMemo(() => {
-    if (config.skip) {
+    const runtime = state.activeRepositoryName
+      ? state.runtimeStore[state.activeRepositoryName]
+      : undefined
+
+    if (config.skip || !runtime) {
       return { data: staticData, isPreview: false }
     } else {
-      return traverseAndReplace(staticData, state.nodes)
+      return traverseAndReplace(staticData, runtime)
     }
   }, [staticData, config.skip, state])
 }

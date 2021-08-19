@@ -1,30 +1,16 @@
 import * as React from 'react'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from '@prismicio/client'
 import * as prismicT from '@prismicio/types'
-import * as RE from 'fp-ts/ReaderEither'
-import * as Re from 'fp-ts/Reader'
-import * as A from 'fp-ts/Array'
 import * as E from 'fp-ts/Either'
 import * as O from 'fp-ts/Option'
-import { pipe } from 'fp-ts/function'
-import { createNodeHelpers } from 'gatsby-node-helpers'
-import md5 from 'tiny-hashes/md5'
 
-import { defaultFieldTransformer } from './lib/defaultFieldTransformer'
 import { extractPreviewRefRepositoryName } from './lib/extractPreviewRefRepositoryName'
 import { fetchTypePaths } from './lib/fetchTypePaths'
 import { getPreviewRef } from './lib/getPreviewRef'
 import { isPreviewSession } from './lib/isPreviewSession'
-import { proxyDocumentNodeInput } from './lib/proxyDocumentNodeInput'
-import { serializePath } from './lib/serializePath'
 import { sprintf } from './lib/sprintf'
 
-import {
-  Mutable,
-  PrismicAPIDocumentNodeInput,
-  PrismicRepositoryConfigs,
-} from './types'
+import { PrismicRepositoryConfigs } from './types'
 import {
   MISSING_PLUGIN_OPTIONS_MSG,
   MISSING_REPOSITORY_CONFIG_MSG,
@@ -139,21 +125,6 @@ export const usePrismicPreviewBootstrap = (
       })
     }
 
-    const createNodeId = (input: string): string => md5(input)
-    const createContentDigest = <T>(input: T): string =>
-      md5(JSON.stringify(input))
-    const nodeHelpers = createNodeHelpers({
-      typePrefix: [
-        gatsbyPrismic.GLOBAL_TYPE_PREFIX,
-        repositoryPluginOptions.typePrefix,
-      ]
-        .filter(Boolean)
-        .join(' '),
-      fieldPrefix: gatsbyPrismic.GLOBAL_TYPE_PREFIX,
-      createNodeId,
-      createContentDigest,
-    })
-
     // Begin bootstrap phase.
     contextDispatch({
       type: PrismicContextActionType.StartBootstrapping,
@@ -209,45 +180,11 @@ export const usePrismicPreviewBootstrap = (
       }
     }
 
-    const allNodes = allDocuments.map(
-      (doc) =>
-        nodeHelpers.createNodeFactory(doc.type)(
-          doc,
-        ) as PrismicAPIDocumentNodeInput,
-    )
-
-    const allProxiedNodesOrError = pipe(
-      allNodes,
-      A.map((nodeInput) => proxyDocumentNodeInput(nodeInput)),
-      RE.sequenceArray,
-      RE.getOrElseW((error) => Re.of(error)),
-    )({
-      createContentDigest,
-      nodeHelpers,
-      linkResolver: repositoryConfig.linkResolver,
-      getTypePath: (path) =>
-        contextStateRef.current.typePathsStore[repositoryName.value][
-          serializePath(path)
-        ],
-      getNode: (id) => contextStateRef.current.nodes[id],
-      imageImgixParams: repositoryPluginOptions.imageImgixParams,
-      imagePlaceholderImgixParams:
-        repositoryPluginOptions.imagePlaceholderImgixParams,
-      htmlSerializer: repositoryConfig.htmlSerializer,
-      transformFieldName:
-        repositoryConfig.transformFieldName ?? defaultFieldTransformer,
-    })
-    if (allProxiedNodesOrError instanceof Error) {
-      return contextDispatch({
-        type: PrismicContextActionType.Failed,
-        payload: { error: allProxiedNodesOrError },
-      })
-    }
-
     contextDispatch({
-      type: PrismicContextActionType.AppendNodes,
+      type: PrismicContextActionType.AppendDocuments,
       payload: {
-        nodes: allProxiedNodesOrError as Mutable<typeof allProxiedNodesOrError>,
+        repositoryName: repositoryName.value,
+        documents: allDocuments,
       },
     })
 

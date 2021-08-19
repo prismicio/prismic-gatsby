@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as A from 'fp-ts/Array'
 import * as O from 'fp-ts/Option'
 import * as R from 'fp-ts/Record'
@@ -18,6 +19,7 @@ import { usePrismicPreviewBootstrap } from './usePrismicPreviewBootstrap'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { PrismicContextActionType, PrismicPreviewState } from './context'
 import { PrismicPreviewUI } from './components/PrismicPreviewUI'
+import { Runtime } from '../../gatsby-source-prismic/dist'
 
 /**
  * A convenience function to create a `componentResolver` function from a record
@@ -65,12 +67,26 @@ export const defaultDataResolver: PrismicUnpublishedRepositoryConfig['dataResolv
       ),
     )
 
-const useNodesForPath = (path: string) => {
+const useNodesForPath = (
+  path: string,
+): gatsbyPrismic.NormalizedPrismicDocumentNodeInput[] => {
+  const activeRuntime = useActiveRuntime()
+
+  return React.useMemo(
+    () => (activeRuntime ? getNodesForPath(path, activeRuntime) : []),
+    [path, activeRuntime],
+  )
+}
+
+const useActiveRuntime = (): Runtime | undefined => {
   const [contextState] = usePrismicPreviewContext()
 
   return React.useMemo(
-    () => getNodesForPath(path, contextState.nodes),
-    [path, contextState.nodes],
+    () =>
+      contextState.activeRepositoryName
+        ? contextState.runtimeStore[contextState.activeRepositoryName]
+        : undefined,
+    [contextState.activeRepositoryName, contextState.runtimeStore],
   )
 }
 

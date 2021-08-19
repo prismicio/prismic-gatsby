@@ -7,6 +7,7 @@ import * as prismicT from '@prismicio/types'
 import * as gqlc from 'graphql-compose'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { NodeHelpers } from 'gatsby-node-helpers'
+import { Runtime } from './runtime'
 
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P]
@@ -28,7 +29,7 @@ export type JoiValidationError = InstanceType<
 >
 
 export type PrismicDocumentNodeInput<
-  TDocument extends prismicT.PrismicDocument = prismicT.PrismicDocument
+  TDocument extends prismicT.PrismicDocument = prismicT.PrismicDocument,
 > = TDocument & gatsby.NodeInput & { prismicId: string }
 
 export enum TypePathKind {
@@ -72,6 +73,7 @@ export interface Dependencies {
   pluginOptions: PluginOptions
   webhookBody?: unknown
   createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode
+  runtime: Runtime
 }
 
 export interface PluginOptions extends gatsby.PluginOptions {
@@ -110,7 +112,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
 }
 
 export type FieldConfigCreator<
-  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField
+  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField,
 > = (
   path: string[],
   schema: TSchema,
@@ -213,7 +215,7 @@ interface PrismicWebhookExperimentVariation {
 export type PrismicCustomTypeApiResponse = PrismicCustomTypeApiCustomType[]
 
 export interface PrismicCustomTypeApiCustomType<
-  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel
+  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel,
 > {
   id: string
   label: string

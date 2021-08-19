@@ -18,13 +18,14 @@ export const isSharedSlice = (
   value: prismicT.Slice,
 ): value is prismicT.SharedSlice => 'variation' in value
 
-export type NormalizeSliceConfig<Value extends prismicT.Slice> =
-  NormalizeConfig<Value> & NormalizerDependencies
+export type NormalizeSliceConfig<
+  Value extends prismicT.Slice
+> = NormalizeConfig<Value> & NormalizerDependencies
 
 export type NormalizedSliceValue<
   Value extends prismicT.Slice | prismicT.SharedSlice =
     | prismicT.Slice
-    | prismicT.SharedSlice,
+    | prismicT.SharedSlice
 > = Value extends prismicT.SharedSlice
   ? {
       __typename: string
@@ -65,7 +66,11 @@ export const slice = <Value extends prismicT.Slice | prismicT.SharedSlice>(
     result.primary = {} as NormalizedSliceValue['primary']
 
     for (const key in primary) {
-      result.primary[key] = normalize({
+      const transformedKey = config.transformFieldName(
+        key,
+      ) as keyof NormalizedSliceValue['primary']
+
+      result.primary[transformedKey] = normalize({
         ...config,
         value: config.value.primary[key],
         path: [...config.path, 'primary', key],
@@ -74,16 +79,19 @@ export const slice = <Value extends prismicT.Slice | prismicT.SharedSlice>(
   }
 
   if (items) {
-    config.value.items = items.map((item) => {
+    result.items = items.map((item) => {
       const result = {} as IterableElement<NormalizedSliceValue['items']>
 
       for (const key in item) {
-        result[key as keyof IterableElement<NormalizedSliceValue['items']>] =
-          normalize({
-            ...config,
-            value: item[key],
-            path: [...config.path, 'items', key],
-          })
+        const transformedKey = config.transformFieldName(
+          key,
+        ) as keyof IterableElement<NormalizedSliceValue['items']>
+
+        result[transformedKey] = normalize({
+          ...config,
+          value: item[key],
+          path: [...config.path, 'items', key],
+        })
       }
 
       return result

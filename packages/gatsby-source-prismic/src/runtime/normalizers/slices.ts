@@ -3,7 +3,7 @@ import { IterableElement, Simplify } from 'type-fest'
 
 import {
   NormalizeConfig,
-  NormalizedValueMap,
+  NormalizedValue,
   NormalizerDependencies,
 } from '../types'
 import { normalize } from '../normalize'
@@ -13,12 +13,13 @@ export const isSlices = (value: unknown): value is prismicT.SliceZone => {
   return Array.isArray(value) && value.every((element) => isSlice(element))
 }
 
-type NormalizeSlicesConfig<Value extends prismicT.SliceZone> =
-  NormalizeConfig<Value> & NormalizerDependencies
+type NormalizeSlicesConfig<
+  Value extends prismicT.SliceZone
+> = NormalizeConfig<Value> & NormalizerDependencies
 
 export type NormalizedSlicesValue<
-  Value extends prismicT.SliceZone = prismicT.SliceZone,
-> = NormalizedValueMap<Simplify<IterableElement<Value>>>[]
+  Value extends prismicT.SliceZone = prismicT.SliceZone
+> = NormalizedValue<Simplify<IterableElement<Value>>>[]
 
 export const slices = <Value extends prismicT.SliceZone>(
   config: NormalizeSlicesConfig<Value>,

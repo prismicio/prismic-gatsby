@@ -1,10 +1,6 @@
-import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
 
-import { createTypePath } from '../lib/createTypePath'
-
-import { FieldConfigCreator, TypePathKind } from '../types'
+import { FieldConfigCreator } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Timestamp Custom Type
@@ -17,15 +13,8 @@ import { FieldConfigCreator, TypePathKind } from '../types'
  *
  * @returns GraphQL field configuration object.
  */
-export const buildTimestampFieldConfig: FieldConfigCreator = (path) =>
-  pipe(
-    createTypePath(
-      TypePathKind.Field,
-      path,
-      prismicT.CustomTypeModelFieldType.Timestamp,
-    ),
-    RTE.map(() => ({
-      type: 'Date',
-      extensions: { dateformat: {} },
-    })),
-  )
+export const buildTimestampFieldConfig: FieldConfigCreator = () =>
+  RTE.right({
+    type: 'Date',
+    extensions: { dateformat: {} },
+  })

@@ -74,9 +74,15 @@ export class Runtime {
     this.subscribers = [...this.subscribers, callback]
   }
 
+  unsubscribe(callback: SubscriberFn): void {
+    this.subscribers = this.subscribers.filter(
+      (registeredCallback) => registeredCallback !== callback,
+    )
+  }
+
   registerCustomTypeModels(models: prismicT.CustomTypeModel[]): void {
     const typePaths = models.flatMap((model) =>
-      customTypeModelToTypePaths(model),
+      customTypeModelToTypePaths(model, this.config.transformFieldName),
     )
 
     this.typePaths = [...this.typePaths, ...typePaths]
@@ -86,7 +92,7 @@ export class Runtime {
 
   registerSharedSliceModels(models: prismicT.SharedSliceModel[]): void {
     const typePaths = models.flatMap((model) =>
-      sharedSliceModelToTypePaths(model),
+      sharedSliceModelToTypePaths(model, this.config.transformFieldName),
     )
 
     this.typePaths = [...this.typePaths, ...typePaths]
@@ -103,7 +109,7 @@ export class Runtime {
   registerDocument<PrismicDocument extends prismicT.PrismicDocument>(
     document: PrismicDocument,
   ): NormalizedPrismicDocumentNodeInput<PrismicDocument> {
-    const normalizedDocument = this.#normalizeDocument(document)
+    const normalizedDocument = this.normalizeDocument(document)
 
     this.nodes = [...this.nodes, normalizedDocument]
 
@@ -114,7 +120,7 @@ export class Runtime {
 
   registerDocuments(documents: prismicT.PrismicDocument[]): void {
     const nodes = documents.map((document) => {
-      return this.#normalizeDocument(document)
+      return this.normalizeDocument(document)
     })
 
     this.nodes = [...this.nodes, ...nodes]
@@ -122,14 +128,14 @@ export class Runtime {
     this.#notifySubscribers()
   }
 
-  #normalizeDocument<PrismicDocument extends prismicT.PrismicDocument>(
+  normalizeDocument<PrismicDocument extends prismicT.PrismicDocument>(
     document: PrismicDocument,
   ): NormalizedPrismicDocumentNodeInput<PrismicDocument> {
     const normalizedDocument = normalize({
       value: document,
       path: [document.type],
-      getNode: this.#getNode.bind(this),
-      getTypePath: this.#getTypePath.bind(this),
+      getNode: this.getNode.bind(this),
+      getTypePath: this.getTypePath.bind(this),
       nodeHelpers: this.nodeHelpers,
       linkResolver: this.config.linkResolver,
       htmlSerializer: this.config.htmlSerializer,
@@ -143,11 +149,15 @@ export class Runtime {
     ) as NormalizedPrismicDocumentNodeInput<PrismicDocument>
   }
 
-  #getNode(id: string): NormalizedPrismicDocumentNodeInput | undefined {
+  getNode(id: string): NormalizedPrismicDocumentNodeInput | undefined {
     return this.nodes.find((node) => node.prismicId === id)
   }
 
-  #getTypePath(path: string[]): TypePath | undefined {
+  hasNode(id: string): boolean {
+    return this.nodes.some((node) => node.prismicId === id)
+  }
+
+  getTypePath(path: string[]): TypePath | undefined {
     return this.typePaths.find(
       (typePath) =>
         typePath.path.join('__SEPARATOR__') === path.join('__SEPARATOR__'),

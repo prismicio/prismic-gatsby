@@ -30,7 +30,9 @@ export const group = <Value extends prismicT.GroupField>(
     const result: NormalizedValueMap<typeof element> = {}
 
     for (const key in element) {
-      result[key] = normalize({
+      const transformedKey = config.transformFieldName(key)
+
+      result[transformedKey] = normalize({
         ...config,
         value: element[key],
         path: [...config.path, key],

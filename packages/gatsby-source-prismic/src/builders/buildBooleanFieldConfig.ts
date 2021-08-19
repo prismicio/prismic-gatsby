@@ -1,10 +1,6 @@
-import * as prismicT from '@prismicio/types'
 import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
 
-import { createTypePath } from '../lib/createTypePath'
-
-import { FieldConfigCreator, TypePathKind } from '../types'
+import { FieldConfigCreator } from '../types'
 
 /**
  * Builds a GraphQL field configuration object for a Boolean Custom Type field.
@@ -16,12 +12,5 @@ import { FieldConfigCreator, TypePathKind } from '../types'
  *
  * @returns GraphQL field configuration object.
  */
-export const buildBooleanFieldConfig: FieldConfigCreator = (path) =>
-  pipe(
-    createTypePath(
-      TypePathKind.Field,
-      path,
-      prismicT.CustomTypeModelFieldType.Boolean,
-    ),
-    RTE.map(() => 'Boolean'),
-  )
+export const buildBooleanFieldConfig: FieldConfigCreator = () =>
+  RTE.right('Boolean')

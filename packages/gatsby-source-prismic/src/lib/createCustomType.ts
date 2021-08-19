@@ -8,12 +8,7 @@ import * as S from 'fp-ts/Semigroup'
 import * as struct from 'fp-ts/struct'
 import { pipe } from 'fp-ts/function'
 
-import {
-  Dependencies,
-  PrismicAPIDocumentNode,
-  PrismicSpecialType,
-  TypePathKind,
-} from '../types'
+import { Dependencies, PrismicAPIDocumentNode } from '../types'
 import {
   PREVIEWABLE_NODE_ID_FIELD,
   PRISMIC_API_NON_DATA_FIELDS,
@@ -22,7 +17,6 @@ import { getTypeName } from './getTypeName'
 import { buildObjectType } from './buildObjectType'
 import { createType } from './createType'
 import { buildFieldConfigMap } from './buildFieldConfigMap'
-import { createTypePath } from './createTypePath'
 import { listTypeName } from './listTypeName'
 import { requiredTypeName } from './requiredTypeName'
 
@@ -70,13 +64,6 @@ const buildDataFieldConfigMap = (
     RTE.filterOrElse(
       () => !R.isEmpty(fields),
       () => new Error('No data fields in schema'),
-    ),
-    RTE.chainFirstW(() =>
-      createTypePath(
-        TypePathKind.Field,
-        [customTypeName, 'data'],
-        PrismicSpecialType.DocumentData,
-      ),
     ),
     RTE.bindW('fieldConfigMap', () =>
       buildFieldConfigMap([customTypeName, 'data'], fields),
@@ -184,11 +171,4 @@ export const createCustomType = (
       }),
     ),
     RTE.chainFirstW(createType),
-    RTE.chainFirstW(() =>
-      createTypePath(
-        TypePathKind.CustomType,
-        [customType.id],
-        PrismicSpecialType.Document,
-      ),
-    ),
   )
