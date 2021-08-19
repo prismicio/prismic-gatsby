@@ -2,6 +2,7 @@ import * as ava from 'ava'
 import * as sinon from 'sinon'
 import * as prismic from '@prismicio/client'
 import * as crypto from 'crypto'
+import fetch from 'node-fetch'
 
 import {
   DEFAULT_CUSTOM_TYPES_API_ENDPOINT,
@@ -34,5 +35,6 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
       .stub()
       .resolves(Promise.resolve({ id: 'remoteFileNodeId' })),
     transformFieldName: (fieldName: string) => fieldName.replace(/-/g, '_'),
+    fetch,
   }
 }

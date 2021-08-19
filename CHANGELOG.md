@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/prismicio/prismic-gatsby/compare/v4.0.3...v4.1.0) (2021-08-18)
+
+
+### Features
+
+* support for custom fetch function ([#432](https://github.com/prismicio/prismic-gatsby/issues/432)) ([8f4a96f](https://github.com/prismicio/prismic-gatsby/commit/8f4a96ffd0653f4b6fe9271af52d2fdd35cd7876))
+
+
+
+
+
 ## [4.0.3](https://github.com/prismicio/gatsby/compare/v4.0.2...v4.0.3) (2021-07-28)
 
 

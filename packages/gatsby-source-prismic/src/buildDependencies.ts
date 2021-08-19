@@ -1,6 +1,5 @@
 import * as gatsby from 'gatsby'
 import * as prismic from '@prismicio/client'
-import fetch from 'node-fetch'
 import { createNodeHelpers } from 'gatsby-node-helpers'
 
 import { GLOBAL_TYPE_PREFIX } from './constants'
@@ -28,7 +27,7 @@ export const buildDependencies = (
     pluginOptions.apiEndpoint ??
     prismic.getEndpoint(pluginOptions.repositoryName)
   const prismicClient = prismic.createClient(prismicEndpoint, {
-    fetch,
+    fetch: pluginOptions.fetch,
     accessToken: pluginOptions.accessToken,
     defaultParams: {
       lang: pluginOptions.lang,
