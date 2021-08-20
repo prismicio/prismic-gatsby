@@ -3,6 +3,7 @@ import * as sinon from 'sinon'
 import * as assert from 'assert'
 import * as mswNode from 'msw/node'
 import * as prismic from '@prismicio/client'
+import * as prismicMock from '@prismicio/mock'
 import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
 import * as gatsby from 'gatsby'
@@ -18,8 +19,6 @@ import { createPageProps } from './__testutils__/createPageProps'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPreviewURL } from './__testutils__/createPreviewURL'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
@@ -32,6 +31,7 @@ import {
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
 import { navigateToPreviewResolverURL } from './__testutils__/navigateToPreviewResolverURL'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 
 const server = mswNode.setupServer()
 test.before(() => {
@@ -158,17 +158,18 @@ test.serial('redirects to path on valid preview', async (t) => {
   const tree = createTree(pageProps, hookConfig, config)
   const ref = createPreviewRef(pluginOptions.repositoryName)
 
-  const doc = createPrismicAPIDocument()
-  const queryResponse = createPrismicAPIQueryResponse([doc])
+  const document = prismicMock.value.document()
+  const queryResponse = prismicMock.api.query({ documents: [document] })
 
-  navigateToPreviewResolverURL(ref, doc.id)
+  navigateToPreviewResolverURL(ref, document.id)
   cookie.set(prismic.cookie.preview, ref)
 
   server.use(
+    createAPIRepositoryMockedRequest(pluginOptions),
     createAPIQueryMockedRequest(pluginOptions, queryResponse, {
       ref,
       graphQuery: pluginOptions.graphQuery,
-      q: `[${prismic.predicate.at('document.id', doc.id)}]`,
+      q: `[${prismic.predicate.at('document.id', document.id)}]`,
       page: undefined,
       pageSize: undefined,
     }),
@@ -185,7 +186,7 @@ test.serial('redirects to path on valid preview', async (t) => {
   t.true(
     (config.navigate as sinon.SinonStub).calledWith(
       prismicH.asLink(
-        prismicH.documentToLinkField(doc),
+        prismicH.documentToLinkField(document),
         hookConfig[0].linkResolver,
       ),
     ),
@@ -204,17 +205,18 @@ test.serial(
     const tree = createTree(pageProps, hookConfig, config)
     const ref = createPreviewRef(pluginOptions.repositoryName)
 
-    const doc = createPrismicAPIDocument()
-    const queryResponse = createPrismicAPIQueryResponse([doc])
+    const document = prismicMock.value.document()
+    const queryResponse = prismicMock.api.query({ documents: [document] })
 
-    navigateToPreviewResolverURL(ref, doc.id)
+    navigateToPreviewResolverURL(ref, document.id)
     cookie.set(prismic.cookie.preview, ref)
 
     server.use(
+      createAPIRepositoryMockedRequest(pluginOptions),
       createAPIQueryMockedRequest(pluginOptions, queryResponse, {
         ref,
         graphQuery: pluginOptions.graphQuery,
-        q: `[${prismic.predicate.at('document.id', doc.id)}]`,
+        q: `[${prismic.predicate.at('document.id', document.id)}]`,
         page: undefined,
         pageSize: undefined,
       }),
@@ -231,7 +233,7 @@ test.serial(
     t.true(
       result.getByTestId('prismicPreviewPath').textContent ===
         prismicH.asLink(
-          prismicH.documentToLinkField(doc),
+          prismicH.documentToLinkField(document),
           hookConfig[0].linkResolver,
         ),
     )

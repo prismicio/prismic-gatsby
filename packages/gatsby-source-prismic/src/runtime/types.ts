@@ -9,9 +9,10 @@ import { TypePath } from '../types'
 import * as normalizers from './normalizers'
 
 export type NormalizedPrismicDocumentNodeInput<
-  Document extends prismicT.PrismicDocument = prismicT.PrismicDocument
+  Document extends prismicT.PrismicDocument = prismicT.PrismicDocument,
 > = normalizers.NormalizedDocumentValue<Document> &
   gatsby.NodeInput & {
+    __typename: string
     prismicId: string
   }
 

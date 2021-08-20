@@ -2,6 +2,7 @@ import test from 'ava'
 import * as mswNode from 'msw/node'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from '@prismicio/client'
+import * as prismicMock from '@prismicio/mock'
 import * as cookie from 'es-cookie'
 import * as assert from 'assert'
 import { renderHook, act, cleanup } from '@testing-library/react-hooks'
@@ -30,6 +31,9 @@ import {
   PrismicPreviewState,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
+import { jsonFilter } from './__testutils__/jsonFilter'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
+import { createRuntime } from './__testutils__/createRuntime'
 
 const createStaticData = () => {
   const previewable = createPrismicAPIDocumentNodeInput({ text: 'static' })
@@ -97,35 +101,38 @@ test.serial(
     const pluginOptions = createPluginOptions(t)
     const gatsbyContext = createGatsbyContext()
     const config = createRepositoryConfigs(pluginOptions)
-    const queryResponse = createPrismicAPIQueryResponse()
+
+    const model = prismicMock.model.customType()
+    const documents = Array(20)
+      .fill(undefined)
+      .map(() => prismicMock.value.document({ model }))
+    const queryResponse = prismicMock.api.query({ documents })
+
+    const runtime = createRuntime(pluginOptions, config[0])
+    runtime.registerCustomTypeModels([model])
+    runtime.registerDocuments(documents)
 
     const ref = createPreviewRef(pluginOptions.repositoryName)
     cookie.set(prismic.cookie.preview, ref)
 
-    const queryResponseNodes = queryResponse.results.map(
-      (doc) =>
-        nodeHelpers.createNodeFactory(doc.type)(
-          doc,
-        ) as PrismicAPIDocumentNodeInput,
-    )
-
     server.use(
-      createAPIQueryMockedRequest(pluginOptions, queryResponse, { ref }),
-    )
-    server.use(
-      createTypePathsMockedRequest('d26c1607b46a831c5d238303c3cbf489.json', {
-        type: gatsbyPrismic.PrismicSpecialType.Document,
-        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      createAPIRepositoryMockedRequest(pluginOptions),
+      createAPIQueryMockedRequest(pluginOptions, queryResponse, {
+        ref,
       }),
+      createTypePathsMockedRequest(
+        'd26c1607b46a831c5d238303c3cbf489.json',
+        runtime.typePaths,
+      ),
     )
 
     // Need to use the query results nodes rather than new documents to ensure
     // the IDs match.
-    const staticData = {
-      previewable: { ...queryResponseNodes[0] },
-      nonPreviewable: { ...queryResponseNodes[1] },
-    }
-    staticData.previewable._previewable = queryResponseNodes[0].prismicId
+    const staticData = jsonFilter({
+      previewable: runtime.nodes[0],
+      nonPreviewable: runtime.nodes[1],
+    })
+    staticData.previewable._previewable = runtime.nodes[0].prismicId
     // Marking this data as "old" and should be replaced during the merge.
     staticData.previewable.uid = 'old'
 
@@ -161,8 +168,7 @@ test.serial(
 
     t.true(result.current.mergedData.isPreview)
     t.true(
-      result.current.mergedData.data.previewable.uid ===
-        queryResponseNodes[0].uid,
+      result.current.mergedData.data.previewable.uid === runtime.nodes[0].uid,
     )
   },
 )
@@ -173,33 +179,38 @@ test('allows skipping', async (t) => {
   const pluginOptions = createPluginOptions(t)
   const gatsbyContext = createGatsbyContext()
   const config = createRepositoryConfigs(pluginOptions)
-  const queryResponse = createPrismicAPIQueryResponse()
+
+  const model = prismicMock.model.customType()
+  const documents = Array(20)
+    .fill(undefined)
+    .map(() => prismicMock.value.document({ model }))
+  const queryResponse = prismicMock.api.query({ documents })
+
+  const runtime = createRuntime(pluginOptions, config[0])
+  runtime.registerCustomTypeModels([model])
+  runtime.registerDocuments(documents)
 
   const ref = createPreviewRef(pluginOptions.repositoryName)
   cookie.set(prismic.cookie.preview, ref)
 
-  const queryResponseNodes = queryResponse.results.map(
-    (doc) =>
-      nodeHelpers.createNodeFactory(doc.type)(
-        doc,
-      ) as PrismicAPIDocumentNodeInput,
-  )
-
-  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse, { ref }))
   server.use(
-    createTypePathsMockedRequest('87ec42108faaca92ab06c427cf0b3b9d.json', {
-      type: gatsbyPrismic.PrismicSpecialType.Document,
-      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+    createAPIRepositoryMockedRequest(pluginOptions),
+    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
+      ref,
     }),
+    createTypePathsMockedRequest(
+      '87ec42108faaca92ab06c427cf0b3b9d.json',
+      runtime.typePaths,
+    ),
   )
 
   // Need to use the query results nodes rather than new documents to ensure
   // the IDs match.
-  const staticData = {
-    previewable: { ...queryResponseNodes[0] },
-    nonPreviewable: { ...queryResponseNodes[1] },
-  }
-  staticData.previewable._previewable = queryResponseNodes[0].prismicId
+  const staticData = jsonFilter({
+    previewable: runtime.nodes[0],
+    nonPreviewable: runtime.nodes[1],
+  })
+  staticData.previewable._previewable = runtime.nodes[0].prismicId
   // Marking this data as "old" and should be replaced during the merge.
   staticData.previewable.uid = 'old'
 

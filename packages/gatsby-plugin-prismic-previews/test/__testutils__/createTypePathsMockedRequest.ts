@@ -1,12 +1,11 @@
 import * as msw from 'msw'
-
-import { TypePathsStore } from '../../src'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 
 import { resolveURL } from './resolveURL'
 
 export const createTypePathsMockedRequest = (
   filename: string,
-  typePaths: TypePathsStore,
+  typePaths: gatsbyPrismic.TypePath[],
 ): msw.RestHandler =>
   msw.rest.get(
     resolveURL(globalThis.__PATH_PREFIX__, `/static/${filename}`),

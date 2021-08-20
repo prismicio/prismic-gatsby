@@ -1,6 +1,7 @@
 import test from 'ava'
 import * as mswNode from 'msw/node'
 import * as prismic from '@prismicio/client'
+import * as prismicMock from '@prismicio/mock'
 import * as cookie from 'es-cookie'
 import * as assert from 'assert'
 import { renderHook, act, cleanup } from '@testing-library/react-hooks'
@@ -12,8 +13,6 @@ import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepos
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { navigateToPreviewResolverURL } from './__testutils__/navigateToPreviewResolverURL'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
@@ -149,8 +148,10 @@ test.serial('resolves a path using the link resolver', async (t) => {
   const config = createConfig(pluginOptions)
   const ref = createPreviewRef(pluginOptions.repositoryName)
 
-  const doc = createPrismicAPIDocument()
-  const queryResponse = createPrismicAPIQueryResponse([doc])
+  const doc = prismicMock.value.document()
+  const queryResponse = prismicMock.api.query({
+    documents: [doc],
+  })
 
   navigateToPreviewResolverURL(ref, doc.id)
   cookie.set(prismic.cookie.preview, ref)
@@ -193,6 +194,6 @@ test.serial('resolves a path using the link resolver', async (t) => {
     ),
   )
 
-  t.is(result.current.context[0].resolvedPath, `/${doc.id}`)
+  t.is(result.current.context[0].resolvedPath, doc.url)
   t.is(result.current.context[0].error, undefined)
 })

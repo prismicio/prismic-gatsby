@@ -22,7 +22,7 @@ import {
 } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 
-export type UsePrismicPreviewBootstrapFn = () => void
+export type UsePrismicPreviewBootstrapFn = () => Promise<void>
 
 /**
  * React hook that bootstraps a Prismic preview session. When the returned

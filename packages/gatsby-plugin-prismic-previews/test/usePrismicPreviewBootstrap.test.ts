@@ -3,6 +3,7 @@ import * as msw from 'msw'
 import * as mswNode from 'msw/node'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from '@prismicio/client'
+import * as prismicMock from '@prismicio/mock'
 import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
 import * as assert from 'assert'
@@ -32,6 +33,9 @@ import {
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
 import { IS_PROXY } from '../src/constants'
+import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
+import { createRuntime } from './__testutils__/createRuntime'
 
 const createRepositoryConfigs = (
   pluginOptions: PluginOptions,
@@ -108,103 +112,29 @@ test.serial(
     const gatsbyContext = createGatsbyContext()
     const pluginOptions = createPluginOptions(t)
     const config = createRepositoryConfigs(pluginOptions)
-    const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
-      page: 1,
-      total_pages: 2,
-    })
-    const queryResponsePage2 = createPrismicAPIQueryResponse(undefined, {
-      page: 2,
-      total_pages: 2,
-    })
+
+    const model = prismicMock.model.customType()
+    const documents = Array(20)
+      .fill(undefined)
+      .map(() => prismicMock.value.document({ model }))
+    const queryResponse = prismicMock.api.query({ documents })
+
+    const runtime = createRuntime(pluginOptions, config[0])
+    runtime.registerCustomTypeModels([model])
+    runtime.registerDocuments(documents)
 
     const ref = createPreviewRef(pluginOptions.repositoryName)
     cookie.set(prismic.cookie.preview, ref)
 
-    const queryResponsePage1Nodes = queryResponsePage1.results.map((doc) => {
-      const node = nodeHelpers.createNodeFactory(doc.type)(
-        doc,
-      ) as PrismicAPIDocumentNodeInput
-
-      return {
-        ...node,
-        url: prismicH.asLink(
-          prismicH.documentToLinkField(doc),
-          config[0].linkResolver,
-        ),
-        alternate_languages: node.alternate_languages.map(
-          (alternativeLanguage) => ({
-            ...alternativeLanguage,
-            raw: alternativeLanguage,
-            // Sorry, this is an implementation detail but we need it pass tests.
-            [IS_PROXY]: true,
-          }),
-        ),
-      }
-    })
-
-    const queryResponsePage2Nodes = queryResponsePage2.results.map((doc) => {
-      const node = nodeHelpers.createNodeFactory(doc.type)(
-        doc,
-      ) as PrismicAPIDocumentNodeInput
-
-      return {
-        ...node,
-        url: prismicH.asLink(
-          prismicH.documentToLinkField(doc),
-          config[0].linkResolver,
-        ),
-        alternate_languages: node.alternate_languages.map(
-          (alternativeLanguage) => ({
-            ...alternativeLanguage,
-            raw: alternativeLanguage,
-            // Sorry, this is an implementation detail but we need it pass tests.
-            [IS_PROXY]: true,
-          }),
-        ),
-      }
-    })
-
-    // We're testing pagination functionality here. We need to make sure the hook
-    // will fetch all documents in a repository, not just the first page of
-    // results.
-
     server.use(
-      msw.rest.get(
-        resolveURL(pluginOptions.apiEndpoint, './documents/search'),
-        (req, res, ctx) => {
-          if (
-            isValidAccessToken(pluginOptions.accessToken, req) &&
-            req.url.searchParams.get('ref') === ref &&
-            req.url.searchParams.get('lang') === pluginOptions.lang &&
-            req.url.searchParams.get('graphQuery') ===
-              pluginOptions.graphQuery &&
-            req.url.searchParams.get('pageSize') === '100'
-          ) {
-            switch (req.url.searchParams.get('page')) {
-              case '2':
-                return res(ctx.json(queryResponsePage2))
-              default:
-                return res(ctx.json(queryResponsePage1))
-            }
-          } else {
-            return res(
-              ctx.status(403),
-              ctx.json({
-                error: '[MOCK ERROR]',
-                oauth_initiate: 'oauth_initiate',
-                oauth_token: 'oauth_token',
-              }),
-            )
-          }
-        },
-      ),
-    )
-
-    server.use(
-      createTypePathsMockedRequest('fa7e36097b060b84eb14d0df1009fa58.json', {
-        type: gatsbyPrismic.PrismicSpecialType.Document,
-        'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+      createAPIRepositoryMockedRequest(pluginOptions),
+      createAPIQueryMockedRequest(pluginOptions, queryResponse, {
+        ref,
       }),
+      createTypePathsMockedRequest(
+        'fa7e36097b060b84eb14d0df1009fa58.json',
+        runtime.typePaths,
+      ),
     )
 
     // @ts-expect-error - Partial gatsbyContext provided
@@ -236,24 +166,11 @@ test.serial(
     )
     t.true(result.current.context[0].error === undefined)
     t.true(result.current.context[0].isBootstrapped)
-    t.deepEqual(result.current.context[0].nodes, {
-      [queryResponsePage1Nodes[0].prismicId]: {
-        __typename: 'PrismicPrefixType',
-        ...queryResponsePage1Nodes[0],
-      },
-      [queryResponsePage1Nodes[1].prismicId]: {
-        __typename: 'PrismicPrefixType',
-        ...queryResponsePage1Nodes[1],
-      },
-      [queryResponsePage2Nodes[0].prismicId]: {
-        __typename: 'PrismicPrefixType',
-        ...queryResponsePage2Nodes[0],
-      },
-      [queryResponsePage2Nodes[1].prismicId]: {
-        __typename: 'PrismicPrefixType',
-        ...queryResponsePage2Nodes[1],
-      },
-    })
+    t.deepEqual(
+      result.current.context[0].runtimeStore[pluginOptions.repositoryName]
+        .nodes,
+      runtime.nodes,
+    )
   },
 )
 
@@ -261,51 +178,29 @@ test.serial('does nothing if already bootstrapped', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const config = createRepositoryConfigs(pluginOptions)
-  const queryResponsePage1 = createPrismicAPIQueryResponse(undefined, {
-    page: 1,
-    total_pages: 2,
-  })
-  const queryResponsePage2 = createPrismicAPIQueryResponse(undefined, {
-    page: 2,
-    total_pages: 2,
-  })
+
+  const model = prismicMock.model.customType()
+  const documents = Array(20)
+    .fill(undefined)
+    .map(() => prismicMock.value.document({ model }))
+  const queryResponse = prismicMock.api.query({ documents })
+
+  const runtime = createRuntime(pluginOptions, config[0])
+  runtime.registerCustomTypeModels([model])
+  runtime.registerDocuments(documents)
 
   const ref = createPreviewRef(pluginOptions.repositoryName)
   cookie.set(prismic.cookie.preview, ref)
 
-  // We're testing pagination functionality here. We need to make sure the hook
-  // will fetch all documents in a repository, not just the first page of
-  // results.
-
   server.use(
-    msw.rest.get(
-      resolveURL(pluginOptions.apiEndpoint, './documents/search'),
-      (req, res, ctx) => {
-        if (
-          isValidAccessToken(pluginOptions.accessToken, req) &&
-          req.url.searchParams.get('ref') === ref &&
-          req.url.searchParams.get('lang') === pluginOptions.lang &&
-          req.url.searchParams.get('graphQuery') === pluginOptions.graphQuery &&
-          req.url.searchParams.get('pageSize') === '100'
-        ) {
-          switch (req.url.searchParams.get('page')) {
-            case '2':
-              return res(ctx.json(queryResponsePage2))
-            default:
-              return res(ctx.json(queryResponsePage1))
-          }
-        } else {
-          return res(ctx.status(401))
-        }
-      },
-    ),
-  )
-
-  server.use(
-    createTypePathsMockedRequest('d6c42f6728e21ab594cd600ff04e4913.json', {
-      type: gatsbyPrismic.PrismicSpecialType.Document,
-      'type.data': gatsbyPrismic.PrismicSpecialType.DocumentData,
+    createAPIRepositoryMockedRequest(pluginOptions),
+    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
+      ref,
     }),
+    createTypePathsMockedRequest(
+      'd6c42f6728e21ab594cd600ff04e4913.json',
+      runtime.typePaths,
+    ),
   )
 
   // @ts-expect-error - Partial gatsbyContext provided
