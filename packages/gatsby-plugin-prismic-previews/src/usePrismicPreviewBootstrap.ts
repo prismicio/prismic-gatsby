@@ -125,6 +125,22 @@ export const usePrismicPreviewBootstrap = (
       })
     }
 
+    contextDispatch({
+      type: PrismicContextActionType.SetupRuntime,
+      payload: {
+        repositoryName: repositoryName.value,
+        config: {
+          linkResolver: repositoryConfig.linkResolver,
+          htmlSerializer: repositoryConfig.htmlSerializer,
+          transformFieldName: repositoryConfig.transformFieldName,
+          typePrefix: repositoryPluginOptions.typePrefix,
+          imageImgixParams: repositoryPluginOptions.imageImgixParams,
+          imagePlaceholderImgixParams:
+            repositoryPluginOptions.imagePlaceholderImgixParams,
+        },
+      },
+    })
+
     // Begin bootstrap phase.
     contextDispatch({
       type: PrismicContextActionType.StartBootstrapping,

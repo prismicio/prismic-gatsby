@@ -9,8 +9,8 @@ export const serializeTypePathNodes = (
     typePathNodes,
     A.map((node) => ({
       kind: node.kind,
-      path: node.path,
       type: node.type,
+      path: node.path,
     })),
     JSON.stringify,
   )

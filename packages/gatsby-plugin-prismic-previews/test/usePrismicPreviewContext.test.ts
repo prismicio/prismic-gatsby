@@ -116,7 +116,18 @@ test.serial('AppendDocuments action adds documents', async (t) => {
   const { result } = renderHook(() => usePrismicPreviewContext(), {
     wrapper: PrismicPreviewProvider,
   })
-  const dispatch = result.current[1]
+
+  act(() => {
+    const dispatch = result.current[1]
+
+    dispatch({
+      type: PrismicContextActionType.SetupRuntime,
+      payload: {
+        repositoryName: pluginOptions.repositoryName,
+        config: {},
+      },
+    })
+  })
 
   const model = mock.model.customType()
   const documents = [
@@ -128,6 +139,8 @@ test.serial('AppendDocuments action adds documents', async (t) => {
   ].registerCustomTypeModels([model])
 
   act(() => {
+    const dispatch = result.current[1]
+
     dispatch({
       type: PrismicContextActionType.AppendDocuments,
       payload: { repositoryName: pluginOptions.repositoryName, documents },

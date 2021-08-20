@@ -58,6 +58,8 @@ export type PrismicContextState = {
 export enum PrismicContextActionType {
   SetActiveRepositoryName = 'SetActiveRepositoryName',
   SetAccessToken = 'SetAccessToken',
+
+  SetupRuntime = 'SetupRuntime',
   AppendDocuments = 'AppendDocuments',
   AppendTypePaths = 'AppendTypePaths',
 
@@ -82,6 +84,10 @@ export type PrismicContextAction =
   | {
       type: PrismicContextActionType.SetAccessToken
       payload: { repositoryName: string; accessToken: string }
+    }
+  | {
+      type: PrismicContextActionType.SetupRuntime
+      payload: { repositoryName: string; config: gatsbyPrismic.RuntimeConfig }
     }
   | {
       type: PrismicContextActionType.AppendDocuments
@@ -134,10 +140,28 @@ export const contextReducer = (
       }
     }
 
+    case PrismicContextActionType.SetupRuntime: {
+      const runtime = gatsbyPrismic.createRuntime(action.payload.config)
+
+      return {
+        ...state,
+        runtimeStore: {
+          ...state.runtimeStore,
+          [action.payload.repositoryName]: runtime,
+        },
+      }
+    }
+
     case PrismicContextActionType.AppendDocuments: {
       const runtime = state.runtimeStore[action.payload.repositoryName]
 
-      runtime.registerDocuments(action.payload.documents)
+      if (runtime) {
+        runtime.registerDocuments(action.payload.documents)
+      } else {
+        throw new Error(
+          `A runtime for repository "${action.payload.repositoryName}" as not found`,
+        )
+      }
 
       return state
     }
@@ -145,7 +169,13 @@ export const contextReducer = (
     case PrismicContextActionType.AppendTypePaths: {
       const runtime = state.runtimeStore[action.payload.repositoryName]
 
-      runtime.registerTypePaths(action.payload.typePaths)
+      if (runtime) {
+        runtime.registerTypePaths(action.payload.typePaths)
+      } else {
+        throw new Error(
+          `A runtime for repository "${action.payload.repositoryName}" as not found`,
+        )
+      }
 
       return state
     }
@@ -261,31 +291,9 @@ const createInitialState = (
     {},
   )
 
-  const runtimeStore = repositoryNames.reduce(
-    (acc: Record<string, gatsbyPrismic.Runtime>, repositoryName) => {
-      const pluginOptions = pluginOptionsStore[repositoryName]
-      const repositoryConfig = repositoryConfigs.find(
-        (config) => config.repositoryName === repositoryName,
-      )
-
-      acc[repositoryName] = gatsbyPrismic.createRuntime({
-        typePrefix: pluginOptions.typePrefix,
-        imageImgixParams: pluginOptions.imageImgixParams,
-        imagePlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
-        linkResolver: repositoryConfig?.linkResolver,
-        htmlSerializer: repositoryConfig?.htmlSerializer,
-        transformFieldName: repositoryConfig?.transformFieldName,
-      })
-
-      return acc
-    },
-    {},
-  )
-
   return {
     ...defaultInitialState,
     pluginOptionsStore: injectedPluginOptionsStore,
-    runtimeStore,
     repositoryConfigs,
   }
 }

@@ -70,12 +70,29 @@ export const defaultDataResolver: PrismicUnpublishedRepositoryConfig['dataResolv
 const useNodesForPath = (
   path: string,
 ): gatsbyPrismic.NormalizedPrismicDocumentNodeInput[] => {
+  const [state, setState] = React.useState(0)
+  const rerender = () => setState((i) => i + 1)
+
   const activeRuntime = useActiveRuntime()
 
-  return React.useMemo(
-    () => (activeRuntime ? getNodesForPath(path, activeRuntime) : []),
-    [path, activeRuntime],
-  )
+  React.useEffect(() => {
+    if (activeRuntime) {
+      activeRuntime.subscribe(rerender)
+    }
+
+    return () => {
+      if (activeRuntime) {
+        activeRuntime.unsubscribe(rerender)
+      }
+    }
+  }, [activeRuntime])
+
+  return React.useMemo(() => {
+    // To appease the exhaustive-deps linter rule
+    state
+
+    return activeRuntime ? getNodesForPath(path, activeRuntime) : []
+  }, [state, path, activeRuntime])
 }
 
 const useActiveRuntime = (): Runtime | undefined => {

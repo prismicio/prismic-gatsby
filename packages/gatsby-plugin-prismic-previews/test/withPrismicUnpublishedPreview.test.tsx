@@ -1,17 +1,14 @@
 import test from 'ava'
 import * as assert from 'assert'
 import * as mswNode from 'msw/node'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from '@prismicio/client'
 import * as prismicMock from '@prismicio/mock'
-import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
 import * as gatsby from 'gatsby'
 import * as React from 'react'
 import * as tlr from '@testing-library/react'
-import { createNodeHelpers } from 'gatsby-node-helpers'
+import * as cc from 'camel-case'
 import globalJsdom from 'global-jsdom'
-import md5 from 'tiny-hashes/md5'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
@@ -20,13 +17,11 @@ import { createPageProps } from './__testutils__/createPageProps'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPreviewURL } from './__testutils__/createPreviewURL'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
   PluginOptions,
-  PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
   PrismicRepositoryConfigs,
   PrismicUnpublishedRepositoryConfigs,
@@ -37,18 +32,9 @@ import {
   withPrismicUnpublishedPreview,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
-import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
 import { jsonFilter } from './__testutils__/jsonFilter'
 import { createRuntime } from './__testutils__/createRuntime'
 import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
-
-const nodeHelpers = createNodeHelpers({
-  typePrefix: 'Prismic prefix',
-  fieldPrefix: 'Prismic',
-  createNodeId: (id) => md5(id),
-  createContentDigest: (input) => md5(JSON.stringify(input)),
-})
 
 const server = mswNode.setupServer()
 test.before(() => {
@@ -178,10 +164,12 @@ test.serial('merges data if preview data is available', async (t) => {
   const ref = createPreviewRef(pluginOptions.repositoryName)
   cookie.set(prismic.cookie.preview, ref)
 
-  const model = prismicMock.model.customType()
+  const model = prismicMock.model.customType({ withUID: true })
+  model.id = 'type'
+
   const documents = Array(20)
     .fill(undefined)
-    .map(() => prismicMock.value.document({ model }))
+    .map(() => prismicMock.value.document({ model, withURL: false }))
   const queryResponse = prismicMock.api.query({ documents })
 
   const runtime = createRuntime(pluginOptions, repositoryConfigs[0])
@@ -228,7 +216,9 @@ test.serial('merges data if preview data is available', async (t) => {
   const mergedData = jsonFilter({
     ...staticData,
     previewable: runtime.nodes[0],
-    [runtime.nodes[0].__typename]: runtime.nodes[0],
+    [cc.camelCase(runtime.nodes[0].__typename, {
+      transform: cc.camelCaseTransformMerge,
+    })]: runtime.nodes[0],
   })
   t.deepEqual(propData, mergedData)
 })
