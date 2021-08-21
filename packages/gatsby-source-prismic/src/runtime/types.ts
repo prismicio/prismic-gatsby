@@ -1,23 +1,14 @@
 import * as prismicT from '@prismicio/types'
 import * as prismicH from '@prismicio/helpers'
 import * as imgixGatsby from '@imgix/gatsby'
-import * as gatsby from 'gatsby'
 import * as nodeHelpers from 'gatsby-node-helpers'
 
 import { TypePath } from '../types'
 
 import * as normalizers from './normalizers'
 
-export type NormalizedPrismicDocumentNodeInput<
-  Document extends prismicT.PrismicDocument = prismicT.PrismicDocument,
-> = normalizers.NormalizedDocumentValue<Document> &
-  gatsby.NodeInput & {
-    __typename: string
-    prismicId: string
-  }
-
 export interface NormalizerDependencies {
-  getNode(id: string): NormalizedPrismicDocumentNodeInput | undefined
+  getNode(id: string): normalizers.NormalizedDocumentValue | undefined
   getTypePath(path: string[]): TypePath | undefined
   nodeHelpers: nodeHelpers.NodeHelpers
   transformFieldName: <K extends string>(key: K) => string

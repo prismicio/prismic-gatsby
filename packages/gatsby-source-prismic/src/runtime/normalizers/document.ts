@@ -1,5 +1,6 @@
 import * as prismicT from '@prismicio/types'
 import * as prismicH from '@prismicio/helpers'
+import * as gatsby from 'gatsby'
 
 import {
   NormalizeConfig,
@@ -22,12 +23,15 @@ export type NormalizedDocumentValue<
   Value extends prismicT.PrismicDocument = prismicT.PrismicDocument,
 > = Omit<Value, 'data'> & {
   data: NormalizedValueMap<Value['data']>
-}
+} & gatsby.NodeInput & {
+    __typename: string
+    prismicId: string
+  }
 
 export const document = <Value extends prismicT.PrismicDocument>(
   config: NormalizeDocumentConfig<Value>,
 ): NormalizedDocumentValue<Value> => {
-  return {
+  const fields = {
     ...config.value,
     __typename: config.nodeHelpers.createTypeName(config.path),
     _previewable: config.value.id,
@@ -41,5 +45,9 @@ export const document = <Value extends prismicT.PrismicDocument>(
       value: config.value.data,
       path: [...config.path, 'data'],
     }),
-  } as NormalizedDocumentValue<Value>
+  }
+
+  return config.nodeHelpers.createNodeFactory(config.value.type)(
+    fields,
+  ) as NormalizedDocumentValue<Value>
 }

@@ -11,12 +11,13 @@ import {
   DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
   GLOBAL_TYPE_PREFIX,
 } from '../constants'
-import { NormalizedPrismicDocumentNodeInput } from './types'
+import { NormalizedValue } from './types'
 import { SetRequired } from 'type-fest'
 import {
   customTypeModelToTypePaths,
   sharedSliceModelToTypePaths,
 } from './typePaths'
+import { NormalizedDocumentValue } from './normalizers'
 
 const createNodeId = (input: string): string => md5(input)
 const createContentDigest = <T>(input: T): string => md5(JSON.stringify(input))
@@ -37,7 +38,7 @@ export const createRuntime = (config: RuntimeConfig = {}): Runtime => {
 }
 
 export class Runtime {
-  nodes: NormalizedPrismicDocumentNodeInput[]
+  nodes: NormalizedDocumentValue[]
   typePaths: TypePath[]
   subscribers: SubscriberFn[]
 
@@ -83,7 +84,20 @@ export class Runtime {
     )
   }
 
-  registerCustomTypeModels(models: prismicT.CustomTypeModel[]): void {
+  registerCustomTypeModel(model: prismicT.CustomTypeModel): TypePath[] {
+    const typePaths = customTypeModelToTypePaths(
+      model,
+      this.config.transformFieldName,
+    )
+
+    this.typePaths = [...this.typePaths, ...typePaths]
+
+    this.#notifySubscribers()
+
+    return typePaths
+  }
+
+  registerCustomTypeModels(models: prismicT.CustomTypeModel[]): TypePath[] {
     const typePaths = models.flatMap((model) =>
       customTypeModelToTypePaths(model, this.config.transformFieldName),
     )
@@ -91,9 +105,24 @@ export class Runtime {
     this.typePaths = [...this.typePaths, ...typePaths]
 
     this.#notifySubscribers()
+
+    return typePaths
   }
 
-  registerSharedSliceModels(models: prismicT.SharedSliceModel[]): void {
+  registerSharedSliceModel(model: prismicT.SharedSliceModel): TypePath[] {
+    const typePaths = sharedSliceModelToTypePaths(
+      model,
+      this.config.transformFieldName,
+    )
+
+    this.typePaths = [...this.typePaths, ...typePaths]
+
+    this.#notifySubscribers()
+
+    return typePaths
+  }
+
+  registerSharedSliceModels(models: prismicT.SharedSliceModel[]): TypePath[] {
     const typePaths = models.flatMap((model) =>
       sharedSliceModelToTypePaths(model, this.config.transformFieldName),
     )
@@ -101,6 +130,8 @@ export class Runtime {
     this.typePaths = [...this.typePaths, ...typePaths]
 
     this.#notifySubscribers()
+
+    return typePaths
   }
 
   registerTypePaths(typePaths: TypePath[]): void {
@@ -111,7 +142,7 @@ export class Runtime {
 
   registerDocument<PrismicDocument extends prismicT.PrismicDocument>(
     document: PrismicDocument,
-  ): NormalizedPrismicDocumentNodeInput<PrismicDocument> {
+  ): NormalizedDocumentValue<PrismicDocument> {
     const normalizedDocument = this.normalizeDocument(document)
 
     this.nodes = [...this.nodes, normalizedDocument]
@@ -121,7 +152,9 @@ export class Runtime {
     return normalizedDocument
   }
 
-  registerDocuments(documents: prismicT.PrismicDocument[]): void {
+  registerDocuments<PrismicDocument extends prismicT.PrismicDocument>(
+    documents: PrismicDocument[],
+  ): NormalizedDocumentValue<PrismicDocument>[] {
     const nodes = documents.map((document) => {
       return this.normalizeDocument(document)
     })
@@ -129,14 +162,22 @@ export class Runtime {
     this.nodes = [...this.nodes, ...nodes]
 
     this.#notifySubscribers()
+
+    return nodes
   }
 
   normalizeDocument<PrismicDocument extends prismicT.PrismicDocument>(
     document: PrismicDocument,
-  ): NormalizedPrismicDocumentNodeInput<PrismicDocument> {
-    const normalizedDocument = normalize({
-      value: document,
-      path: [document.type],
+  ): NormalizedDocumentValue<PrismicDocument> {
+    return this.normalize(document, [
+      document.type,
+    ]) as NormalizedDocumentValue<PrismicDocument>
+  }
+
+  normalize<Value>(value: Value, path: string[]): NormalizedValue<Value> {
+    return normalize({
+      value,
+      path,
       getNode: this.getNode.bind(this),
       getTypePath: this.getTypePath.bind(this),
       nodeHelpers: this.nodeHelpers,
@@ -146,13 +187,9 @@ export class Runtime {
       imagePlaceholderImgixParams: this.config.imagePlaceholderImgixParams,
       transformFieldName: this.config.transformFieldName,
     })
-
-    return this.nodeHelpers.createNodeFactory(document.type)(
-      normalizedDocument,
-    ) as NormalizedPrismicDocumentNodeInput<PrismicDocument>
   }
 
-  getNode(id: string): NormalizedPrismicDocumentNodeInput | undefined {
+  getNode(id: string): NormalizedDocumentValue | undefined {
     return this.nodes.find((node) => node.prismicId === id)
   }
 

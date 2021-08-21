@@ -92,7 +92,7 @@ export const normalize = <Value>(
     }
 
     case prismicT.CustomTypeModelSliceType.Slice:
-    case prismicT.CustomTypeModelSliceType.SharedSlice: {
+    case PrismicSpecialType.SharedSliceVariation: {
       assertType<prismicT.Slice | prismicT.SharedSlice>(
         prismicT.CustomTypeModelSliceType.Slice,
         normalizers.isSlice,
