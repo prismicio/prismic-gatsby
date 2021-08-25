@@ -8,7 +8,7 @@ import { ProxyDocumentSubtreeEnv } from '../lib/proxyDocumentSubtree'
 import { createGetProxy } from '../lib/createGetProxy'
 
 export const valueRefinement = (value: unknown): value is prismicT.LinkField =>
-  typeof value === 'object' && value !== null && 'link_type' in value
+  typeof value === 'object' && (value === null || 'link_type' in value)
 
 export const proxyValue = (
   fieldValue: prismicT.LinkField,
