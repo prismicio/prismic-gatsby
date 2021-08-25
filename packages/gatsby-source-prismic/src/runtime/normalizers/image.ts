@@ -3,10 +3,10 @@ import * as gatsbyImage from 'gatsby-image'
 import * as gatsbyPluginImage from 'gatsby-plugin-image'
 import * as imgixGatsby from '@imgix/gatsby'
 import * as imgixGatsbyHelpers from '@imgix/gatsby/dist/pluginHelpers.browser'
-import { NormalizeConfig, NormalizerDependencies } from '../types'
 
-const sanitizeImageURL = (url: string): string =>
-  decodeURIComponent(url.replace(/\+/g, ' '))
+import { sanitizeImageURL } from '../../lib/sanitizeImageURL'
+
+import { NormalizeConfig, NormalizerDependencies } from '../types'
 
 const getURLSearchParams = (url: string): Record<string, string> => {
   const urlInstance = new URL(url)
@@ -26,7 +26,7 @@ export const isImageField = (value: unknown): value is prismicT.ImageField => {
 }
 
 export type NormalizeImageConfig<
-  Value extends prismicT.ImageField = prismicT.ImageField
+  Value extends prismicT.ImageField = prismicT.ImageField,
 > = NormalizeConfig<Value> &
   Pick<
     NormalizerDependencies,
@@ -47,11 +47,10 @@ type NormalizedImageBase<Value extends prismicT.ImageFieldImage> = Value & {
   } | null
 }
 
-export type NormalizedImageValue<
-  Value extends prismicT.ImageField
-> = NormalizedImageBase<Value> & {
-  thumbnails: Record<string, NormalizedImageBase<prismicT.ImageFieldImage>>
-}
+export type NormalizedImageValue<Value extends prismicT.ImageField> =
+  NormalizedImageBase<Value> & {
+    thumbnails: Record<string, NormalizedImageBase<prismicT.ImageFieldImage>>
+  }
 
 type BuildImageFieldConfig<Value extends prismicT.ImageFieldImage> = {
   value: Value
@@ -68,10 +67,21 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
   }
   const placeholderImgixParams = config.imagePlaceholderImgixParams
 
+  const url = config.value.url ? new URL(config.value.url) : null
+  if (url) {
+    for (const paramKey in imgixParams) {
+      url.searchParams.set(
+        paramKey,
+        String(imgixParams[paramKey as keyof typeof imgixParams]),
+      )
+    }
+  }
+  const normalizedURL = url ? sanitizeImageURL(url.toString()) : null
+
   const fixed =
-    config.value.url && config.value.dimensions
+    normalizedURL && config.value.dimensions
       ? imgixGatsbyHelpers.buildFixedObject({
-          url: config.value.url,
+          url: normalizedURL,
           args: {
             width: 400,
             imgixParams,
@@ -83,9 +93,9 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
       : null
 
   const fluid =
-    config.value.url && config.value.dimensions
+    normalizedURL && config.value.dimensions
       ? imgixGatsbyHelpers.buildFluidObject({
-          url: config.value.url,
+          url: normalizedURL,
           args: {
             maxWidth: 800,
             imgixParams,
@@ -97,9 +107,9 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
       : null
 
   const gatsbyImageData =
-    config.value.url && config.value.dimensions
+    normalizedURL && config.value.dimensions
       ? imgixGatsbyHelpers.buildGatsbyImageDataObject({
-          url: config.value.url,
+          url: normalizedURL,
           dimensions: config.value.dimensions,
           defaultParams: imgixParams,
           resolverArgs: {},
@@ -107,7 +117,7 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
       : null
 
   return {
-    url: config.value.url ? sanitizeImageURL(config.value.url) : null,
+    url: normalizedURL,
     alt: config.value.alt,
     copyright: config.value.copyright,
     dimensions: config.value.dimensions,
@@ -145,13 +155,12 @@ export const image = <Value extends prismicT.ImageField>(
   )
 
   for (const thumbnailName of thumbnailNames) {
-    result.thumbnails[
-      thumbnailName as keyof typeof result.thumbnails
-    ] = buildImageField({
-      value: config.value[thumbnailName],
-      imageImgixParams: config.imageImgixParams,
-      imagePlaceholderImgixParams: config.imagePlaceholderImgixParams,
-    })
+    result.thumbnails[thumbnailName as keyof typeof result.thumbnails] =
+      buildImageField({
+        value: config.value[thumbnailName],
+        imageImgixParams: config.imageImgixParams,
+        imagePlaceholderImgixParams: config.imagePlaceholderImgixParams,
+      })
   }
 
   return result
