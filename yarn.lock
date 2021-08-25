@@ -2941,10 +2941,10 @@
     "@prismicio/types" "^0.1.6"
     escape-html "^1.0.3"
 
-"@prismicio/mock@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@prismicio/mock/-/mock-0.0.3.tgz#d4aaa43bd99a727f54b1fd584994436f11da2f44"
-  integrity sha512-yEMl5dwxVRqY+QUEypDeVSTAkp9Wy2LdY6zp1MJJbj1H3J1VrybaglS6wGWO1bBaMJZM4CZfsX723O0kBkXXpw==
+"@prismicio/mock@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@prismicio/mock/-/mock-0.0.5.tgz#96512863fc08bf2fb700b16394733924182046e4"
+  integrity sha512-DS5sfpsjMeFHCE6gj2X4+xET2G2YZKsblImxjagjoEF579eXisPAlobjtFP2NL+hszHhi1WeH/44+VD9jvPipA==
   dependencies:
     "@prismicio/types" "^0.1.6"
     change-case "^4.1.2"
