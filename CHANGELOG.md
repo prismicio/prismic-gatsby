@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/prismicio/prismic-gatsby/compare/v4.1.0...v4.1.1) (2021-08-25)
+
+
+### Bug Fixes
+
+* **previews:** treat null link fields as valid ([#433](https://github.com/prismicio/prismic-gatsby/issues/433)) ([4e6cc1d](https://github.com/prismicio/prismic-gatsby/commit/4e6cc1db493baa13d7b74b7f95c52c30f55a149d))
+
+
+
+
+
 # [4.1.0](https://github.com/prismicio/prismic-gatsby/compare/v4.0.3...v4.1.0) (2021-08-18)
 
 
