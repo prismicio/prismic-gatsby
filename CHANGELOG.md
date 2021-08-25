@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/prismicio/prismic-gatsby/compare/v4.1.1...v4.1.2) (2021-08-25)
+
+
+### Bug Fixes
+
+* image field proxy types ([91e07eb](https://github.com/prismicio/prismic-gatsby/commit/91e07eb91275db18312193c1b39cfbbbf1f3fb7a))
+* lock `@prismicio/client` version ([43e7795](https://github.com/prismicio/prismic-gatsby/commit/43e77957ed579ae1519699278c56522da5b8c75a))
+
+
+
+
+
+## [4.1.1](https://github.com/prismicio/prismic-gatsby/compare/v4.1.0...v4.1.1) (2021-08-25)
+
+
+### Bug Fixes
+
+* **previews:** treat null link fields as valid ([#433](https://github.com/prismicio/prismic-gatsby/issues/433)) ([4e6cc1d](https://github.com/prismicio/prismic-gatsby/commit/4e6cc1db493baa13d7b74b7f95c52c30f55a149d))
+
+
+
+
+
 # [4.1.0](https://github.com/prismicio/prismic-gatsby/compare/v4.0.3...v4.1.0) (2021-08-18)
 
 

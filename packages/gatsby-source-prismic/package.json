@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "4.1.0",
+  "version": "4.1.2",
   "description": "Gatsby source plugin for building websites using Prismic as a data source",
   "license": "Apache-2.0",
   "author": "Prismic <contact@prismic.io> (https://prismic.io)",
@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@imgix/gatsby": "^1.6.11",
-    "@prismicio/client": "^6.0.0-alpha.8",
+    "@prismicio/client": "6.0.0-alpha.8",
     "@prismicio/custom-types-client": "^0.0.4",
     "@prismicio/helpers": "^2.0.0-alpha.5",
     "@prismicio/mock": "^0.0.3",

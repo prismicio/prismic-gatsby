@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/prismicio/gatsby/compare/v4.1.1...v4.1.2) (2021-08-25)
+
+
+### Bug Fixes
+
+* lock `@prismicio/client` version ([43e7795](https://github.com/prismicio/gatsby/commit/43e77957ed579ae1519699278c56522da5b8c75a))
+
+
+
+
+
 # [4.1.0](https://github.com/prismicio/gatsby/compare/v4.0.3...v4.1.0) (2021-08-18)
 
 
