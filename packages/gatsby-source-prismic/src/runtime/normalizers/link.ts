@@ -7,7 +7,7 @@ import { createGetProxy } from '../createGetProxy'
 import { NormalizeConfig, NormalizerDependencies } from '../types'
 
 export const isLinkField = (value: unknown): value is prismicT.LinkField => {
-  return typeof value === 'object' && value !== null && 'link_type' in value
+  return typeof value === 'object' && (value === null || 'link_type' in value)
 }
 
 export type NormalizeLinkConfig<
