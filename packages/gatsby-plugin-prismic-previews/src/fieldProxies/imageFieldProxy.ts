@@ -15,10 +15,6 @@ import { sprintf } from '../lib/sprintf'
 import { PRISMIC_API_IMAGE_FIELDS } from '../constants'
 import { stripURLQueryParameters } from '../lib/stripURLQueryParameters'
 
-interface ImageProxyValue extends prismicT.ImageField {
-  thumbnails: Record<string, prismicT.ImageField>
-}
-
 export const valueRefinement = (value: unknown): value is prismicT.ImageField =>
   // Unfortunately, we can't check for specific properties here since it's
   // possible for the object to be empty if an image was never set.
@@ -26,7 +22,7 @@ export const valueRefinement = (value: unknown): value is prismicT.ImageField =>
 
 const buildImageProxyValue = (
   fieldValue: prismicT.ImageField,
-): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, prismicT.ImageField> =>
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
     RE.ask<ProxyDocumentSubtreeEnv>(),
     RE.bindW('url', () =>
@@ -123,13 +119,13 @@ const buildImageProxyValue = (
       localFile: env.localFile,
     })),
     // If data is missing, we fall back to the original field value.
-    RE.orElse(() => RE.of(fieldValue)),
+    RE.orElse(() => RE.of(fieldValue as unknown)),
   )
 
 export const proxyValue = (
   fieldValue: prismicT.ImageField,
   path: string[],
-): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, ImageProxyValue> =>
+): RE.ReaderEither<ProxyDocumentSubtreeEnv, Error, unknown> =>
   pipe(
     fieldValue,
     R.partitionWithIndex((fieldName) =>
@@ -165,7 +161,7 @@ export const proxyValue = (
       ),
     ),
     RE.map((scope) => ({
-      ...scope.baseFields,
+      ...(scope.baseFields as Record<string, unknown>),
       thumbnails: scope.thumbnails,
     })),
   )
