@@ -189,8 +189,13 @@ export class Runtime {
     })
   }
 
-  getNode(id: string): NormalizedDocumentValue | undefined {
-    return this.nodes.find((node) => node.prismicId === id)
+  getNode<Document extends prismicT.PrismicDocument>(
+    id: string,
+  ): NormalizedDocumentValue<Document> | undefined {
+    return this.nodes.find(
+      (node): node is NormalizedDocumentValue<Document> =>
+        node.prismicId === id,
+    )
   }
 
   hasNode(id: string): boolean {

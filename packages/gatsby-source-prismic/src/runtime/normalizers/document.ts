@@ -8,7 +8,10 @@ import {
   NormalizerDependencies,
 } from '../types'
 import { normalize } from '../normalize'
-import { alternateLanguages } from './alternateLanguages'
+import {
+  alternateLanguages,
+  NormalizedAlternateLanguagesValue,
+} from './alternateLanguages'
 
 export const isDocument = (
   value: unknown,
@@ -21,10 +24,12 @@ type NormalizeDocumentConfig<Value extends prismicT.PrismicDocument> =
 
 export type NormalizedDocumentValue<
   Value extends prismicT.PrismicDocument = prismicT.PrismicDocument,
-> = Omit<Value, 'data'> & {
+> = Omit<Value, 'alternate_languages' | 'data'> & {
+  alternate_languages: NormalizedAlternateLanguagesValue
   data: NormalizedValueMap<Value['data']>
 } & gatsby.NodeInput & {
     __typename: string
+    _previewable: string
     prismicId: string
   }
 

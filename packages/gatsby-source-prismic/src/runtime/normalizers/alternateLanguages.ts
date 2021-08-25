@@ -1,8 +1,9 @@
 import * as prismicT from '@prismicio/types'
 
-import { PrismicDocumentNodeInput } from '../../types'
 import { createGetProxy } from '../createGetProxy'
 import { NormalizeConfig, NormalizerDependencies } from '../types'
+
+import { NormalizedDocumentValue } from './document'
 
 export const isAlternateLanguagesField = (
   value: unknown,
@@ -22,7 +23,7 @@ export type NormalizeAlternateLanguagesConfig = NormalizeConfig<
   Pick<NormalizerDependencies, 'getNode'>
 
 export type NormalizedAlternateLanguagesValue = (prismicT.AlternateLanguage & {
-  document: PrismicDocumentNodeInput | null
+  document: NormalizedDocumentValue | null
   raw: prismicT.AlternateLanguage
 })[]
 
