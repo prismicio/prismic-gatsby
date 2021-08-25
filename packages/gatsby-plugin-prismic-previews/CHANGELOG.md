@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/prismicio/gatsby/compare/v4.1.1...v4.1.2) (2021-08-25)
+
+
+### Bug Fixes
+
+* image field proxy types ([91e07eb](https://github.com/prismicio/gatsby/commit/91e07eb91275db18312193c1b39cfbbbf1f3fb7a))
+* lock `@prismicio/client` version ([43e7795](https://github.com/prismicio/gatsby/commit/43e77957ed579ae1519699278c56522da5b8c75a))
+
+
+
+
+
 ## [4.1.1](https://github.com/prismicio/gatsby/compare/v4.1.0...v4.1.1) (2021-08-25)
 
 
