@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@imgix/gatsby": "^1.6.11",
-    "@prismicio/client": "6.0.0-alpha.8",
+    "@prismicio/client": "^6.0.0-alpha.11",
     "@prismicio/helpers": "^2.0.0-alpha.4",
     "@prismicio/mock": "^0.0.3",
     "@prismicio/types": "^0.1.6",
