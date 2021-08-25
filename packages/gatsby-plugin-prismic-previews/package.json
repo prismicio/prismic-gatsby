@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@imgix/gatsby": "^1.6.11",
-    "@prismicio/client": "^6.0.0-alpha.8",
+    "@prismicio/client": "6.0.0-alpha.8",
     "@prismicio/helpers": "^2.0.0-alpha.4",
     "@prismicio/types": "^0.1.6",
     "@reach/dialog": "^0.16.0",
@@ -88,5 +88,5 @@
     ],
     "verbose": true
   },
-  "gitHead": "003aa29c7336f9ccc5de1e529f3cba5934d183eb"
+  "gitHead": "3d01b6e8d59dd85d83fb0a81e344145fea0159fc"
 }
