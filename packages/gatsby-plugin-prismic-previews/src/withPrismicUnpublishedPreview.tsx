@@ -69,7 +69,7 @@ export const defaultDataResolver: PrismicUnpublishedRepositoryConfig['dataResolv
 
 const useNodesForPath = (
   path: string,
-): gatsbyPrismic.NormalizedPrismicDocumentNodeInput[] => {
+): gatsbyPrismic.NormalizedDocumentValue[] => {
   const [state, setState] = React.useState(0)
   const rerender = () => setState((i) => i + 1)
 

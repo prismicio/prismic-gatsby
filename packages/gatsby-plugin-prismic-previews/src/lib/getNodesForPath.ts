@@ -13,7 +13,7 @@ import * as gatsbyPrismic from 'gatsby-source-prismic'
 export const getNodesForPath = (
   path: string,
   runtime: gatsbyPrismic.Runtime,
-): gatsbyPrismic.NormalizedPrismicDocumentNodeInput[] =>
+): gatsbyPrismic.NormalizedDocumentValue[] =>
   pipe(
     runtime.nodes,
     A.filter((node) => node.url === path),

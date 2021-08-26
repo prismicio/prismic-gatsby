@@ -142,7 +142,7 @@ test.serial('AppendDocuments action adds documents', async (t) => {
     const dispatch = result.current[1]
 
     dispatch({
-      type: PrismicContextActionType.AppendDocuments,
+      type: PrismicContextActionType.RegisterDocuments,
       payload: { repositoryName: pluginOptions.repositoryName, documents },
     })
   })

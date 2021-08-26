@@ -60,8 +60,8 @@ export enum PrismicContextActionType {
   SetAccessToken = 'SetAccessToken',
 
   SetupRuntime = 'SetupRuntime',
-  AppendDocuments = 'AppendDocuments',
-  AppendTypePaths = 'AppendTypePaths',
+  RegisterDocuments = 'RegisterDocuments',
+  RegisterTypePaths = 'RegisterTypePaths',
 
   StartResolving = 'StartResolving',
   Resolved = 'Resolved',
@@ -90,11 +90,11 @@ export type PrismicContextAction =
       payload: { repositoryName: string; config: gatsbyPrismic.RuntimeConfig }
     }
   | {
-      type: PrismicContextActionType.AppendDocuments
+      type: PrismicContextActionType.RegisterDocuments
       payload: { repositoryName: string; documents: prismicT.PrismicDocument[] }
     }
   | {
-      type: PrismicContextActionType.AppendTypePaths
+      type: PrismicContextActionType.RegisterTypePaths
       payload: { repositoryName: string; typePaths: gatsbyPrismic.TypePath[] }
     }
   | {
@@ -152,7 +152,7 @@ export const contextReducer = (
       }
     }
 
-    case PrismicContextActionType.AppendDocuments: {
+    case PrismicContextActionType.RegisterDocuments: {
       const runtime = state.runtimeStore[action.payload.repositoryName]
 
       if (runtime) {
@@ -166,7 +166,7 @@ export const contextReducer = (
       return state
     }
 
-    case PrismicContextActionType.AppendTypePaths: {
+    case PrismicContextActionType.RegisterTypePaths: {
       const runtime = state.runtimeStore[action.payload.repositoryName]
 
       if (runtime) {

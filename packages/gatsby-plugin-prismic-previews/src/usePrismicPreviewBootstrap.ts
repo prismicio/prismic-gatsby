@@ -157,7 +157,7 @@ export const usePrismicPreviewBootstrap = (
     }
 
     contextDispatch({
-      type: PrismicContextActionType.AppendTypePaths,
+      type: PrismicContextActionType.RegisterTypePaths,
       payload: {
         repositoryName: repositoryName.value,
         typePaths: typePaths.right,
@@ -197,7 +197,7 @@ export const usePrismicPreviewBootstrap = (
     }
 
     contextDispatch({
-      type: PrismicContextActionType.AppendDocuments,
+      type: PrismicContextActionType.RegisterDocuments,
       payload: {
         repositoryName: repositoryName.value,
         documents: allDocuments,
