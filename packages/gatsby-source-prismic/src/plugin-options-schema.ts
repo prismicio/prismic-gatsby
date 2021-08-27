@@ -237,7 +237,7 @@ export const pluginOptionsSchema: NonNullable<
     graphQuery: Joi.string(),
     lang: Joi.string().default(DEFAULT_LANG),
     linkResolver: Joi.function(),
-    htmlSerializer: Joi.function(),
+    htmlSerializer: Joi.alternatives(Joi.object(), Joi.function()),
     schemas: Joi.object(),
     // If a user provides `schemas`, the default value will be converted from
     // `schemas` to something that appears to be from the Custom Types API.
