@@ -3,6 +3,6 @@ import postcss from 'rollup-plugin-postcss'
 
 export default defineSirocConfig({
   rollup: {
-    plugins: [postcss({ extract: true })],
+    plugins: [postcss({ inject: false })],
   },
 })

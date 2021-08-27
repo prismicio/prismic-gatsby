@@ -15,12 +15,11 @@ export const isGroupField = (value: unknown): value is prismicT.GroupField => {
   )
 }
 
-type NormalizeGroupConfig<
-  Value extends prismicT.GroupField
-> = NormalizeConfig<Value> & NormalizerDependencies
+type NormalizeGroupConfig<Value extends prismicT.GroupField> =
+  NormalizeConfig<Value> & NormalizerDependencies
 
 export type NormalizedGroupValue<
-  Value extends prismicT.GroupField = prismicT.GroupField
+  Value extends prismicT.GroupField = prismicT.GroupField,
 > = NormalizedValueMap<IterableElement<Value>>[]
 
 export const group = <Value extends prismicT.GroupField>(
@@ -35,7 +34,7 @@ export const group = <Value extends prismicT.GroupField>(
       result[transformedKey] = normalize({
         ...config,
         value: element[key],
-        path: [...config.path, key],
+        path: [...config.path, transformedKey],
       })
     }
 

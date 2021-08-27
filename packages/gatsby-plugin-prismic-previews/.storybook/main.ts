@@ -19,4 +19,26 @@ export default {
       },
     },
   ],
+  webpackFinal: (config) => {
+    if (config.module?.rules) {
+      config.module.rules = config.module.rules.map((rule) => {
+        if (
+          typeof rule === 'object' &&
+          rule.test instanceof RegExp &&
+          rule.test.test('.css') &&
+          Array.isArray(rule.use)
+        ) {
+          return {
+            ...rule,
+            // slice(1) removes `style-loader`
+            use: ['to-string-loader', ...rule.use.slice(1)],
+          }
+        }
+
+        return rule
+      })
+    }
+
+    return config
+  },
 } as StorybookConfig

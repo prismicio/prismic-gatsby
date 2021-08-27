@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as gatsbyPrismicRuntime from 'gatsby-source-prismic/dist/runtime'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismicT from '@prismicio/types'
 import * as E from 'fp-ts/Either'
 
@@ -48,7 +48,7 @@ export type PrismicContextState = {
   /** Determines if all preview content has been fetched and prepared. */
   isBootstrapped: boolean
   /** Record of `gatsby-source-prismic` runtimes keyed by their repository name. */
-  runtimeStore: Record<string, gatsbyPrismicRuntime.Runtime>
+  runtimeStore: Record<string, gatsbyPrismic.Runtime>
   /** Record of plugin options keyed by their repository name. */
   pluginOptionsStore: Record<string, PluginOptions>
   /** Configuration for each repository */
@@ -89,7 +89,7 @@ export type PrismicContextAction =
       type: PrismicContextActionType.SetupRuntime
       payload: {
         repositoryName: string
-        config: gatsbyPrismicRuntime.RuntimeConfig
+        config: gatsbyPrismic.RuntimeConfig
       }
     }
   | {
@@ -144,7 +144,7 @@ export const contextReducer = (
     }
 
     case PrismicContextActionType.SetupRuntime: {
-      const runtime = gatsbyPrismicRuntime.createRuntime(action.payload.config)
+      const runtime = gatsbyPrismic.createRuntime(action.payload.config)
 
       return {
         ...state,

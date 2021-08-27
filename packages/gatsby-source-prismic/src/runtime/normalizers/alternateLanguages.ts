@@ -23,7 +23,7 @@ export type NormalizeAlternateLanguagesConfig = NormalizeConfig<
   Pick<NormalizerDependencies, 'getNode'>
 
 export type NormalizedAlternateLanguagesValue = (prismicT.AlternateLanguage & {
-  document: NormalizedDocumentValue | null
+  document?: NormalizedDocumentValue | null
   raw: prismicT.AlternateLanguage
 })[]
 
@@ -33,7 +33,6 @@ export const alternateLanguages = (
   return config.value.map((alternateLanguage) => {
     const value = {
       ...alternateLanguage,
-      document: null,
       raw: alternateLanguage,
     }
 

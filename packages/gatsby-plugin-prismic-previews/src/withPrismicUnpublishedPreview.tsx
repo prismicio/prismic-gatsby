@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as gatsby from 'gatsby'
-import * as gatsbyPrismicRuntime from 'gatsby-source-prismic/dist/runtime'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as A from 'fp-ts/Array'
 import * as O from 'fp-ts/Option'
 import * as R from 'fp-ts/Record'
@@ -31,17 +31,19 @@ import { PrismicPreviewUI } from './components/PrismicPreviewUI'
  *
  * @returns A `componentResolver` function that can be passed to `withPrismicUnpublishedPreview`'s configuration.
  */
-export const componentResolverFromMap = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  componentMap: Record<string, React.ComponentType<any>>,
-): PrismicUnpublishedRepositoryConfig['componentResolver'] => (nodes) =>
-  pipe(
-    A.head(nodes),
-    O.bindTo('node'),
-    O.bind('type', (env) => O.some(env.node.type)),
-    O.chain((env) => R.lookup(env.type, componentMap)),
-    O.getOrElseW(constNull),
-  )
+export const componentResolverFromMap =
+  (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    componentMap: Record<string, React.ComponentType<any>>,
+  ): PrismicUnpublishedRepositoryConfig['componentResolver'] =>
+  (nodes) =>
+    pipe(
+      A.head(nodes),
+      O.bindTo('node'),
+      O.bind('type', (env) => O.some(env.node.type)),
+      O.chain((env) => R.lookup(env.type, componentMap)),
+      O.getOrElseW(constNull),
+    )
 
 /**
  * A `dataResolver` function that assumes the first matching node for the page's
@@ -49,26 +51,24 @@ export const componentResolverFromMap = (
  * using the Prismic document's type formatted using Gatsby's camel-cased query
  * convention.
  */
-export const defaultDataResolver: PrismicUnpublishedRepositoryConfig['dataResolver'] = (
-  nodes,
-  data,
-) =>
-  pipe(
-    A.head(nodes),
-    O.bindTo('node'),
-    O.bind('key', (env) => O.some(camelCase(env.node.internal.type))),
-    O.fold(
-      () => data,
-      (env) => ({
-        ...data,
-        [env.key]: env.node,
-      }),
-    ),
-  )
+export const defaultDataResolver: PrismicUnpublishedRepositoryConfig['dataResolver'] =
+  (nodes, data) =>
+    pipe(
+      A.head(nodes),
+      O.bindTo('node'),
+      O.bind('key', (env) => O.some(camelCase(env.node.internal.type))),
+      O.fold(
+        () => data,
+        (env) => ({
+          ...data,
+          [env.key]: env.node,
+        }),
+      ),
+    )
 
 const useNodesForPath = (
   path: string,
-): gatsbyPrismicRuntime.NormalizedDocumentValue[] => {
+): gatsbyPrismic.NormalizedDocumentValue[] => {
   const [state, setState] = React.useState(0)
   const rerender = () => setState((i) => i + 1)
 
@@ -94,7 +94,7 @@ const useNodesForPath = (
   }, [state, path, activeRuntime])
 }
 
-const useActiveRuntime = (): gatsbyPrismicRuntime.Runtime | undefined => {
+const useActiveRuntime = (): gatsbyPrismic.Runtime | undefined => {
   const [contextState] = usePrismicPreviewContext()
 
   return React.useMemo(
@@ -137,7 +137,7 @@ const useActiveRepositoryConfig = (
  */
 export const withPrismicUnpublishedPreview = <
   TStaticData extends UnknownRecord,
-  TProps extends gatsby.PageProps<TStaticData>
+  TProps extends gatsby.PageProps<TStaticData>,
 >(
   WrappedComponent: React.ComponentType<TProps>,
   repositoryConfigs?: PrismicUnpublishedRepositoryConfigs,

@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { ModalLoading } from './ModalLoading'
+import { Root } from './Root'
 
 export default {
   title: 'Components/ModalLoading',
@@ -8,9 +9,11 @@ export default {
 }
 
 export const Default = (): JSX.Element => (
-  <ModalLoading
-    repositoryName="qwerty"
-    isOpen={true}
-    onDismiss={() => console.log('Dismissed')}
-  />
+  <Root>
+    <ModalLoading
+      repositoryName="qwerty"
+      isOpen={true}
+      onDismiss={() => console.log('Dismissed')}
+    />
+  </Root>
 )

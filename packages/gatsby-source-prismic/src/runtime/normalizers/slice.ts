@@ -18,14 +18,13 @@ export const isSharedSlice = (
   value: prismicT.Slice,
 ): value is prismicT.SharedSlice => 'variation' in value
 
-export type NormalizeSliceConfig<
-  Value extends prismicT.Slice
-> = NormalizeConfig<Value> & NormalizerDependencies
+export type NormalizeSliceConfig<Value extends prismicT.Slice> =
+  NormalizeConfig<Value> & NormalizerDependencies
 
 export type NormalizedSliceValue<
   Value extends prismicT.Slice | prismicT.SharedSlice =
     | prismicT.Slice
-    | prismicT.SharedSlice
+    | prismicT.SharedSlice,
 > = Value extends prismicT.SharedSlice
   ? {
       __typename: string
@@ -73,7 +72,7 @@ export const slice = <Value extends prismicT.Slice | prismicT.SharedSlice>(
       result.primary[transformedKey] = normalize({
         ...config,
         value: config.value.primary[key],
-        path: [...config.path, 'primary', key],
+        path: [...config.path, 'primary', transformedKey],
       })
     }
   }
@@ -90,7 +89,7 @@ export const slice = <Value extends prismicT.Slice | prismicT.SharedSlice>(
         result[transformedKey] = normalize({
           ...config,
           value: item[key],
-          path: [...config.path, 'items', key],
+          path: [...config.path, 'items', transformedKey],
         })
       }
 

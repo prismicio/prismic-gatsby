@@ -5,6 +5,7 @@ import * as imgixGatsby from '@imgix/gatsby'
 import * as imgixGatsbyHelpers from '@imgix/gatsby/dist/pluginHelpers.browser'
 
 import { sanitizeImageURL } from '../../lib/sanitizeImageURL'
+import { stripURLQueryParameters } from '../../lib/stripURLParameters'
 
 import { NormalizeConfig, NormalizerDependencies } from '../types'
 
@@ -68,15 +69,17 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
   const placeholderImgixParams = config.imagePlaceholderImgixParams
 
   const url = config.value.url ? new URL(config.value.url) : null
-  if (url) {
-    for (const paramKey in imgixParams) {
-      url.searchParams.set(
-        paramKey,
-        String(imgixParams[paramKey as keyof typeof imgixParams]),
-      )
-    }
-  }
-  const normalizedURL = url ? sanitizeImageURL(url.toString()) : null
+  // if (url) {
+  //   for (const paramKey in imgixParams) {
+  //     url.searchParams.set(
+  //       paramKey,
+  //       String(imgixParams[paramKey as keyof typeof imgixParams]),
+  //     )
+  //   }
+  // }
+  const normalizedURL = url
+    ? sanitizeImageURL(stripURLQueryParameters(url.toString()))
+    : null
 
   const fixed =
     normalizedURL && config.value.dimensions

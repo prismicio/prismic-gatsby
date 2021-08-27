@@ -18,7 +18,7 @@ export type NormalizeLinkConfig<
 export type NormalizedLinkValue<Value extends prismicT.LinkField> = Value & {
   url?: string | null
   raw: Value
-  document: PrismicDocumentNodeInput | null
+  document?: PrismicDocumentNodeInput | null
   localFile?: {
     publicURL: string
   }
@@ -30,7 +30,6 @@ export const link = <Value extends prismicT.LinkField>(
   const value: NormalizedLinkValue<Value> = {
     ...config.value,
     url: prismicH.asLink(config.value, config.linkResolver),
-    document: null,
     localFile: undefined,
     raw: config.value,
   }

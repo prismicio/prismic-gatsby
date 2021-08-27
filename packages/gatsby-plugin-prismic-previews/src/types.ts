@@ -1,7 +1,6 @@
 import * as gatsby from 'gatsby'
 import * as imgixGatsby from '@imgix/gatsby'
 import * as gatsbyPrismic from 'gatsby-source-prismic'
-import * as gatsbyPrismicRuntime from 'gatsby-source-prismic/dist/runtime'
 import * as prismicT from '@prismicio/types'
 import * as prismicH from '@prismicio/helpers'
 import { SetRequired } from 'type-fest'
@@ -42,7 +41,7 @@ export type WriteTypePathsToFilesystemArgs = {
 export type TypePathsStore = Record<string, gatsbyPrismic.PrismicTypePathType>
 
 export interface PrismicAPIDocumentNodeInput<
-  TData = prismicT.PrismicDocument['data']
+  TData = prismicT.PrismicDocument['data'],
 > extends prismicT.PrismicDocument<TData>,
     gatsby.NodeInput {
   prismicId: string
@@ -62,7 +61,8 @@ export type PrismicUnpublishedRepositoryConfig = SetRequired<
   'componentResolver'
 >
 
-export type PrismicUnpublishedRepositoryConfigs = PrismicUnpublishedRepositoryConfig[]
+export type PrismicUnpublishedRepositoryConfigs =
+  PrismicUnpublishedRepositoryConfig[]
 
 export type PrismicRepositoryConfig = {
   /**
@@ -102,7 +102,7 @@ export type PrismicRepositoryConfig = {
    * @returns The React component to render. If no component is returned, the wrapped component will be rendered.
    */
   componentResolver?<P>(
-    nodes: gatsbyPrismicRuntime.NormalizedDocumentValue[],
+    nodes: gatsbyPrismic.NormalizedDocumentValue[],
   ): React.ComponentType<P> | undefined | null
 
   /**
@@ -116,7 +116,7 @@ export type PrismicRepositoryConfig = {
    * @returns The value that will be passed to the page's `data` prop.
    */
   dataResolver?<TData extends Record<string, unknown>>(
-    nodes: gatsbyPrismicRuntime.NormalizedDocumentValue[],
+    nodes: gatsbyPrismic.NormalizedDocumentValue[],
     data: TData,
   ): Record<string, unknown>
 }

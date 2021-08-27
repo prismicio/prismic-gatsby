@@ -21,13 +21,7 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     },
-    "./gatsby-node": {
-      "require": "./dist/gatsby-node.cjs"
-    },
-    "./runtime": {
-      "require": "./dist/runtime/index.cjs",
-      "import": "./dist/runtime/index.mjs"
-    },
+    "./gatsby-node": "./dist/gatsby-node.js",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
