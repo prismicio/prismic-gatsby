@@ -4,15 +4,6 @@
 export const GLOBAL_TYPE_PREFIX = 'Prismic'
 
 /**
- * Custom type fields that are included alongside other fields in the JSON
- * schema, but are not included in the API response for a document's `data`
- * field.
- *
- * Fields in this list are moved from the `data` GraphQL field to the root.
- */
-export const PRISMIC_API_NON_DATA_FIELDS = ['uid']
-
-/**
  * Default endpoint used to fetch custom type JSON schemas from Prismic's
  * Custom Type API.
  *

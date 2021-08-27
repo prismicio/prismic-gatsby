@@ -5,14 +5,12 @@ import * as prismicH from '@prismicio/helpers'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as R from 'fp-ts/Record'
 import * as S from 'fp-ts/Semigroup'
+import * as A from 'fp-ts/Array'
 import * as struct from 'fp-ts/struct'
 import { pipe } from 'fp-ts/function'
 
 import { Dependencies, PrismicAPIDocumentNode } from '../types'
-import {
-  PREVIEWABLE_NODE_ID_FIELD,
-  PRISMIC_API_NON_DATA_FIELDS,
-} from '../constants'
+import { PREVIEWABLE_NODE_ID_FIELD } from '../constants'
 import { getTypeName } from './getTypeName'
 import { buildObjectType } from './buildObjectType'
 import { createType } from './createType'
@@ -117,12 +115,25 @@ export const createCustomType = (
     RTE.bind('partitionedFields', (scope) =>
       pipe(
         scope.fields,
-        R.partitionWithIndex((i) => PRISMIC_API_NON_DATA_FIELDS.includes(i)),
+        R.partition(
+          (field) => field.type === prismicT.CustomTypeModelFieldType.UID,
+        ),
         (partitionedFields) => RTE.right(partitionedFields),
       ),
     ),
     RTE.bind('rootFieldConfigMap', (scope) =>
-      buildFieldConfigMap([customType.id], scope.partitionedFields.right),
+      pipe(
+        scope.partitionedFields.right,
+        R.collect((k, a) => [k, a] as [string, prismicT.CustomTypeModelField]),
+        A.map(
+          ([k, a]) =>
+            (a.type === prismicT.CustomTypeModelFieldType.UID
+              ? ['uid', a]
+              : [k, a]) as [string, prismicT.CustomTypeModelField],
+        ),
+        R.fromFoldable(S.last<prismicT.CustomTypeModelField>(), A.Foldable),
+        (fields) => buildFieldConfigMap([customType.id], fields),
+      ),
     ),
     RTE.bindW('dataFieldConfigMap', (scope) =>
       buildDataFieldConfigMap(customType.id, scope.partitionedFields.left),
