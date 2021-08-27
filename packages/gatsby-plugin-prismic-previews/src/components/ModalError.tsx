@@ -24,35 +24,32 @@ export const ModalError = ({
       isOpen={isOpen}
       aria-label={`Prismic preview error for ${repositoryName}`}
     >
-      <div className="gppp-grid gppp-gap-6 sm:gppp-gap-7 gppp-justify-items-center">
-        <div className="gppp-grid gppp-gap-4">
-          <Text
-            variant="sans-24"
-            className="gppp-text-center gppp-font-semibold"
-          >
+      <div className="grid gap-6 sm:gap-7 justify-items-center">
+        <div className="grid gap-4">
+          <Text variant="sans-24" className="text-center font-semibold">
             Error
           </Text>
-          <Text variant="sans-12-14" className="gppp-text-center">
+          <Text variant="sans-12-14" className="text-center">
             The preview could not be loaded.
           </Text>
         </div>
 
         {errorMessage && (
-          <Text variant="mono-20" className="gppp-text-center gppp-my-2">
+          <Text variant="mono-20" className="text-center my-2">
             {errorMessage}
           </Text>
         )}
 
         <Button variant="whiteOutline" onClick={onDismiss} className="mx-auto">
-          <Text variant="sans-14" className="gppp-font-medium">
+          <Text variant="sans-14" className="font-medium">
             Cancel Preview
           </Text>
         </Button>
 
-        <dl className="gppp-text-red-80 gppp-flex gppp-flex-wrap gppp--mt-5 gppp--ml-5 gppp-justify-center">
-          <div className="gppp-grid gppp-gap-2 gppp-pl-5 gppp-pt-5 gppp-grid-flow-col">
+        <dl className="text-red-80 flex flex-wrap -mt-5 -ml-5 justify-center">
+          <div className="grid gap-2 pl-5 pt-5 grid-flow-col">
             <dt>
-              <Text variant="sans-12" className="gppp-font-semibold">
+              <Text variant="sans-12" className="font-semibold">
                 Repository
               </Text>
             </dt>
@@ -60,9 +57,9 @@ export const ModalError = ({
               <Text variant="sans-12">{repositoryName}</Text>
             </dd>
           </div>
-          <div className="gppp-grid gppp-gap-2 gppp-pl-5 gppp-pt-5 gppp-grid-flow-col">
+          <div className="grid gap-2 pl-5 pt-5 grid-flow-col">
             <dt>
-              <Text variant="sans-12" className="gppp-font-semibold">
+              <Text variant="sans-12" className="font-semibold">
                 Plugin Version
               </Text>
             </dt>

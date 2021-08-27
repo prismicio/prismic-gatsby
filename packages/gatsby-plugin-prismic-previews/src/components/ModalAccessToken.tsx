@@ -53,28 +53,28 @@ export const ModalAccessToken = ({
       isOpen={isOpen}
       aria-label={`Prismic access token for ${repositoryName}`}
     >
-      <div className="gppp-grid gppp-gap-6 sm:gppp-gap-7">
-        <div className="gppp-grid gppp-gap-5">
+      <div className="grid gap-6 sm:gap-7">
+        <div className="grid gap-5">
           <Text
             variant="sans-24"
-            className="gppp-text-slate-10 gppp-text-center gppp-font-semibold"
+            className="text-slate-10 text-center font-semibold"
           >
-            Enter your Prismic <br className="sm:gppp-hidden" />
+            Enter your Prismic <br className="sm:hidden" />
             access token
           </Text>
-          <Text variant="sans-12-14" className="gppp-text-center">
+          <Text variant="sans-12-14" className="text-center">
             An access token is required to view this preview.
             <br />
             Repository Name:{' '}
-            <strong className="gppp-font-medium gppp-text-slate-10">
+            <strong className="font-medium text-slate-10">
               {repositoryName}
             </strong>
           </Text>
         </div>
 
-        <form onSubmit={onSubmit} className="gppp-grid gppp-gap-5">
-          <label className="gppp-grid gppp-gap-3">
-            <span className="gppp-sr-only">Access token</span>
+        <form onSubmit={onSubmit} className="grid gap-5">
+          <label className="grid gap-3">
+            <span className="sr-only">Access token</span>
             <input
               name="access-token"
               placeholder="your-access-token"
@@ -83,34 +83,34 @@ export const ModalAccessToken = ({
               required={true}
               onChange={onAccessTokenChange}
               className={clsx(
-                'gppp-border gppp-rounded gppp-px-5 gppp-py-3 gppp-block gppp-font-mono gppp-text-base gppp-leading-none gppp-w-full',
-                !ephemeralAccessToken && 'gppp-text-center',
+                'border rounded px-5 py-3 block font-mono text-base leading-none w-full',
+                !ephemeralAccessToken && 'text-center',
                 state === 'IDLE' &&
-                  'gppp-border-slate-90 gppp-bg-slate-95 gppp-text-slate-30 gppp-placeholder-slate-70',
+                  'border-slate-90 bg-slate-95 text-slate-30 placeholder-slate-70',
                 state === 'INCORRECT' &&
-                  'gppp-border-red-40 gppp-bg-red-95 gppp-text-red-40 gppp-placeholder-red-80',
+                  'border-red-40 bg-red-95 text-red-40 placeholder-red-80',
               )}
             />
             {state === 'INCORRECT' && (
               <Text
                 variant="sans-12-14"
-                className="gppp-text-red-40 gppp-font-semibold gppp-text-center"
+                className="text-red-40 font-semibold text-center"
               >
                 Incorrect token
               </Text>
             )}
           </label>
-          <ul className="gppp--ml-4 gppp--mt-4 gppp-flex gppp-flex-wrap gppp-justify-center gppp-pointer-events-none">
-            <li className="gppp-pl-4 gppp-pt-4 gppp-pointer-events-auto">
+          <ul className="-ml-4 -mt-4 flex flex-wrap justify-center pointer-events-none">
+            <li className="pl-4 pt-4 pointer-events-auto">
               <Button variant="white" type="button" onClick={onDismiss}>
-                <Text variant="sans-14" className="gppp-font-semibold">
+                <Text variant="sans-14" className="font-semibold">
                   Cancel
                 </Text>
               </Button>
             </li>
-            <li className="gppp-pl-4 gppp-pt-4 gppp-pointer-events-auto">
+            <li className="pl-4 pt-4 pointer-events-auto">
               <Button variant="purple" type="submit">
-                <Text variant="sans-14" className="gppp-font-semibold">
+                <Text variant="sans-14" className="font-semibold">
                   Continue
                 </Text>
               </Button>
@@ -118,13 +118,13 @@ export const ModalAccessToken = ({
           </ul>
         </form>
 
-        <Text variant="sans-12" className="gppp-text-center">
-          Not sure what your access token is? <br className="sm:gppp-hidden" />
+        <Text variant="sans-12" className="text-center">
+          Not sure what your access token is? <br className="sm:hidden" />
           <a
             href={PRISMIC_DOCS_GENERATING_AN_ACCESS_TOKEN}
             target="_blank"
             rel="noopener noreferrer nofollow"
-            className="gppp-text-purple-50 focus:gppp-text-purple-40 hover:gppp-text-purple-40 gppp-transition"
+            className="text-purple-50 focus:text-purple-40 hover:text-purple-40 transition"
           >
             Learn about generating one here.
           </a>

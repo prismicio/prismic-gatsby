@@ -9,7 +9,7 @@ type RootProps = {
 
 export const Root = ({ children }: RootProps): JSX.Element => (
   <root.div>
-    <div className="gppp-root">{children}</div>
+    <div className="root">{children}</div>
     <style type="text/css">{styles}</style>
   </root.div>
 )

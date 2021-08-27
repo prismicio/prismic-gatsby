@@ -21,21 +21,21 @@ export const ModalLoading = ({
       isOpen={isOpen}
       aria-label={`Prismic preview loading for ${repositoryName}`}
     >
-      <div className="gppp-grid gppp-gap-6 sm:gppp-gap-7 gppp-justify-items-center">
-        <div className="gppp-grid gppp-gap-5">
+      <div className="grid gap-6 sm:gap-7 justify-items-center">
+        <div className="grid gap-5">
           <Text
             variant="sans-24"
-            className="gppp-text-slate-10 gppp-text-center gppp-font-semibold"
+            className="text-slate-10 text-center font-semibold"
           >
             Fetching preview
           </Text>
-          <Text variant="sans-12-14" className="gppp-text-center">
+          <Text variant="sans-12-14" className="text-center">
             Please wait while your updates are loading&hellip;
           </Text>
         </div>
 
         <Button variant="white" onClick={onDismiss} className="mx-auto">
-          <Text variant="sans-14" className="gppp-font-medium">
+          <Text variant="sans-14" className="font-medium">
             Cancel Preview
           </Text>
         </Button>

@@ -3,9 +3,7 @@ const tailwindCapsize = require('@themosaad/tailwindcss-capsize')
 module.exports = {
   mode: 'jit',
   purge: ['./src/**/*.{ts,tsx}'],
-  prefix: 'gppp-',
   darkMode: false,
-  important: true,
   theme: {
     colors: {
       black: '#000',

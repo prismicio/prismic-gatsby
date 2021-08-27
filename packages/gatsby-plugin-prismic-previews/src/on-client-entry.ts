@@ -78,7 +78,7 @@ export const checkStyles = (
               parseInt(
                 window
                   .getComputedStyle(document.body)
-                  .getPropertyValue(`--gppp-${stylesheetName}`),
+                  .getPropertyValue(`--${stylesheetName}`),
               ) !== 1,
             () => new Error('Styles are correctly setup'),
           ),

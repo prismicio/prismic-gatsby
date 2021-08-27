@@ -24,7 +24,7 @@ export const Purple = (): JSX.Element => (
 
 export const WhiteOutline = (): JSX.Element => (
   <Root>
-    <div className="gppp-bg-red-40 gppp-p-6">
+    <div className="bg-red-40 p-6">
       <Button variant="whiteOutline">{content}</Button>
     </div>
   </Root>

@@ -64,38 +64,38 @@ export const Modal = ({
   return (
     <Dialog isOpen={isOpen} onDismiss={onDismiss} aria-label={ariaLabel}>
       <Root>
-        <div className="gppp-z-max gppp-bg-black gppp-bg-opacity-60 gppp-fixed gppp-inset-0 gppp-overflow-auto">
-          <div className="gppp-root gppp-w-full gppp-max-w-34rem gppp-mx-auto gppp-mt-20vh gppp-px-4">
+        <div className="z-max bg-black bg-opacity-60 fixed inset-0 overflow-auto">
+          <div className="w-full max-w-34rem mx-auto mt-20vh px-4">
             <div
               className={clsx(
-                'gppp-rounded-lg gppp-shadow-lg gppp-px-7 gppp-py-8 gppp-relative sm:gppp-px-10',
-                variant === 'base' && 'gppp-bg-white gppp-text-slate-30',
-                variant === 'red' && 'gppp-bg-red-40 gppp-text-white',
+                'rounded-lg shadow-lg px-7 py-8 relative sm:px-10',
+                variant === 'base' && 'bg-white text-slate-30',
+                variant === 'red' && 'bg-red-40 text-white',
               )}
               data-gatsby-plugin-prismic-previews-repository-name={
                 repositoryName
               }
             >
-              <div className="gppp-grid gppp-gap-7">
+              <div className="grid gap-7">
                 <PrismicLogo
                   fillWhite={variant === 'red'}
-                  className="gppp-block gppp-mx-auto gppp-w-11 gppp-h-11"
+                  className="block mx-auto w-11 h-11"
                 />
                 <div>{children}</div>
               </div>
 
               <button
                 className={clsx(
-                  'gppp-absolute gppp-top-5 gppp-right-5 gppp-transition  sm:gppp-top-6 sm:gppp-right-6 gppp-p-2 gppp--m-2',
+                  'absolute top-5 right-5 transition  sm:top-6 sm:right-6 p-2 -m-2',
                   variant === 'base' &&
-                    'gppp-text-slate-90 hover:gppp-text-slate-60 focus:gppp-text-slate-60',
+                    'text-slate-90 hover:text-slate-60 focus:text-slate-60',
                   variant === 'red' &&
-                    'gppp-text-red-80 hover:gppp-text-white focus:gppp-text-white',
+                    'text-red-80 hover:text-white focus:text-white',
                 )}
                 onClick={onDismiss}
               >
-                <span className="gppp-sr-only">Close modal</span>
-                <CloseSVG className="gppp-w-5 gppp-h-5" />
+                <span className="sr-only">Close modal</span>
+                <CloseSVG className="w-5 h-5" />
               </button>
             </div>
           </div>
