@@ -3,13 +3,13 @@ import * as prismicH from '@prismicio/helpers'
 import * as imgixGatsby from '@imgix/gatsby'
 import * as nodeHelpers from 'gatsby-node-helpers'
 
-import { TypePath } from '../types'
+import { SerializedTypePath } from '../types'
 
 import * as normalizers from './normalizers'
 
 export interface NormalizerDependencies {
   getNode(id: string): normalizers.NormalizedDocumentValue | undefined
-  getTypePath(path: string[]): TypePath | undefined
+  getTypePath(path: string[]): SerializedTypePath | undefined
   nodeHelpers: nodeHelpers.NodeHelpers
   transformFieldName: <K extends string>(key: K) => string
   linkResolver?: prismicH.LinkResolverFunction

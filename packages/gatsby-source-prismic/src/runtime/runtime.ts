@@ -2,9 +2,10 @@ import * as prismicT from '@prismicio/types'
 import * as prismicH from '@prismicio/helpers'
 import * as imgixGatsby from '@imgix/gatsby'
 import * as nodeHelpers from 'gatsby-node-helpers'
+import { pipe } from 'fp-ts/function'
 import md5 from 'tiny-hashes/md5'
 
-import { TransformFieldNameFn, TypePath } from '../types'
+import { SerializedTypePath, TransformFieldNameFn, TypePath } from '../types'
 import { normalize } from './normalize'
 import {
   DEFAULT_IMGIX_PARAMS,
@@ -18,6 +19,8 @@ import {
   sharedSliceModelToTypePaths,
 } from './typePaths'
 import { NormalizedDocumentValue } from './normalizers'
+import { serializeTypePaths } from './serializeTypePaths'
+import { serializePath } from './serializePath'
 
 const createNodeId = (input: string): string => md5(input)
 const createContentDigest = <T>(input: T): string => md5(JSON.stringify(input))
@@ -39,7 +42,7 @@ export const createRuntime = (config: RuntimeConfig = {}): Runtime => {
 
 export class Runtime {
   nodes: NormalizedDocumentValue[]
-  typePaths: TypePath[]
+  typePaths: SerializedTypePath[]
   subscribers: SubscriberFn[]
 
   config: SetRequired<
@@ -84,22 +87,12 @@ export class Runtime {
     )
   }
 
-  registerCustomTypeModel(model: prismicT.CustomTypeModel): TypePath[] {
-    const typePaths = customTypeModelToTypePaths(
-      model,
-      this.config.transformFieldName,
-    )
-
-    this.typePaths = [...this.typePaths, ...typePaths]
-
-    this.#notifySubscribers()
-
-    return typePaths
-  }
-
-  registerCustomTypeModels(models: prismicT.CustomTypeModel[]): TypePath[] {
-    const typePaths = models.flatMap((model) =>
+  registerCustomTypeModel(
+    model: prismicT.CustomTypeModel,
+  ): SerializedTypePath[] {
+    const typePaths = pipe(
       customTypeModelToTypePaths(model, this.config.transformFieldName),
+      serializeTypePaths,
     )
 
     this.typePaths = [...this.typePaths, ...typePaths]
@@ -109,10 +102,14 @@ export class Runtime {
     return typePaths
   }
 
-  registerSharedSliceModel(model: prismicT.SharedSliceModel): TypePath[] {
-    const typePaths = sharedSliceModelToTypePaths(
-      model,
-      this.config.transformFieldName,
+  registerCustomTypeModels(
+    models: prismicT.CustomTypeModel[],
+  ): SerializedTypePath[] {
+    const typePaths = pipe(
+      models.flatMap((model) =>
+        customTypeModelToTypePaths(model, this.config.transformFieldName),
+      ),
+      serializeTypePaths,
     )
 
     this.typePaths = [...this.typePaths, ...typePaths]
@@ -122,9 +119,12 @@ export class Runtime {
     return typePaths
   }
 
-  registerSharedSliceModels(models: prismicT.SharedSliceModel[]): TypePath[] {
-    const typePaths = models.flatMap((model) =>
+  registerSharedSliceModel(
+    model: prismicT.SharedSliceModel,
+  ): SerializedTypePath[] {
+    const typePaths = pipe(
       sharedSliceModelToTypePaths(model, this.config.transformFieldName),
+      serializeTypePaths,
     )
 
     this.typePaths = [...this.typePaths, ...typePaths]
@@ -134,10 +134,21 @@ export class Runtime {
     return typePaths
   }
 
-  registerTypePaths(typePaths: TypePath[]): void {
+  registerSharedSliceModels(
+    models: prismicT.SharedSliceModel[],
+  ): SerializedTypePath[] {
+    const typePaths = pipe(
+      models.flatMap((model) =>
+        sharedSliceModelToTypePaths(model, this.config.transformFieldName),
+      ),
+      serializeTypePaths,
+    )
+
     this.typePaths = [...this.typePaths, ...typePaths]
 
     this.#notifySubscribers()
+
+    return typePaths
   }
 
   registerDocument<PrismicDocument extends prismicT.PrismicDocument>(
@@ -202,11 +213,24 @@ export class Runtime {
     return this.nodes.some((node) => node.prismicId === id)
   }
 
-  getTypePath(path: string[]): TypePath | undefined {
+  getTypePath(path: string[]): SerializedTypePath | undefined {
     return this.typePaths.find(
-      (typePath) =>
-        typePath.path.join('__SEPARATOR__') === path.join('__SEPARATOR__'),
+      (typePath) => typePath.path === serializePath(path),
     )
+  }
+
+  exportTypePaths(): string {
+    return JSON.stringify(this.typePaths)
+  }
+
+  importTypePaths(typePathsExport: string): TypePath[] {
+    const importedTypePaths = JSON.parse(typePathsExport)
+
+    this.typePaths = [...this.typePaths, ...importedTypePaths]
+
+    this.#notifySubscribers()
+
+    return importedTypePaths
   }
 
   #notifySubscribers(): void {

@@ -157,7 +157,7 @@ export const usePrismicPreviewBootstrap = (
     }
 
     contextDispatch({
-      type: PrismicContextActionType.RegisterTypePaths,
+      type: PrismicContextActionType.ImportTypePaths,
       payload: {
         repositoryName: repositoryName.value,
         typePaths: typePaths.right,

@@ -45,6 +45,10 @@ export interface TypePath {
   type: PrismicTypePathType
 }
 
+export interface SerializedTypePath extends Omit<TypePath, 'path'> {
+  path: string
+}
+
 export type TypePathNode = TypePath & gatsby.Node
 
 export type TransformFieldNameFn = (fieldName: string) => string

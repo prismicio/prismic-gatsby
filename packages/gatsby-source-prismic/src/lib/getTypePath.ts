@@ -2,6 +2,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
 import { Dependencies, TypePathKind, TypePathNode } from '../types'
+import { serializePath } from '../runtime/serializePath'
 
 import { dotPath } from './dotPath'
 
@@ -21,10 +22,7 @@ export const getTypePath = (
     RTE.ask<Dependencies>(),
     RTE.bind('nodeId', (scope) =>
       RTE.right(
-        scope.nodeHelpers.createNodeId([
-          'TypePathType',
-          [kind, ...path].toString(),
-        ]),
+        scope.nodeHelpers.createNodeId(['TypePathType', serializePath(path)]),
       ),
     ),
     RTE.chain((scope) =>

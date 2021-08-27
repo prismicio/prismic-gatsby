@@ -61,7 +61,7 @@ export enum PrismicContextActionType {
 
   SetupRuntime = 'SetupRuntime',
   RegisterDocuments = 'RegisterDocuments',
-  RegisterTypePaths = 'RegisterTypePaths',
+  ImportTypePaths = 'ImportTypePaths',
 
   StartResolving = 'StartResolving',
   Resolved = 'Resolved',
@@ -94,8 +94,8 @@ export type PrismicContextAction =
       payload: { repositoryName: string; documents: prismicT.PrismicDocument[] }
     }
   | {
-      type: PrismicContextActionType.RegisterTypePaths
-      payload: { repositoryName: string; typePaths: gatsbyPrismic.TypePath[] }
+      type: PrismicContextActionType.ImportTypePaths
+      payload: { repositoryName: string; typePathsExport: string }
     }
   | {
       type: PrismicContextActionType.StartResolving
@@ -166,11 +166,11 @@ export const contextReducer = (
       return state
     }
 
-    case PrismicContextActionType.RegisterTypePaths: {
+    case PrismicContextActionType.ImportTypePaths: {
       const runtime = state.runtimeStore[action.payload.repositoryName]
 
       if (runtime) {
-        runtime.registerTypePaths(action.payload.typePaths)
+        runtime.importTypePaths(action.payload.typePathsExport)
       } else {
         throw new Error(
           `A runtime for repository "${action.payload.repositoryName}" as not found`,

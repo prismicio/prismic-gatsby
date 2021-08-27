@@ -3,7 +3,7 @@ import { constVoid, pipe } from 'fp-ts/function'
 
 import { createNodeOfType } from './createNodeOfType'
 
-import { Dependencies, PrismicTypePathType, TypePathKind } from '../types'
+import { Dependencies, SerializedTypePath } from '../types'
 
 /**
  * Creates a type path using the environment's `createTypePath` function.
@@ -12,12 +12,15 @@ import { Dependencies, PrismicTypePathType, TypePathKind } from '../types'
  * @param type Type of the field.
  */
 export const createTypePath = (
-  kind: TypePathKind,
-  path: string[],
-  type: PrismicTypePathType,
+  serializedTypePath: SerializedTypePath,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
   pipe(
-    RTE.right({ id: [kind, ...path].toString(), kind, path, type }),
+    RTE.right({
+      id: serializedTypePath.path,
+      kind: serializedTypePath.kind,
+      path: serializedTypePath.path,
+      type: serializedTypePath.type,
+    }),
     RTE.chain((node) => createNodeOfType(node, 'TypePathType')),
     RTE.map(constVoid),
   )
