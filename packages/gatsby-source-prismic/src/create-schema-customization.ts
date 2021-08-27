@@ -35,40 +35,37 @@ const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>()
  * repository-specific), while others are repository-specific, depending on
  * the type's use of custom plugin options.
  */
-export const createBaseTypes: RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  void
-> = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.bind('baseTypes', () =>
-    pipe(
-      [
-        buildAlternateLanguageType,
-        buildEmbedType,
-        buildGeoPointType,
-        buildImageDimensionsType,
-        buildImageThumbnailType,
-        buildLinkType,
-        buildLinkTypeEnumType,
-        buildSliceInterface,
-        buildSharedSliceInterface,
-        buildStructuredTextType,
-        buildTypePathType,
-      ],
-      RTE.sequenceArray,
+export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
+  pipe(
+    RTE.ask<Dependencies>(),
+    RTE.bind('baseTypes', () =>
+      pipe(
+        [
+          buildAlternateLanguageType,
+          buildEmbedType,
+          buildGeoPointType,
+          buildImageDimensionsType,
+          buildImageThumbnailType,
+          buildLinkType,
+          buildLinkTypeEnumType,
+          buildSliceInterface,
+          buildSharedSliceInterface,
+          buildStructuredTextType,
+          buildTypePathType,
+        ],
+        RTE.sequenceArray,
+      ),
     ),
-  ),
-  RTE.bind('imgixTypes', () => buildImgixImageTypes),
-  RTE.map((scope) =>
-    GatsbyGraphQLTypeM.concat(
-      scope.baseTypes as Mutable<typeof scope.baseTypes>,
-      scope.imgixTypes,
+    RTE.bind('imgixTypes', () => buildImgixImageTypes),
+    RTE.map((scope) =>
+      GatsbyGraphQLTypeM.concat(
+        scope.baseTypes as Mutable<typeof scope.baseTypes>,
+        scope.imgixTypes,
+      ),
     ),
-  ),
-  RTE.chain(createTypes),
-  RTE.map(constVoid),
-)
+    RTE.chain(createTypes),
+    RTE.map(constVoid),
+  )
 
 /**
  * Create types for all Custom Types using the JSON models provided at
@@ -118,13 +115,7 @@ const createTypePaths: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
   ),
   RTE.bind('typePaths', (scope) => RTE.right(scope.runtime.typePaths)),
   RTE.chainFirstW((scope) =>
-    pipe(
-      scope.typePaths,
-      A.map((typePath) =>
-        createTypePath(typePath.kind, typePath.path, typePath.type),
-      ),
-      RTE.sequenceArray,
-    ),
+    pipe(scope.typePaths, A.map(createTypePath), RTE.sequenceArray),
   ),
   RTE.map(constVoid),
 )
