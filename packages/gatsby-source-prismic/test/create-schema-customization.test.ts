@@ -1,12 +1,12 @@
 import test from 'ava'
 import * as sinon from 'sinon'
-import * as prismicT from '@prismicio/types'
-import * as prismicCustomTypes from '@prismicio/custom-types-client'
+import * as prismicM from '@prismicio/mock'
 
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { createMockCustomTypeModelWithFields } from './__testutils__/createMockCustomTypeModelWithFields'
+import { createMockKitchenSinkCustomTypeModel } from './__testutils__/createMockKitchenSinkCustomTypeModel'
+import { createMockKitchenSinkSharedSliceModel } from './__testutils__/createMockKitchenSinkSharedSliceModel'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import kitchenSinkSchema from './__fixtures__/kitchenSinkSchema.json'
-import kitchenSinkSharedSliceSchema from './__fixtures__/kitchenSinkSharedSliceSchema.json'
 
 import { createSchemaCustomization } from '../src/gatsby-node'
 
@@ -14,27 +14,19 @@ test('creates type path nodes', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.customTypeModels = [
-    kitchenSinkSchema as prismicCustomTypes.CustomType,
-  ]
-  pluginOptions.sharedSliceModels = [
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    kitchenSinkSharedSliceSchema as prismicT.SharedSliceModel<any>,
-  ]
+  pluginOptions.customTypeModels = [createMockKitchenSinkCustomTypeModel(t)]
+  pluginOptions.sharedSliceModels = [createMockKitchenSinkSharedSliceModel(t)]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
   const calls = (gatsbyContext.actions.createNode as sinon.SinonStub)
     .getCalls()
-    .filter(
-      (call) => call.firstArg.internal.type === 'PrismicPrefixTypePathType',
-    )
-    .reduce((acc: Record<string, string>, call) => {
-      acc[call.firstArg.path.join('.')] = call.firstArg.type
-
-      return acc
-    }, {})
+    .map((call) => ({
+      kind: call.firstArg.kind,
+      type: call.firstArg.type,
+      path: call.firstArg.path,
+    }))
 
   t.snapshot(calls)
 })
@@ -43,45 +35,47 @@ test('field names with dashes are transformed with underscores by default', asyn
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  const dashifiedKitchenSinkSchemaJSON = Object.keys(
-    kitchenSinkSchema.json,
-  ).reduce((acc: prismicT.CustomTypeModel, tabName) => {
-    const tab =
-      kitchenSinkSchema.json[tabName as keyof typeof kitchenSinkSchema.json]
-
-    acc[tabName] = Object.keys(tab).reduce(
-      (tabAcc: prismicT.CustomTypeModelTab, fieldName) => {
-        tabAcc[fieldName.replace(/_/g, '-')] =
-          tab[fieldName as keyof typeof tab]
-
-        return tabAcc
+  const model = createMockCustomTypeModelWithFields(t, {
+    'dash-group': {
+      ...prismicM.model.group({ seed: t.title }),
+      config: {
+        label: 'Group',
+        fields: {
+          'dash-boolean': prismicM.model.boolean({ seed: t.title }),
+        },
       },
-      {},
-    )
+    },
+    'dash-sliceZone': {
+      ...prismicM.model.sliceZone({ seed: t.title }),
+      config: {
+        labels: {},
+        choices: {
+          'dash-slice': {
+            ...prismicM.model.slice({ seed: t.title }),
+            'non-repeat': {
+              'dash-boolean': prismicM.model.boolean({ seed: t.title }),
+            },
+            repeat: {
+              'dash-boolean': prismicM.model.boolean({ seed: t.title }),
+            },
+          },
+        },
+      },
+    },
+  })
 
-    return acc
-  }, {})
-
-  pluginOptions.customTypeModels = [
-    {
-      ...kitchenSinkSchema,
-      json: dashifiedKitchenSinkSchemaJSON,
-    } as prismicCustomTypes.CustomType,
-  ]
+  pluginOptions.customTypeModels = [model]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
   const calls = (gatsbyContext.actions.createNode as sinon.SinonStub)
     .getCalls()
-    .filter(
-      (call) => call.firstArg.internal.type === 'PrismicPrefixTypePathType',
-    )
-    .reduce((acc: Record<string, string>, call) => {
-      acc[call.firstArg.path.join('.')] = call.firstArg.type
-
-      return acc
-    }, {})
+    .map((call) => ({
+      kind: call.firstArg.kind,
+      type: call.firstArg.type,
+      path: call.firstArg.path,
+    }))
 
   t.snapshot(calls)
 })

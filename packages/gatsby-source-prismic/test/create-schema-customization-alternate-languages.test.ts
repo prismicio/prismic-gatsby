@@ -1,5 +1,6 @@
 import test from 'ava'
 import * as sinon from 'sinon'
+import * as prismicM from '@prismicio/mock'
 
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
@@ -46,18 +47,18 @@ test('document field resolves to linked node ID', async (t) => {
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
 
+  const alternativeLanguageDocument = prismicM.value.document({ seed: t.title })
+  const document = prismicM.value.document({
+    seed: t.title,
+    alternateLanguages: [alternativeLanguageDocument],
+  })
+
   const call = findCreateTypesCall(
     'PrismicPrefixAlternateLanguageType',
     gatsbyContext.actions.createTypes as sinon.SinonStub,
   )
-  const field = {
-    type: 'foo',
-    id: 'id',
-    uid: 'uid',
-    lang: 'lang',
-  }
   const resolver = call.config.fields.document.resolve
-  const res = await resolver(field)
+  const res = await resolver(document.alternate_languages[0])
 
-  t.true(res === `Prismic prefix ${field.id}`)
+  t.true(res === `Prismic prefix ${document.alternate_languages[0].id}`)
 })

@@ -1,7 +1,7 @@
 import test from 'ava'
 import * as msw from 'msw'
 import * as mswn from 'msw/node'
-import * as prismic from '@prismicio/client'
+import * as prismicM from '@prismicio/mock'
 import {
   testPluginOptionsSchema,
   Joi,
@@ -9,13 +9,10 @@ import {
 } from 'gatsby-plugin-utils'
 import fetch from 'node-fetch'
 
-import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
-import kitchenSinkSharedSliceSchemaFixture from './__fixtures__/kitchenSinkSharedSliceSchema.json'
-import { createCustomTypesAPICustomType } from './__testutils__/createCustomTypesAPICustomType'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createCustomTypesAPIMockedRequest } from './__testutils__/createCustomTypesAPIMockedRequest'
-import { createCustomTypesAPISharedSlice } from './__testutils__/createCustomTypesAPISharedSlice'
 import { createCustomTypesAPISharedSlicesMockedRequest } from './__testutils__/createCustomTypesAPISharedSlicesMockedRequest'
-import { isValidAccessToken } from './__testutils__/isValidAccessToken'
+import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { resolveURL } from './__testutils__/resolveURL'
 
 import { PluginOptions } from '../src'
@@ -27,7 +24,10 @@ test.afterEach(() => server.resetHandlers())
 test.after(() => server.close())
 
 test.serial('passes on valid options', async (t) => {
-  const pluginOptions = {
+  const customTypeModel = prismicM.model.customType({ seed: t.title })
+  const sharedSliceModel = prismicM.model.sharedSlice({ seed: t.title })
+
+  const pluginOptions: PluginOptions = {
     repositoryName: 'string',
     accessToken: 'string',
     customTypesApiToken: 'string',
@@ -36,43 +36,43 @@ test.serial('passes on valid options', async (t) => {
     releaseID: 'string',
     graphQuery: 'string',
     lang: 'string',
-    linkResolver: (): void => void 0,
-    htmlSerializer: (): void => void 0,
-    customTypeModels: [kitchenSinkSchemaFixture],
-    sharedSliceModels: [kitchenSinkSharedSliceSchemaFixture],
+    linkResolver: (): string => '',
+    htmlSerializer: {},
+    customTypeModels: [customTypeModel],
+    sharedSliceModels: [sharedSliceModel],
     imageImgixParams: { q: 100 },
     imagePlaceholderImgixParams: { q: 100 },
     typePrefix: 'string',
     webhookSecret: 'string',
+    // @ts-expect-error - noop purposely given for test
     createRemoteFileNode: (): void => void 0,
-    transformFieldName: (): void => void 0,
+    transformFieldName: (x: string): string => x,
     fetch,
   }
 
+  const repositoryResponse = prismicM.api.repository({
+    seed: t.title,
+    customTypeModels: [customTypeModel],
+  })
+
   server.use(
-    msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
-      if (isValidAccessToken(pluginOptions.accessToken, req)) {
-        return res(
-          ctx.json({
-            types: { kitchen_sink: 'Kitchen Sink' },
-            refs: [{ ref: 'master', isMasterRef: true }],
-          }),
-        )
-      } else {
-        return res(ctx.status(403))
-      }
+    createAPIRepositoryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
     }),
   )
 
   server.use(
-    msw.rest.get(pluginOptions.customTypesApiEndpoint, (_req, res, ctx) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    msw.rest.get(pluginOptions.customTypesApiEndpoint!, (_req, res, ctx) => {
       return res(ctx.json([]))
     }),
   )
 
   server.use(
     msw.rest.get(
-      resolveURL(pluginOptions.customTypesApiEndpoint, '/slices'),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      resolveURL(pluginOptions.customTypesApiEndpoint!, '/slices'),
       (_req, res, ctx) => {
         return res(ctx.json([]))
       },
@@ -130,7 +130,7 @@ test.serial('fails on invalid options', async (t) => {
     '"graphQuery" must be a string',
     '"lang" must be a string',
     '"linkResolver" must be of type function',
-    '"htmlSerializer" must be of type function',
+    '"htmlSerializer" must be one of [object]',
     '"schemas" must be of type object',
     '"customTypeModels" must be an array',
     '"sharedSliceModels" must be an array',
@@ -167,7 +167,7 @@ test.serial('fails on invalid customTypesApiToken', async (t) => {
 test.serial('allows only one of qraphQuery or fetchLinks', async (t) => {
   const pluginOptions = {
     repositoryName: 'qwerty',
-    schemas: { page: kitchenSinkSchemaFixture },
+    customTypeModels: [prismicM.model.customType({ seed: t.title })],
     graphQuery: 'string',
     fetchLinks: ['string'],
   }
@@ -180,147 +180,165 @@ test.serial('allows only one of qraphQuery or fetchLinks', async (t) => {
 })
 
 test.serial('checks that all schemas are provided', async (t) => {
-  const pluginOptions = {
-    repositoryName: 'qwerty',
-    customTypesApiEndpoint: 'https://example.com',
-    schemas: { page: kitchenSinkSchemaFixture },
-  }
-  const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
+  const pluginOptions = createPluginOptions(t)
+  pluginOptions.customTypeModels = []
+  pluginOptions.customTypesApiToken = undefined
+
+  const { plugins, ...pluginOptionsWithoutPlugins } = pluginOptions
+
+  // This line is to ignore tsserver's unused variable wraning.
+  plugins
+
+  const customTypeModel = prismicM.model.customType({ seed: t.title })
+  const repositoryResponse = prismicM.api.repository({
+    seed: t.title,
+    customTypeModels: [customTypeModel],
+  })
 
   server.use(
-    msw.rest.get(apiEndpoint, (_req, res, ctx) =>
-      res(
-        ctx.json({
-          types: { page: 'Page', blogPost: 'Blog Post' },
-        }),
-      ),
-    ),
+    createAPIRepositoryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+    }),
   )
 
-  server.use(createCustomTypesAPIMockedRequest(pluginOptions, []))
-
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+  const res = await testPluginOptionsSchema(
+    pluginOptionsSchema,
+    pluginOptionsWithoutPlugins,
+  )
 
   t.false(res.isValid)
   t.true(res.errors.length === 1)
-  t.true(/blogPost/.test(res.errors[0]))
+  t.true(new RegExp(customTypeModel.id).test(res.errors[0]))
 })
 
 test.serial(
   'populates customTypeModels if customTypesApiToken is provided',
   async (t) => {
-    const pluginOptions = {
-      repositoryName: 'qwerty',
-      customTypesApiToken: 'customTypesApiToken',
-      customTypesApiEndpoint: 'https://example.com',
-    }
-    const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
+    const pluginOptions = createPluginOptions(t)
+    const { plugins, ...pluginOptionsWithoutPlugins } = pluginOptions
 
-    const customType1 = createCustomTypesAPICustomType()
-    const customType2 = createCustomTypesAPICustomType()
-    const customTypesResponse = [customType1, customType2]
+    // This line is to ignore tsserver's unused variable wraning.
+    plugins
 
-    const sharedSlice1 = createCustomTypesAPISharedSlice()
-    const sharedSlice2 = createCustomTypesAPISharedSlice()
-    const sharedSlicesResponse = [sharedSlice1, sharedSlice2]
+    const customType1 = prismicM.model.customType({ seed: t.title })
+    const customType2 = prismicM.model.customType({ seed: t.title })
+    const customTypeModels = [customType1, customType2]
 
-    server.use(
-      msw.rest.get(apiEndpoint, (_req, res, ctx) =>
-        res(
-          ctx.json({
-            types: {
-              [customType1.id]: customType1.label,
-              [customType2.id]: customType2.label,
-            },
-          }),
-        ),
-      ),
-    )
+    const sharedSlice1 = prismicM.model.sharedSlice({ seed: t.title })
+    const sharedSlice2 = prismicM.model.sharedSlice({ seed: t.title })
+    const sharedSliceModels = [sharedSlice1, sharedSlice2]
+
+    const repositoryResponse = prismicM.api.repository({
+      seed: t.title,
+      customTypeModels,
+    })
 
     server.use(
-      createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
+      createAPIRepositoryMockedRequest({
+        pluginOptions,
+        repositoryResponse,
+      }),
+      createCustomTypesAPIMockedRequest(pluginOptions, customTypeModels),
       createCustomTypesAPISharedSlicesMockedRequest(
         pluginOptions,
-        sharedSlicesResponse,
+        sharedSliceModels,
       ),
     )
 
     const schema = pluginOptionsSchema({ Joi })
     const res = (await validateOptionsSchema(
       schema,
-      pluginOptions,
+      pluginOptionsWithoutPlugins,
     )) as PluginOptions
 
-    t.deepEqual(res.customTypeModels, customTypesResponse)
+    // We need to stringify since `customTypeModels` may contain `undefined`.
+    // `undefined` is not valid JSON and is not sent through msw.
+    t.deepEqual(
+      res.customTypeModels,
+      JSON.parse(JSON.stringify(customTypeModels)),
+    )
   },
 )
 
 test.serial(
   'merges schemas if customTypesApiToken and schemas are provided',
   async (t) => {
-    const customTypeNotInAPI = createCustomTypesAPICustomType()
-    const customTypeInAPI1 = createCustomTypesAPICustomType()
-    const customTypeInAPI2 = createCustomTypesAPICustomType()
-    const customTypesResponse = [customTypeInAPI1, customTypeInAPI2]
+    const pluginOptions = createPluginOptions(t)
 
-    const sharedSliceInAPI1 = createCustomTypesAPISharedSlice()
-    const sharedSliceInAPI2 = createCustomTypesAPISharedSlice()
-    const sharedSlicesResponse = [sharedSliceInAPI1, sharedSliceInAPI2]
+    const customTypeNotInAPI = prismicM.model.customType({ seed: t.title })
+    const customType1 = prismicM.model.customType({ seed: t.title })
+    const customType2 = prismicM.model.customType({ seed: t.title })
+    const customTypeModels = [customType1, customType2]
 
-    const pluginOptions = {
-      repositoryName: 'qwerty',
-      customTypesApiToken: 'customTypesApiToken',
-      customTypesApiEndpoint: 'https://example.com',
-      customTypeModels: [
-        customTypeNotInAPI,
+    const sharedSliceNotInAPI = prismicM.model.sharedSlice({ seed: t.title })
+    const sharedSlice1 = prismicM.model.sharedSlice({ seed: t.title })
+    const sharedSlice2 = prismicM.model.sharedSlice({ seed: t.title })
+    const sharedSliceModels = [sharedSlice1, sharedSlice2]
 
-        // Note that we are going to replace customTypeInAPI2 with
-        // customTypeNotInAPI, in which customTypeInAPI2 is part of the API
-        // response. The test at the end checks for this.
-        { ...customTypeNotInAPI, id: customTypeInAPI2.id },
-      ],
-    }
-    const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
+    pluginOptions.customTypeModels = [
+      customTypeNotInAPI,
+      {
+        ...customTypeNotInAPI,
+        id: customType1.id,
+      },
+    ]
 
-    server.use(
-      msw.rest.get(apiEndpoint, (_req, res, ctx) =>
-        res(
-          ctx.json({
-            types: {
-              [customTypesResponse[0].id]: customTypesResponse[0].label,
-              [customTypesResponse[1].id]: customTypesResponse[1].label,
-            },
-          }),
-        ),
-      ),
-    )
+    pluginOptions.sharedSliceModels = [
+      sharedSliceNotInAPI,
+      {
+        ...sharedSliceNotInAPI,
+        id: sharedSlice1.id,
+      },
+    ]
+
+    const repositoryResponse = prismicM.api.repository({
+      seed: t.title,
+      customTypeModels,
+    })
 
     server.use(
-      createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
+      createAPIRepositoryMockedRequest({
+        pluginOptions,
+        repositoryResponse,
+      }),
+      createCustomTypesAPIMockedRequest(pluginOptions, customTypeModels),
       createCustomTypesAPISharedSlicesMockedRequest(
         pluginOptions,
-        sharedSlicesResponse,
+        sharedSliceModels,
       ),
     )
+
+    const { plugins, ...pluginOptionsWithoutPlugins } = pluginOptions
+
+    // This line is to ignore tsserver's unused variable wraning.
+    plugins
 
     const schema = pluginOptionsSchema({ Joi })
     const res = (await validateOptionsSchema(
       schema,
-      pluginOptions,
+      pluginOptionsWithoutPlugins,
     )) as PluginOptions
 
     // TODO: Properly allow overriding types by checking IDs. Prefer models passed via options.
-    t.deepEqual(res.customTypeModels, [
-      // These custom types were not provided in the plugin options, but is
-      // provided by the API.
-      customTypeInAPI1,
-      customTypeInAPI2,
+    // We need to stringify since `customTypeModels` may contain `undefined`.
+    // `undefined` is not valid JSON and is not sent through msw.
+    t.deepEqual(
+      res.customTypeModels,
+      JSON.parse(
+        JSON.stringify([
+          // These custom types were not provided in the plugin options, but is
+          // provided by the API.
+          customType1,
+          customType2,
 
-      // We are testing that a schema provided by the API can be overridden by
-      // one provided in plugin options.
-      customTypeNotInAPI,
+          // We are testing that a schema provided by the API can be overridden by
+          // one provided in plugin options.
+          customTypeNotInAPI,
 
-      { ...customTypeNotInAPI, id: customTypeInAPI2.id },
-    ])
+          { ...customTypeNotInAPI, id: customType1.id },
+        ]),
+      ),
+    )
   },
 )

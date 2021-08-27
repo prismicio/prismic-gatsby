@@ -1,5 +1,5 @@
 import * as msw from 'msw'
-import * as prismicCustomTypes from '@prismicio/custom-types-client'
+import * as prismicT from '@prismicio/types'
 
 import { PluginOptions } from '../../src'
 
@@ -8,7 +8,7 @@ export const createCustomTypesAPIMockedRequest = (
     PluginOptions,
     'repositoryName' | 'customTypesApiToken' | 'customTypesApiEndpoint'
   >,
-  response: prismicCustomTypes.CustomType[],
+  response: prismicT.CustomTypeModel[],
 ): msw.RestHandler =>
   msw.rest.get(
     pluginOptions.customTypesApiEndpoint ||

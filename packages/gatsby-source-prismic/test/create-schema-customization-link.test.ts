@@ -1,5 +1,7 @@
 import test from 'ava'
 import * as sinon from 'sinon'
+import * as prismicM from '@prismicio/mock'
+import * as prismicT from '@prismicio/types'
 
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
@@ -74,12 +76,10 @@ test('document field resolves to linked node ID if link type is Document and doc
     'PrismicPrefixLinkType',
     gatsbyContext.actions.createTypes as sinon.SinonStub,
   )
-  const field = {
-    link_type: 'Document',
-    type: 'foo',
-    id: 'id',
-    isBroken: false,
-  }
+  const field = prismicM.value.link({
+    seed: t.title,
+    type: prismicT.LinkType.Document,
+  })
   const resolver = call.config.fields.document.resolve
   const res = await resolver(field)
 
@@ -97,12 +97,11 @@ test('document field resolves to null if link type is Document and isBroken is t
     'PrismicPrefixLinkType',
     gatsbyContext.actions.createTypes as sinon.SinonStub,
   )
-  const field = {
-    link_type: 'Document',
-    type: 'foo',
-    id: 'id',
-    isBroken: true,
-  }
+  const field = prismicM.value.link({
+    seed: t.title,
+    type: prismicT.LinkType.Document,
+  })
+  field.isBroken = true
   const resolver = call.config.fields.document.resolve
   const res = await resolver(field)
 
@@ -120,7 +119,10 @@ test('document field resolves to null if link type is not Document', async (t) =
     'PrismicPrefixLinkType',
     gatsbyContext.actions.createTypes as sinon.SinonStub,
   )
-  const field = { link_type: 'Media', url: 'url' }
+  const field = prismicM.value.link({
+    seed: t.title,
+    type: prismicT.LinkType.Media,
+  })
   const resolver = call.config.fields.document.resolve
   const res = await resolver(field)
 
@@ -138,7 +140,10 @@ test('localFile field resolves to remote node if link type is Media and url is p
     'PrismicPrefixLinkType',
     gatsbyContext.actions.createTypes as sinon.SinonStub,
   )
-  const field = { url: 'url', link_type: 'Media' }
+  const field = prismicM.value.link({
+    seed: t.title,
+    type: prismicT.LinkType.Media,
+  })
   const resolver = call.config.fields.localFile.resolve
   const res = await resolver(field)
 
@@ -156,7 +161,11 @@ test('localFile field resolves to null if link type is Media and url is not pres
     'PrismicPrefixLinkType',
     gatsbyContext.actions.createTypes as sinon.SinonStub,
   )
-  const field = { url: null, link_type: 'Media' }
+  const field = prismicM.value.link({
+    seed: t.title,
+    type: prismicT.LinkType.Media,
+    isFilled: false,
+  })
   const resolver = call.config.fields.localFile.resolve
   const res = await resolver(field)
 
@@ -174,7 +183,10 @@ test('localFile field resolves to null if link type is not Media', async (t) => 
     'PrismicPrefixLinkType',
     gatsbyContext.actions.createTypes as sinon.SinonStub,
   )
-  const field = { url: 'url', link_type: 'Document' }
+  const field = prismicM.value.link({
+    seed: t.title,
+    type: prismicT.LinkType.Document,
+  })
   const resolver = call.config.fields.localFile.resolve
   const res = await resolver(field)
 

@@ -1,8 +1,10 @@
 import test from 'ava'
 import * as sinon from 'sinon'
-import * as prismicT from '@prismicio/types'
+import * as prismicM from '@prismicio/mock'
 
+import { createAllNamedMockFieldModels } from './__testutils__/createAllNamedMockFieldModels'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
+import { createMockCustomTypeModelWithFields } from './__testutils__/createMockCustomTypeModelWithFields'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 
 import { createSchemaCustomization } from '../src/gatsby-node'
@@ -11,74 +13,18 @@ test('creates types with each field', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  pluginOptions.customTypeModels = [
-    {
-      label: 'Foo',
-      id: 'foo',
-      status: true,
-      repeatable: true,
-      json: {
-        Main: {
-          group: {
-            type: prismicT.CustomTypeModelFieldType.Group,
-            config: {
-              label: 'Group',
-              fields: {
-                boolean: {
-                  type: prismicT.CustomTypeModelFieldType.Boolean,
-                  config: { label: 'Boolean' },
-                },
-                color: {
-                  type: prismicT.CustomTypeModelFieldType.Color,
-                  config: { label: 'Color' },
-                },
-                date: {
-                  type: prismicT.CustomTypeModelFieldType.Date,
-                  config: { label: 'Date' },
-                },
-                embed: {
-                  type: prismicT.CustomTypeModelFieldType.Embed,
-                  config: { label: 'Embed' },
-                },
-                geo_point: {
-                  type: prismicT.CustomTypeModelFieldType.GeoPoint,
-                  config: { label: 'GeoPoint' },
-                },
-                image: {
-                  type: prismicT.CustomTypeModelFieldType.Image,
-                  config: { label: 'Image', constraint: {}, thumbnails: [] },
-                },
-                link: {
-                  type: prismicT.CustomTypeModelFieldType.Link,
-                  config: { label: 'Link' },
-                },
-                number: {
-                  type: prismicT.CustomTypeModelFieldType.Number,
-                  config: { label: 'Number' },
-                },
-                select: {
-                  type: prismicT.CustomTypeModelFieldType.Select,
-                  config: { label: 'Select', options: ['Option 1'] },
-                },
-                structured_text: {
-                  type: prismicT.CustomTypeModelFieldType.StructuredText,
-                  config: { label: 'StructuredText', multi: '' },
-                },
-                text: {
-                  type: prismicT.CustomTypeModelFieldType.Text,
-                  config: { label: 'Text' },
-                },
-                timestamp: {
-                  type: prismicT.CustomTypeModelFieldType.Timestamp,
-                  config: { label: 'Timestamp' },
-                },
-              },
-            },
-          },
-        },
+  const customTypeModel = createMockCustomTypeModelWithFields(t, {
+    group: {
+      ...prismicM.model.group({ seed: t.title }),
+      config: {
+        label: 'Group',
+        fields: createAllNamedMockFieldModels(t),
       },
     },
-  ]
+  })
+  customTypeModel.id = 'foo'
+
+  pluginOptions.customTypeModels = [customTypeModel]
 
   // @ts-expect-error - Partial gatsbyContext provided
   await createSchemaCustomization(gatsbyContext, pluginOptions)
@@ -91,16 +37,23 @@ test('creates types with each field', async (t) => {
         fields: {
           boolean: 'Boolean',
           color: 'String',
+          contentRelationship: 'PrismicPrefixLinkType',
           date: { type: 'Date', extensions: { dateformat: {} } },
           embed: { type: 'PrismicPrefixEmbedType', extensions: { link: {} } },
-          geo_point: 'PrismicGeoPointType',
+          geoPoint: 'PrismicGeoPointType',
           image: 'PrismicPrefixFooDataGroupImageImageType',
+          integrationFields: {
+            type: 'PrismicPrefixFooDataGroupIntegrationFieldsIntegrationType',
+            extensions: { link: {} },
+          },
+          keyText: 'String',
           link: 'PrismicPrefixLinkType',
+          linkToMedia: 'PrismicPrefixLinkType',
           number: 'Float',
+          richText: 'PrismicPrefixStructuredTextType',
           select: 'String',
-          structured_text: 'PrismicPrefixStructuredTextType',
-          text: 'String',
           timestamp: { type: 'Date', extensions: { dateformat: {} } },
+          title: 'PrismicPrefixStructuredTextType',
         },
       }),
     }),

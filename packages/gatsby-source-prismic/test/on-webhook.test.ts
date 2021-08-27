@@ -1,12 +1,12 @@
 import test from 'ava'
 import * as sinon from 'sinon'
 import * as mswNode from 'msw/node'
+import * as prismicM from '@prismicio/mock'
 
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
 import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
 import { createWebhookTestTrigger } from './__testutils__/createWebhookTestTrigger'
 import { createWebhookUnknown } from './__testutils__/createWebhookUnknown'
 
@@ -19,11 +19,26 @@ test.after(() => server.close())
 test('touches all nodes to prevent garbage collection', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
-  const queryResponse = createPrismicAPIQueryResponse()
+
+  const documents = [
+    prismicM.value.document({ seed: t.title }),
+    prismicM.value.document({ seed: t.title }),
+  ]
+  const repositoryResponse = prismicM.api.repository({ seed: t.title })
+  const queryResponse = prismicM.api.query({ seed: t.title, documents })
   const webhookBody = createWebhookUnknown()
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
+  server.use(
+    createAPIRepositoryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+    }),
+    createAPIQueryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+      queryResponse,
+    }),
+  )
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)

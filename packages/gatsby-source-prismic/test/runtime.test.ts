@@ -1,78 +1,12 @@
-import test, { ExecutionContext } from 'ava'
+import test from 'ava'
 import * as prismicM from '@prismicio/mock'
 import * as sinon from 'sinon'
 
 import { createMockCustomTypeModelWithFields } from './__testutils__/createMockCustomTypeModelWithFields'
+import { createMockKitchenSinkCustomTypeModel } from './__testutils__/createMockKitchenSinkCustomTypeModel'
+import { createMockKitchenSinkSharedSliceModel } from './__testutils__/createMockKitchenSinkSharedSliceModel'
 
 import * as gatsbyPrismic from '../src'
-
-const createAllNamedFieldModels = (t: ExecutionContext) => ({
-  boolean: prismicM.model.boolean({ seed: t.title }),
-  color: prismicM.model.color({ seed: t.title }),
-  contentRelationship: prismicM.model.contentRelationship({ seed: t.title }),
-  date: prismicM.model.date({ seed: t.title }),
-  embed: prismicM.model.embed({ seed: t.title }),
-  geoPoint: prismicM.model.geoPoint({ seed: t.title }),
-  image: prismicM.model.image({ seed: t.title }),
-  integrationFields: prismicM.model.integrationFields({ seed: t.title }),
-  keyText: prismicM.model.keyText({ seed: t.title }),
-  link: prismicM.model.link({ seed: t.title }),
-  linkToMedia: prismicM.model.linkToMedia({ seed: t.title }),
-  number: prismicM.model.number({ seed: t.title }),
-  richText: prismicM.model.richText({ seed: t.title }),
-  select: prismicM.model.select({ seed: t.title }),
-  timestamp: prismicM.model.timestamp({ seed: t.title }),
-  title: prismicM.model.title({ seed: t.title }),
-})
-
-const createKitchenSinkCustomTypeModel = (t: ExecutionContext) => {
-  return createMockCustomTypeModelWithFields(t, {
-    ...createAllNamedFieldModels(t),
-    group: {
-      ...prismicM.model.group({ seed: t.title }),
-      config: {
-        label: 'Group',
-        fields: createAllNamedFieldModels(t),
-      },
-    },
-    sliceZone: {
-      ...prismicM.model.sliceZone({ seed: t.title }),
-      config: {
-        labels: {},
-        choices: {
-          slice: {
-            ...prismicM.model.slice({ seed: t.title }),
-            'non-repeat': createAllNamedFieldModels(t),
-            repeat: createAllNamedFieldModels(t),
-          },
-          sharedSlice: prismicM.model.sharedSliceChoice(),
-        },
-      },
-    },
-  })
-}
-
-const createKitchenSinkSharedSliceModel = (t: ExecutionContext) => {
-  return {
-    ...prismicM.model.sharedSlice({
-      seed: t.title,
-      variationsCount: 0,
-    }),
-    id: 'sharedSlice',
-    variations: [
-      {
-        ...prismicM.model.sharedSliceVariation({ seed: t.title }),
-        primary: createAllNamedFieldModels(t),
-        items: createAllNamedFieldModels(t),
-      },
-      {
-        ...prismicM.model.sharedSliceVariation({ seed: t.title }),
-        primary: createAllNamedFieldModels(t),
-        items: createAllNamedFieldModels(t),
-      },
-    ],
-  }
-}
 
 test('createRuntime creates a Runtime instance with default config', (t) => {
   const runtime = gatsbyPrismic.createRuntime()
@@ -108,7 +42,7 @@ test('config can be passed on creation', (t) => {
 })
 
 test('registering a custom type model adds its type paths', (t) => {
-  const model = createKitchenSinkCustomTypeModel(t)
+  const model = createMockKitchenSinkCustomTypeModel(t)
 
   const runtime = gatsbyPrismic.createRuntime()
   runtime.registerCustomTypeModel(model)
@@ -117,8 +51,8 @@ test('registering a custom type model adds its type paths', (t) => {
 })
 
 test('multiple custom type models can be registered at once', (t) => {
-  const model1 = createKitchenSinkCustomTypeModel(t)
-  const model2 = createKitchenSinkCustomTypeModel(t)
+  const model1 = createMockKitchenSinkCustomTypeModel(t)
+  const model2 = createMockKitchenSinkCustomTypeModel(t)
 
   const runtime = gatsbyPrismic.createRuntime()
   runtime.registerCustomTypeModels([model1, model2])
@@ -127,7 +61,7 @@ test('multiple custom type models can be registered at once', (t) => {
 })
 
 test('registering a shared slice model adds its type paths', (t) => {
-  const model = createKitchenSinkSharedSliceModel(t)
+  const model = createMockKitchenSinkSharedSliceModel(t)
 
   const runtime = gatsbyPrismic.createRuntime()
   runtime.registerSharedSliceModel(model)
@@ -136,33 +70,13 @@ test('registering a shared slice model adds its type paths', (t) => {
 })
 
 test('multiple shared slice models can be registered at once', (t) => {
-  const model1 = createKitchenSinkSharedSliceModel(t)
-  const model2 = createKitchenSinkSharedSliceModel(t)
+  const model1 = createMockKitchenSinkSharedSliceModel(t)
+  const model2 = createMockKitchenSinkSharedSliceModel(t)
 
   const runtime = gatsbyPrismic.createRuntime()
   runtime.registerSharedSliceModels([model1, model2])
 
   t.snapshot(runtime.typePaths)
-})
-
-test('type paths can be registered directly', (t) => {
-  const typePaths: gatsbyPrismic.TypePath[] = [
-    {
-      kind: gatsbyPrismic.TypePathKind.CustomType,
-      path: ['foo'],
-      type: gatsbyPrismic.PrismicSpecialType.Document,
-    },
-    {
-      kind: gatsbyPrismic.TypePathKind.SharedSliceVariation,
-      path: ['bar', 'baz'],
-      type: gatsbyPrismic.PrismicSpecialType.SharedSliceVariation,
-    },
-  ]
-
-  const runtime = gatsbyPrismic.createRuntime()
-  runtime.registerTypePaths(typePaths)
-
-  t.deepEqual(runtime.typePaths, typePaths)
 })
 
 test("registering a document adds a normalized version to the runtime's nodes", (t) => {
@@ -319,9 +233,34 @@ test('getTypePath returns a type path for a set of parameters', (t) => {
 
   t.deepEqual(runtime.getTypePath([document.type]), {
     kind: gatsbyPrismic.TypePathKind.CustomType,
-    path: [document.type],
+    path: document.type,
     type: gatsbyPrismic.PrismicSpecialType.Document,
   })
+})
+
+test('type paths can be exported', (t) => {
+  const model = prismicM.model.customType({ seed: t.title })
+
+  const runtime = gatsbyPrismic.createRuntime()
+  runtime.registerCustomTypeModel(model)
+
+  const exportedTypePaths = runtime.exportTypePaths()
+
+  t.is(typeof exportedTypePaths, 'string')
+})
+
+test('exported type paths can be imported', (t) => {
+  const model = prismicM.model.customType({ seed: t.title })
+
+  const runtime1 = gatsbyPrismic.createRuntime()
+  runtime1.registerCustomTypeModel(model)
+
+  const exportedTypePaths = runtime1.exportTypePaths()
+
+  const runtime2 = gatsbyPrismic.createRuntime()
+  runtime2.importTypePaths(exportedTypePaths)
+
+  t.deepEqual(runtime1.typePaths, runtime2.typePaths)
 })
 
 test('subscribers are notified as a result of actions', (t) => {

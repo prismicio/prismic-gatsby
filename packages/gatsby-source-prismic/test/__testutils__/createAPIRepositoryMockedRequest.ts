@@ -1,47 +1,21 @@
 import * as msw from 'msw'
-import * as prismic from '@prismicio/client'
+import * as prismicT from '@prismicio/types'
 
 import { isValidAccessToken } from './isValidAccessToken'
 
 import { PluginOptions } from '../../src'
 
-const DEFAULT_RESPONSE: prismic.Repository = {
-  types: { foo: 'Foo' },
-  refs: [
-    {
-      id: 'master',
-      ref: 'master',
-      isMasterRef: true,
-      label: 'master',
-      scheduledAt: 'scheduledAt',
-    },
-    {
-      id: 'release',
-      ref: 'release',
-      isMasterRef: false,
-      label: 'release',
-      scheduledAt: 'scheduledAt',
-    },
-  ],
-  integrationFieldsRef: null,
-  bookmarks: {},
-  tags: [],
-  forms: {},
-  license: 'license',
-  languages: [{ id: 'fr-fr', name: 'fr-fr' }],
-  experiments: {},
-  oauth_initiate: 'oauth_initiate',
-  oauth_token: 'oauth_token',
-  version: 'version',
+type CreateAPIRepositoryMockedRequestConfig = {
+  pluginOptions: PluginOptions
+  repositoryResponse: prismicT.Repository
 }
 
 export const createAPIRepositoryMockedRequest = (
-  pluginOptions: PluginOptions,
-  overrides?: Partial<prismic.Repository>,
+  config: CreateAPIRepositoryMockedRequestConfig,
 ): msw.RestHandler =>
-  msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
-    if (isValidAccessToken(pluginOptions.accessToken, req)) {
-      return res(ctx.json({ ...DEFAULT_RESPONSE, ...overrides }))
+  msw.rest.get(config.pluginOptions.apiEndpoint, (req, res, ctx) => {
+    if (isValidAccessToken(config.pluginOptions.accessToken, req)) {
+      return res(ctx.json(config.repositoryResponse))
     } else {
       return res(
         ctx.status(403),
