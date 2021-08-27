@@ -1,9 +1,9 @@
 import * as TE from 'fp-ts/TaskEither'
 
-export const fetchJSON = <T>(
+export const fetchText = (
   ...args: Parameters<typeof fetch>
-): TE.TaskEither<Error, T> =>
+): TE.TaskEither<Error, string> =>
   TE.tryCatch(
-    async () => await (await fetch(...args)).json(),
+    async () => await (await fetch(...args)).text(),
     (error) => error as Error,
   )

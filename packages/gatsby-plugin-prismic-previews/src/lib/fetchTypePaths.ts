@@ -1,5 +1,4 @@
 import * as gatsby from 'gatsby'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as RTE from 'fp-ts/ReaderTaskEither'
 import { pipe } from 'fp-ts/function'
 
@@ -7,7 +6,7 @@ import {
   BuildTypePathsStoreFilenameEnv,
   buildTypePathsStoreFilename,
 } from './buildTypePathsStoreFilename'
-import { fetchJSON } from './fetchJSON'
+import { fetchText } from './fetchText'
 
 export type FetchTypePathsStoreEnv = BuildTypePathsStoreFilenameEnv
 
@@ -24,13 +23,13 @@ const buildTypePathsStoreURL: RTE.ReaderTaskEither<
 export const fetchTypePaths: RTE.ReaderTaskEither<
   FetchTypePathsStoreEnv,
   Error,
-  gatsbyPrismic.TypePath[]
+  string
 > = pipe(
   RTE.ask<BuildTypePathsStoreFilenameEnv>(),
   RTE.bind('url', () => buildTypePathsStoreURL),
   RTE.chain((scope) =>
     RTE.fromTaskEither(
-      fetchJSON<gatsbyPrismic.TypePath[]>(scope.url, {
+      fetchText(scope.url, {
         // We opt out of the cache to ensure we always fetch the latest type
         // paths. Since the URL to the type paths JSON file is always the
         // same (a hashed version of the repository name), some servers may

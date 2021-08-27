@@ -160,7 +160,7 @@ export const usePrismicPreviewBootstrap = (
       type: PrismicContextActionType.ImportTypePaths,
       payload: {
         repositoryName: repositoryName.value,
-        typePaths: typePaths.right,
+        typePathsExport: typePaths.right,
       },
     })
 
