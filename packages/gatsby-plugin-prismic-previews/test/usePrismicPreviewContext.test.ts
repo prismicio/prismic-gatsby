@@ -1,7 +1,7 @@
 import test from 'ava'
 import { renderHook, act, cleanup } from '@testing-library/react-hooks'
 import browserEnv from 'browser-env'
-import * as mock from '@prismicio/mock'
+import * as prismicM from '@prismicio/mock'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
@@ -129,10 +129,10 @@ test.serial('AppendDocuments action adds documents', async (t) => {
     })
   })
 
-  const model = mock.model.customType()
+  const model = prismicM.model.customType()
   const documents = [
-    mock.value.document({ model }),
-    mock.value.document({ model }),
+    prismicM.value.document({ model }),
+    prismicM.value.document({ model }),
   ]
   result.current[0].runtimeStore[
     pluginOptions.repositoryName

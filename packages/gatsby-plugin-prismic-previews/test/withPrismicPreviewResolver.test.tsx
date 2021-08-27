@@ -3,7 +3,7 @@ import * as sinon from 'sinon'
 import * as assert from 'assert'
 import * as mswNode from 'msw/node'
 import * as prismic from '@prismicio/client'
-import * as prismicMock from '@prismicio/mock'
+import * as prismicM from '@prismicio/mock'
 import * as prismicH from '@prismicio/helpers'
 import * as cookie from 'es-cookie'
 import * as gatsby from 'gatsby'
@@ -14,11 +14,13 @@ import globalJsdom from 'global-jsdom'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPageProps } from './__testutils__/createPageProps'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPreviewURL } from './__testutils__/createPreviewURL'
+import { navigateToPreviewResolverURL } from './__testutils__/navigateToPreviewResolverURL'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
@@ -30,8 +32,6 @@ import {
   PrismicRepositoryConfigs,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
-import { navigateToPreviewResolverURL } from './__testutils__/navigateToPreviewResolverURL'
-import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 
 const server = mswNode.setupServer()
 test.before(() => {
@@ -158,20 +158,23 @@ test.serial('redirects to path on valid preview', async (t) => {
   const tree = createTree(pageProps, hookConfig, config)
   const ref = createPreviewRef(pluginOptions.repositoryName)
 
-  const document = prismicMock.value.document()
-  const queryResponse = prismicMock.api.query({ documents: [document] })
+  const document = prismicM.value.document()
+  const queryResponse = prismicM.api.query({ documents: [document] })
+  const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
   navigateToPreviewResolverURL(ref, document.id)
   cookie.set(prismic.cookie.preview, ref)
 
   server.use(
-    createAPIRepositoryMockedRequest(pluginOptions),
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      ref,
-      graphQuery: pluginOptions.graphQuery,
-      q: `[${prismic.predicate.at('document.id', document.id)}]`,
-      page: undefined,
-      pageSize: undefined,
+    createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+    createAPIQueryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+      queryResponse,
+      searchParams: {
+        ref,
+        q: `[${prismic.predicate.at('document.id', document.id)}]`,
+      },
     }),
   )
 
@@ -205,20 +208,23 @@ test.serial(
     const tree = createTree(pageProps, hookConfig, config)
     const ref = createPreviewRef(pluginOptions.repositoryName)
 
-    const document = prismicMock.value.document()
-    const queryResponse = prismicMock.api.query({ documents: [document] })
+    const document = prismicM.value.document()
+    const queryResponse = prismicM.api.query({ documents: [document] })
+    const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
     navigateToPreviewResolverURL(ref, document.id)
     cookie.set(prismic.cookie.preview, ref)
 
     server.use(
-      createAPIRepositoryMockedRequest(pluginOptions),
-      createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-        ref,
-        graphQuery: pluginOptions.graphQuery,
-        q: `[${prismic.predicate.at('document.id', document.id)}]`,
-        page: undefined,
-        pageSize: undefined,
+      createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+      createAPIQueryMockedRequest({
+        pluginOptions,
+        repositoryResponse,
+        queryResponse,
+        searchParams: {
+          ref,
+          q: `[${prismic.predicate.at('document.id', document.id)}]`,
+        },
       }),
     )
 

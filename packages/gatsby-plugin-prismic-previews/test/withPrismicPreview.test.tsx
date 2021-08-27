@@ -2,7 +2,7 @@ import test from 'ava'
 import * as assert from 'assert'
 import * as mswNode from 'msw/node'
 import * as prismic from '@prismicio/client'
-import * as prismicMock from '@prismicio/mock'
+import * as prismicM from '@prismicio/mock'
 import * as cookie from 'es-cookie'
 import * as gatsby from 'gatsby'
 import * as React from 'react'
@@ -101,10 +101,10 @@ test.serial(
     const pluginOptions = createPluginOptions(t)
     const config = createRepositoryConfigs(pluginOptions)
 
-    const model = prismicMock.model.customType()
+    const model = prismicM.model.customType()
     const documents = Array(20)
       .fill(undefined)
-      .map(() => prismicMock.value.document({ model }))
+      .map(() => prismicM.value.document({ model }))
 
     const runtime = createRuntime(pluginOptions, config[0])
     runtime.registerCustomTypeModels([model])
@@ -141,11 +141,12 @@ test.serial('merges data if preview data is available', async (t) => {
   const pluginOptions = createPluginOptions(t)
   const config = createRepositoryConfigs(pluginOptions)
 
-  const model = prismicMock.model.customType()
+  const model = prismicM.model.customType()
   const documents = Array(20)
     .fill(undefined)
-    .map(() => prismicMock.value.document({ model }))
-  const queryResponse = prismicMock.api.query({ documents })
+    .map(() => prismicM.value.document({ seed: t.title, model }))
+  const queryResponse = prismicM.api.query({ seed: t.title, documents })
+  const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
   const runtime = createRuntime(pluginOptions, config[0])
   runtime.registerCustomTypeModels([model])
@@ -155,9 +156,12 @@ test.serial('merges data if preview data is available', async (t) => {
   cookie.set(prismic.cookie.preview, ref)
 
   server.use(
-    createAPIRepositoryMockedRequest(pluginOptions),
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      ref,
+    createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+    createAPIQueryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+      queryResponse,
+      searchParams: { ref },
     }),
     createTypePathsMockedRequest(
       'a9101d270279c16322571b8448d7a329.json',
@@ -202,11 +206,12 @@ test.serial('handles custom types without a data field', async (t) => {
   const pluginOptions = createPluginOptions(t)
   const config = createRepositoryConfigs(pluginOptions)
 
-  const model = prismicMock.model.customType()
+  const model = prismicM.model.customType()
   const documents = Array(20)
     .fill(undefined)
-    .map(() => prismicMock.value.document({ model }))
-  const queryResponse = prismicMock.api.query({ documents })
+    .map(() => prismicM.value.document({ model }))
+  const queryResponse = prismicM.api.query({ documents })
+  const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
   const runtime = createRuntime(pluginOptions, config[0])
   runtime.registerCustomTypeModels([model])
@@ -216,9 +221,12 @@ test.serial('handles custom types without a data field', async (t) => {
   cookie.set(prismic.cookie.preview, ref)
 
   server.use(
-    createAPIRepositoryMockedRequest(pluginOptions),
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      ref,
+    createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+    createAPIQueryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+      queryResponse,
+      searchParams: { ref },
     }),
     createTypePathsMockedRequest(
       'eac4669530f66bef76da4016f1111055.json',

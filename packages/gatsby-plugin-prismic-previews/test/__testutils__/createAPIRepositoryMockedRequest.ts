@@ -1,25 +1,21 @@
 import * as msw from 'msw'
 import * as prismicT from '@prismicio/types'
-import * as prismicMock from '@prismicio/mock'
 
 import { isValidAccessToken } from './isValidAccessToken'
 
 import { PluginOptions } from '../../src'
 
-export const createAPIRepositoryMockedRequest = (
-  pluginOptions: PluginOptions,
-  overrides?: Partial<prismicT.Repository>,
-): msw.RestHandler =>
-  msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
-    if (isValidAccessToken(pluginOptions.accessToken, req)) {
-      const repository = prismicMock.api.repository()
+type CreateAPIRepositoryMockedRequestConfig = {
+  pluginOptions: PluginOptions
+  repositoryResponse: prismicT.Repository
+}
 
-      return res(
-        ctx.json({
-          ...repository,
-          ...overrides,
-        }),
-      )
+export const createAPIRepositoryMockedRequest = (
+  config: CreateAPIRepositoryMockedRequestConfig,
+): msw.RestHandler =>
+  msw.rest.get(config.pluginOptions.apiEndpoint, (req, res, ctx) => {
+    if (isValidAccessToken(config.pluginOptions.accessToken, req)) {
+      return res(ctx.json(config.repositoryResponse))
     } else {
       return res(
         ctx.status(403),

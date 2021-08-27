@@ -2,7 +2,7 @@ import test from 'ava'
 import * as assert from 'assert'
 import * as mswNode from 'msw/node'
 import * as prismic from '@prismicio/client'
-import * as prismicMock from '@prismicio/mock'
+import * as prismicM from '@prismicio/mock'
 import * as cookie from 'es-cookie'
 import * as gatsby from 'gatsby'
 import * as React from 'react'
@@ -12,12 +12,15 @@ import globalJsdom from 'global-jsdom'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPageProps } from './__testutils__/createPageProps'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPreviewURL } from './__testutils__/createPreviewURL'
+import { createRuntime } from './__testutils__/createRuntime'
 import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
+import { jsonFilter } from './__testutils__/jsonFilter'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
@@ -32,9 +35,6 @@ import {
   withPrismicUnpublishedPreview,
 } from '../src'
 import { onClientEntry } from '../src/on-client-entry'
-import { jsonFilter } from './__testutils__/jsonFilter'
-import { createRuntime } from './__testutils__/createRuntime'
-import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 
 const server = mswNode.setupServer()
 test.before(() => {
@@ -122,10 +122,10 @@ test.serial('renders the 404 page if not a preview', async (t) => {
   const pluginOptions = createPluginOptions(t)
   const repositoryConfigs = createRepositoryConfigs(pluginOptions)
 
-  const model = prismicMock.model.customType()
+  const model = prismicM.model.customType()
   const documents = Array(20)
     .fill(undefined)
-    .map(() => prismicMock.value.document({ model }))
+    .map(() => prismicM.value.document({ model }))
 
   const runtime = createRuntime(pluginOptions, repositoryConfigs[0])
   runtime.registerCustomTypeModels([model])
@@ -164,13 +164,14 @@ test.serial('merges data if preview data is available', async (t) => {
   const ref = createPreviewRef(pluginOptions.repositoryName)
   cookie.set(prismic.cookie.preview, ref)
 
-  const model = prismicMock.model.customType({ withUID: true })
+  const model = prismicM.model.customType({ withUID: true })
   model.id = 'type'
 
   const documents = Array(20)
     .fill(undefined)
-    .map(() => prismicMock.value.document({ model, withURL: false }))
-  const queryResponse = prismicMock.api.query({ documents })
+    .map(() => prismicM.value.document({ model, withURL: false }))
+  const queryResponse = prismicM.api.query({ documents })
+  const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
   const runtime = createRuntime(pluginOptions, repositoryConfigs[0])
   runtime.registerCustomTypeModels([model])
@@ -181,9 +182,12 @@ test.serial('merges data if preview data is available', async (t) => {
   window.history.replaceState(null, '', runtime.nodes[0].url)
 
   server.use(
-    createAPIRepositoryMockedRequest(pluginOptions),
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      ref,
+    createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+    createAPIQueryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+      queryResponse,
+      searchParams: { ref },
     }),
     createTypePathsMockedRequest(
       'a9101d270279c16322571b8448d7a329.json',
@@ -227,12 +231,12 @@ test('componentResolverFromMap returns componentResolver', (t) => {
   const pluginOptions = createPluginOptions(t)
   const config = createRepositoryConfigs(pluginOptions)
 
-  const fooModel = prismicMock.model.customType()
-  const fooDocument = prismicMock.value.document({ model: fooModel })
+  const fooModel = prismicM.model.customType()
+  const fooDocument = prismicM.value.document({ model: fooModel })
   const FooComp = () => <div />
 
-  const barModel = prismicMock.model.customType()
-  const barDocument = prismicMock.value.document({ model: barModel })
+  const barModel = prismicM.model.customType()
+  const barDocument = prismicM.value.document({ model: barModel })
   const BarComp = () => <div />
 
   const runtime = createRuntime(pluginOptions, config[0])

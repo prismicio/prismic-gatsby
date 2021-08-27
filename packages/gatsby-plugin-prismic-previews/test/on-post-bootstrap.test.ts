@@ -1,18 +1,18 @@
 import test from 'ava'
 import * as sinon from 'sinon'
-import * as prismicMock from '@prismicio/mock'
+import * as prismicM from '@prismicio/mock'
 
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
+import { createRuntime } from './__testutils__/createRuntime'
 
 import { onPostBootstrap } from '../src/gatsby-node'
-import { createRuntime } from './__testutils__/createRuntime'
 
 test('saves serialized typepaths to filesystem', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
 
-  const model = prismicMock.model.customType()
+  const model = prismicM.model.customType()
 
   const runtime = createRuntime(pluginOptions)
   runtime.registerCustomTypeModels([model])

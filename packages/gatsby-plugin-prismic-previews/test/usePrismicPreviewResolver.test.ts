@@ -1,7 +1,7 @@
 import test from 'ava'
 import * as mswNode from 'msw/node'
 import * as prismic from '@prismicio/client'
-import * as prismicMock from '@prismicio/mock'
+import * as prismicM from '@prismicio/mock'
 import * as cookie from 'es-cookie'
 import * as assert from 'assert'
 import { renderHook, act, cleanup } from '@testing-library/react-hooks'
@@ -148,22 +148,26 @@ test.serial('resolves a path using the link resolver', async (t) => {
   const config = createConfig(pluginOptions)
   const ref = createPreviewRef(pluginOptions.repositoryName)
 
-  const doc = prismicMock.value.document()
-  const queryResponse = prismicMock.api.query({
+  const doc = prismicM.value.document({ seed: t.title })
+  const queryResponse = prismicM.api.query({
+    seed: t.title,
     documents: [doc],
   })
+  const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
   navigateToPreviewResolverURL(ref, doc.id)
   cookie.set(prismic.cookie.preview, ref)
 
   server.use(
-    createAPIRepositoryMockedRequest(pluginOptions),
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      ref,
-      graphQuery: pluginOptions.graphQuery,
-      q: `[${prismic.predicate.at('document.id', doc.id)}]`,
-      page: undefined,
-      pageSize: undefined,
+    createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+    createAPIQueryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+      queryResponse,
+      searchParams: {
+        ref,
+        q: `[${prismic.predicate.at('document.id', doc.id)}]`,
+      },
     }),
   )
 

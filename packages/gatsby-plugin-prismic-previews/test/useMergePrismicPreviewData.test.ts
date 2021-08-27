@@ -1,27 +1,25 @@
 import test from 'ava'
 import * as mswNode from 'msw/node'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
 import * as prismic from '@prismicio/client'
-import * as prismicMock from '@prismicio/mock'
+import * as prismicM from '@prismicio/mock'
 import * as cookie from 'es-cookie'
 import * as assert from 'assert'
 import { renderHook, act, cleanup } from '@testing-library/react-hooks'
-import { createNodeHelpers } from 'gatsby-node-helpers'
-import md5 from 'tiny-hashes/md5'
 import browserEnv from 'browser-env'
 
 import { clearAllCookies } from './__testutils__/clearAllCookies'
 import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
+import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
 import { createGatsbyContext } from './__testutils__/createGatsbyContext'
 import { createPluginOptions } from './__testutils__/createPluginOptions'
 import { createPreviewRef } from './__testutils__/createPreviewRef'
 import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
+import { createRuntime } from './__testutils__/createRuntime'
 import { createTypePathsMockedRequest } from './__testutils__/createTypePathsMockedRequest'
+import { jsonFilter } from './__testutils__/jsonFilter'
 import { polyfillKy } from './__testutils__/polyfillKy'
 
 import {
-  PrismicAPIDocumentNodeInput,
   PrismicPreviewProvider,
   useMergePrismicPreviewData,
   usePrismicPreviewBootstrap,
@@ -31,9 +29,6 @@ import {
   PrismicPreviewState,
 } from '../src'
 import { onClientEntry } from '../src/gatsby-browser'
-import { jsonFilter } from './__testutils__/jsonFilter'
-import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
-import { createRuntime } from './__testutils__/createRuntime'
 
 const createStaticData = () => {
   const previewable = createPrismicAPIDocumentNodeInput({ text: 'static' })
@@ -52,13 +47,6 @@ const createRepositoryConfigs = (
     linkResolver: (doc): string => `/${doc.uid}`,
   },
 ]
-
-const nodeHelpers = createNodeHelpers({
-  typePrefix: 'Prismic prefix',
-  fieldPrefix: 'Prismic',
-  createNodeId: (id) => md5(id),
-  createContentDigest: (input) => md5(JSON.stringify(input)),
-})
 
 const server = mswNode.setupServer()
 test.before(() => {
@@ -102,11 +90,12 @@ test.serial(
     const gatsbyContext = createGatsbyContext()
     const config = createRepositoryConfigs(pluginOptions)
 
-    const model = prismicMock.model.customType()
+    const model = prismicM.model.customType()
     const documents = Array(20)
       .fill(undefined)
-      .map(() => prismicMock.value.document({ model }))
-    const queryResponse = prismicMock.api.query({ documents })
+      .map(() => prismicM.value.document({ model }))
+    const queryResponse = prismicM.api.query({ seed: t.title, documents })
+    const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
     const runtime = createRuntime(pluginOptions, config[0])
     runtime.registerCustomTypeModels([model])
@@ -116,9 +105,12 @@ test.serial(
     cookie.set(prismic.cookie.preview, ref)
 
     server.use(
-      createAPIRepositoryMockedRequest(pluginOptions),
-      createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-        ref,
+      createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+      createAPIQueryMockedRequest({
+        pluginOptions,
+        repositoryResponse,
+        queryResponse,
+        searchParams: { ref },
       }),
       createTypePathsMockedRequest(
         'd26c1607b46a831c5d238303c3cbf489.json',
@@ -180,11 +172,12 @@ test('allows skipping', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const config = createRepositoryConfigs(pluginOptions)
 
-  const model = prismicMock.model.customType()
+  const model = prismicM.model.customType()
   const documents = Array(20)
     .fill(undefined)
-    .map(() => prismicMock.value.document({ model }))
-  const queryResponse = prismicMock.api.query({ documents })
+    .map(() => prismicM.value.document({ model }))
+  const queryResponse = prismicM.api.query({ documents })
+  const repositoryResponse = prismicM.api.repository({ seed: t.title })
 
   const runtime = createRuntime(pluginOptions, config[0])
   runtime.registerCustomTypeModels([model])
@@ -194,9 +187,12 @@ test('allows skipping', async (t) => {
   cookie.set(prismic.cookie.preview, ref)
 
   server.use(
-    createAPIRepositoryMockedRequest(pluginOptions),
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      ref,
+    createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+    createAPIQueryMockedRequest({
+      pluginOptions,
+      repositoryResponse,
+      queryResponse,
+      searchParams: { ref },
     }),
     createTypePathsMockedRequest(
       '87ec42108faaca92ab06c427cf0b3b9d.json',
