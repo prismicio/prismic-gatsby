@@ -1,1 +1,1 @@
-module.exports = require('./dist/gatsby-browser')
+export * from './dist/gatsby-browser.mjs'

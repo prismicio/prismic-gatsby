@@ -1,6 +1,6 @@
 import * as A from 'fp-ts/Array'
 import { pipe } from 'fp-ts/function'
-import * as gatsbyPrismic from 'gatsby-source-prismic'
+import * as gatsbyPrismicRuntime from 'gatsby-source-prismic/dist/runtime'
 
 /**
  * Returns nodes from the node store with URLs that match the given path.
@@ -12,8 +12,8 @@ import * as gatsbyPrismic from 'gatsby-source-prismic'
  */
 export const getNodesForPath = (
   path: string,
-  runtime: gatsbyPrismic.Runtime,
-): gatsbyPrismic.NormalizedDocumentValue[] =>
+  runtime: gatsbyPrismicRuntime.Runtime,
+): gatsbyPrismicRuntime.NormalizedDocumentValue[] =>
   pipe(
     runtime.nodes,
     A.filter((node) => node.url === path),

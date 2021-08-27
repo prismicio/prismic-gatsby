@@ -1,12 +1,12 @@
-import * as gatsbyPrismic from 'gatsby-source-prismic'
+import * as gatsbyPrismicRuntime from 'gatsby-source-prismic/dist/runtime'
 
 import { PluginOptions, PrismicRepositoryConfig } from '../../src'
 
 export const createRuntime = (
   pluginOptions: PluginOptions,
   repositoryConfig?: PrismicRepositoryConfig,
-): gatsbyPrismic.Runtime => {
-  return gatsbyPrismic.createRuntime({
+): gatsbyPrismicRuntime.Runtime => {
+  return gatsbyPrismicRuntime.createRuntime({
     typePrefix: pluginOptions.typePrefix,
     imageImgixParams: pluginOptions.imageImgixParams,
     imagePlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,

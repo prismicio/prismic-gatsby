@@ -1,7 +1,8 @@
 import * as React from 'react'
 import * as O from 'fp-ts/Option'
 import { pipe } from 'fp-ts/function'
-import { PREVIEWABLE_NODE_ID_FIELD, Runtime } from 'gatsby-source-prismic'
+import * as gatsbyPrismic from 'gatsby-source-prismic'
+import * as gatsbyPrismicRuntime from 'gatsby-source-prismic/dist/runtime'
 
 import { isPlainObject } from './lib/isPlainObject'
 
@@ -17,45 +18,47 @@ import { isProxy } from './lib/isProxy'
  *
  * @returns Function that accepts a node or node content to find and replace previewable content.
  */
-const findAndReplacePreviewables =
-  (runtime: Runtime) =>
-  (nodeOrLeaf: unknown): unknown => {
-    if (isPlainObject(nodeOrLeaf)) {
-      // If the value is a proxy, we can't reliably replace properties since
-      // property keys could be synthetic. We opt to ignore the object
-      // completely.
-      //
-      // At the time of writing this comment, Proxies are only present in Link
-      // fields. We can safely opt out of merging preview data in this case.
-      if (isProxy(nodeOrLeaf)) {
-        return nodeOrLeaf
-      }
-
-      const nodeId = nodeOrLeaf[PREVIEWABLE_NODE_ID_FIELD] as string | undefined
-      if (nodeId && runtime.hasNode(nodeId)) {
-        return runtime.getNode(nodeId)
-      }
-
-      // We didn't find a previewable field, so continue to iterate through all
-      // properties to find it.
-      const newNode = {} as typeof nodeOrLeaf
-      for (const key in nodeOrLeaf) {
-        newNode[key] = findAndReplacePreviewables(runtime)(nodeOrLeaf[key])
-      }
-
-      return newNode
+const findAndReplacePreviewables = (runtime: gatsbyPrismicRuntime.Runtime) => (
+  nodeOrLeaf: unknown,
+): unknown => {
+  if (isPlainObject(nodeOrLeaf)) {
+    // If the value is a proxy, we can't reliably replace properties since
+    // property keys could be synthetic. We opt to ignore the object
+    // completely.
+    //
+    // At the time of writing this comment, Proxies are only present in Link
+    // fields. We can safely opt out of merging preview data in this case.
+    if (isProxy(nodeOrLeaf)) {
+      return nodeOrLeaf
     }
 
-    // Iterate all elements in the node to find the previewable value.
-    if (Array.isArray(nodeOrLeaf)) {
-      return (nodeOrLeaf as unknown[]).map((subnode) =>
-        findAndReplacePreviewables(runtime)(subnode),
-      )
+    const nodeId = nodeOrLeaf[gatsbyPrismic.PREVIEWABLE_NODE_ID_FIELD] as
+      | string
+      | undefined
+    if (nodeId && runtime.hasNode(nodeId)) {
+      return runtime.getNode(nodeId)
     }
 
-    // If the node is not an object or array, it cannot be a previewable value.
-    return nodeOrLeaf
+    // We didn't find a previewable field, so continue to iterate through all
+    // properties to find it.
+    const newNode = {} as typeof nodeOrLeaf
+    for (const key in nodeOrLeaf) {
+      newNode[key] = findAndReplacePreviewables(runtime)(nodeOrLeaf[key])
+    }
+
+    return newNode
   }
+
+  // Iterate all elements in the node to find the previewable value.
+  if (Array.isArray(nodeOrLeaf)) {
+    return (nodeOrLeaf as unknown[]).map((subnode) =>
+      findAndReplacePreviewables(runtime)(subnode),
+    )
+  }
+
+  // If the node is not an object or array, it cannot be a previewable value.
+  return nodeOrLeaf
+}
 
 /**
  * Takes a static data object and a record of nodes and replaces any instances
@@ -74,7 +77,7 @@ const findAndReplacePreviewables =
  */
 const traverseAndReplace = <TStaticData extends UnknownRecord>(
   staticData: TStaticData,
-  runtime: Runtime,
+  runtime: gatsbyPrismicRuntime.Runtime,
 ): { data: TStaticData; isPreview: boolean } =>
   pipe(
     runtime.nodes,
