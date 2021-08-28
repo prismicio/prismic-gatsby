@@ -1,3 +1,3 @@
-const body = { foo: 'bar' }
+const body = { foo: "bar" };
 
-export const createWebhookUnknown = (): typeof body => body
+export const createWebhookUnknown = (): typeof body => body;

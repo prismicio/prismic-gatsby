@@ -55,10 +55,10 @@
 		"tiny-hashes": "^1.0.1"
 	},
 	"devDependencies": {
-		"@prismicio/mock": "^0.0.5",
+		"@prismicio/mock": "^0.0.6",
+		"@types/sinon": "^10.0.2",
 		"@typescript-eslint/eslint-plugin": "^4.29.3",
 		"@typescript-eslint/parser": "^4.29.3",
-		"@types/sinon": "^10.0.2",
 		"ava": "^3.15.0",
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",

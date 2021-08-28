@@ -1,8 +1,8 @@
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as A from 'fp-ts/Array'
-import { flow } from 'fp-ts/function'
+import * as RTE from "fp-ts/ReaderTaskEither";
+import * as A from "fp-ts/Array";
+import { flow } from "fp-ts/function";
 
-import { normalizeDocument } from './normalizeDocument'
+import { normalizeDocument } from "./normalizeDocument";
 
 /**
  * Normalizes one or more documents.
@@ -10,6 +10,6 @@ import { normalizeDocument } from './normalizeDocument'
  * @see gatsby-source-prismic/lib/normalizeDocument.ts
  */
 export const normalizeDocuments = flow(
-  A.map(normalizeDocument),
-  RTE.sequenceArray,
-)
+	A.map(normalizeDocument),
+	RTE.sequenceArray,
+);

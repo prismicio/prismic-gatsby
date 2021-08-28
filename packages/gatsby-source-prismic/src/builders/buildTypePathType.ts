@@ -1,9 +1,9 @@
-import * as gatsby from 'gatsby'
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
+import * as gatsby from "gatsby";
+import * as RTE from "fp-ts/ReaderTaskEither";
+import { pipe } from "fp-ts/function";
 
-import { Dependencies } from '../types'
-import { buildObjectType } from '../lib/buildObjectType'
+import { Dependencies } from "../types";
+import { buildObjectType } from "../lib/buildObjectType";
 
 /**
  * Builds a GraphQL type used to map a Custom Type's fields to an Prismic field
@@ -11,21 +11,21 @@ import { buildObjectType } from '../lib/buildObjectType'
  * `createTypes` action.
  */
 export const buildTypePathType: RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  gatsby.GatsbyGraphQLType
+	Dependencies,
+	never,
+	gatsby.GatsbyGraphQLType
 > = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.chain((deps) =>
-    buildObjectType({
-      name: deps.nodeHelpers.createTypeName('TypePathType'),
-      fields: {
-        kind: 'String!',
-        path: '[String!]!',
-        type: 'String!',
-      },
-      interfaces: ['Node'],
-      extensions: { infer: false },
-    }),
-  ),
-)
+	RTE.ask<Dependencies>(),
+	RTE.chain((deps) =>
+		buildObjectType({
+			name: deps.nodeHelpers.createTypeName("TypePathType"),
+			fields: {
+				kind: "String!",
+				path: "[String!]!",
+				type: "String!",
+			},
+			interfaces: ["Node"],
+			extensions: { infer: false },
+		}),
+	),
+);

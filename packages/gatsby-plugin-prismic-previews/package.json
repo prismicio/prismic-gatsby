@@ -70,7 +70,7 @@
 		"tiny-hashes": "^1.0.1"
 	},
 	"devDependencies": {
-		"@prismicio/mock": "^0.0.5",
+		"@prismicio/mock": "^0.0.6",
 		"@storybook/addon-postcss": "^2.0.0",
 		"@storybook/cli": "^6.3.7",
 		"@storybook/react": "^6.3.7",

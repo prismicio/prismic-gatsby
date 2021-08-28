@@ -2847,10 +2847,10 @@
     "@prismicio/types" "^0.1.6"
     escape-html "^1.0.3"
 
-"@prismicio/mock@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@prismicio/mock/-/mock-0.0.5.tgz#96512863fc08bf2fb700b16394733924182046e4"
-  integrity sha512-DS5sfpsjMeFHCE6gj2X4+xET2G2YZKsblImxjagjoEF579eXisPAlobjtFP2NL+hszHhi1WeH/44+VD9jvPipA==
+"@prismicio/mock@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@prismicio/mock/-/mock-0.0.6.tgz#1ac9691fb0617e42d82afba16be55526e4bd14d4"
+  integrity sha512-mXNI2/RoBt3WZWDUP9Rz7ZuZb4ERVpsi6COLnyBDIoYA7JjDPmJO6sKXD0rRmyTDghi5KDtfT2vjcIOKRRS1FQ==
   dependencies:
     "@prismicio/types" "^0.1.6"
     change-case "^4.1.2"

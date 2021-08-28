@@ -1,18 +1,18 @@
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as O from 'fp-ts/Option'
-import { pipe } from 'fp-ts/function'
+import * as RTE from "fp-ts/ReaderTaskEither";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 
-import { isPrismicWebhookBodyApiUpdate } from './lib/isPrismicWebhookBodyApiUpdate'
-import { isPrismicWebhookBodyForRepository } from './lib/isPrismicWebhookBodyForRepository'
-import { isPrismicWebhookBodyTestTrigger } from './lib/isPrismicWebhookBodyTestTrigger'
-import { isValidWebhookSecret } from './lib/isValidWebhookSecret'
-import { reportWarning } from './lib/reportWarning'
-import { touchAllNodes } from './lib/touchAllNodes'
+import { isPrismicWebhookBodyApiUpdate } from "./lib/isPrismicWebhookBodyApiUpdate";
+import { isPrismicWebhookBodyForRepository } from "./lib/isPrismicWebhookBodyForRepository";
+import { isPrismicWebhookBodyTestTrigger } from "./lib/isPrismicWebhookBodyTestTrigger";
+import { isValidWebhookSecret } from "./lib/isValidWebhookSecret";
+import { reportWarning } from "./lib/reportWarning";
+import { touchAllNodes } from "./lib/touchAllNodes";
 
-import { Dependencies, PrismicWebhookBody } from './types'
-import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
-import { onWebhookApiUpdate } from './on-webhook-api-update'
-import { onWebhookTestTrigger } from './on-webhook-test-trigger'
+import { Dependencies, PrismicWebhookBody } from "./types";
+import { WEBHOOK_SECRET_MISMATCH_MSG } from "./constants";
+import { onWebhookApiUpdate } from "./on-webhook-api-update";
+import { onWebhookTestTrigger } from "./on-webhook-test-trigger";
 
 /**
  * Calls the appropriate webhook handler depending on its contents.
@@ -20,32 +20,32 @@ import { onWebhookTestTrigger } from './on-webhook-test-trigger'
  * If the webhook is not intended for this plugin, the webhook is ignored.
  */
 const onPrismicWebhook = (
-  webhookBody: PrismicWebhookBody,
+	webhookBody: PrismicWebhookBody,
 ): RTE.ReaderTaskEither<Dependencies, Error, void> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chain((deps) =>
-      pipe(
-        webhookBody,
-        O.fromPredicate(isValidWebhookSecret(deps.pluginOptions.webhookSecret)),
-        O.fold(
-          () => reportWarning(WEBHOOK_SECRET_MISMATCH_MSG),
-          (webhookBody) => {
-            if (isPrismicWebhookBodyApiUpdate(webhookBody)) {
-              return onWebhookApiUpdate(webhookBody)
-            }
+	pipe(
+		RTE.ask<Dependencies>(),
+		RTE.chain((deps) =>
+			pipe(
+				webhookBody,
+				O.fromPredicate(isValidWebhookSecret(deps.pluginOptions.webhookSecret)),
+				O.fold(
+					() => reportWarning(WEBHOOK_SECRET_MISMATCH_MSG),
+					(webhookBody) => {
+						if (isPrismicWebhookBodyApiUpdate(webhookBody)) {
+							return onWebhookApiUpdate(webhookBody);
+						}
 
-            if (isPrismicWebhookBodyTestTrigger(webhookBody)) {
-              return onWebhookTestTrigger
-            }
+						if (isPrismicWebhookBodyTestTrigger(webhookBody)) {
+							return onWebhookTestTrigger;
+						}
 
-            // This webhook is unsupported or does not pertain to this plugin.
-            return RTE.right(void 0)
-          },
-        ),
-      ),
-    ),
-  )
+						// This webhook is unsupported or does not pertain to this plugin.
+						return RTE.right(void 0);
+					},
+				),
+			),
+		),
+	);
 
 /**
  * To be executed in the `sourceNodes` stage when a webhook is received.
@@ -58,15 +58,15 @@ const onPrismicWebhook = (
  * prevent garbage collection.
  */
 export const onWebhook: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.chain((deps) =>
-    pipe(
-      deps.webhookBody,
-      O.fromPredicate(
-        isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
-      ),
-      O.fold(() => RTE.right(void 0), onPrismicWebhook),
-    ),
-  ),
-  RTE.chainW(touchAllNodes),
-)
+	RTE.ask<Dependencies>(),
+	RTE.chain((deps) =>
+		pipe(
+			deps.webhookBody,
+			O.fromPredicate(
+				isPrismicWebhookBodyForRepository(deps.pluginOptions.repositoryName),
+			),
+			O.fold(() => RTE.right(void 0), onPrismicWebhook),
+		),
+	),
+	RTE.chainW(touchAllNodes),
+);

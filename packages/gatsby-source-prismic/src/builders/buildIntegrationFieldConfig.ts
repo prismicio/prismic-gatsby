@@ -1,11 +1,11 @@
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
+import * as RTE from "fp-ts/ReaderTaskEither";
+import { pipe } from "fp-ts/function";
 
-import { buildInferredNodeType } from '../lib/buildInferredNodeType'
-import { createType } from '../lib/createType'
-import { getTypeName } from '../lib/getTypeName'
+import { buildInferredNodeType } from "../lib/buildInferredNodeType";
+import { createType } from "../lib/createType";
+import { getTypeName } from "../lib/getTypeName";
 
-import { Dependencies, FieldConfigCreator } from '../types'
+import { Dependencies, FieldConfigCreator } from "../types";
 
 /**
  * Builds a GraphQL field configuration object for an Integration Fields Custom
@@ -16,20 +16,20 @@ import { Dependencies, FieldConfigCreator } from '../types'
  *
  * This function registers a typepath for the field.
  *
- * @param path Path to the field.
+ * @param path - Path to the field.
  *
  * @returns GraphQL field configuration object.
  */
 export const buildIntegrationFieldConfig: FieldConfigCreator = (
-  path: string[],
+	path: string[],
 ) =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chain(() => buildInferredNodeType([...path, 'IntegrationType'])),
-    RTE.chainFirst(createType),
-    RTE.map(getTypeName),
-    RTE.map((type) => ({
-      type,
-      extensions: { link: {} },
-    })),
-  )
+	pipe(
+		RTE.ask<Dependencies>(),
+		RTE.chain(() => buildInferredNodeType([...path, "IntegrationType"])),
+		RTE.chainFirst(createType),
+		RTE.map(getTypeName),
+		RTE.map((type) => ({
+			type,
+			extensions: { link: {} },
+		})),
+	);

@@ -1,13 +1,13 @@
-import { SerializedTypePath, TypePath } from '../types'
-import { serializePath } from './serializePath'
+import { SerializedTypePath, TypePath } from "../types";
+import { serializePath } from "./serializePath";
 
 export const serializeTypePaths = (
-  typePaths: TypePath[],
+	typePaths: TypePath[],
 ): SerializedTypePath[] => {
-  return typePaths.map((typePath) => {
-    return {
-      ...typePath,
-      path: serializePath(typePath.path),
-    }
-  })
-}
+	return typePaths.map((typePath) => {
+		return {
+			...typePath,
+			path: serializePath(typePath.path),
+		};
+	});
+};
