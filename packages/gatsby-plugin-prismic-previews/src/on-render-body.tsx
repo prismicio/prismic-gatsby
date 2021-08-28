@@ -1,7 +1,7 @@
-import * as React from 'react'
-import * as gatsby from 'gatsby'
+import * as React from "react";
+import * as gatsby from "gatsby";
 
-import { PluginOptions } from './types'
+import { PluginOptions } from "./types";
 
 /**
  * Returns the URL for the Prismic Toolbar script.
@@ -12,19 +12,23 @@ import { PluginOptions } from './types'
  * @returns URL for the Prismic Toolbar script.
  */
 const getToolbarScriptURL = (
-  repositoryName: string,
-  type: PluginOptions['toolbar'],
+	repositoryName: string,
+	type: PluginOptions["toolbar"],
 ): URL => {
-  switch (type) {
-    case 'new': {
-      return new URL(`https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}&new=true`)
-    }
+	switch (type) {
+		case "new": {
+			return new URL(
+				`https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}&new=true`,
+			);
+		}
 
-    case 'legacy': {
-      return new URL(`https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}`)
-    }
-  }
-}
+		case "legacy": {
+			return new URL(
+				`https://static.cdn.prismic.io/prismic.js?repo=${repositoryName}`,
+			);
+		}
+	}
+};
 
 /**
  * Called after every page Gatsby server renders while building HTML so it can
@@ -34,34 +38,34 @@ const getToolbarScriptURL = (
  */
 // TODO: Explore what happens when multiple instances of the plugin are
 // configured. Will multiple toolbars cause conflicts?
-export const onRenderBody: NonNullable<gatsby.GatsbySSR['onRenderBody']> =
-  async (
-    gatsbyContext: gatsby.RenderBodyArgs,
-    pluginOptions: PluginOptions,
-  ) => {
-    const toolbarScriptUrl = getToolbarScriptURL(
-      pluginOptions.repositoryName,
-      pluginOptions.toolbar,
-    )
+export const onRenderBody: NonNullable<gatsby.GatsbySSR["onRenderBody"]> =
+	async (
+		gatsbyContext: gatsby.RenderBodyArgs,
+		pluginOptions: PluginOptions,
+	) => {
+		const toolbarScriptUrl = getToolbarScriptURL(
+			pluginOptions.repositoryName,
+			pluginOptions.toolbar,
+		);
 
-    gatsbyContext.setHeadComponents([
-      <link
-        rel="preconnect"
-        key="preconnect-prismic-toolbar"
-        href={toolbarScriptUrl.origin}
-      />,
-      <link
-        rel="dns-prefetch"
-        key="dns-prefetch-prismic-toolbar"
-        href={toolbarScriptUrl.origin}
-      />,
-    ])
+		gatsbyContext.setHeadComponents([
+			<link
+				rel="preconnect"
+				key="preconnect-prismic-toolbar"
+				href={toolbarScriptUrl.origin}
+			/>,
+			<link
+				rel="dns-prefetch"
+				key="dns-prefetch-prismic-toolbar"
+				href={toolbarScriptUrl.origin}
+			/>,
+		]);
 
-    gatsbyContext.setPostBodyComponents([
-      <script
-        src={toolbarScriptUrl.href}
-        defer={true}
-        key={`gatsby-plugin-prismic-previews-toolbar-${pluginOptions.repositoryName}`}
-      />,
-    ])
-  }
+		gatsbyContext.setPostBodyComponents([
+			<script
+				src={toolbarScriptUrl.href}
+				defer={true}
+				key={`gatsby-plugin-prismic-previews-toolbar-${pluginOptions.repositoryName}`}
+			/>,
+		]);
+	};

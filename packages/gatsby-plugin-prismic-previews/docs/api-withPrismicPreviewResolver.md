@@ -21,15 +21,15 @@ updates.
 
 ```typescript
 function withPrismicPreviewResolver(
-  WrappedComponent: React.ComponentType,
-  repositoryConfigs: {
-    repositoryName: string
-    linkResolver: LinkResolver
-  }[],
-  config: {
-    autoRedirect?: boolean
-  },
-): React.ComponentType
+	WrappedComponent: React.ComponentType,
+	repositoryConfigs: {
+		repositoryName: string;
+		linkResolver: LinkResolver;
+	}[],
+	config: {
+		autoRedirect?: boolean;
+	},
+): React.ComponentType;
 ```
 
 - **`WrappedComponent`**<br/>The page component which will direct editors during
@@ -70,29 +70,28 @@ special preview-specific code. In most cases, you can simply add
 page to enable preview support.
 
 ```javascript
-import * as React from 'react'
-import { withPrismicPreviewResolver } from 'gatsby-plugin-prismic-previews'
+import * as React from "react";
+import { withPrismicPreviewResolver } from "gatsby-plugin-prismic-previews";
 
-import { linkResolver } from '../linkResolver'
+import { linkResolver } from "../linkResolver";
 
 const PreviewPage = () => {
-  return (
-    <div>
-      <h1>Loading preview…</h1>
-    </div>
-  )
-}
+	return (
+		<div>
+			<h1>Loading preview…</h1>
+		</div>
+	);
+};
 
 export default withPrismicPreviewResolver(PreviewPage, [
-  {
-    repositoryName: 'my-repository-name',
-    linkResolver,
-  },
-])
+	{
+		repositoryName: "my-repository-name",
+		linkResolver,
+	},
+]);
 ```
 
 [hoc]: https://reactjs.org/docs/higher-order-components.html
 [link-resolver]: https://prismic.io/docs/technologies/link-resolver-gatsby
 [gsp]: https://github.com/angeloashmore/gatsby-source-prismic
-[how-to-set-up-a-preview]:
-  https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview
+[how-to-set-up-a-preview]: https://user-guides.prismic.io/en/articles/781294-how-to-set-up-a-preview

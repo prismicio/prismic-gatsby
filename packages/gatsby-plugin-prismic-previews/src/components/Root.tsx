@@ -1,15 +1,15 @@
-import * as React from 'react'
-import root from 'react-shadow'
+import * as React from "react";
+import root from "react-shadow";
 
-import styles from '../styles.css'
+import styles from "../styles.css";
 
 type RootProps = {
-  children?: React.ReactNode
-}
+	children?: React.ReactNode;
+};
 
 export const Root = ({ children }: RootProps): JSX.Element => (
-  <root.div>
-    <div className="root">{children}</div>
-    <style type="text/css">{styles}</style>
-  </root.div>
-)
+	<root.div>
+		<div className="root">{children}</div>
+		<style type="text/css">{styles}</style>
+	</root.div>
+);

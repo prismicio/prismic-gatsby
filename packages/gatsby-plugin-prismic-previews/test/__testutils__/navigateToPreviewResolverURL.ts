@@ -1,11 +1,11 @@
-import { createPreviewURL } from './createPreviewURL'
+import { createPreviewURL } from "./createPreviewURL";
 
 export const navigateToPreviewResolverURL = (
-  token: string,
-  documentId: string | null = 'documentId',
+	token: string,
+	documentId: string | null = "documentId",
 ): void =>
-  window.history.replaceState(
-    null,
-    '',
-    createPreviewURL({ token, documentId: documentId ?? undefined }),
-  )
+	window.history.replaceState(
+		null,
+		"",
+		createPreviewURL({ token, documentId: documentId ?? undefined }),
+	);

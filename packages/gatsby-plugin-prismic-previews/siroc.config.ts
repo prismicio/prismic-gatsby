@@ -1,8 +1,8 @@
-import { defineSirocConfig } from 'siroc'
-import postcss from 'rollup-plugin-postcss'
+import { defineSirocConfig } from "siroc";
+import postcss from "rollup-plugin-postcss";
 
 export default defineSirocConfig({
-  rollup: {
-    plugins: [postcss({ inject: false })],
-  },
-})
+	rollup: {
+		plugins: [postcss({ inject: false })],
+	},
+});

@@ -16,17 +16,17 @@ must mark documents in your query as "previewable." This involves adding a
 
 ```typescript
 function withPrismicPreview(
-  WrappedComponent: React.ComponentType,
-  repositoryConfigs: {
-    repositoryName: string
-    linkResolver: LinkResolver
-    htmlSerializer?: HTMLSerializer
-    transformFieldName?: FieldNameTransformer
-  }[],
-  config: {
-    mergePreviewData?: boolean
-  },
-): React.ComponentType
+	WrappedComponent: React.ComponentType,
+	repositoryConfigs: {
+		repositoryName: string;
+		linkResolver: LinkResolver;
+		htmlSerializer?: HTMLSerializer;
+		transformFieldName?: FieldNameTransformer;
+	}[],
+	config: {
+		mergePreviewData?: boolean;
+	},
+): React.ComponentType;
 ```
 
 - **`WrappedComponent`**<br/>The page component to which Prismic previews will
@@ -80,46 +80,45 @@ This special field should be included any time a document is queried, including
 querying for documents within relationship fields.
 
 ```javascript
-import * as React from 'react'
-import { graphql } from 'gatsby'
-import { withPrismicPreview } from 'gatsby-plugin-prismic-previews'
+import * as React from "react";
+import { graphql } from "gatsby";
+import { withPrismicPreview } from "gatsby-plugin-prismic-previews";
 
-import { linkResolver } from '../linkResolver'
+import { linkResolver } from "../linkResolver";
 
 const PageTemplate = ({ data }) => {
-  const page = data.prismicPage
+	const page = data.prismicPage;
 
-  return (
-    <div>
-      <h1>{page.data.title.text}</h1>
-    </div>
-  )
-}
+	return (
+		<div>
+			<h1>{page.data.title.text}</h1>
+		</div>
+	);
+};
 
 export default withPrismicPreview(PageTemplate, [
-  {
-    repositoryName: 'my-repository-name',
-    linkResolver,
-  },
-])
+	{
+		repositoryName: "my-repository-name",
+		linkResolver,
+	},
+]);
 
 export const query = graphql`
-  query PageTemplate($id: ID!) {
-    prismicPage(id: { eq: $id }) {
-      _previewable
-      data {
-        title {
-          text
-        }
-      }
-    }
-  }
-`
+	query PageTemplate($id: ID!) {
+		prismicPage(id: { eq: $id }) {
+			_previewable
+			data {
+				title {
+					text
+				}
+			}
+		}
+	}
+`;
 ```
 
 [hoc]: https://reactjs.org/docs/higher-order-components.html
 [link-resolver]: https://prismic.io/docs/technologies/link-resolver-gatsby
 [gsp]: https://github.com/angeloashmore/gatsby-source-prismic
-[html-serializer]:
-  https://prismic.io/docs/technologies/html-serializer-javascript
+[html-serializer]: https://prismic.io/docs/technologies/html-serializer-javascript
 [usemergeprismicpreviewdata]: ./useMergePrismicPreviewData.md

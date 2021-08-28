@@ -1,1 +1,1 @@
-module.exports = require('./dist/gatsby-node.cjs')
+module.exports = require("./dist/gatsby-node.cjs");

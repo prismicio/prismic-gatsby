@@ -1,2 +1,2 @@
 export const defaultFieldTransformer = (fieldName: string): string =>
-  fieldName.replace(/-/g, '_')
+	fieldName.replace(/-/g, "_");

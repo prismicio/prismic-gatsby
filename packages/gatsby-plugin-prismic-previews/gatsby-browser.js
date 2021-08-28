@@ -1,1 +1,1 @@
-export * from './dist/gatsby-browser.mjs'
+export * from "./dist/gatsby-browser.mjs";

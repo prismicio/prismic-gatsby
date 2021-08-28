@@ -1,4 +1,4 @@
 export const createAuthorizationHeader = (
-  accessToken?: string,
+	accessToken?: string,
 ): string | undefined =>
-  accessToken != null ? `Token ${accessToken}` : undefined
+	accessToken != null ? `Token ${accessToken}` : undefined;

@@ -3,7 +3,7 @@
  * not detect the exports if the module is re-exported as a whole.
  */
 
-import * as gatsbySSR from './dist/gatsby-ssr.mjs'
+import * as gatsbySSR from "./dist/gatsby-ssr.mjs";
 
-export const onRenderBody = gatsbySSR.onRenderBody
-export const wrapRootElement = gatsbySSR.wrapRootElement
+export const onRenderBody = gatsbySSR.onRenderBody;
+export const wrapRootElement = gatsbySSR.wrapRootElement;
