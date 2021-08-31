@@ -39,7 +39,7 @@
 		"format": "prettier --write .",
 		"prepare": "yarn build",
 		"lint": "eslint --ext .js,.ts .",
-		"unit": "nyc --reporter=lcovonly --reporter=text --exclude-after-remap=false ava",
+		"unit": "nyc ava",
 		"test": "yarn lint && yarn unit"
 	},
 	"dependencies": {

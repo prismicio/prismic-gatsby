@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@angeloashmore/esbuild-register@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@angeloashmore/esbuild-register/-/esbuild-register-0.0.1.tgz#54ad811bc87e462f862ca39c11d4c8cf93ef5475"
+  integrity sha512-ud9B9HeVZajZiIzEYEaQSaPTK1oWg1CPKNpwS01l6CPPQ57XuwP6NtLjH0/nbXRE4tGj1wpHCpaE5YYbfBEJ5g==
+  dependencies:
+    jsonc-parser "^3.0.0"
+
 "@ardatan/aggregate-error@0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@ardatan/aggregate-error/-/aggregate-error-0.0.6.tgz#fe6924771ea40fc98dc7a7045c2e872dc8527609"

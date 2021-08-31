@@ -50,7 +50,7 @@
 		"format": "prettier --write .",
 		"prepare": "yarn build",
 		"lint": "eslint --ext .js,.ts .",
-		"unit": "nyc --reporter=lcovonly --reporter=text --exclude-after-remap=false ava",
+		"unit": "nyc ava",
 		"test": "yarn lint && yarn unit",
 		"build-storybook": "build-storybook",
 		"storybook": "start-storybook --quiet -p 6006"
@@ -70,6 +70,7 @@
 		"tiny-hashes": "^1.0.1"
 	},
 	"devDependencies": {
+		"@angeloashmore/esbuild-register": "^0.0.1",
 		"@prismicio/mock": "^0.0.6",
 		"@storybook/addon-postcss": "^2.0.0",
 		"@storybook/cli": "^6.3.7",
@@ -84,7 +85,6 @@
 		"ava": "^3.15.0",
 		"browser-env": "^3.3.0",
 		"cross-fetch": "^3.1.4",
-		"esbuild-register": "^3.0.0",
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-prettier": "^3.4.1",
