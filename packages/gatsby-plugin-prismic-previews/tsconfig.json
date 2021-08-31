@@ -4,7 +4,7 @@
 		"skipLibCheck": true,
 
 		"target": "esnext",
-		"module": "esnext",
+		"module": "commonjs",
 		"declaration": false,
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
