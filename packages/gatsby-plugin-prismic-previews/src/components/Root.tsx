@@ -7,9 +7,11 @@ type RootProps = {
 	children?: React.ReactNode;
 };
 
-export const Root = ({ children }: RootProps): JSX.Element => (
-	<root.div>
-		<div className="root">{children}</div>
-		<style type="text/css">{styles}</style>
-	</root.div>
-);
+export const Root = ({ children }: RootProps): JSX.Element => {
+	return (
+		<root.div>
+			<div className="root">{children}</div>
+			<style type="text/css">{styles}</style>
+		</root.div>
+	);
+};
