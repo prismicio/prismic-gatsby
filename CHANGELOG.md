@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.3](https://github.com/prismicio/prismic-gatsby/compare/v4.1.2...v4.1.3) (2021-09-01)
+
+
+### Bug Fixes
+
+* **previews:** wait for bootstrap to complete before merging data ([4b9bfe4](https://github.com/prismicio/prismic-gatsby/commit/4b9bfe4594810bf3b4de919ed0b3c967c20b4382))
+
+
+
+
+
 ## [4.1.2](https://github.com/prismicio/prismic-gatsby/compare/v4.1.1...v4.1.2) (2021-08-25)
 
 
