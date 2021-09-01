@@ -6,6 +6,7 @@ import * as gatsbyPrismic from "gatsby-source-prismic";
 import { isPlainObject } from "./lib/isPlainObject";
 
 import { UnknownRecord } from "./types";
+import { PrismicPreviewState } from "./context";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
 import { isProxy } from "./lib/isProxy";
 
@@ -132,7 +133,11 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
 			? state.runtimeStore[state.activeRepositoryName]
 			: undefined;
 
-		if (config.skip || !runtime) {
+		if (
+			config.skip ||
+			!runtime ||
+			state.previewState !== PrismicPreviewState.ACTIVE
+		) {
 			return { data: staticData, isPreview: false };
 		} else {
 			return traverseAndReplace(staticData, runtime);
