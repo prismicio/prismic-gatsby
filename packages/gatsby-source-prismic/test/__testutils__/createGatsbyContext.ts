@@ -29,6 +29,8 @@ export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
 			deleteNode: sinon.stub().callsFake((id: string) => nodeStore.delete(id)),
 			createTypes: sinon.stub(),
 			touchNode: sinon.stub(),
+			addThirdPartySchema: sinon.stub(),
+			createFieldExtension: sinon.stub(),
 		},
 		reporter: {
 			info: sinon.stub(),

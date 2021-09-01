@@ -53,7 +53,7 @@ test("creates base types", async (t) => {
 					},
 					localFile: {
 						type: "File",
-						resolve: sinon.match.func,
+						extensions: { link: {} },
 					},
 					raw: {
 						type: "JSON",
@@ -124,70 +124,6 @@ test("document field resolves to null if link type is not Document", async (t) =
 		type: prismicT.LinkType.Media,
 	});
 	const resolver = call.config.fields.document.resolve;
-	const res = await resolver(field);
-
-	t.true(res === null);
-});
-
-test("localFile field resolves to remote node if link type is Media and url is present", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
-
-	const call = findCreateTypesCall(
-		"PrismicPrefixLinkType",
-		gatsbyContext.actions.createTypes as sinon.SinonStub,
-	);
-	const field = prismicM.value.link({
-		seed: t.title,
-		type: prismicT.LinkType.Media,
-	});
-	const resolver = call.config.fields.localFile.resolve;
-	const res = await resolver(field);
-
-	t.true(res.id === "remoteFileNodeId");
-});
-
-test("localFile field resolves to null if link type is Media and url is not present", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
-
-	const call = findCreateTypesCall(
-		"PrismicPrefixLinkType",
-		gatsbyContext.actions.createTypes as sinon.SinonStub,
-	);
-	const field = prismicM.value.link({
-		seed: t.title,
-		type: prismicT.LinkType.Media,
-		isFilled: false,
-	});
-	const resolver = call.config.fields.localFile.resolve;
-	const res = await resolver(field);
-
-	t.true(res === null);
-});
-
-test("localFile field resolves to null if link type is not Media", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
-
-	const call = findCreateTypesCall(
-		"PrismicPrefixLinkType",
-		gatsbyContext.actions.createTypes as sinon.SinonStub,
-	);
-	const field = prismicM.value.link({
-		seed: t.title,
-		type: prismicT.LinkType.Document,
-	});
-	const resolver = call.config.fields.localFile.resolve;
 	const res = await resolver(field);
 
 	t.true(res === null);

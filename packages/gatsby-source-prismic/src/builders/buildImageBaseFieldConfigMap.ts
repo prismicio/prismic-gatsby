@@ -1,5 +1,4 @@
 import * as gqlc from "graphql-compose";
-import * as gatsbyFs from "gatsby-source-filesystem";
 import * as imgixGatsby from "@imgix/gatsby/dist/pluginHelpers";
 import * as prismicT from "@prismicio/types";
 import * as RTE from "fp-ts/ReaderTaskEither";
@@ -165,19 +164,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
 		gatsbyImageData: scope.gatsbyImageDataField,
 		localFile: {
 			type: "File",
-			resolve: async (
-				source: prismicT.ImageField,
-			): Promise<gatsbyFs.FileSystemNode | null> =>
-				source.url
-					? await scope.createRemoteFileNode({
-							url: source.url,
-							store: scope.store,
-							cache: scope.cache,
-							createNode: scope.createNode,
-							createNodeId: scope.createNodeId,
-							reporter: scope.reporter,
-					  })
-					: null,
+			extensions: { link: {} },
 		},
 	})),
 );

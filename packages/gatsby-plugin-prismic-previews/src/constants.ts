@@ -13,19 +13,6 @@ export const VERSION = pkg.version;
 export const IS_PROXY = Symbol("IS_PROXY");
 
 /**
- * Prismic API document fields returned for image fields that are **not** thumbnails.
- *
- * These fields are filtered out from the API response to extract the field's
- * thumbnails. The API includes thumbnails adjacent to these fields.
- */
-export const PRISMIC_API_IMAGE_FIELDS = [
-	"alt",
-	"copyright",
-	"dimensions",
-	"url",
-];
-
-/**
  * Default value for the `toolbar` plugin option which determines which version
  * of the Prismic Toolbar to render.
  */

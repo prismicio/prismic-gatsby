@@ -67,7 +67,7 @@
 		"eslint-plugin-react": "^7.24.0",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"eslint-plugin-tsdoc": "^0.2.14",
-		"gatsby": "^3.12.1",
+		"gatsby": "4.0.0-alpha-9689ff.5",
 		"gatsby-image": "^3.11.0",
 		"gatsby-plugin-image": "^1.11.0",
 		"gatsby-plugin-utils": "^1.11.0",

@@ -1,3 +1,6 @@
+import * as gatsby from "gatsby";
+import { ErrorContext } from "./types";
+
 /**
  * Global prefix used for all GraphQL types and, where necessary, fields.
  */
@@ -10,6 +13,19 @@ export const GLOBAL_TYPE_PREFIX = "Prismic";
  */
 export const DEFAULT_CUSTOM_TYPES_API_ENDPOINT =
 	"https://customtypes.prismic.io/customtypes";
+
+/**
+ * Prismic API document fields returned for image fields that are **not** thumbnails.
+ *
+ * These fields are filtered out from the API response to extract the field's
+ * thumbnails. The API includes thumbnails adjacent to these fields.
+ */
+export const PRISMIC_API_IMAGE_FIELDS = [
+	"alt",
+	"copyright",
+	"dimensions",
+	"url",
+];
 
 /**
  * Default Imgix URL parameters for `gatsby-plugin-image` fields.
@@ -89,3 +105,26 @@ export const MISSING_SCHEMAS_MSG =
  * Format used to inform the user of a missing schema.
  */
 export const MISSING_SCHEMA_MSG = 'JSON schema for "%s" is missing';
+
+export enum ErrorCode {
+	GENERIC = "GENERIC",
+	MISSING_SHARED_SLICE_MODEL = "MISSING_SHARED_SLICE_MODEL",
+	FIELD_SHAPE_MISMATCH = "FIELD_SHAPE_MISMATCH",
+}
+
+export const ERROR_MAP: gatsby.Reporter["errorMap"] = {
+	[ErrorCode.GENERIC]: {
+		text: (context: ErrorContext) => context.sourceMessage,
+		level: "DEBUG",
+	},
+	[ErrorCode.MISSING_SHARED_SLICE_MODEL]: {
+		text: (context: ErrorContext) => context.sourceMessage,
+		level: "ERROR",
+		type: "CONFIG",
+	},
+	[ErrorCode.FIELD_SHAPE_MISMATCH]: {
+		text: (context: ErrorContext) => context.sourceMessage,
+		level: "ERROR",
+		type: "PLUGIN",
+	},
+};

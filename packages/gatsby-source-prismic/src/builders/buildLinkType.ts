@@ -1,5 +1,4 @@
 import * as gatsby from "gatsby";
-import * as gatsbyFs from "gatsby-source-filesystem";
 import * as prismicH from "@prismicio/helpers";
 import * as prismicT from "@prismicio/types";
 import * as RTE from "fp-ts/ReaderTaskEither";
@@ -51,21 +50,9 @@ export const buildLinkType: RTE.ReaderTaskEither<
 				},
 				localFile: {
 					type: "File",
-					resolve: async (
-						source: prismicT.LinkField,
-					): Promise<gatsbyFs.FileSystemNode | null> =>
-						source.link_type === prismicT.LinkType.Media &&
-						"url" in source &&
-						source.url
-							? await deps.createRemoteFileNode({
-									url: source.url,
-									store: deps.store,
-									cache: deps.cache,
-									createNode: deps.createNode,
-									createNodeId: deps.createNodeId,
-									reporter: deps.reporter,
-							  })
-							: null,
+					extensions: {
+						link: {},
+					},
 				},
 				raw: { type: "JSON", resolve: identity },
 			},

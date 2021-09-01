@@ -8,6 +8,7 @@ import { sanitizeImageURL } from "../../lib/sanitizeImageURL";
 import { stripURLQueryParameters } from "../../lib/stripURLParameters";
 
 import { NormalizeConfig, NormalizerDependencies } from "../types";
+import { PRISMIC_API_IMAGE_FIELDS } from "../../constants";
 
 const getURLSearchParams = (url: string): Record<string, string> => {
 	const urlInstance = new URL(url);
@@ -157,7 +158,7 @@ export const image = <Value extends prismicT.ImageField>(
 	};
 
 	const thumbnailNames = Object.keys(config.value).filter(
-		(key) => !["url", "alt", "copyright", "dimensions"].includes(key),
+		(key) => !PRISMIC_API_IMAGE_FIELDS.includes(key),
 	);
 
 	for (const thumbnailName of thumbnailNames) {

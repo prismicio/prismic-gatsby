@@ -16,6 +16,8 @@ import {
 import { getTypePath } from "./getTypePath";
 import { createNodeOfType } from "./createNodeOfType";
 import { mapRecordIndices } from "./mapRecordIndices";
+import { createRemoteFileNode } from "./createRemoteFileNode";
+import { PRISMIC_API_IMAGE_FIELDS } from "../constants";
 
 /**
  * Determines if a value is a record.
@@ -98,6 +100,34 @@ const stringableRefinement = (value: unknown): value is Stringable =>
 		typeof value === "object") &&
 	value != null &&
 	Boolean(value.toString);
+
+/**
+ * Determines if a value is a Link field.
+ *
+ * @param value - Value to check.
+ *
+ * @returns `true` if the value is a Link, `false` otherwise.
+ */
+export const linkValueRefinement = (
+	value: unknown,
+): value is prismicT.LinkField => {
+	return typeof value === "object" && (value === null || "link_type" in value);
+};
+
+/**
+ * Determines if a value is an Image field.
+ *
+ * @param value - Value to check.
+ *
+ * @returns `true` if the value is an Image, `false` otherwise.
+ */
+export const imageValueRefinement = (
+	value: unknown,
+): value is prismicT.ImageField => {
+	// Unfortunately, we can't check for specific properties here since it's
+	// possible for the object to be empty if an image was never set.
+	return typeof value === "object" && value !== null;
+};
 
 /**
  * Normalizes a record within a Prismic document. It normalizes each field individually.
@@ -364,12 +394,89 @@ export const normalizeDocumentSubtree = (
 					);
 				}
 
+				case prismicT.CustomTypeModelFieldType.Link: {
+					return pipe(
+						value,
+						RTE.fromPredicate(
+							linkValueRefinement,
+							() =>
+								new Error(
+									`Field value does not match the type declared in its type path: ${env.type}`,
+								),
+						),
+						RTE.bindTo("value"),
+						RTE.bind("fileNode", (scope) => {
+							return scope.value.link_type == prismicT.LinkType.Media &&
+								"url" in scope.value &&
+								scope.value.url
+								? createRemoteFileNode(scope.value.url)
+								: RTE.right(null);
+						}),
+						RTE.map((scope) => ({
+							...scope.value,
+							localFile: scope.fileNode?.id || null,
+						})),
+					);
+				}
+
+				case prismicT.CustomTypeModelFieldType.Image: {
+					return pipe(
+						value,
+						RTE.fromPredicate(
+							imageValueRefinement,
+							() =>
+								new Error(
+									`Field value does not match the type declared in its type path: ${env.type}`,
+								),
+						),
+						RTE.bindTo("value"),
+						RTE.bind("thumbnails", (scope) =>
+							pipe(
+								scope.value,
+								R.filterWithIndex<string, prismicT.ImageFieldImage>(
+									(key) => !PRISMIC_API_IMAGE_FIELDS.includes(key),
+								),
+								RTE.right,
+								RTE.bindTo("thumbnails"),
+								RTE.bind("thumbnailFileNodes", (scope) =>
+									pipe(
+										scope.thumbnails,
+										R.map((thumbnail) =>
+											thumbnail.url
+												? createRemoteFileNode(thumbnail.url)
+												: RTE.right(null),
+										),
+										R.sequence(RTE.ApplicativeSeq),
+									),
+								),
+								RTE.map((scope) =>
+									pipe(
+										scope.thumbnails,
+										R.mapWithIndex((key, value) => ({
+											...value,
+											localFile: scope.thumbnailFileNodes[key]?.id || null,
+										})),
+									),
+								),
+							),
+						),
+						RTE.bind("fileNode", (scope) => {
+							return scope.value.url
+								? createRemoteFileNode(scope.value.url)
+								: RTE.right(null);
+						}),
+						RTE.map((scope) => ({
+							...scope.value,
+							...scope.thumbnails,
+							localFile: scope.fileNode?.id || null,
+						})),
+					);
+				}
+
 				case prismicT.CustomTypeModelFieldType.Boolean:
 				case prismicT.CustomTypeModelFieldType.Color:
 				case prismicT.CustomTypeModelFieldType.Date:
 				case prismicT.CustomTypeModelFieldType.GeoPoint:
-				case prismicT.CustomTypeModelFieldType.Image:
-				case prismicT.CustomTypeModelFieldType.Link:
 				case prismicT.CustomTypeModelFieldType.Number:
 				case prismicT.CustomTypeModelFieldType.Select:
 				case prismicT.CustomTypeModelFieldType.StructuredText:
