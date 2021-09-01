@@ -7,7 +7,7 @@ import { PREVIEWABLE_NODE_ID_FIELD } from 'gatsby-source-prismic'
 import { isPlainObject } from './lib/isPlainObject'
 
 import { UnknownRecord } from './types'
-import { PrismicContextState } from './context'
+import { PrismicContextState, PrismicPreviewState } from './context'
 import { usePrismicPreviewContext } from './usePrismicPreviewContext'
 import { isProxy } from './lib/isProxy'
 
@@ -131,7 +131,7 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
   const [state] = usePrismicPreviewContext()
 
   return React.useMemo(() => {
-    if (config.skip) {
+    if (config.skip || state.previewState !== PrismicPreviewState.ACTIVE) {
       return { data: staticData, isPreview: false }
     } else {
       return traverseAndReplace(staticData, state.nodes)
