@@ -25,10 +25,6 @@ export type IterableElement<TargetIterable> = TargetIterable extends Iterable<
 	? ElementType
 	: never;
 
-export interface ErrorContext {
-	sourceMessage: string;
-}
-
 export type JoiValidationError = InstanceType<
 	gatsby.PluginOptionsSchemaArgs["Joi"]["ValidationError"]
 >;

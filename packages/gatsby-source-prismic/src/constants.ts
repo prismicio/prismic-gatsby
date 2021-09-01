@@ -1,6 +1,3 @@
-import * as gatsby from "gatsby";
-import { ErrorContext } from "./types";
-
 /**
  * Global prefix used for all GraphQL types and, where necessary, fields.
  */
@@ -105,26 +102,3 @@ export const MISSING_SCHEMAS_MSG =
  * Format used to inform the user of a missing schema.
  */
 export const MISSING_SCHEMA_MSG = 'JSON schema for "%s" is missing';
-
-export enum ErrorCode {
-	GENERIC = "GENERIC",
-	MISSING_SHARED_SLICE_MODEL = "MISSING_SHARED_SLICE_MODEL",
-	FIELD_SHAPE_MISMATCH = "FIELD_SHAPE_MISMATCH",
-}
-
-export const ERROR_MAP: gatsby.Reporter["errorMap"] = {
-	[ErrorCode.GENERIC]: {
-		text: (context: ErrorContext) => context.sourceMessage,
-		level: "DEBUG",
-	},
-	[ErrorCode.MISSING_SHARED_SLICE_MODEL]: {
-		text: (context: ErrorContext) => context.sourceMessage,
-		level: "ERROR",
-		type: "CONFIG",
-	},
-	[ErrorCode.FIELD_SHAPE_MISMATCH]: {
-		text: (context: ErrorContext) => context.sourceMessage,
-		level: "ERROR",
-		type: "PLUGIN",
-	},
-};
