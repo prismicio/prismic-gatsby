@@ -56,7 +56,7 @@ test("creates base types", async (t) => {
 						}),
 						localFile: sinon.match({
 							type: "File",
-							resolve: sinon.match.func,
+							extensions: { link: {} },
 						}),
 					},
 				}),
@@ -109,7 +109,7 @@ test("creates field-specific image type", async (t) => {
 					}),
 					localFile: sinon.match({
 						type: "File",
-						resolve: sinon.match.func,
+						extensions: { link: {} },
 					}),
 				},
 			}),
@@ -166,65 +166,6 @@ test("creates field-specific thumbnail types", async (t) => {
 			(type) => type === "PrismicPrefixImageThumbnailType",
 		),
 	);
-});
-
-test("localFile field resolves to remote node if image is present", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-
-	const customTypeModel = createMockCustomTypeModelWithFields(t, {
-		image: prismicM.model.image({
-			seed: t.title,
-			thumbnailsCount: 0,
-		}),
-	});
-	customTypeModel.id = "foo";
-
-	pluginOptions.customTypeModels = [customTypeModel];
-
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
-
-	const call = findCreateTypesCall(
-		"PrismicPrefixFooDataImageImageType",
-		gatsbyContext.actions.createTypes as sinon.SinonStub,
-	);
-	const field = prismicM.value.image({
-		seed: t.title,
-		model: customTypeModel.json.Main.image,
-	});
-	const resolver = call.config.fields.localFile.resolve;
-	const res = await resolver(field);
-
-	t.true(res.id === "remoteFileNodeId");
-});
-
-test("localFile field resolves to null if image is not present", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-
-	const customTypeModel = createMockCustomTypeModelWithFields(t, {
-		image: prismicM.model.image({
-			seed: t.title,
-			thumbnailsCount: 0,
-		}),
-	});
-	customTypeModel.id = "foo";
-
-	pluginOptions.customTypeModels = [customTypeModel];
-
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
-
-	const call = findCreateTypesCall(
-		"PrismicPrefixFooDataImageImageType",
-		gatsbyContext.actions.createTypes as sinon.SinonStub,
-	);
-	const field = { url: null };
-	const resolver = call.config.fields.localFile.resolve;
-	const res = await resolver(field);
-
-	t.true(res === null);
 });
 
 test("thumbnail field resolves thumbnails", async (t) => {

@@ -30,6 +30,7 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
 		imagePlaceholderImgixParams: DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
 		linkResolver: () => "linkResolver",
 		htmlSerializer: () => "htmlSerializer",
+		shouldDownloadFiles: {},
 		plugins: [],
 		createRemoteFileNode: sinon
 			.stub()

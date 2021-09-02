@@ -328,7 +328,7 @@ test("link fields with media and link to media fields are normalized to include 
 		seed: t.title,
 		model: customTypeModel,
 		configs: {
-			link: { isFilled: false },
+			link: { isFilled: true },
 		},
 	});
 	const repositoryResponse = prismicM.api.repository({ seed: t.title });
@@ -342,6 +342,9 @@ test("link fields with media and link to media fields are normalized to include 
 	});
 
 	pluginOptions.customTypeModels = [customTypeModel];
+	pluginOptions.shouldDownloadFiles = {
+		"foo.data.link": true,
+	};
 
 	server.use(
 		createAPIRepositoryMockedRequest({
@@ -402,6 +405,48 @@ test("link fields with media and link to media fields are normalized to include 
 	);
 });
 
+test("linked media are not downloaded without configuring shouldDownloadFiles", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		link: prismicM.model.link({ seed: t.title }),
+	});
+	const document = prismicM.value.document({
+		seed: t.title,
+		model: customTypeModel,
+		configs: {
+			link: { type: prismicT.LinkType.Media },
+		},
+	});
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({
+		seed: t.title,
+		documents: [document],
+	});
+
+	pluginOptions.customTypeModels = [customTypeModel];
+
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+		}),
+	);
+
+	// @ts-expect-error - Partial gatsbyContext provided
+	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
+
+	t.is((pluginOptions.createRemoteFileNode as sinon.SinonStub).callCount, 0);
+});
+
 test("image fields with images are normalized to include localFile field id", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
@@ -433,6 +478,10 @@ test("image fields with images are normalized to include localFile field id", as
 	});
 
 	pluginOptions.customTypeModels = [customTypeModel];
+	pluginOptions.shouldDownloadFiles = {
+		"foo.data.image": true,
+		[`foo.data.image.${thumbnailName}`]: true,
+	};
 
 	server.use(
 		createAPIRepositoryMockedRequest({
@@ -484,6 +533,48 @@ test("image fields with images are normalized to include localFile field id", as
 			}),
 		),
 	);
+});
+
+test("images are not downloaded without configuring shouldDownloadFiles", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		image: prismicM.model.image({
+			seed: t.title,
+			thumbnailsCount: 1,
+		}),
+	});
+	const document = prismicM.value.document({
+		seed: t.title,
+		model: customTypeModel,
+	});
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({
+		seed: t.title,
+		documents: [document],
+	});
+
+	pluginOptions.customTypeModels = [customTypeModel];
+
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+		}),
+	);
+
+	// @ts-expect-error - Partial gatsbyContext provided
+	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
+
+	t.is((pluginOptions.createRemoteFileNode as sinon.SinonStub).callCount, 0);
 });
 
 // This check is required to support Gatsby 4 parallelization.
