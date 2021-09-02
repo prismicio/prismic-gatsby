@@ -266,3 +266,66 @@ test("id field resolves to a unique id", async (t) => {
 
 	t.true(res === "Prismic prefix foo data slices slice createContentDigest");
 });
+
+test("shared slice union type resolves to correct", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		slices: prismicM.model.sliceZone({
+			seed: t.title,
+			choices: {
+				sharedSlice: prismicM.model.sharedSliceChoice(),
+			},
+		}),
+	});
+	customTypeModel.id = "foo";
+
+	const sharedSliceModel = prismicM.model.sharedSlice({
+		seed: t.title,
+		variationsCount: 2,
+	});
+	sharedSliceModel.id = "sharedSlice";
+	sharedSliceModel.variations[0].id = "variation1";
+	sharedSliceModel.variations[1].id = "variation2";
+
+	pluginOptions.customTypeModels = [customTypeModel];
+	pluginOptions.sharedSliceModels = [sharedSliceModel];
+
+	// @ts-expect-error - Partial gatsbyContext provided
+	await createSchemaCustomization(gatsbyContext, pluginOptions);
+
+	t.true(
+		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+			kind: "UNION",
+			config: sinon.match({
+				name: "PrismicPrefixSharedSlice",
+				types: [
+					"PrismicPrefixSharedSliceVariation1",
+					"PrismicPrefixSharedSliceVariation2",
+				],
+				resolveType: sinon.match.func,
+			}),
+		}),
+	);
+
+	const call = findCreateTypesCall(
+		"PrismicPrefixSharedSlice",
+		gatsbyContext.actions.createTypes as sinon.SinonStub,
+	);
+	const resolver = call.config.resolveType;
+
+	const sliceVariation1 = prismicM.value.sharedSliceVariation({
+		seed: t.title,
+		model: sharedSliceModel.variations[0],
+		type: sharedSliceModel.id,
+	});
+	const sliceVariation2 = prismicM.value.sharedSliceVariation({
+		seed: t.title,
+		model: sharedSliceModel.variations[1],
+		type: sharedSliceModel.id,
+	});
+
+	t.is(resolver(sliceVariation1), "PrismicPrefixSharedSliceVariation1");
+	t.is(resolver(sliceVariation2), "PrismicPrefixSharedSliceVariation2");
+});

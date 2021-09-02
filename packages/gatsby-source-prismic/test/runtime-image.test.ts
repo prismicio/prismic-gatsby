@@ -93,6 +93,35 @@ test("normalizes Image fields", (t) => {
 	}
 });
 
+test("normalizes empty Image fields", (t) => {
+	const model = createMockCustomTypeModelWithFields(t, {
+		image: prismicM.model.image({ seed: t.title, thumbnailsCount: 0 }),
+	});
+	const document = prismicM.value.document({
+		seed: t.title,
+		model,
+	});
+	document.data.image.url = null;
+	document.data.image.dimensions = null;
+	document.data.image.alt = null;
+	document.data.image.copyright = null;
+
+	const runtime = gatsbyPrismic.createRuntime();
+	runtime.registerCustomTypeModel(model);
+
+	const normalizedDocument = runtime.registerDocument(document);
+
+	t.is(normalizedDocument.data.image.url, null);
+	t.is(normalizedDocument.data.image.dimensions, null);
+	t.is(normalizedDocument.data.image.alt, null);
+	t.is(normalizedDocument.data.image.copyright, null);
+	t.is(normalizedDocument.data.image.fixed, null);
+	t.is(normalizedDocument.data.image.fluid, null);
+	t.is(normalizedDocument.data.image.gatsbyImageData, null);
+	t.is(normalizedDocument.data.image.localFile, null);
+	t.deepEqual(normalizedDocument.data.image.thumbnails, {});
+});
+
 test("uses imageImgixParams if provided to the runtime", (t) => {
 	const model = createMockCustomTypeModelWithFields(t, {
 		image: prismicM.model.image({ seed: t.title }),

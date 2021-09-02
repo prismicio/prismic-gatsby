@@ -60,6 +60,16 @@ test("multiple custom type models can be registered at once", (t) => {
 	t.snapshot(runtime.typePaths);
 });
 
+test("registering a custom type model without data fields does not add DocumentData", (t) => {
+	const model = createMockCustomTypeModelWithFields(t, {});
+
+	const runtime = gatsbyPrismic.createRuntime();
+	runtime.registerCustomTypeModel(model);
+
+	t.is(runtime.typePaths.length, 1);
+	t.snapshot(runtime.typePaths);
+});
+
 test("registering a shared slice model adds its type paths", (t) => {
 	const model = createMockKitchenSinkSharedSliceModel(t);
 
@@ -187,6 +197,25 @@ test("throws during normalization if a type path was not registered", (t) => {
 
 	t.throws(() => runtime.registerDocument(document), {
 		message: /no type for path/i,
+	});
+});
+
+test("throws during normalization if a value does not match the type path type", (t) => {
+	const model = createMockCustomTypeModelWithFields(t, {
+		richText: prismicM.model.richText({ seed: t.title }),
+	});
+	const document = prismicM.value.customType({
+		seed: t.title,
+		model,
+	});
+	// @ts-expect-error - We are purposely giving it unexpected data
+	document.data.richText = prismicM.value.boolean({ seed: t.title });
+
+	const runtime = gatsbyPrismic.createRuntime();
+	runtime.registerCustomTypeModel(model);
+
+	t.throws(() => runtime.registerDocument(document), {
+		message: /not expected type/i,
 	});
 });
 
