@@ -1,6 +1,7 @@
 import test from "ava";
 import * as prismicH from "@prismicio/helpers";
 import * as prismicM from "@prismicio/mock";
+import * as prismicT from "@prismicio/types";
 import * as sinon from "sinon";
 
 import { createMockCustomTypeModelWithFields } from "./__testutils__/createMockCustomTypeModelWithFields";
@@ -78,6 +79,36 @@ test("uses Link Resolver for url field if one is provided to the runtime", (t) =
 			normalizedDocument.data.contentRelationship.url,
 			prismicH.asLink(document.data.contentRelationship, linkResolver),
 		);
+	} else {
+		t.fail();
+	}
+});
+
+test("document field returns null if the document node does not exist", (t) => {
+	const model = createMockCustomTypeModelWithFields(t, {
+		contentRelationship: prismicM.model.contentRelationship({ seed: t.title }),
+	});
+	const document = prismicM.value.document({
+		seed: t.title,
+		model,
+	});
+	document.data.contentRelationship = prismicM.value.contentRelationship({
+		seed: t.title,
+		linkableDocuments: [document],
+	});
+	(document.data.contentRelationship as prismicT.FilledLinkToDocumentField).id =
+		"non-existent";
+
+	const runtime = gatsbyPrismic.createRuntime();
+	runtime.registerCustomTypeModel(model);
+
+	const normalizedDocument = runtime.registerDocument(document);
+
+	if (
+		"url" in document.data.contentRelationship &&
+		"url" in normalizedDocument.data.contentRelationship
+	) {
+		t.is(normalizedDocument.data.contentRelationship.document, null);
 	} else {
 		t.fail();
 	}

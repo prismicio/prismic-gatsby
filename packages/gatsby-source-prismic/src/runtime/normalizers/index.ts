@@ -1,7 +1,4 @@
-export {
-	alternateLanguages,
-	isAlternateLanguagesField,
-} from "./alternateLanguages";
+export { alternateLanguages } from "./alternateLanguages";
 export type {
 	NormalizeAlternateLanguagesConfig,
 	NormalizedAlternateLanguagesValue,

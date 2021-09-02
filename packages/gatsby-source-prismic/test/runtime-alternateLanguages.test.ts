@@ -42,3 +42,26 @@ test("normalizes Alternate Languages field", (t) => {
 		);
 	}
 });
+
+test("document field returns null if the document node does not exist", (t) => {
+	const model = prismicM.model.customType({ seed: t.title });
+	const document = prismicM.value.document({
+		seed: t.title,
+		model,
+	});
+	document.alternate_languages = [
+		{
+			id: "non-existent",
+			lang: "non-existent",
+			type: "non-existent",
+			uid: "non-existent",
+		},
+	];
+
+	const runtime = gatsbyPrismic.createRuntime();
+	runtime.registerCustomTypeModel(model);
+
+	const normalizedDocument = runtime.registerDocument(document);
+
+	t.is(normalizedDocument.alternate_languages[0].document, null);
+});

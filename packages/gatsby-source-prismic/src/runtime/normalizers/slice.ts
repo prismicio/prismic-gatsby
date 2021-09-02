@@ -59,43 +59,42 @@ export const slice = <Value extends prismicT.Slice | prismicT.SharedSlice>(
 		]),
 		slice_type: config.value.slice_type,
 		slice_label: config.value.slice_label,
-	} as NormalizedSliceValue<Value>;
+	} as unknown as NormalizedSliceValue<Value>;
+	// Yes, using `as unknown as X` is bad practice.
+	// Yes, you can fix this if you know how to do it.
+	// Yes, that means you!
 
-	if (primary && Object.keys(primary).length) {
-		result.primary = {} as NormalizedSliceValue["primary"];
+	result.primary = {} as NormalizedSliceValue["primary"];
 
-		for (const key in primary) {
-			const transformedKey = config.transformFieldName(
-				key,
-			) as keyof NormalizedSliceValue["primary"];
+	for (const key in primary) {
+		const transformedKey = config.transformFieldName(
+			key,
+		) as keyof NormalizedSliceValue["primary"];
 
-			result.primary[transformedKey] = normalize({
-				...config,
-				value: config.value.primary[key],
-				path: [...config.path, "primary", transformedKey],
-			});
-		}
-	}
-
-	if (items) {
-		result.items = items.map((item) => {
-			const result = {} as IterableElement<NormalizedSliceValue["items"]>;
-
-			for (const key in item) {
-				const transformedKey = config.transformFieldName(
-					key,
-				) as keyof IterableElement<NormalizedSliceValue["items"]>;
-
-				result[transformedKey] = normalize({
-					...config,
-					value: item[key],
-					path: [...config.path, "items", transformedKey],
-				});
-			}
-
-			return result;
+		result.primary[transformedKey] = normalize({
+			...config,
+			value: config.value.primary[key],
+			path: [...config.path, "primary", transformedKey],
 		});
 	}
+
+	result.items = items.map((item) => {
+		const result = {} as IterableElement<NormalizedSliceValue["items"]>;
+
+		for (const key in item) {
+			const transformedKey = config.transformFieldName(
+				key,
+			) as keyof IterableElement<NormalizedSliceValue["items"]>;
+
+			result[transformedKey] = normalize({
+				...config,
+				value: item[key],
+				path: [...config.path, "items", transformedKey],
+			});
+		}
+
+		return result;
+	});
 
 	return result;
 };

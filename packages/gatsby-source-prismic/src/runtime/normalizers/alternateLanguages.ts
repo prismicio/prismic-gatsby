@@ -5,18 +5,6 @@ import { NormalizeConfig, NormalizerDependencies } from "../types";
 
 import { NormalizedDocumentValue } from "./document";
 
-export const isAlternateLanguagesField = (
-	value: unknown,
-): value is prismicT.PrismicDocument["alternate_languages"] => {
-	return (
-		Array.isArray(value) &&
-		value.every(
-			(element) =>
-				typeof element === "object" && element !== null && "id" in element,
-		)
-	);
-};
-
 export type NormalizeAlternateLanguagesConfig = NormalizeConfig<
 	prismicT.PrismicDocument["alternate_languages"]
 > &
