@@ -4,8 +4,6 @@
  * - Replace `+` in filename with a space
  * - Decode the URL
  *
- * @deprecated This is a temporary solution until the Prismic API properly
- *   handles spaces in filenames.
  * @param url - Image URL to sanitize.
  *
  * @returns Sanitized image URL.
