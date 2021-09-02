@@ -22,6 +22,9 @@ module.exports = {
           not_used: {},
           test: {},
         },
+        shouldDownloadFiles: {
+          'kitchen_sink.data.image': () => false,
+        },
       },
     },
     {

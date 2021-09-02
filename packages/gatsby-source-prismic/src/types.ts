@@ -111,6 +111,11 @@ export interface PluginOptions extends gatsby.PluginOptions {
 	imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams;
 	typePrefix?: string;
 	webhookSecret?: string;
+	shouldDownloadFiles: Record<
+		string,
+		| boolean
+		| ((field: prismicT.ImageFieldImage | prismicT.LinkToMediaField) => boolean)
+	>;
 	plugins: [];
 	createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode;
 	transformFieldName: TransformFieldNameFn;

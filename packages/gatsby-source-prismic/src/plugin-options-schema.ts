@@ -282,6 +282,9 @@ export const pluginOptionsSchema: NonNullable<
 		),
 		typePrefix: Joi.string(),
 		webhookSecret: Joi.string(),
+		shouldDownloadFiles: Joi.object()
+			.pattern(Joi.string(), Joi.alternatives(Joi.boolean(), Joi.function()))
+			.default({}),
 		createRemoteFileNode: Joi.function().default(
 			() => gatsbyFs.createRemoteFileNode,
 		),

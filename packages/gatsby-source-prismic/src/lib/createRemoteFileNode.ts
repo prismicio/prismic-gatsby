@@ -1,9 +1,17 @@
+import * as prismicT from "@prismicio/types";
 import * as gatsbyFs from "gatsby-source-filesystem";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 
 import { Dependencies } from "../types";
+import { shouldDownloadFile } from "./shouldDownloadFile";
+
+type CreateRemoteFileNodeConfig = {
+	url: string;
+	field: prismicT.ImageFieldImage | prismicT.LinkToMediaField;
+	path: string[];
+};
 
 /**
  * Creates a File node with remote data using the environment's
@@ -15,22 +23,30 @@ import { Dependencies } from "../types";
  * @returns The created File node.
  */
 export const createRemoteFileNode = (
-	url: string,
-): RTE.ReaderTaskEither<Dependencies, Error, gatsbyFs.FileSystemNode> =>
+	config: CreateRemoteFileNodeConfig,
+): RTE.ReaderTaskEither<Dependencies, Error, gatsbyFs.FileSystemNode | null> =>
 	pipe(
 		RTE.ask<Dependencies>(),
-		RTE.chainW((deps) =>
+		RTE.bind("attemptDownload", () =>
+			shouldDownloadFile({
+				path: config.path,
+				field: config.field,
+			}),
+		),
+		RTE.chain((scope) =>
 			RTE.fromTaskEither(
 				TE.tryCatch(
 					() =>
-						deps.createRemoteFileNode({
-							url,
-							store: deps.store,
-							cache: deps.cache,
-							createNode: deps.createNode,
-							createNodeId: deps.createNodeId,
-							reporter: deps.reporter,
-						}),
+						scope.attemptDownload
+							? scope.createRemoteFileNode({
+									url: config.url,
+									store: scope.store,
+									cache: scope.cache,
+									createNode: scope.createNode,
+									createNodeId: scope.createNodeId,
+									reporter: scope.reporter,
+							  })
+							: Promise.resolve(null),
 					(e) => e as Error,
 				),
 			),

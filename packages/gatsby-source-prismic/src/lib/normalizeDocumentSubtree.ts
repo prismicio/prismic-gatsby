@@ -409,7 +409,11 @@ export const normalizeDocumentSubtree = (
 							return scope.value.link_type == prismicT.LinkType.Media &&
 								"url" in scope.value &&
 								scope.value.url
-								? createRemoteFileNode(scope.value.url)
+								? createRemoteFileNode({
+										url: scope.value.url,
+										path,
+										field: scope.value,
+								  })
 								: RTE.right(null);
 						}),
 						RTE.map((scope) => ({
@@ -438,12 +442,16 @@ export const normalizeDocumentSubtree = (
 								),
 								RTE.right,
 								RTE.bindTo("thumbnails"),
-								RTE.bind("thumbnailFileNodes", (scope) =>
+								RTE.bind("thumbnailFileNodes", (thumbnailsScope) =>
 									pipe(
-										scope.thumbnails,
-										R.map((thumbnail) =>
+										thumbnailsScope.thumbnails,
+										R.mapWithIndex((thumbnailName, thumbnail) =>
 											thumbnail.url
-												? createRemoteFileNode(thumbnail.url)
+												? createRemoteFileNode({
+														url: thumbnail.url,
+														path: [...path, thumbnailName],
+														field: thumbnail,
+												  })
 												: RTE.right(null),
 										),
 										R.sequence(RTE.ApplicativeSeq),
@@ -462,7 +470,11 @@ export const normalizeDocumentSubtree = (
 						),
 						RTE.bind("fileNode", (scope) => {
 							return scope.value.url
-								? createRemoteFileNode(scope.value.url)
+								? createRemoteFileNode({
+										url: scope.value.url,
+										path,
+										field: scope.value,
+								  })
 								: RTE.right(null);
 						}),
 						RTE.map((scope) => ({
