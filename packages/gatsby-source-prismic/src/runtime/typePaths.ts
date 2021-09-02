@@ -99,9 +99,10 @@ export const customTypeModelToTypePaths = <
 		prismicT.CustomTypeModelField
 	>;
 
-	const hasDataFields = Object.values(fieldModels).filter(
-		(fieldModel) => fieldModel.type !== prismicT.CustomTypeModelFieldType.UID,
-	);
+	const hasDataFields =
+		Object.values(fieldModels).filter(
+			(fieldModel) => fieldModel.type !== prismicT.CustomTypeModelFieldType.UID,
+		).length > 0;
 
 	const documentTypePath = {
 		kind: TypePathKind.CustomType,
