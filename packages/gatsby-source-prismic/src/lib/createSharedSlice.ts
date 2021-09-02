@@ -2,7 +2,6 @@ import * as gatsby from "gatsby";
 import * as prismicT from "@prismicio/types";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import * as A from "fp-ts/Array";
-import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 
 import { Dependencies } from "../types";
@@ -31,25 +30,11 @@ export const createSharedSlice = (
 			buildUnionType({
 				name: scope.nodeHelpers.createTypeName([sharedSliceModel.id]),
 				types: scope.variationTypes,
-				resolveType: (source: prismicT.Slice | prismicT.SharedSlice) =>
-					pipe(
-						source,
-						O.fromPredicate(
-							(source): source is prismicT.SharedSlice => "variation" in source,
-						),
-						O.map((source) =>
-							scope.nodeHelpers.createTypeName([
-								source.slice_type,
-								source.variation,
-							]),
-						),
-						O.getOrElse(() =>
-							scope.nodeHelpers.createTypeName([
-								sharedSliceModel.id,
-								source.slice_type,
-							]),
-						),
-					),
+				resolveType: (source: prismicT.SharedSlice) =>
+					scope.nodeHelpers.createTypeName([
+						source.slice_type,
+						source.variation,
+					]),
 			}),
 		),
 		RTE.chainFirstW(createType),
