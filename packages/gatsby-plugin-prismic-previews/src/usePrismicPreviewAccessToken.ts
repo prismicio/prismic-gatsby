@@ -1,7 +1,6 @@
 import * as React from "react";
+import * as cookie from "es-cookie";
 
-import { setCookie } from "./lib/setCookie";
-import { removeCookie } from "./lib/removeCookie";
 import { sprintf } from "./lib/sprintf";
 
 import { COOKIE_ACCESS_TOKEN_NAME } from "./constants";
@@ -46,14 +45,10 @@ export const usePrismicPreviewAccessToken = (
 	 *   future preview sessions.
 	 */
 	const setAccessToken = React.useCallback(
-		(
-			accessToken: string,
-			// eslint-disable-next-line @typescript-eslint/no-inferrable-types
-			remember: boolean = true,
-		): void => {
+		(accessToken: string, remember = true as boolean): void => {
 			if (!repositoryName || !cookieName) {
 				throw new Error(
-					"A repository name must be provided to the usePrismicPreviewAccessToken hook before using the set function.",
+					"A repository name must be provided to usePrismicPreviewAccessToken before using the set function.",
 				);
 			}
 
@@ -63,7 +58,7 @@ export const usePrismicPreviewAccessToken = (
 			});
 
 			if (remember) {
-				setCookie(cookieName, accessToken)();
+				cookie.set(cookieName, accessToken);
 			}
 		},
 		[cookieName, contextDispatch, repositoryName],
@@ -75,11 +70,11 @@ export const usePrismicPreviewAccessToken = (
 	const removeAccessTokenCookie = React.useCallback(() => {
 		if (!cookieName) {
 			throw new Error(
-				"A repository name must be provided to the usePrismicPreviewAccessToken hook before using the removeCookie function.",
+				"A repository name must be provided to usePrismicPreviewAccessToken before using the removeCookie function.",
 			);
 		}
 
-		removeCookie(cookieName)();
+		cookie.remove(cookieName);
 	}, [cookieName]);
 
 	return React.useMemo(

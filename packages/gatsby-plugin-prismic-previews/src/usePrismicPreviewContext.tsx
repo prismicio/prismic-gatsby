@@ -19,15 +19,14 @@ type UsePrismicPreviewContextValue = readonly [
  * Returns the global state for Prismic preview sessions.
  */
 export const usePrismicPreviewContext = (): UsePrismicPreviewContextValue => {
-	const context = React.useContext(PrismicContext);
-
 	React.useEffect(() => {
-		if (process.env.NODE_ENV === "development") {
-			if (!window[WINDOW_PROVIDER_PRESENCE_KEY]) {
-				console.warn(MISSING_PROVIDER_MSG);
-			}
+		if (
+			process.env.NODE_ENV === "development" &&
+			!window[WINDOW_PROVIDER_PRESENCE_KEY]
+		) {
+			console.warn(MISSING_PROVIDER_MSG);
 		}
-	}, [context]);
+	}, []);
 
-	return context;
+	return React.useContext(PrismicContext);
 };

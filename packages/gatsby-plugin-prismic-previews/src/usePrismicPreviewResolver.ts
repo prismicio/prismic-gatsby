@@ -1,14 +1,12 @@
 import * as React from "react";
 import * as prismic from "@prismicio/client";
-import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
+import * as cookie from "es-cookie";
 
 import { extractPreviewRefRepositoryName } from "./lib/extractPreviewRefRepositoryName";
-import { getPreviewRef } from "./lib/getPreviewRef";
-import { isPreviewResolverSession } from "./lib/isPreviewResolverSession";
 import { sprintf } from "./lib/sprintf";
 
-import { PrismicRepositoryConfigs } from "./types";
+import { FetchLike, PrismicRepositoryConfigs } from "./types";
 import {
 	MISSING_PLUGIN_OPTIONS_MSG,
 	MISSING_REPOSITORY_CONFIG_MSG,
@@ -19,11 +17,17 @@ import {
 	PrismicPreviewState,
 } from "./context";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
+import { getURLSearchParam } from "./lib/getURLSearchParam";
+
+export type UsePrismicPreviewResolverConfig = {
+	fetch?: FetchLike;
+};
 
 export type UsePrismicPreviewResolverFn = () => Promise<void>;
 
 export const usePrismicPreviewResolver = (
 	repositoryConfigs: PrismicRepositoryConfigs = [],
+	config: UsePrismicPreviewResolverConfig = {},
 ): UsePrismicPreviewResolverFn => {
 	const [contextState, contextDispatch] = usePrismicPreviewContext();
 
@@ -41,25 +45,15 @@ export const usePrismicPreviewResolver = (
 			return;
 		}
 
-		if (E.isLeft(isPreviewResolverSession())) {
+		const previewRef = cookie.get(prismic.cookie.preview);
+		const documentId = getURLSearchParam("documentId");
+		const repositoryName = previewRef
+			? extractPreviewRefRepositoryName(previewRef)
+			: O.none;
+
+		if (O.isNone(documentId) || O.isNone(repositoryName)) {
 			return contextDispatch({
 				type: PrismicContextActionType.NotAPreview,
-			});
-		}
-
-		const previewRef = getPreviewRef();
-		if (E.isLeft(previewRef)) {
-			return contextDispatch({
-				type: PrismicContextActionType.Failed,
-				payload: { error: new Error("Preview cookie not present") },
-			});
-		}
-
-		const repositoryName = extractPreviewRefRepositoryName(previewRef.right);
-		if (O.isNone(repositoryName)) {
-			return contextDispatch({
-				type: PrismicContextActionType.Failed,
-				payload: { error: new Error("Invalid preview ref") },
 			});
 		}
 
@@ -119,6 +113,7 @@ export const usePrismicPreviewResolver = (
 				fetchLinks: repositoryPluginOptions.fetchLinks,
 				graphQuery: repositoryPluginOptions.graphQuery,
 			},
+			fetch: config.fetch,
 		});
 		client.enableAutoPreviews();
 
@@ -153,5 +148,6 @@ export const usePrismicPreviewResolver = (
 		contextState.pluginOptionsStore,
 		contextState.repositoryConfigs,
 		repositoryConfigs,
+		config.fetch,
 	]);
 };

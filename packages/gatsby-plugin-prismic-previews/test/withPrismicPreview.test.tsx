@@ -7,6 +7,7 @@ import * as cookie from "es-cookie";
 import * as gatsby from "gatsby";
 import * as React from "react";
 import * as tlr from "@testing-library/react";
+import fetch from "node-fetch";
 import globalJsdom from "global-jsdom";
 
 import { clearAllCookies } from "./__testutils__/clearAllCookies";
@@ -20,7 +21,6 @@ import { createPreviewURL } from "./__testutils__/createPreviewURL";
 import { createRuntime } from "./__testutils__/createRuntime";
 import { createTypePathsMockedRequest } from "./__testutils__/createTypePathsMockedRequest";
 import { jsonFilter } from "./__testutils__/jsonFilter";
-import { polyfillKy } from "./__testutils__/polyfillKy";
 
 import {
 	PluginOptions,
@@ -35,7 +35,6 @@ import { onClientEntry } from "../src/on-client-entry";
 
 const server = mswNode.setupServer();
 test.before(() => {
-	polyfillKy();
 	globalJsdom(undefined, {
 		url: "https://example.com",
 		pretendToBeVisual: true,
@@ -83,7 +82,10 @@ const createTree = (
 	repositoryConfigs: PrismicRepositoryConfigs,
 	config?: WithPrismicPreviewConfig,
 ) => {
-	const WrappedPage = withPrismicPreview(Page, repositoryConfigs, config);
+	const WrappedPage = withPrismicPreview(Page, repositoryConfigs, {
+		...config,
+		fetch,
+	});
 
 	return (
 		<PrismicPreviewProvider>

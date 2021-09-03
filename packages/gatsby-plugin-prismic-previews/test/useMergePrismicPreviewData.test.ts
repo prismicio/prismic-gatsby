@@ -6,6 +6,7 @@ import * as cookie from "es-cookie";
 import * as assert from "assert";
 import { renderHook, act, cleanup } from "@testing-library/react-hooks";
 import browserEnv from "browser-env";
+import fetch from "node-fetch";
 
 import { clearAllCookies } from "./__testutils__/clearAllCookies";
 import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
@@ -17,7 +18,6 @@ import { createPrismicAPIDocumentNodeInput } from "./__testutils__/createPrismic
 import { createRuntime } from "./__testutils__/createRuntime";
 import { createTypePathsMockedRequest } from "./__testutils__/createTypePathsMockedRequest";
 import { jsonFilter } from "./__testutils__/jsonFilter";
-import { polyfillKy } from "./__testutils__/polyfillKy";
 
 import {
 	PrismicPreviewProvider,
@@ -50,7 +50,6 @@ const createRepositoryConfigs = (
 
 const server = mswNode.setupServer();
 test.before(() => {
-	polyfillKy();
 	browserEnv(["window", "document"]);
 	server.listen({ onUnhandledRequest: "error" });
 	window.requestAnimationFrame = function (callback) {
@@ -134,7 +133,7 @@ test.serial(
 		const { result, waitFor } = renderHook(
 			() => {
 				const context = usePrismicPreviewContext();
-				const bootstrap = usePrismicPreviewBootstrap(config);
+				const bootstrap = usePrismicPreviewBootstrap(config, { fetch });
 				const mergedData = useMergePrismicPreviewData(staticData);
 
 				return { bootstrap, context, mergedData };
@@ -216,7 +215,7 @@ test("allows skipping", async (t) => {
 	const { result, waitFor } = renderHook(
 		() => {
 			const context = usePrismicPreviewContext();
-			const bootstrap = usePrismicPreviewBootstrap(config);
+			const bootstrap = usePrismicPreviewBootstrap(config, { fetch });
 			const mergedData = useMergePrismicPreviewData(staticData, { skip: true });
 
 			return { bootstrap, context, mergedData };

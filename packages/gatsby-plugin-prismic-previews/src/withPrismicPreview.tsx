@@ -3,12 +3,13 @@ import * as gatsby from "gatsby";
 
 import { getComponentDisplayName } from "./lib/getComponentDisplayName";
 
-import { PrismicRepositoryConfigs, UnknownRecord } from "./types";
+import { FetchLike, PrismicRepositoryConfigs, UnknownRecord } from "./types";
 import { usePrismicPreviewBootstrap } from "./usePrismicPreviewBootstrap";
 import { useMergePrismicPreviewData } from "./useMergePrismicPreviewData";
-import { PrismicPreviewUI } from "./components/PrismicPreviewUI";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
 import { PrismicContextActionType } from "./context";
+
+import { PrismicPreviewUI } from "./components/PrismicPreviewUI";
 
 export interface WithPrismicPreviewProps<
 	TStaticData extends UnknownRecord = UnknownRecord,
@@ -19,6 +20,7 @@ export interface WithPrismicPreviewProps<
 
 export type WithPrismicPreviewConfig = {
 	mergePreviewData?: boolean;
+	fetch?: FetchLike;
 };
 
 /**
@@ -44,7 +46,9 @@ export const withPrismicPreview = <
 ): React.ComponentType<TProps> => {
 	const WithPrismicPreview = (props: TProps): React.ReactElement => {
 		const [, contextDispatch] = usePrismicPreviewContext();
-		const bootstrapPreview = usePrismicPreviewBootstrap(repositoryConfigs);
+		const bootstrapPreview = usePrismicPreviewBootstrap(repositoryConfigs, {
+			fetch: config.fetch,
+		});
 		const mergedData = useMergePrismicPreviewData(props.data, {
 			skip: config.mergePreviewData,
 		});

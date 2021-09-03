@@ -1,14 +1,12 @@
 import * as React from "react";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 import * as gatsbyPrismic from "gatsby-source-prismic";
 
 import { isPlainObject } from "./lib/isPlainObject";
+import { isProxy } from "./lib/isProxy";
 
 import { UnknownRecord } from "./types";
 import { PrismicPreviewState } from "./context";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
-import { isProxy } from "./lib/isProxy";
 
 /**
  * Recursively finds previewable data and replaces data if a previewed version
@@ -19,47 +17,48 @@ import { isProxy } from "./lib/isProxy";
  * @returns Function that accepts a node or node content to find and replace
  *   previewable content.
  */
-const findAndReplacePreviewables =
-	(runtime: gatsbyPrismic.Runtime) =>
-	(nodeOrLeaf: unknown): unknown => {
-		if (isPlainObject(nodeOrLeaf)) {
-			// If the value is a proxy, we can't reliably replace properties since
-			// property keys could be synthetic. We opt to ignore the object
-			// completely.
-			//
-			// At the time of writing this comment, Proxies are only present in Link
-			// fields. We can safely opt out of merging preview data in this case.
-			if (isProxy(nodeOrLeaf)) {
-				return nodeOrLeaf;
-			}
-
-			const nodeId = nodeOrLeaf[gatsbyPrismic.PREVIEWABLE_NODE_ID_FIELD] as
-				| string
-				| undefined;
-			if (nodeId && runtime.hasNode(nodeId)) {
-				return runtime.getNode(nodeId);
-			}
-
-			// We didn't find a previewable field, so continue to iterate through all
-			// properties to find it.
-			const newNode = {} as typeof nodeOrLeaf;
-			for (const key in nodeOrLeaf) {
-				newNode[key] = findAndReplacePreviewables(runtime)(nodeOrLeaf[key]);
-			}
-
-			return newNode;
+const findAndReplacePreviewables = (
+	runtime: gatsbyPrismic.Runtime,
+	nodeOrLeaf: unknown,
+): unknown => {
+	if (isPlainObject(nodeOrLeaf)) {
+		// If the value is a proxy, we can't reliably replace properties since
+		// property keys could be synthetic. We opt to ignore the object
+		// completely.
+		//
+		// At the time of writing this comment, Proxies are only present in Link
+		// fields. We can safely opt out of merging preview data in this case.
+		if (isProxy(nodeOrLeaf)) {
+			return nodeOrLeaf;
 		}
 
-		// Iterate all elements in the node to find the previewable value.
-		if (Array.isArray(nodeOrLeaf)) {
-			return (nodeOrLeaf as unknown[]).map((subnode) =>
-				findAndReplacePreviewables(runtime)(subnode),
-			);
+		const nodeId = nodeOrLeaf[gatsbyPrismic.PREVIEWABLE_NODE_ID_FIELD] as
+			| string
+			| undefined;
+		if (nodeId && runtime.hasNode(nodeId)) {
+			return runtime.getNode(nodeId);
 		}
 
-		// If the node is not an object or array, it cannot be a previewable value.
-		return nodeOrLeaf;
-	};
+		// We didn't find a previewable field, so continue to iterate through all
+		// properties to find it.
+		const newNode = {} as typeof nodeOrLeaf;
+		for (const key in nodeOrLeaf) {
+			newNode[key] = findAndReplacePreviewables(runtime, nodeOrLeaf[key]);
+		}
+
+		return newNode;
+	}
+
+	// Iterate all elements in the node to find the previewable value.
+	if (Array.isArray(nodeOrLeaf)) {
+		return (nodeOrLeaf as unknown[]).map((subnode) =>
+			findAndReplacePreviewables(runtime, subnode),
+		);
+	}
+
+	// If the node is not an object or array, it cannot be a previewable value.
+	return nodeOrLeaf;
+};
 
 /**
  * Takes a static data object and a record of nodes and replaces any instances
@@ -77,17 +76,19 @@ const findAndReplacePreviewables =
 const traverseAndReplace = <TStaticData extends UnknownRecord>(
 	staticData: TStaticData,
 	runtime: gatsbyPrismic.Runtime,
-): { data: TStaticData; isPreview: boolean } =>
-	pipe(
-		runtime.nodes,
-		O.fromPredicate((nodes) => nodes.length > 0),
-		O.map(() => staticData),
-		O.map(findAndReplacePreviewables(runtime)),
-		O.fold(
-			() => ({ data: staticData, isPreview: false as boolean }),
-			(data) => ({ data: data as TStaticData, isPreview: true }),
-		),
-	);
+): { data: TStaticData; isPreview: boolean } => {
+	if (runtime.nodes.length > 0) {
+		return {
+			data: findAndReplacePreviewables(runtime, staticData) as TStaticData,
+			isPreview: true,
+		};
+	} else {
+		return {
+			data: staticData,
+			isPreview: false,
+		};
+	}
+};
 
 export type UsePrismicPreviewDataConfig = {
 	/**
@@ -134,13 +135,13 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
 			: undefined;
 
 		if (
-			config.skip ||
-			!runtime ||
-			state.previewState !== PrismicPreviewState.ACTIVE
+			!config.skip &&
+			runtime &&
+			state.previewState === PrismicPreviewState.ACTIVE
 		) {
-			return { data: staticData, isPreview: false };
-		} else {
 			return traverseAndReplace(staticData, runtime);
+		} else {
+			return { data: staticData, isPreview: false };
 		}
 	}, [staticData, config.skip, state]);
 };

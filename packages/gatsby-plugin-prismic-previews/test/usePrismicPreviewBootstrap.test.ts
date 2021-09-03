@@ -1,18 +1,19 @@
 import test from "ava";
 import * as mswNode from "msw/node";
+import * as gatsby from "gatsby";
 import * as prismic from "@prismicio/client";
 import * as prismicM from "@prismicio/mock";
 import * as cookie from "es-cookie";
 import * as assert from "assert";
 import { renderHook, act, cleanup } from "@testing-library/react-hooks";
 import browserEnv from "browser-env";
+import fetch from "node-fetch";
 
 import { clearAllCookies } from "./__testutils__/clearAllCookies";
 import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
 import { createPluginOptions } from "./__testutils__/createPluginOptions";
 import { createPreviewRef } from "./__testutils__/createPreviewRef";
 import { createTypePathsMockedRequest } from "./__testutils__/createTypePathsMockedRequest";
-import { polyfillKy } from "./__testutils__/polyfillKy";
 
 import {
 	PrismicPreviewProvider,
@@ -38,7 +39,6 @@ const createRepositoryConfigs = (
 
 const server = mswNode.setupServer();
 test.before(() => {
-	polyfillKy();
 	browserEnv(["window", "document"]);
 	server.listen({ onUnhandledRequest: "error" });
 	window.requestAnimationFrame = function (callback) {
@@ -61,12 +61,11 @@ test.serial("fails if not a preview session - cookie is not set", async (t) => {
 	const pluginOptions = createPluginOptions(t);
 	const config = createRepositoryConfigs(pluginOptions);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
+	onClientEntry(gatsbyContext as gatsby.BrowserPluginArgs, pluginOptions);
 	const { result, waitFor } = renderHook(
 		() => {
 			const context = usePrismicPreviewContext();
-			const bootstrap = usePrismicPreviewBootstrap(config);
+			const bootstrap = usePrismicPreviewBootstrap(config, { fetch });
 
 			return { bootstrap, context };
 		},
@@ -124,12 +123,11 @@ test.serial(
 			),
 		);
 
-		// @ts-expect-error - Partial gatsbyContext provided
-		await onClientEntry(gatsbyContext, pluginOptions);
+		onClientEntry(gatsbyContext as gatsby.BrowserPluginArgs, pluginOptions);
 		const { result, waitFor } = renderHook(
 			() => {
 				const context = usePrismicPreviewContext();
-				const bootstrap = usePrismicPreviewBootstrap(config);
+				const bootstrap = usePrismicPreviewBootstrap(config, { fetch });
 
 				return { bootstrap, context };
 			},
@@ -194,12 +192,11 @@ test.serial("does nothing if already bootstrapped", async (t) => {
 		),
 	);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
+	onClientEntry(gatsbyContext as gatsby.BrowserPluginArgs, pluginOptions);
 	const { result, waitFor } = renderHook(
 		() => {
 			const context = usePrismicPreviewContext();
-			const bootstrap = usePrismicPreviewBootstrap(config);
+			const bootstrap = usePrismicPreviewBootstrap(config, { fetch });
 
 			return { bootstrap, context };
 		},

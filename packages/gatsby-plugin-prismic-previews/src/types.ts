@@ -1,19 +1,32 @@
 import * as gatsby from "gatsby";
 import * as imgixGatsby from "@imgix/gatsby";
 import * as gatsbyPrismic from "gatsby-source-prismic";
+import * as prismic from "@prismicio/client";
 import * as prismicT from "@prismicio/types";
 import * as prismicH from "@prismicio/helpers";
 import { SetRequired } from "type-fest";
 
-export type Mutable<T> = {
-	-readonly [P in keyof T]: T[P];
-};
+/**
+ * A universal API to make network requests. A subset of the `fetch()` API.
+ */
+export type FetchLike = (
+	input: string,
+	init?: RequestInitLike,
+) => Promise<ResponseLike>;
 
-export type IterableElement<TargetIterable> = TargetIterable extends Iterable<
-	infer ElementType
->
-	? ElementType
-	: never;
+/**
+ * The minimum required properties from RequestInit.
+ */
+export interface RequestInitLike extends prismic.RequestInitLike {
+	cache?: RequestCache;
+}
+
+/**
+ * The minimum required properties from Response.
+ */
+export interface ResponseLike extends prismic.ResponseLike {
+	text(): Promise<string>;
+}
 
 export interface PluginOptions extends gatsby.PluginOptions {
 	repositoryName: string;
@@ -38,8 +51,7 @@ export type WriteTypePathsToFilesystemArgs = {
 	serializedTypePaths: string;
 };
 
-export type TypePathsStore = Record<string, gatsbyPrismic.PrismicTypePathType>;
-
+// TODO: Delete
 export interface PrismicAPIDocumentNodeInput<
 	TData = prismicT.PrismicDocument["data"],
 > extends prismicT.PrismicDocument<TData>,
@@ -74,7 +86,7 @@ export type PrismicRepositoryConfig = {
 	 * Link Resolver for the repository. This should be the same Link Resolver
 	 * provided to `gatsby-source-prismic`'s plugin options.
 	 */
-	linkResolver: prismicH.LinkResolverFunction;
+	linkResolver?: prismicH.LinkResolverFunction;
 
 	/**
 	 * HTML Serializer for the repository. This should be the same HTML Serializer

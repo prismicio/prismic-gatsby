@@ -11,6 +11,7 @@ import * as React from "react";
 import * as tlr from "@testing-library/react";
 // import browserEnv from 'browser-env'
 import globalJsdom from "global-jsdom";
+import fetch from "node-fetch";
 
 import { clearAllCookies } from "./__testutils__/clearAllCookies";
 import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
@@ -21,7 +22,6 @@ import { createPluginOptions } from "./__testutils__/createPluginOptions";
 import { createPreviewRef } from "./__testutils__/createPreviewRef";
 import { createPreviewURL } from "./__testutils__/createPreviewURL";
 import { navigateToPreviewResolverURL } from "./__testutils__/navigateToPreviewResolverURL";
-import { polyfillKy } from "./__testutils__/polyfillKy";
 
 import {
 	PluginOptions,
@@ -35,7 +35,6 @@ import { onClientEntry } from "../src/on-client-entry";
 
 const server = mswNode.setupServer();
 test.before(() => {
-	polyfillKy();
 	// browserEnv(['window', 'document'])
 	globalJsdom(undefined, {
 		url: "https://example.com",
@@ -81,11 +80,10 @@ const createTree = (
 	repositoryConfigs: PrismicRepositoryConfigs,
 	config?: WithPrismicPreviewResolverConfig,
 ) => {
-	const WrappedPage = withPrismicPreviewResolver(
-		Page,
-		repositoryConfigs,
-		config,
-	);
+	const WrappedPage = withPrismicPreviewResolver(Page, repositoryConfigs, {
+		...config,
+		fetch,
+	});
 
 	return (
 		<PrismicPreviewProvider>

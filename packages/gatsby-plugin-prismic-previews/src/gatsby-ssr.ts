@@ -10,5 +10,3 @@
  */
 
 export { onRenderBody } from "./on-render-body";
-// TODO: Temporarily disabling automatic provider injection as it doesn't seem to work
-// export { wrapRootElement } from './wrap-root-element'

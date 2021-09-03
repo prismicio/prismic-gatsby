@@ -3,14 +3,13 @@ import * as prismic from "@prismicio/client";
 import * as prismicT from "@prismicio/types";
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
+import * as cookie from "es-cookie";
 
 import { extractPreviewRefRepositoryName } from "./lib/extractPreviewRefRepositoryName";
 import { fetchTypePaths } from "./lib/fetchTypePaths";
-import { getPreviewRef } from "./lib/getPreviewRef";
-import { isPreviewSession } from "./lib/isPreviewSession";
 import { sprintf } from "./lib/sprintf";
 
-import { PrismicRepositoryConfigs } from "./types";
+import { FetchLike, PrismicRepositoryConfigs } from "./types";
 import {
 	MISSING_PLUGIN_OPTIONS_MSG,
 	MISSING_REPOSITORY_CONFIG_MSG,
@@ -21,6 +20,10 @@ import {
 	PrismicPreviewState,
 } from "./context";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
+
+export type UsePrismicPreviewBootstrapConfig = {
+	fetch?: FetchLike;
+};
 
 export type UsePrismicPreviewBootstrapFn = () => Promise<void>;
 
@@ -35,6 +38,7 @@ export type UsePrismicPreviewBootstrapFn = () => Promise<void>;
  */
 export const usePrismicPreviewBootstrap = (
 	repositoryConfigs: PrismicRepositoryConfigs = [],
+	config: UsePrismicPreviewBootstrapConfig = {},
 ): UsePrismicPreviewBootstrapFn => {
 	const [contextState, contextDispatch] = usePrismicPreviewContext();
 
@@ -63,25 +67,14 @@ export const usePrismicPreviewBootstrap = (
 			return;
 		}
 
-		if (E.isLeft(isPreviewSession())) {
-			return contextDispatch({
-				type: PrismicContextActionType.NotAPreview,
-			});
-		}
+		const previewRef = cookie.get(prismic.cookie.preview);
+		const repositoryName = previewRef
+			? extractPreviewRefRepositoryName(previewRef)
+			: O.none;
 
-		const previewRef = getPreviewRef();
-		if (E.isLeft(previewRef)) {
-			return contextDispatch({
-				type: PrismicContextActionType.Failed,
-				payload: { error: previewRef.left },
-			});
-		}
-
-		const repositoryName = extractPreviewRefRepositoryName(previewRef.right);
 		if (O.isNone(repositoryName)) {
 			return contextDispatch({
-				type: PrismicContextActionType.Failed,
-				payload: { error: new Error("Invalid preview ref") },
+				type: PrismicContextActionType.NotAPreview,
 			});
 		}
 
@@ -130,15 +123,8 @@ export const usePrismicPreviewBootstrap = (
 			type: PrismicContextActionType.SetupRuntime,
 			payload: {
 				repositoryName: repositoryName.value,
-				config: {
-					linkResolver: repositoryConfig.linkResolver,
-					htmlSerializer: repositoryConfig.htmlSerializer,
-					transformFieldName: repositoryConfig.transformFieldName,
-					typePrefix: repositoryPluginOptions.typePrefix,
-					imageImgixParams: repositoryPluginOptions.imageImgixParams,
-					imagePlaceholderImgixParams:
-						repositoryPluginOptions.imagePlaceholderImgixParams,
-				},
+				repositoryConfig,
+				pluginOptions: repositoryPluginOptions,
 			},
 		});
 
@@ -149,7 +135,8 @@ export const usePrismicPreviewBootstrap = (
 
 		const typePaths = await fetchTypePaths({
 			repositoryName: repositoryName.value,
-		})();
+			fetch: config.fetch,
+		});
 		if (E.isLeft(typePaths)) {
 			return contextDispatch({
 				type: PrismicContextActionType.Failed,
@@ -175,6 +162,7 @@ export const usePrismicPreviewBootstrap = (
 				fetchLinks: repositoryPluginOptions.fetchLinks,
 				graphQuery: repositoryPluginOptions.graphQuery,
 			},
+			fetch: config.fetch,
 		});
 		client.enableAutoPreviews();
 
@@ -213,5 +201,6 @@ export const usePrismicPreviewBootstrap = (
 		contextState.repositoryConfigs,
 		contextState.pluginOptionsStore,
 		contextDispatch,
+		config.fetch,
 	]);
 };

@@ -1,24 +1,20 @@
 import * as React from "react";
 import * as gatsbyPrismic from "gatsby-source-prismic";
 import * as prismicT from "@prismicio/types";
-import * as E from "fp-ts/Either";
+import * as cookie from "es-cookie";
 
-import { getCookie } from "./lib/getCookie";
 import { sprintf } from "./lib/sprintf";
-import { ssrPluginOptionsStore } from "./lib/setPluginOptionsOnWindow";
 
 import {
 	COOKIE_ACCESS_TOKEN_NAME,
 	WINDOW_PLUGIN_OPTIONS_KEY,
 	WINDOW_PROVIDER_PRESENCE_KEY,
 } from "./constants";
-import { PluginOptions, PrismicUnpublishedRepositoryConfigs } from "./types";
-
-declare global {
-	interface Window {
-		[WINDOW_PROVIDER_PRESENCE_KEY]: boolean;
-	}
-}
+import {
+	PluginOptions,
+	PrismicRepositoryConfig,
+	PrismicUnpublishedRepositoryConfigs,
+} from "./types";
 
 export type PrismicContextValue = readonly [
 	PrismicContextState,
@@ -105,7 +101,8 @@ export type PrismicContextAction =
 			type: PrismicContextActionType.SetupRuntime;
 			payload: {
 				repositoryName: string;
-				config: gatsbyPrismic.RuntimeConfig;
+				repositoryConfig: PrismicRepositoryConfig;
+				pluginOptions: PluginOptions;
 			};
 	  }
 	| {
@@ -163,7 +160,15 @@ export const contextReducer = (
 		}
 
 		case PrismicContextActionType.SetupRuntime: {
-			const runtime = gatsbyPrismic.createRuntime(action.payload.config);
+			const runtime = gatsbyPrismic.createRuntime({
+				linkResolver: action.payload.repositoryConfig.linkResolver,
+				htmlSerializer: action.payload.repositoryConfig.htmlSerializer,
+				transformFieldName: action.payload.repositoryConfig.transformFieldName,
+				typePrefix: action.payload.pluginOptions.typePrefix,
+				imageImgixParams: action.payload.pluginOptions.imageImgixParams,
+				imagePlaceholderImgixParams:
+					action.payload.pluginOptions.imagePlaceholderImgixParams,
+			});
 
 			return {
 				...state,
@@ -292,20 +297,21 @@ const createInitialState = (
 	repositoryConfigs = defaultInitialState.repositoryConfigs,
 ): PrismicContextState => {
 	const pluginOptionsStore =
-		typeof window === "undefined"
-			? ssrPluginOptionsStore
-			: window[WINDOW_PLUGIN_OPTIONS_KEY];
+		typeof window === "undefined" ? {} : window[WINDOW_PLUGIN_OPTIONS_KEY];
 	const repositoryNames = Object.keys(pluginOptionsStore);
 
 	const injectedPluginOptionsStore = repositoryNames.reduce(
 		(acc: Record<string, PluginOptions>, repositoryName) => {
-			const cookieName = sprintf(COOKIE_ACCESS_TOKEN_NAME, repositoryName);
-			const cookie = getCookie(cookieName)();
+			const persistedAccessTokenCookieName = sprintf(
+				COOKIE_ACCESS_TOKEN_NAME,
+				repositoryName,
+			);
+			const persistedAccessToken = cookie.get(persistedAccessTokenCookieName);
 
 			acc[repositoryName] = pluginOptionsStore[repositoryName];
 
-			if (acc[repositoryName].accessToken == null && E.isRight(cookie)) {
-				acc[repositoryName].accessToken = cookie.right;
+			if (acc[repositoryName].accessToken == null && persistedAccessToken) {
+				acc[repositoryName].accessToken = persistedAccessToken;
 			}
 
 			return acc;
@@ -339,9 +345,9 @@ export const PrismicPreviewProvider = ({
 	const initialState = createInitialState(repositoryConfigs);
 	const reducerTuple = React.useReducer(contextReducer, initialState);
 
-	React.useLayoutEffect(() => {
+	if (typeof window !== "undefined") {
 		window[WINDOW_PROVIDER_PRESENCE_KEY] = true;
-	}, []);
+	}
 
 	return (
 		<PrismicContext.Provider value={reducerTuple}>

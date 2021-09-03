@@ -9,6 +9,7 @@ import * as React from "react";
 import * as tlr from "@testing-library/react";
 import * as cc from "camel-case";
 import globalJsdom from "global-jsdom";
+import fetch from "node-fetch";
 
 import { clearAllCookies } from "./__testutils__/clearAllCookies";
 import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
@@ -21,7 +22,6 @@ import { createPreviewURL } from "./__testutils__/createPreviewURL";
 import { createRuntime } from "./__testutils__/createRuntime";
 import { createTypePathsMockedRequest } from "./__testutils__/createTypePathsMockedRequest";
 import { jsonFilter } from "./__testutils__/jsonFilter";
-import { polyfillKy } from "./__testutils__/polyfillKy";
 
 import {
 	PluginOptions,
@@ -33,12 +33,12 @@ import {
 	componentResolverFromMap,
 	withPrismicPreview,
 	withPrismicUnpublishedPreview,
+	WithPrismicUnpublishedPreviewConfig,
 } from "../src";
 import { onClientEntry } from "../src/on-client-entry";
 
 const server = mswNode.setupServer();
 test.before(() => {
-	polyfillKy();
 	globalJsdom(undefined, {
 		url: "https://example.com",
 		pretendToBeVisual: true,
@@ -102,10 +102,12 @@ const Page = <TProps extends UnknownRecord = UnknownRecord>(
 const createTree = (
 	pageProps: gatsby.PageProps,
 	repositoryConfigs: PrismicUnpublishedRepositoryConfigs,
+	config?: WithPrismicUnpublishedPreviewConfig,
 ) => {
 	const WrappedPage = withPrismicUnpublishedPreview(
 		NotFoundPage,
 		repositoryConfigs,
+		{ ...config, fetch },
 	);
 
 	return (

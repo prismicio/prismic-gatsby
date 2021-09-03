@@ -1,16 +1,12 @@
 import * as React from "react";
 import * as gatsby from "gatsby";
 import * as gatsbyPrismic from "gatsby-source-prismic";
-import * as A from "fp-ts/Array";
-import * as O from "fp-ts/Option";
-import * as R from "fp-ts/Record";
-import { constNull, pipe } from "fp-ts/function";
 
 import { camelCase } from "./lib/camelCase";
 import { getComponentDisplayName } from "./lib/getComponentDisplayName";
-import { getNodesForPath } from "./lib/getNodesForPath";
 
 import {
+	FetchLike,
 	PrismicUnpublishedRepositoryConfig,
 	PrismicUnpublishedRepositoryConfigs,
 	UnknownRecord,
@@ -37,14 +33,13 @@ export const componentResolverFromMap =
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		componentMap: Record<string, React.ComponentType<any>>,
 	): PrismicUnpublishedRepositoryConfig["componentResolver"] =>
-	(nodes) =>
-		pipe(
-			A.head(nodes),
-			O.bindTo("node"),
-			O.bind("type", (env) => O.some(env.node.type)),
-			O.chain((env) => R.lookup(env.type, componentMap)),
-			O.getOrElseW(constNull),
-		);
+	(nodes) => {
+		if (nodes.length > 0) {
+			return componentMap[nodes[0].type] || null;
+		} else {
+			return null;
+		}
+	};
 
 /**
  * A `dataResolver` function that assumes the first matching node for the page's
@@ -53,19 +48,18 @@ export const componentResolverFromMap =
  * convention.
  */
 export const defaultDataResolver: PrismicUnpublishedRepositoryConfig["dataResolver"] =
-	(nodes, data) =>
-		pipe(
-			A.head(nodes),
-			O.bindTo("node"),
-			O.bind("key", (env) => O.some(camelCase(env.node.internal.type))),
-			O.fold(
-				() => data,
-				(env) => ({
-					...data,
-					[env.key]: env.node,
-				}),
-			),
-		);
+	(nodes, data) => {
+		if (nodes.length > 0) {
+			const key = camelCase(nodes[0].internal.type);
+
+			return {
+				...data,
+				[key]: nodes[0],
+			};
+		} else {
+			return data;
+		}
+	};
 
 const useNodesForPath = (
 	path: string,
@@ -91,7 +85,9 @@ const useNodesForPath = (
 		// To appease the exhaustive-deps linter rule
 		state;
 
-		return activeRuntime ? getNodesForPath(path, activeRuntime) : [];
+		return activeRuntime
+			? activeRuntime.nodes.filter((node) => node.url === path)
+			: [];
 	}, [state, path, activeRuntime]);
 };
 
@@ -125,6 +121,10 @@ const useActiveRepositoryConfig = (
 	);
 };
 
+export type WithPrismicUnpublishedPreviewConfig = {
+	fetch?: FetchLike;
+};
+
 /**
  * A React higher order component (HOC) that wraps a Gatsby page to
  * automatically display a template for an unpublished Prismic document. This
@@ -143,10 +143,13 @@ export const withPrismicUnpublishedPreview = <
 >(
 	WrappedComponent: React.ComponentType<TProps>,
 	repositoryConfigs?: PrismicUnpublishedRepositoryConfigs,
+	config: WithPrismicUnpublishedPreviewConfig = {},
 ): React.ComponentType<TProps> => {
 	const WithPrismicUnpublishedPreview = (props: TProps): React.ReactElement => {
 		const [contextState, contextDispatch] = usePrismicPreviewContext();
-		const bootstrapPreview = usePrismicPreviewBootstrap(repositoryConfigs);
+		const bootstrapPreview = usePrismicPreviewBootstrap(repositoryConfigs, {
+			fetch: config.fetch,
+		});
 		const nodesForPath = useNodesForPath(props.location.pathname);
 		const repositoryConfig = useActiveRepositoryConfig(repositoryConfigs);
 

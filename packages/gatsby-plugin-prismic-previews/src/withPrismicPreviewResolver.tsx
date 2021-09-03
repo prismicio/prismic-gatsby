@@ -3,7 +3,7 @@ import * as gatsby from "gatsby";
 
 import { getComponentDisplayName } from "./lib/getComponentDisplayName";
 
-import { PrismicRepositoryConfigs } from "./types";
+import { FetchLike, PrismicRepositoryConfigs } from "./types";
 import { usePrismicPreviewResolver } from "./usePrismicPreviewResolver";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
 
@@ -22,6 +22,7 @@ export interface WithPrismicPreviewResolverProps {
 export type WithPrismicPreviewResolverConfig = {
 	autoRedirect?: boolean;
 	navigate?: typeof gatsby.navigate;
+	fetch?: FetchLike;
 };
 
 /**
@@ -45,7 +46,9 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 ): React.ComponentType<TProps> => {
 	const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
 		const [contextState, contextDispatch] = usePrismicPreviewContext();
-		const resolvePreview = usePrismicPreviewResolver(repositoryConfigs);
+		const resolvePreview = usePrismicPreviewResolver(repositoryConfigs, {
+			fetch: config.fetch,
+		});
 
 		const isPreview =
 			contextState.previewState === PrismicPreviewState.IDLE

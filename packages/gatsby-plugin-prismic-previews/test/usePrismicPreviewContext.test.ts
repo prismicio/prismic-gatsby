@@ -8,12 +8,24 @@ import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
 import { createPluginOptions } from "./__testutils__/createPluginOptions";
 
 import {
+	PluginOptions,
 	PrismicContextActionType,
 	PrismicPreviewProvider,
+	PrismicRepositoryConfigs,
 	usePrismicPreviewAccessToken,
 	usePrismicPreviewContext,
 } from "../src";
 import { onClientEntry } from "../src/gatsby-browser";
+
+const createConfig = (
+	pluginOptions: PluginOptions,
+): PrismicRepositoryConfigs => [
+	{
+		repositoryName: pluginOptions.repositoryName,
+		linkResolver: (doc): string => `/${doc.uid}`,
+		componentResolver: () => null,
+	},
+];
 
 test.before(() => {
 	browserEnv(["window", "document"]);
@@ -110,6 +122,7 @@ test.serial("SetAccessToken action sets the access token", async (t) => {
 test.serial("AppendDocuments action adds documents", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
+	const config = createConfig(pluginOptions);
 
 	// @ts-expect-error - Partial gatsbyContext provided
 	await onClientEntry(gatsbyContext, pluginOptions);
@@ -124,7 +137,8 @@ test.serial("AppendDocuments action adds documents", async (t) => {
 			type: PrismicContextActionType.SetupRuntime,
 			payload: {
 				repositoryName: pluginOptions.repositoryName,
-				config: {},
+				repositoryConfig: config[0],
+				pluginOptions,
 			},
 		});
 	});
