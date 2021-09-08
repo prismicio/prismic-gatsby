@@ -37,7 +37,12 @@ export const buildStructuredTextType: RTE.ReaderTaskEither<
 						),
 				},
 				richText: { type: "JSON", resolve: identity },
-				raw: { type: "JSON", resolve: identity },
+				raw: {
+					type: "JSON",
+					resolve: identity,
+					deprecationReason:
+						"This field has been renamed to `richText`. The `richText` field has the same value the `raw` field.",
+				},
 			},
 		}),
 	),
