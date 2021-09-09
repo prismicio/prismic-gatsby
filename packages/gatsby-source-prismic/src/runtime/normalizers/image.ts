@@ -86,7 +86,7 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
 			stripURLQueryParameters(url.toString()),
 		);
 
-		const populatedUrl = new URL(url);
+		const populatedUrl = new URL(url.toString());
 		for (const paramKey in imgixParams) {
 			populatedUrl.searchParams.set(
 				paramKey,
