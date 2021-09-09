@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-alpha.0](https://github.com/prismicio/prismic-gatsby/compare/v4.1.3...v5.0.0-alpha.0) (2021-09-09)
+
+
+### Bug Fixes
+
+* **previews:** display correct package version in error modal ([00d3a6e](https://github.com/prismicio/prismic-gatsby/commit/00d3a6e69db6df6d6032688a1af4bd69699c0b3e))
+* restore type path serialization ([907b3ee](https://github.com/prismicio/prismic-gatsby/commit/907b3eebb1fcf232c990c806de252f66a1a3a65a))
+* setup runtime with correct config ([cf14441](https://github.com/prismicio/prismic-gatsby/commit/cf14441e927cd3b66ae295a892423b527db50333))
+* use latest `@prismicio/client` ([0ea5cef](https://github.com/prismicio/prismic-gatsby/commit/0ea5cefdbb6ba50657c006c83a9305dd84f94f84))
+* use serialized type paths ([ea5c427](https://github.com/prismicio/prismic-gatsby/commit/ea5c4275b85b8b988a7fca7284d44e0bef683362))
+
+
+### Features
+
+* add richText field to StructuredText fields ([f967015](https://github.com/prismicio/prismic-gatsby/commit/f967015382385e49bf5db0db3cb949e05bb0d000))
+* initial parallelization support ([217c97f](https://github.com/prismicio/prismic-gatsby/commit/217c97f2242d0062b7f09c832d69c84545a600bf))
+* **previews:** support Shared Slices ([2727b93](https://github.com/prismicio/prismic-gatsby/commit/2727b93be4e23d3c7fda4ec3ac02b5d5fd5d7a4f))
+* **previews:** use new shared runtime ([0030398](https://github.com/prismicio/prismic-gatsby/commit/0030398846dc1a41fe034eb5ffc8ad784f974177))
+* **previews:** use runtime throughout plugin ([937650b](https://github.com/prismicio/prismic-gatsby/commit/937650b522e06c36725f56229090d84b22307b26))
+* **previews:** use shadow dom for style isolation ([f4e5448](https://github.com/prismicio/prismic-gatsby/commit/f4e5448fc6fabda20c06f3f26c0892e2a2fa59ac))
+* support Gatsby 4 ([600e566](https://github.com/prismicio/prismic-gatsby/commit/600e5669c8bad99f75d5fce68b8b2ba57c11592a))
+
+
+### BREAKING CHANGES
+
+* Changes to Gatsby's query runner requires the plugin to
+download local files at bootstrap. Add a `shouldDownloadFiles` plugin
+option if you use the `localFile` field for Image and Link fields.
+
+
+
+
+
 ## [4.1.3](https://github.com/prismicio/gatsby/compare/v4.1.2...v4.1.3) (2021-09-01)
 
 
