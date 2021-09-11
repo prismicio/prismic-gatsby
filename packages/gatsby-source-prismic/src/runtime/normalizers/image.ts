@@ -1,11 +1,9 @@
 import * as prismicT from "@prismicio/types";
 import * as gatsbyImage from "gatsby-image";
 import * as gatsbyPluginImage from "gatsby-plugin-image";
-import * as imgixGatsby from "@imgix/gatsby";
-import * as imgixGatsbyHelpers from "@imgix/gatsby/dist/pluginHelpers.browser";
+import * as gatsbyImgix from "gatsby-plugin-imgix-lite";
 
 import { sanitizeImageURL } from "../../lib/sanitizeImageURL";
-import { stripURLQueryParameters } from "../../lib/stripURLParameters";
 
 import { NormalizeConfig, NormalizerDependencies } from "../types";
 import { PRISMIC_API_IMAGE_FIELDS } from "../../constants";
@@ -66,8 +64,8 @@ export type NormalizedImageValue<Value extends prismicT.ImageField> =
 
 type BuildImageFieldConfig<Value extends prismicT.ImageFieldImage> = {
 	value: Value;
-	imageImgixParams: imgixGatsby.ImgixUrlParams;
-	imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams;
+	imageImgixParams: gatsbyImgix.ImgixParams;
+	imagePlaceholderImgixParams: gatsbyImgix.ImgixParams;
 };
 
 const buildImageField = <Value extends prismicT.ImageFieldImage>(
@@ -78,13 +76,10 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
 			...getURLSearchParams(config.value.url),
 			...config.imageImgixParams,
 		};
-		const placeholderImgixParams = config.imagePlaceholderImgixParams;
 
 		const url = new URL(config.value.url);
 
-		const normalizedURL = sanitizeImageURL(
-			stripURLQueryParameters(url.toString()),
-		);
+		const normalizedURL = sanitizeImageURL(config.value.url);
 
 		const populatedUrl = new URL(url.toString());
 		for (const paramKey in imgixParams) {
@@ -94,33 +89,25 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
 			);
 		}
 
-		const fixed = imgixGatsbyHelpers.buildFixedObject({
-			url: normalizedURL,
-			args: {
-				width: 400,
-				imgixParams,
-				placeholderImgixParams,
-			},
-			sourceWidth: config.value.dimensions.width,
-			sourceHeight: config.value.dimensions.height,
+		const aspectRatio =
+			config.value.dimensions.width / config.value.dimensions.height;
+
+		const fixed = gatsbyImgix.buildFixedImageData(normalizedURL, {
+			...config.imageImgixParams,
+			w: 400,
+			h: 400 / aspectRatio,
 		});
 
-		const fluid = imgixGatsbyHelpers.buildFluidObject({
-			url: normalizedURL,
-			args: {
-				maxWidth: 800,
-				imgixParams,
-				placeholderImgixParams,
-			},
-			sourceWidth: config.value.dimensions.width,
-			sourceHeight: config.value.dimensions.height,
+		const fluid = gatsbyImgix.buildFluidImageData(normalizedURL, {
+			...config.imageImgixParams,
+			ar: `${aspectRatio}:1`,
 		});
 
-		const gatsbyImageData = imgixGatsbyHelpers.buildGatsbyImageDataObject({
-			url: normalizedURL,
-			dimensions: config.value.dimensions,
-			defaultParams: imgixParams,
-			resolverArgs: {},
+		const gatsbyImageData = gatsbyImgix.getGatsbyImageData({
+			src: normalizedURL,
+			sourceWidth: config.value.dimensions.width,
+			sourceHeight: config.value.dimensions.height,
+			imgixParams: config.imageImgixParams,
 		});
 
 		return {

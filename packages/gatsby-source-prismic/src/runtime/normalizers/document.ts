@@ -36,6 +36,8 @@ export type NormalizedDocumentValue<
 export const document = <Value extends prismicT.PrismicDocument>(
 	config: NormalizeDocumentConfig<Value>,
 ): NormalizedDocumentValue<Value> => {
+	const hasDataFields = Object.keys(config.value.data).length > 0;
+
 	const fields = {
 		...config.value,
 		__typename: config.nodeHelpers.createTypeName(config.path),
@@ -45,11 +47,13 @@ export const document = <Value extends prismicT.PrismicDocument>(
 			value: config.value["alternate_languages"],
 		}),
 		url: prismicH.documentAsLink(config.value, config.linkResolver),
-		data: normalize({
-			...config,
-			value: config.value.data,
-			path: [...config.path, "data"],
-		}),
+		data: hasDataFields
+			? normalize({
+					...config,
+					value: config.value.data,
+					path: [...config.path, "data"],
+			  })
+			: {},
 	};
 
 	return config.nodeHelpers.createNodeFactory(config.value.type)(

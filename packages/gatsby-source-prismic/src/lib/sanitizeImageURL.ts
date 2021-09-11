@@ -10,4 +10,4 @@
  */
 // TODO: Remove once the Prismic API properly handles spaces in filenames
 export const sanitizeImageURL = (url: string): string =>
-	decodeURIComponent(url.replace(/\+/g, " "));
+	url.replace(/\+/g, " ");

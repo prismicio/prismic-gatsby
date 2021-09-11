@@ -1,5 +1,5 @@
 import * as gqlc from "graphql-compose";
-import * as imgixGatsby from "@imgix/gatsby/dist/pluginHelpers";
+import * as gatsbyImgix from "gatsby-plugin-imgix-lite/node";
 import * as prismicT from "@prismicio/types";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import * as O from "fp-ts/Option";
@@ -8,48 +8,17 @@ import * as A from "fp-ts/Array";
 import * as R from "fp-ts/Record";
 import { constNull, pipe } from "fp-ts/function";
 
+import { name as packageName } from "../../package.json";
+
 import { sanitizeImageURL } from "../lib/sanitizeImageURL";
-import { stripURLQueryParameters } from "../lib/stripURLParameters";
 
 import { Dependencies } from "../types";
-
-/**
- * Returns the URL of an image from the value of an Image field.
- *
- * @param source - Image field data.
- *
- * @returns The URL of the image if an image is provided, `null` otherwise.
- */
-const resolveUrl = (source: prismicT.ImageField): string | null =>
-	source.url
-		? sanitizeImageURL(stripURLQueryParameters(source.url))
-		: source.url;
-
-/**
- * Returns the width of an image from the value of an Image field.
- *
- * @param source - Image field data.
- *
- * @returns The width of the image if an image is provided, `undefined` otherwise.
- */
-const resolveWidth = (source: prismicT.ImageField): number | undefined =>
-	source.dimensions?.width;
-
-/**
- * Returns the height of an image from the value of an Image field.
- *
- * @param source - Image field data.
- *
- * @returns The height of the image if an image is provided, `undefined` otherwise.
- */
-const resolveHeight = (source: prismicT.ImageField): number | undefined =>
-	source.dimensions?.height;
 
 /**
  * The minimum required GraphQL argument properties for an `@imgix/gatsby` field.
  */
 interface ImgixGatsbyFieldArgsLike {
-	imgixParams: Record<string, string | number | boolean>;
+	imgixParams?: gatsbyImgix.ImgixParams;
 }
 
 /**
@@ -69,7 +38,7 @@ const withExistingURLImgixParameters = <
 	TArgs extends ImgixGatsbyFieldArgsLike,
 >(
 	fieldConfig: gqlc.ObjectTypeComposerFieldConfigAsObjectDefinition<
-		prismicT.ImageField,
+		prismicT.ImageFieldImage,
 		TContext,
 		TArgs
 	>,
@@ -105,6 +74,19 @@ const withExistingURLImgixParameters = <
 		),
 });
 
+const generateImageSource: gatsbyImgix.GenerateImageSource<prismicT.ImageFieldImage> =
+	(image) => {
+		if (image.url != null) {
+			return {
+				url: sanitizeImageURL(image.url),
+				width: image.dimensions.width,
+				height: image.dimensions.height,
+			};
+		} else {
+			return null;
+		}
+	};
+
 /**
  * Builds a GraphQL field configuration object to be used as part of another
  * Image field GraphQL configuration object. For example, this base
@@ -113,45 +95,66 @@ const withExistingURLImgixParameters = <
 export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
 	Dependencies,
 	never,
-	gqlc.ObjectTypeComposerFieldConfigMapDefinition<prismicT.ImageField, unknown>
+	gqlc.ObjectTypeComposerFieldConfigMapDefinition<
+		prismicT.ImageFieldImage,
+		undefined
+	>
 > = pipe(
 	RTE.ask<Dependencies>(),
-	RTE.bind("imgixTypes", (scope) =>
+	RTE.bind("urlField", (scope) =>
 		RTE.right(
-			imgixGatsby.createImgixGatsbyTypes({
-				// IMPORTANT: These options need to be kept in sync with the options at
-				// packages/gatsby-source-prismic/src/builders/buildImgixImageTypes.ts
-				cache: scope.cache,
-				resolveUrl,
-				resolveWidth,
-				resolveHeight,
-				defaultParams: scope.pluginOptions.imageImgixParams,
-				namespace: "Imgix",
-			}),
+			withExistingURLImgixParameters(
+				// @ts-expect-error - complex type resolution issue
+				gatsbyImgix.buildUrlFieldConfig({
+					namespace: "Imgix",
+					defaultImgixParams: scope.pluginOptions.imageImgixParams,
+					generateImageSource,
+				}),
+			),
 		),
 	),
-	RTE.bind("urlField", (scope) =>
-		RTE.right(withExistingURLImgixParameters(scope.imgixTypes.fields.url)),
-	),
 	RTE.bind("fixedField", (scope) =>
-		RTE.right(withExistingURLImgixParameters(scope.imgixTypes.fields.fixed)),
+		RTE.right(
+			withExistingURLImgixParameters(
+				// @ts-expect-error - complex type resolution issue
+				gatsbyImgix.buildFixedFieldConfig({
+					namespace: "Imgix",
+					defaultImgixParams: scope.pluginOptions.imageImgixParams,
+					defaultPlaceholderImgixParams:
+						scope.pluginOptions.imagePlaceholderImgixParams,
+					generateImageSource,
+				}),
+			),
+		),
 	),
 	RTE.bind("fluidField", (scope) =>
-		RTE.right(withExistingURLImgixParameters(scope.imgixTypes.fields.fluid)),
+		RTE.right(
+			withExistingURLImgixParameters(
+				// @ts-expect-error - complex type resolution issue
+				gatsbyImgix.buildFluidFieldConfig({
+					namespace: "Imgix",
+					defaultImgixParams: scope.pluginOptions.imageImgixParams,
+					defaultPlaceholderImgixParams:
+						scope.pluginOptions.imagePlaceholderImgixParams,
+					generateImageSource,
+				}),
+			),
+		),
 	),
 	RTE.bind("gatsbyImageDataField", (scope) =>
-		pipe(
-			RTE.right(
-				withExistingURLImgixParameters(scope.imgixTypes.fields.gatsbyImageData),
+		RTE.right(
+			withExistingURLImgixParameters(
+				// @ts-expect-error - complex type resolution issue
+				gatsbyImgix.buildGatsbyImageDataFieldConfig({
+					namespace: "Imgix",
+					cache: scope.cache,
+					pluginName: packageName,
+					defaultImgixParams: scope.pluginOptions.imageImgixParams,
+					defaultPlaceholderImgixParams:
+						scope.pluginOptions.imagePlaceholderImgixParams,
+					generateImageSource,
+				}),
 			),
-			// This field is 'JSON!' by default (i.e. non-nullable). If an image is
-			// not set in Prismic, however, this field throws a GraphQL error saying a
-			// non-nullable field was returned a null value. This should not happen
-			// since the field is nested in a nullable object type, but it happens
-			// anyway.
-			//
-			// We're making the field nullable manually here.
-			RTE.chainFirst((field) => RTE.fromIO(() => (field.type = "JSON"))),
 		),
 	),
 	RTE.map((scope) => ({

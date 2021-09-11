@@ -1,7 +1,6 @@
 import * as gatsby from "gatsby";
-import * as imgixGatsby from "@imgix/gatsby/dist/pluginHelpers";
+import * as gatsbyImgix from "gatsby-plugin-imgix-lite/node";
 import * as RTE from "fp-ts/ReaderTaskEither";
-import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 
 import { Dependencies } from "../types";
@@ -17,38 +16,24 @@ export const buildImgixImageTypes: RTE.ReaderTaskEither<
 	gatsby.GatsbyGraphQLType[]
 > = pipe(
 	RTE.ask<Dependencies>(),
-	RTE.bind("imgixTypes", (scope) =>
-		RTE.right(
-			// IMPORTANT: These options need to be kept in sync with the options at
-			// packages/gatsby-source-prismic/src/builders/buildImageBaseFieldConfigMap.ts
-			imgixGatsby.createImgixGatsbyTypes({
-				cache: scope.cache,
-				resolveUrl: () => "", // Doesn't matter
-				namespace: "Imgix",
-			}),
-		),
-	),
-	RTE.bind("objectTypes", (scope) =>
-		RTE.right(
-			pipe(scope.imgixTypes.types, A.map(scope.schema.buildObjectType)),
-		),
-	),
-	RTE.bind("enumTypes", (scope) =>
-		RTE.right(
-			pipe(scope.imgixTypes.enumTypes, A.map(scope.schema.buildEnumType)),
-		),
-	),
-	RTE.bind("inputTypes", (scope) =>
-		RTE.right(
-			pipe(
-				scope.imgixTypes.inputTypes,
-				A.map(scope.schema.buildInputObjectType),
-			),
-		),
-	),
 	RTE.map((scope) => [
-		...scope.objectTypes,
-		...scope.enumTypes,
-		...scope.inputTypes,
+		gatsbyImgix.buildFixedObjectType({
+			namespace: "Imgix",
+			cache: scope.cache,
+			schema: scope.schema,
+		}),
+		gatsbyImgix.buildFluidObjectType({
+			namespace: "Imgix",
+			cache: scope.cache,
+			schema: scope.schema,
+		}),
+		gatsbyImgix.buildImgixParamsInputObjectType({
+			namespace: "Imgix",
+			schema: scope.schema,
+		}),
+		gatsbyImgix.buildGatsbyImageDataPlaceholderEnum({
+			namespace: "Imgix",
+			schema: scope.schema,
+		}),
 	]),
 );

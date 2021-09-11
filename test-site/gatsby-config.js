@@ -23,7 +23,7 @@ module.exports = {
           test: {},
         },
         shouldDownloadFiles: {
-          'kitchen_sink.data.image': () => false,
+          'kitchen_sink.data.image': true,
         },
       },
     },

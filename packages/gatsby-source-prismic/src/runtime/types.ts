@@ -1,6 +1,6 @@
 import * as prismicT from "@prismicio/types";
 import * as prismicH from "@prismicio/helpers";
-import * as imgixGatsby from "@imgix/gatsby";
+import * as gatsbyImgix from "gatsby-plugin-imgix-lite";
 import * as nodeHelpers from "gatsby-node-helpers";
 
 import { SerializedTypePath } from "../types";
@@ -14,8 +14,8 @@ export interface NormalizerDependencies {
 	transformFieldName: <K extends string>(key: K) => string;
 	linkResolver?: prismicH.LinkResolverFunction;
 	htmlSerializer?: prismicH.HTMLMapSerializer | prismicH.HTMLFunctionSerializer;
-	imageImgixParams: imgixGatsby.ImgixUrlParams;
-	imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams;
+	imageImgixParams: gatsbyImgix.ImgixParams;
+	imagePlaceholderImgixParams: gatsbyImgix.ImgixParams;
 }
 
 export interface NormalizeConfig<Value> {

@@ -1,6 +1,6 @@
 import * as gatsby from "gatsby";
 import * as gatsbyFs from "gatsby-source-filesystem";
-import * as imgixGatsby from "@imgix/gatsby";
+import * as gatsbyImgix from "gatsby-plugin-imgix-lite";
 import * as prismic from "@prismicio/client";
 import * as prismicH from "@prismicio/helpers";
 import * as prismicT from "@prismicio/types";
@@ -107,8 +107,8 @@ export interface PluginOptions extends gatsby.PluginOptions {
 	 * A list of all Shared Slice models.
 	 */
 	sharedSliceModels: prismicT.SharedSliceModel[];
-	imageImgixParams: imgixGatsby.ImgixUrlParams;
-	imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams;
+	imageImgixParams: gatsbyImgix.ImgixParams;
+	imagePlaceholderImgixParams: gatsbyImgix.ImgixParams;
 	typePrefix?: string;
 	webhookSecret?: string;
 	shouldDownloadFiles: Record<

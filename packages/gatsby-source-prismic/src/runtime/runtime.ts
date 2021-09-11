@@ -1,6 +1,6 @@
 import * as prismicT from "@prismicio/types";
 import * as prismicH from "@prismicio/helpers";
-import * as imgixGatsby from "@imgix/gatsby";
+import * as gatsbyImgix from "gatsby-plugin-imgix-lite";
 import * as nodeHelpers from "gatsby-node-helpers";
 import { pipe } from "fp-ts/function";
 import md5 from "tiny-hashes/md5";
@@ -28,8 +28,8 @@ const createContentDigest = <T>(input: T): string => md5(JSON.stringify(input));
 export type RuntimeConfig = {
 	typePrefix?: string;
 	linkResolver?: prismicH.LinkResolverFunction;
-	imageImgixParams?: imgixGatsby.ImgixUrlParams;
-	imagePlaceholderImgixParams?: imgixGatsby.ImgixUrlParams;
+	imageImgixParams?: gatsbyImgix.ImgixParams;
+	imagePlaceholderImgixParams?: gatsbyImgix.ImgixParams;
 	htmlSerializer?: prismicH.HTMLMapSerializer | prismicH.HTMLFunctionSerializer;
 	transformFieldName?: TransformFieldNameFn;
 };

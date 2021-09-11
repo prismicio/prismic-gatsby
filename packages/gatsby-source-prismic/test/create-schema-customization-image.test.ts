@@ -1,7 +1,5 @@
 import test from "ava";
 import * as sinon from "sinon";
-import * as msw from "msw";
-import * as mswn from "msw/node";
 import * as prismicM from "@prismicio/mock";
 
 import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
@@ -231,37 +229,11 @@ test.serial(
 		const originalUrl = new URL(
 			"https://example.com/image.png?rect=0,0,100,200&sat=100&w=1",
 		);
-		const field = { url: originalUrl.toString() };
+		const field = {
+			url: originalUrl.toString(),
+			dimensions: { width: 200, height: 100 },
+		};
 		const imgixParams = { sat: 50 };
-
-		const server = mswn.setupServer(
-			msw.rest.get(
-				`${originalUrl.origin}${originalUrl.pathname}`,
-				(req, res, ctx) => {
-					const params = req.url.searchParams;
-
-					if (params.get("fm") === "json") {
-						return res(
-							ctx.json({
-								"Content-Type": "image/png",
-								PixelWidth: 200,
-								PixelHeight: 100,
-							}),
-						);
-					} else {
-						t.fail(
-							"Forcing a failure due to an unhandled request for Imgix image metadata",
-						);
-
-						return;
-					}
-				},
-			),
-		);
-		server.listen({ onUnhandledRequest: "error" });
-		t.teardown(() => {
-			server.close();
-		});
 
 		const urlRes = await call.config.fields.url.resolve(field, { imgixParams });
 		const urlUrl = new URL(urlRes);
@@ -340,56 +312,30 @@ test.serial("image URL is properly decoded", async (t) => {
 	// - &
 	// - spaces as "%20"
 	// - spaces as "+"
-	const originalUrl = new URL(
-		"https://example.com/image%402x%20with%20spaces+and+plus+signs+&.png",
-	);
-	const decodedUrl = new URL(
+	const field = {
+		url: "https://example.com/image%402x%20with%20spaces+and+plus+signs+&.png",
+		dimensions: { width: 200, height: 100 },
+	};
+	const decodedPathname = new URL(
 		"https://example.com/image@2x with spaces and plus signs &.png",
-	);
-	const field = { url: originalUrl.toString() };
-
-	const server = mswn.setupServer(
-		msw.rest.get(decodedUrl.toString(), (req, res, ctx) => {
-			const params = req.url.searchParams;
-
-			if (params.get("fm") === "json") {
-				return res(
-					ctx.json({
-						"Content-Type": "image/png",
-						PixelWidth: 200,
-						PixelHeight: 100,
-					}),
-				);
-			} else {
-				t.fail(
-					"Forcing a failure due to an unhandled request for Imgix image metadata",
-				);
-
-				return;
-			}
-		}),
-	);
-	server.listen({ onUnhandledRequest: "error" });
-	t.teardown(() => {
-		server.close();
-	});
+	).pathname;
 
 	const urlRes = await call.config.fields.url.resolve(field, {});
 	const urlUrl = new URL(urlRes);
-	t.is(urlUrl.pathname, decodedUrl.pathname);
+	t.is(urlUrl.pathname, decodedPathname);
 
 	const fixedRes = await call.config.fields.fixed.resolve(field, {});
 	const fixedSrcUrl = new URL(fixedRes.src);
-	t.is(fixedSrcUrl.pathname, decodedUrl.pathname);
+	t.is(fixedSrcUrl.pathname, decodedPathname);
 
 	const fluidRes = await call.config.fields.fluid.resolve(field, {});
 	const fluidSrcUrl = new URL(fluidRes.src);
-	t.is(fluidSrcUrl.pathname, decodedUrl.pathname);
+	t.is(fluidSrcUrl.pathname, decodedPathname);
 
 	const gatsbyImageDataRes = await call.config.fields.gatsbyImageData.resolve(
 		field,
 		{},
 	);
 	const gatsbyImageDataSrcUrl = new URL(gatsbyImageDataRes.images.fallback.src);
-	t.is(gatsbyImageDataSrcUrl.pathname, decodedUrl.pathname);
+	t.is(gatsbyImageDataSrcUrl.pathname, decodedPathname);
 });

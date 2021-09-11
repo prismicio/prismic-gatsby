@@ -56,7 +56,6 @@
 		"storybook": "start-storybook --quiet -p 6006"
 	},
 	"dependencies": {
-		"@imgix/gatsby": "^1.6.11",
 		"@prismicio/client": "^6.0.0-alpha.11",
 		"@prismicio/helpers": "^2.0.0-alpha.4",
 		"@prismicio/types": "^0.1.6",
@@ -92,6 +91,7 @@
 		"gatsby": "4.0.0-alpha-9689ff.5",
 		"gatsby-image": "^3.11.0",
 		"gatsby-plugin-image": "^1.11.0",
+		"gatsby-plugin-imgix-lite": "^0.0.0",
 		"gatsby-plugin-utils": "^1.11.0",
 		"global-jsdom": "^8.1.0",
 		"identity-obj-proxy": "^3.0.0",

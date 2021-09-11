@@ -1,6 +1,6 @@
 import * as gatsby from "gatsby";
-import * as imgixGatsby from "@imgix/gatsby";
 import * as gatsbyPrismic from "gatsby-source-prismic";
+import * as gatsbyImgix from "gatsby-plugin-imgix-lite";
 import * as prismic from "@prismicio/client";
 import * as prismicT from "@prismicio/types";
 import * as prismicH from "@prismicio/helpers";
@@ -36,8 +36,8 @@ export interface PluginOptions extends gatsby.PluginOptions {
 	graphQuery?: string;
 	fetchLinks?: string[];
 	lang: string;
-	imageImgixParams: imgixGatsby.ImgixUrlParams;
-	imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams;
+	imageImgixParams: gatsbyImgix.ImgixParams;
+	imagePlaceholderImgixParams: gatsbyImgix.ImgixParams;
 	typePrefix?: string;
 	toolbar: "new" | "legacy";
 	plugins: [];
