@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.4-debug.0](https://github.com/prismicio/gatsby/compare/v4.1.3...v4.1.4-debug.0) (2021-09-13)
+
+
+### Bug Fixes
+
+* add debug information for webhooks ([b19b0f3](https://github.com/prismicio/gatsby/commit/b19b0f3050364f077851d30cb486e6031b2a286d))
+
+
+
+
+
 ## [4.1.2](https://github.com/prismicio/gatsby/compare/v4.1.1...v4.1.2) (2021-08-25)
 
 
