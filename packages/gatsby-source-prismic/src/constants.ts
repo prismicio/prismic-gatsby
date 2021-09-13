@@ -1,4 +1,11 @@
 /**
+ * Name of the plugin used to identify Nodes owned by this plugin.
+ *
+ * Note: This should always be in sync with package.json's `name` field.
+ */
+export const PLUGIN_NAME = 'gatsby-source-prismic'
+
+/**
  * Global prefix used for all GraphQL types and, where necessary, fields.
  */
 export const GLOBAL_TYPE_PREFIX = 'Prismic'

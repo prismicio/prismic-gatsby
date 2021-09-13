@@ -10,5 +10,5 @@ import { Dependencies } from '../types'
  */
 export const getNode = (
   nodeId: string,
-): RTE.ReaderTaskEither<Dependencies, never, gatsby.Node> =>
+): RTE.ReaderTaskEither<Dependencies, never, gatsby.Node | undefined> =>
   RTE.asks((deps) => deps.getNode(nodeId))

@@ -31,7 +31,9 @@ const extractApiUpdateWebhookBodyDocumentIds = (
         RTE.right,
       ),
     ),
-    RTE.map((scope) => [...scope.documentIds, ...scope.releaseDocumentIds]),
+    RTE.map((scope) => [
+      ...new Set([...scope.documentIds, ...scope.releaseDocumentIds]),
+    ]),
   )
 
 /**
@@ -82,6 +84,20 @@ export const onWebhookApiUpdate = (
         scope.documentIds,
         A.difference(s.Eq)(scope.documentIdsToUpdate),
         (ids) => RTE.right(ids),
+      ),
+    ),
+    RTE.chainFirstW((scope) =>
+      reportInfo(
+        `Adding or updating the following Prismic documents: [${scope.documentIdsToUpdate.join(
+          ', ',
+        )}]`,
+      ),
+    ),
+    RTE.chainFirstW((scope) =>
+      reportInfo(
+        `Deleting the following Prismic documents: [${scope.documentIdsToDelete.join(
+          ', ',
+        )}]`,
       ),
     ),
     RTE.chainFirstW((scope) =>

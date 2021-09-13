@@ -6,6 +6,9 @@ import {
   PrismicWebhookType,
 } from '../../src'
 
+/**
+ * @remark A deletion webhook is only triggered when a Release is published or deleted. It is *not* triggered when a document within a release is deleted.
+ */
 export const createWebhookAPIUpdateReleaseDocDeletion = (
   pluginOptions: PluginOptions,
   documents: prismicT.PrismicDocument[],
