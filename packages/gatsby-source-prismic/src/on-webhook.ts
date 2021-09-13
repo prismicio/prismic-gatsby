@@ -13,6 +13,7 @@ import { Dependencies, PrismicWebhookBody } from './types'
 import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
 import { onWebhookApiUpdate } from './on-webhook-api-update'
 import { onWebhookTestTrigger } from './on-webhook-test-trigger'
+import { reportInfo } from './lib/reportInfo'
 
 /**
  * Calls the appropriate webhook handler depending on its contents.
@@ -31,6 +32,9 @@ const onPrismicWebhook = (
         O.fold(
           () => reportWarning(WEBHOOK_SECRET_MISMATCH_MSG),
           (webhookBody) => {
+            console.log({ webhookBody })
+            reportInfo(JSON.stringify({ webhookBody }))
+
             if (isPrismicWebhookBodyApiUpdate(webhookBody)) {
               return onWebhookApiUpdate(webhookBody)
             }
