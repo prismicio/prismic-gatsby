@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.0](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-alpha.0...v5.0.0-next.0) (2021-09-14)
+
+
+### Bug Fixes
+
+* provide better missing schema message ([ddb1d84](https://github.com/prismicio/prismic-gatsby/commit/ddb1d843e01dc87a502f3b4d4c38afc5d53fc9ad))
+
+
+
+
+
 # [5.0.0-alpha.0](https://github.com/prismicio/prismic-gatsby/compare/v4.1.3...v5.0.0-alpha.0) (2021-09-09)
 
 
