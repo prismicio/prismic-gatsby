@@ -91,7 +91,7 @@
 		"gatsby": "4.0.0-alpha-9689ff.5",
 		"gatsby-image": "^3.11.0",
 		"gatsby-plugin-image": "^1.11.0",
-		"gatsby-plugin-imgix-lite": "^0.0.0",
+		"gatsby-plugin-imgix-lite": "link:../../../../js/gatsby-plugin-imgix-lite",
 		"gatsby-plugin-utils": "^1.11.0",
 		"global-jsdom": "^8.1.0",
 		"identity-obj-proxy": "^3.0.0",
