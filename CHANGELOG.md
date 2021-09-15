@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.2](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.1...v5.0.0-next.2) (2021-09-15)
+
+
+### Bug Fixes
+
+* include gatsby-node.js on npm ([29eba49](https://github.com/prismicio/prismic-gatsby/commit/29eba4916deeecb388dfe83f6eb70dbe0fbe0cf5))
+
+
+
+
+
 # [5.0.0-next.1](https://github.com/prismicio/prismic-gatsby/compare/v4.1.5...v5.0.0-next.1) (2021-09-15)
 
 
