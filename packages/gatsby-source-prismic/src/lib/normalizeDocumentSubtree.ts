@@ -150,7 +150,7 @@ export const normalizeDocumentSubtree = (
             ),
             RTE.bindTo('value'),
             RTE.bind('dataField', (scope) =>
-              scope.value.data
+              !R.isEmpty(scope.value.data)
                 ? normalizeDocumentRecord([...path, 'data'], scope.value.data)
                 : RTE.right(undefined),
             ),
