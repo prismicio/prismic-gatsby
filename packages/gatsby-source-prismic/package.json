@@ -30,7 +30,7 @@
 	"files": [
 		"dist",
 		"src",
-		"gatsby-node.cjs",
+		"gatsby-node.js",
 		"fragments.js"
 	],
 	"scripts": {
