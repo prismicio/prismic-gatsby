@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.4](https://github.com/prismicio/prismic-gatsby/compare/v4.1.3...v4.1.4) (2021-09-15)
+
+
+### Bug Fixes
+
+* correctly resolve root document fields when using transformFieldName ([9175c7d](https://github.com/prismicio/prismic-gatsby/commit/9175c7d6681b2385abd5a7a5e2701183dd7e5515)), closes [#447](https://github.com/prismicio/prismic-gatsby/issues/447)
+
+
+
+
+
 ## [4.1.3](https://github.com/prismicio/prismic-gatsby/compare/v4.1.2...v4.1.3) (2021-09-01)
 
 
