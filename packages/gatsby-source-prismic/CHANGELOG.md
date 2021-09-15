@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.5](https://github.com/prismicio/gatsby/compare/v4.1.4...v4.1.5) (2021-09-15)
+
+
+### Bug Fixes
+
+* **sourec:** only normalize data field if it contains fields ([1eb81a2](https://github.com/prismicio/gatsby/commit/1eb81a223d1c3f45884bfc22c04645e2047df293))
+
+
+
+
+
 ## [4.1.4](https://github.com/prismicio/gatsby/compare/v4.1.3...v4.1.4) (2021-09-15)
 
 
