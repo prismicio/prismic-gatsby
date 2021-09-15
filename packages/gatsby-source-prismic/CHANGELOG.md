@@ -59,6 +59,28 @@ option if you use the `localFile` field for Image and Link fields.
 
 
 
+## [4.1.5](https://github.com/prismicio/gatsby/compare/v4.1.4...v4.1.5) (2021-09-15)
+
+
+### Bug Fixes
+
+* **sourec:** only normalize data field if it contains fields ([1eb81a2](https://github.com/prismicio/gatsby/commit/1eb81a223d1c3f45884bfc22c04645e2047df293))
+
+
+
+
+
+## [4.1.4](https://github.com/prismicio/gatsby/compare/v4.1.3...v4.1.4) (2021-09-15)
+
+
+### Bug Fixes
+
+* correctly resolve root document fields when using transformFieldName ([9175c7d](https://github.com/prismicio/gatsby/commit/9175c7d6681b2385abd5a7a5e2701183dd7e5515)), closes [#447](https://github.com/prismicio/gatsby/issues/447)
+
+
+
+
+
 ## [4.1.2](https://github.com/prismicio/gatsby/compare/v4.1.1...v4.1.2) (2021-08-25)
 
 
