@@ -35,10 +35,20 @@ const unknownRecordArrayValueRefinement = (
   Array.isArray(value) && value.every(unknownRecordRefinement)
 
 /**
+ * Determines if a value is a Prismic document.
+ *
+ * @param value Value to check.
+ * @returns `true` if the value is a Prismic document, `false` otherwise.
+ */
+const documentRefinement = (
+  value: unknown,
+): value is prismicT.PrismicDocument =>
+  unknownRecordRefinement(value) && 'first_publication_date' in value
+
+/**
  * Determines if a value is an Embed field.
  *
  * @param value Value to check.
- *
  * @returns `true` if the value is an Embed field, `false` otherwise.
  */
 const embedValueRefinement = (value: unknown): value is prismicT.EmbedField =>
@@ -128,7 +138,31 @@ export const normalizeDocumentSubtree = (
     RTE.bind('type', (env) => RTE.right(env.typePath.type)),
     RTE.chain((env) => {
       switch (env.typePath.type) {
-        case PrismicSpecialType.Document:
+        case PrismicSpecialType.Document: {
+          return pipe(
+            value,
+            RTE.fromPredicate(
+              documentRefinement,
+              () =>
+                new Error(
+                  `Field value does not match the type declared in its type path: ${env.type}`,
+                ),
+            ),
+            RTE.bindTo('value'),
+            RTE.bind('dataField', (scope) =>
+              scope.value.data
+                ? normalizeDocumentRecord([...path, 'data'], scope.value.data)
+                : RTE.right(undefined),
+            ),
+            RTE.chainW((scope) =>
+              RTE.right({
+                ...scope.value,
+                data: scope.dataField,
+              }),
+            ),
+          )
+        }
+
         case PrismicSpecialType.DocumentData: {
           return pipe(
             value,
