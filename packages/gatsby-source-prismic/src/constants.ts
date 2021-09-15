@@ -101,4 +101,5 @@ export const MISSING_SCHEMAS_MSG =
 /**
  * Format used to inform the user of a missing schema.
  */
-export const MISSING_SCHEMA_MSG = 'JSON schema for "%s" is missing';
+export const MISSING_SCHEMA_MSG =
+	'JSON schema for "%s" is missing. If the schema is no longer in use, you may provide "{}" as the JSON schema.';
