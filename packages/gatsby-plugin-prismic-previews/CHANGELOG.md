@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.5](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.4...v5.0.0-next.5) (2021-09-16)
+
+
+### Bug Fixes
+
+* **previews:** optional repositoryConfigs option for withPrismicPreviewResolver ([29b3363](https://github.com/prismicio/prismic-gatsby/commit/29b3363b5582aac2aac9abd288b6bcc65f68a23e))
+
+
+
+
+
 # [5.0.0-next.4](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.3...v5.0.0-next.4) (2021-09-16)
 
 **Note:** Version bump only for package gatsby-plugin-prismic-previews
