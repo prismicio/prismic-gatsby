@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.4](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.3...v5.0.0-next.4) (2021-09-16)
+
+**Note:** Version bump only for package @prismicio/gatsby
+
+
+
+
+
 # [5.0.0-next.3](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.2...v5.0.0-next.3) (2021-09-16)
 
 
