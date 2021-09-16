@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.3](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.2...v5.0.0-next.3) (2021-09-16)
+
+
+### Bug Fixes
+
+* **previews:** remove missing styles message ([00de4ca](https://github.com/prismicio/prismic-gatsby/commit/00de4ca6d253e7a670894a1ca42c8153ae1601a4))
+
+
+
+
+
 # [5.0.0-next.0](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-alpha.0...v5.0.0-next.0) (2021-09-14)
 
 **Note:** Version bump only for package gatsby-plugin-prismic-previews
