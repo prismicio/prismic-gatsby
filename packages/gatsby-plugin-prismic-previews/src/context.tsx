@@ -297,7 +297,9 @@ const createInitialState = (
 	repositoryConfigs = defaultInitialState.repositoryConfigs,
 ): PrismicContextState => {
 	const pluginOptionsStore =
-		typeof window === "undefined" ? {} : window[WINDOW_PLUGIN_OPTIONS_KEY];
+		typeof window === "undefined"
+			? {}
+			: window[WINDOW_PLUGIN_OPTIONS_KEY] || {};
 	const repositoryNames = Object.keys(pluginOptionsStore);
 
 	const injectedPluginOptionsStore = repositoryNames.reduce(
