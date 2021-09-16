@@ -41,7 +41,7 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 	WrappedComponent: React.ComponentType<
 		TProps & WithPrismicPreviewResolverProps
 	>,
-	repositoryConfigs: PrismicRepositoryConfigs,
+	repositoryConfigs: PrismicRepositoryConfigs = [],
 	config: WithPrismicPreviewResolverConfig = {},
 ): React.ComponentType<TProps> => {
 	const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
