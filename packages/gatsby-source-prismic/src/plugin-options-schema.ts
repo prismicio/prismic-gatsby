@@ -85,7 +85,7 @@ const externalCustomTypeFetchingProgram = (
 					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					token: scope.pluginOptions.customTypesApiToken!,
 					endpoint: scope.pluginOptions.customTypesApiEndpoint,
-					fetch: scope.pluginOptions.fetch,
+					fetch: scope.pluginOptions.fetch || fetch,
 				}),
 			),
 		),
@@ -154,7 +154,7 @@ const externalValidationProgram = (
 					deps.pluginOptions.apiEndpoint ??
 						prismic.getEndpoint(deps.pluginOptions.repositoryName),
 					{
-						fetch: deps.pluginOptions.fetch,
+						fetch: deps.pluginOptions.fetch || fetch,
 						accessToken: deps.pluginOptions.accessToken,
 					},
 				),
@@ -288,10 +288,8 @@ export const pluginOptionsSchema: NonNullable<
 		createRemoteFileNode: Joi.function().default(
 			() => gatsbyFs.createRemoteFileNode,
 		),
-		transformFieldName: Joi.function().default(
-			() => (fieldName: string) => fieldName.replace(/-/g, "_"),
-		),
-		fetch: Joi.function().default(() => fetch),
+		transformFieldName: Joi.function(),
+		fetch: Joi.function(),
 	})
 		.or("customTypesApiToken", "customTypeModels", "schemas")
 		.oxor("fetchLinks", "graphQuery")

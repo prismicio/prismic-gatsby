@@ -78,6 +78,7 @@ export interface Dependencies {
 	pluginOptions: PluginOptions;
 	webhookBody?: unknown;
 	createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode;
+	transformFieldName: TransformFieldNameFn;
 	runtime: Runtime;
 }
 
@@ -117,9 +118,9 @@ export interface PluginOptions extends gatsby.PluginOptions {
 		| ((field: prismicT.ImageFieldImage | prismicT.LinkToMediaField) => boolean)
 	>;
 	plugins: [];
-	createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode;
-	transformFieldName: TransformFieldNameFn;
-	fetch: prismic.FetchLike & prismicCustomTypes.FetchLike;
+	createRemoteFileNode?: typeof gatsbyFs.createRemoteFileNode;
+	transformFieldName?: TransformFieldNameFn;
+	fetch?: prismic.FetchLike & prismicCustomTypes.FetchLike;
 }
 
 export type FieldConfigCreator<

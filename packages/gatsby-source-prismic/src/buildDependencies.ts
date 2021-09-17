@@ -1,10 +1,15 @@
 import * as gatsby from "gatsby";
 import * as prismic from "@prismicio/client";
+import * as gatsbyFs from "gatsby-source-filesystem";
 import { createNodeHelpers } from "gatsby-node-helpers";
+import fetch from "node-fetch";
 
 import { GLOBAL_TYPE_PREFIX } from "./constants";
 import { Dependencies, PluginOptions } from "./types";
 import { createRuntime } from "./runtime";
+
+const defaultTransformFieldName = (fieldName: string) =>
+	fieldName.replace(/-/g, "_");
 
 /**
  * Build the dependencies used by functions throughout the plugin.
@@ -25,7 +30,7 @@ export const buildDependencies = (
 		pluginOptions.apiEndpoint ??
 		prismic.getEndpoint(pluginOptions.repositoryName);
 	const prismicClient = prismic.createClient(prismicEndpoint, {
-		fetch: pluginOptions.fetch,
+		fetch: pluginOptions.fetch || fetch,
 		accessToken: pluginOptions.accessToken,
 		defaultParams: {
 			lang: pluginOptions.lang,
@@ -37,6 +42,9 @@ export const buildDependencies = (
 	if (pluginOptions.releaseID) {
 		prismicClient.queryContentFromReleaseByID(pluginOptions.releaseID);
 	}
+
+	const transformFieldName =
+		pluginOptions.transformFieldName || defaultTransformFieldName;
 
 	return {
 		pluginOptions,
@@ -73,14 +81,16 @@ export const buildDependencies = (
 			createNodeId: gatsbyContext.createNodeId,
 			createContentDigest: gatsbyContext.createContentDigest,
 		}),
-		createRemoteFileNode: pluginOptions.createRemoteFileNode,
+		createRemoteFileNode:
+			pluginOptions.createRemoteFileNode || gatsbyFs.createRemoteFileNode,
+		transformFieldName,
 		runtime: createRuntime({
 			typePrefix: GLOBAL_TYPE_PREFIX,
 			linkResolver: pluginOptions.linkResolver,
 			imageImgixParams: pluginOptions.imageImgixParams,
 			imagePlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
 			htmlSerializer: pluginOptions.htmlSerializer,
-			transformFieldName: pluginOptions.transformFieldName,
+			transformFieldName,
 		}),
 	};
 };
