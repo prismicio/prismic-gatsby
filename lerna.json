@@ -3,7 +3,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "5.0.0-next.5",
+  "version": "5.0.0-next.6",
   "command": {
     "publish": {
       "conventionalCommits": true

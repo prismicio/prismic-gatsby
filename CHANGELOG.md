@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.6](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.5...v5.0.0-next.6) (2021-09-17)
+
+
+### Bug Fixes
+
+* move default function plugin options to Node APIs ([d1b39d7](https://github.com/prismicio/prismic-gatsby/commit/d1b39d755ebb5f4229caded3c20d43c12c2a660d))
+
+
+
+
+
 # [5.0.0-next.5](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.4...v5.0.0-next.5) (2021-09-16)
 
 
