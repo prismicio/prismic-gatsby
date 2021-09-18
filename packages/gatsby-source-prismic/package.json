@@ -19,13 +19,13 @@
 	"exports": {
 		".": {
 			"require": "./dist/index.cjs",
-			"import": "./dist/index.mjs"
+			"import": "./dist/index.js"
 		},
-		"./gatsby-node": "./dist/gatsby-node.js",
+		"./gatsby-node": "./dist/gatsby-node.cjs",
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.cjs",
-	"module": "./dist/index.mjs",
+	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"files": [
 		"dist",
