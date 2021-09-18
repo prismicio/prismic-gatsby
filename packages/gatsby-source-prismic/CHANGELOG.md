@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.7](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.6...v5.0.0-next.7) (2021-09-18)
+
+
+### Bug Fixes
+
+* use non-.mjs exports ([318789e](https://github.com/prismicio/prismic-gatsby/commit/318789eb766f2cd97ec0c6a791183ab9bc7a72ef))
+
+
+
+
+
 # [5.0.0-next.6](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.5...v5.0.0-next.6) (2021-09-17)
 
 
