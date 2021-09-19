@@ -1,4 +1,5 @@
 import * as prismicT from "@prismicio/types";
+import * as prismicH from "@prismicio/helpers";
 import * as gatsby from "gatsby";
 import * as gatsbyFs from "gatsby-source-filesystem";
 import * as cc from "change-case";
@@ -6,6 +7,7 @@ import * as cc from "change-case";
 import { PluginOptions } from "../types";
 
 import { dotPath } from "./dotPath";
+import { traversePrismicValue } from "./traversePrismicValue";
 
 const pascalCase = (input: string): string =>
 	cc.pascalCase(input, { transform: cc.pascalCaseTransformMerge });
@@ -32,36 +34,14 @@ type NormalizedIntegrationFieldsField = string | null;
 
 type NormalizedEmbedField = string | null;
 
-type VisitorArgs<Model, Value> = {
-	model: Model;
-	value: Value;
-	path: string[];
+type NormalizedStructuredTextField<
+	Value extends prismicT.TitleField | prismicT.RichTextField,
+> = {
+	text: string;
+	html: string;
+	richText: Value;
+	raw: Value;
 };
-
-type Visitor<Model, Value> = (
-	args: VisitorArgs<Model, Value>,
-) => Promise<unknown>;
-
-type TraversePrismicValueConfig<Model, Value> = {
-	model: Model;
-	value: Value;
-	path: string[];
-	visitors: {
-		embed?: Visitor<prismicT.CustomTypeModelEmbedField, prismicT.EmbedField>;
-		integrationFields?: Visitor<
-			prismicT.CustomTypeModelIntegrationFieldsField,
-			prismicT.IntegrationFields
-		>;
-		link?: Visitor<prismicT.CustomTypeModelLinkField, prismicT.LinkField>;
-		image?: Visitor<prismicT.CustomTypeModelImageField, prismicT.ImageField>;
-	};
-};
-
-type TraversedPrismicValue<Value> = unknown;
-
-const traversePrismicValue = <Value>(
-	config: TraversePrismicValueConfig<Value>,
-): TraversedPrismicValue<Value> => {};
 
 type CreateRemoteFileNodeConfig<Field> = {
 	url: string;
@@ -69,6 +49,7 @@ type CreateRemoteFileNodeConfig<Field> = {
 	field: Field;
 	gatsbyContext: gatsby.NodePluginArgs;
 	pluginOptions: PluginOptions;
+	createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode;
 };
 
 const createRemoteFileNode = async <
@@ -98,21 +79,19 @@ const createRemoteFileNode = async <
 	}
 };
 
-type NormalizeDocumentSubtreeConfig = {
-	model: unknown;
-	value: unknown;
-	path: string[];
+type NormalizeDocumentConfig = {
+	model: prismicT.CustomTypeModel;
+	value: prismicT.PrismicDocument;
 	gatsbyContext: gatsby.NodePluginArgs;
 	pluginOptions: PluginOptions;
+	createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode;
 };
 
-export const normalizeDocumentSubtree = (
-	config: NormalizeDocumentSubtreeConfig,
-) => {
+export const normalizeDocument = (config: NormalizeDocumentConfig) => {
 	return traversePrismicValue({
 		model: config.model,
 		value: config.value,
-		path: config.path,
+		path: [config.model.id],
 		visitors: {
 			embed: async ({ value }): Promise<NormalizedEmbedField> => {
 				if ("embed_url" in value && value.embed_url) {
@@ -181,6 +160,7 @@ export const normalizeDocumentSubtree = (
 						field: value,
 						pluginOptions: config.pluginOptions,
 						gatsbyContext: config.gatsbyContext,
+						createRemoteFileNode: config.createRemoteFileNode,
 					});
 				}
 
@@ -214,6 +194,7 @@ export const normalizeDocumentSubtree = (
 								field: thumbnail,
 								pluginOptions: config.pluginOptions,
 								gatsbyContext: config.gatsbyContext,
+								createRemoteFileNode: config.createRemoteFileNode,
 						  })
 						: null;
 
@@ -230,6 +211,7 @@ export const normalizeDocumentSubtree = (
 							field: value,
 							pluginOptions: config.pluginOptions,
 							gatsbyContext: config.gatsbyContext,
+							createRemoteFileNode: config.createRemoteFileNode,
 					  })
 					: null;
 
@@ -238,6 +220,20 @@ export const normalizeDocumentSubtree = (
 					...thumbnails,
 					localFile: fileNode?.id || null,
 				} as NormalizedImageField<typeof value>;
+			},
+			structuredText: async ({
+				value,
+			}): Promise<NormalizedStructuredTextField<typeof value>> => {
+				return {
+					text: prismicH.asText(value),
+					html: prismicH.asHTML(
+						value,
+						config.pluginOptions.linkResolver,
+						config.pluginOptions.htmlSerializer,
+					),
+					richText: value,
+					raw: value,
+				};
 			},
 		},
 	});

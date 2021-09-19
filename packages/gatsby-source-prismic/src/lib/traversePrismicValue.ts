@@ -1,5 +1,25 @@
 import * as prismicT from "@prismicio/types";
 
+const isCustomTypeModel = (args: {
+	model: PrismicModel;
+	value: unknown;
+}): args is {
+	model: prismicT.CustomTypeModel;
+	value: prismicT.PrismicDocument;
+} => {
+	return "json" in args.model;
+};
+
+const isSharedSliceModelVariation = (args: {
+	model: PrismicModel;
+	value: unknown;
+}): args is {
+	model: prismicT.SharedSliceModelVariation;
+	value: prismicT.SharedSliceVariation;
+} => {
+	return "docURL" in args.model;
+};
+
 export type IterableElement<TargetIterable> = TargetIterable extends Iterable<
 	infer ElementType
 >
@@ -139,16 +159,184 @@ type TraversePrismicValueConfig<
 		>;
 		link?: Visitor<prismicT.CustomTypeModelLinkField, prismicT.LinkField>;
 		image?: Visitor<prismicT.CustomTypeModelImageField, prismicT.ImageField>;
+		structuredText?: Visitor<
+			| prismicT.CustomTypeModelTitleField
+			| prismicT.CustomTypeModelRichTextField,
+			prismicT.TitleField | prismicT.RichTextField
+		>;
 	};
 };
 
-export const traversePrismicValue = <
+export const traversePrismicValue = async <
 	Model extends PrismicModel,
 	Value extends ModelValue<Model>,
 >(
 	config: TraversePrismicValueConfig<Model, Value>,
-): TraversedPrismicValue<Value> => {
-	if ("json" in config.model) {
-		config.model;
+): Promise<TraversedPrismicValue<Value>> => {
+	if (isCustomTypeModel(config)) {
+		const value = config.value as prismicT.PrismicDocument;
+
+		const fieldModels = Object.assign(
+			{},
+			...Object.values(config.model.json),
+		) as prismicT.CustomTypeModelTab;
+
+		const data: unknown = {};
+
+		for (const fieldKey in config.value.data) {
+			data[fieldKey] = await traversePrismicValue({
+				model: fieldModels[fieldKey],
+				value: value.data[fieldKey],
+				visitors: config.visitors,
+				path: [...config.path, "data", fieldKey],
+			});
+		}
+
+		return {
+			...value,
+			data,
+		};
+	} else if (isSharedSliceModelVariation(config)) {
+		const value = config.value as prismicT.SharedSliceVariation;
+		const model = config.model as prismicT.SharedSliceModelVariation;
+
+		const primary: unknown = {};
+
+		for (const fieldKey in value.primary) {
+			primary[fieldKey] = await traversePrismicValue({
+				model: model.primary[fieldKey],
+				value: value.primary[fieldKey],
+				visitors: config.visitors,
+				path: [...config.path, "items", fieldKey],
+			});
+		}
+
+		const items = await Promise.all(
+			value.items.map(async (item) => {
+				const result: unknown = {};
+
+				for (const fieldKey in item) {
+					result[fieldKey] = await traversePrismicValue({
+						model: model.items[fieldKey],
+						value: item[fieldKey],
+						visitors: config.visitors,
+						path: [...config.path, "items", fieldKey],
+					});
+				}
+
+				return result;
+			}),
+		);
+
+		return {
+			...value,
+			primary,
+			items,
+		};
+	} else if ("type" in config.model) {
+		switch (config.model.type) {
+			case prismicT.CustomTypeModelFieldType.Group: {
+				const value = config.value as prismicT.GroupField;
+				const model = config.model as prismicT.CustomTypeModelGroupField;
+
+				return await Promise.all(
+					value.map(async (element) => {
+						const result: unknown = {};
+
+						for (const key in element) {
+							result[key] = await traversePrismicValue({
+								model: model.config.fields[key],
+								value: element[key],
+								visitors: config.visitors,
+								path: [...config.path, key],
+							});
+						}
+
+						return result;
+					}),
+				);
+			}
+
+			case prismicT.CustomTypeModelFieldType.Slices: {
+				const value = config.value as prismicT.SliceZone;
+				const model = config.model as prismicT.CustomTypeModelSliceZoneField;
+
+				return Promise.all(
+					value.map(async (element) => {
+						return await traversePrismicValue({
+							model: model.config.choices[element.slice_type],
+							value: element,
+							visitors: config.visitors,
+							path:
+								"variation" in element
+									? [element.slice_type, element.variation]
+									: [...config.path, element.slice_type],
+						});
+					}),
+				);
+			}
+
+			case prismicT.CustomTypeModelSliceType.Slice: {
+				const value = config.value as prismicT.Slice;
+				const model = config.model as prismicT.CustomTypeModelSlice;
+
+				const primary: unknown = {};
+
+				for (const fieldKey in value.primary) {
+					primary[fieldKey] = await traversePrismicValue({
+						model: model["non-repeat"][fieldKey],
+						value: value.primary[fieldKey],
+						visitors: config.visitors,
+						path: [...config.path, "items", fieldKey],
+					});
+				}
+
+				const items = await Promise.all(
+					value.items.map(async (item) => {
+						const result: unknown = {};
+
+						for (const fieldKey in item) {
+							result[fieldKey] = await traversePrismicValue({
+								model: model.repeat[fieldKey],
+								value: item[fieldKey],
+								visitors: config.visitors,
+								path: [...config.path, "items", fieldKey],
+							});
+						}
+
+						return result;
+					}),
+				);
+
+				return {
+					...value,
+					primary,
+					items,
+				};
+			}
+
+			default: {
+				const visitors = {
+					[prismicT.CustomTypeModelFieldType.Image]: config.visitors.image,
+					[prismicT.CustomTypeModelFieldType.Embed]: config.visitors.embed,
+					[prismicT.CustomTypeModelFieldType.IntegrationFields]:
+						config.visitors.integrationFields,
+					[prismicT.CustomTypeModelFieldType.Link]: config.visitors.link,
+					[prismicT.CustomTypeModelFieldType.StructuredText]:
+						config.visitors.structuredText,
+				};
+				const visitor = visitors[config.model.type as keyof typeof visitors];
+
+				if (visitor) {
+					return await visitor({
+						model: config.model as Parameters<typeof visitor>[0]["model"],
+						value: config.value as Parameters<typeof visitor>[0]["value"],
+						path: config.path,
+					});
+				} else {
+					return config.value;
+				}
+			}
+		}
 	}
 };
