@@ -319,6 +319,11 @@ export type PrismicProviderProps = {
   children?: React.ReactNode
 }
 
+// React currently throws a warning when using useLayoutEffect on the server.
+// To get around it, we can conditionally useEffect on the server (no-op) and
+// useLayoutEffect in the browser.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
 export const PrismicPreviewProvider = ({
   repositoryConfigs,
   children,
@@ -326,7 +331,7 @@ export const PrismicPreviewProvider = ({
   const initialState = createInitialState(repositoryConfigs)()
   const reducerTuple = React.useReducer(contextReducer, initialState)
 
-  React.useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     window[WINDOW_PROVIDER_PRESENCE_KEY] = true
   }, [])
 
