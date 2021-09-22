@@ -188,7 +188,7 @@ test('release doc deletion deletes node if plugin options release ID matches', a
     docs,
   )
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const webhookBodyReleaseDeletion = webhookBody.releases.deletion![0]
+  const webhookBodyReleaseDeletion = webhookBody.releases.update![0]
 
   pluginOptions.releaseID = webhookBodyReleaseDeletion.id
 
@@ -218,13 +218,6 @@ test('release doc deletion deletes node if plugin options release ID matches', a
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
-
-  t.log({ ids: docs.map((doc) => doc.id) })
-  t.log(
-    (gatsbyContext.actions.deleteNode as sinon.SinonStub)
-      .getCalls()
-      .map((call) => call.firstArg),
-  )
 
   t.true(
     (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(

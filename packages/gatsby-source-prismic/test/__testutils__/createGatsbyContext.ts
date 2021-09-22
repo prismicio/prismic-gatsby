@@ -23,9 +23,15 @@ export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
 
   return {
     actions: {
-      createNode: sinon
-        .stub()
-        .callsFake((input: gatsby.NodeInput) => nodeStore.set(input.id, input)),
+      createNode: sinon.stub().callsFake((input: gatsby.NodeInput) =>
+        nodeStore.set(input.id, {
+          ...input,
+          internal: {
+            ...input.internal,
+            owner: 'gatsby-source-prismic',
+          },
+        }),
+      ),
       deleteNode: sinon.stub().callsFake((id: string) => nodeStore.delete(id)),
       createTypes: sinon.stub(),
       touchNode: sinon.stub(),

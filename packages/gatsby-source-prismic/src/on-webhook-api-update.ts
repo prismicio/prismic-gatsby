@@ -42,8 +42,7 @@ const extractApiUpdateWebhookBodyDocumentIds = (
  *
  * This handler is implemented specifically for Gatsby Preview support.
  *
- * This handler performs delta changes to documents that have been updated or
- * deleted.
+ * This handler performs delta changes to documents that have been updated or deleted.
  *
  * - UPDATED documents: Nodes are updated in the Gatsby data layer.
  * - DELETED documents: Nodes are deleted from the Gatsby data layer.
@@ -88,16 +87,16 @@ export const onWebhookApiUpdate = (
     ),
     RTE.chainFirstW((scope) =>
       reportInfo(
-        `Adding or updating the following Prismic documents: [${scope.documentIdsToUpdate.join(
-          ', ',
-        )}]`,
+        `Adding or updating the following Prismic documents: [${scope.documentIdsToUpdate
+          .map((id) => `"${id}"`)
+          .join(', ')}]`,
       ),
     ),
     RTE.chainFirstW((scope) =>
       reportInfo(
-        `Deleting the following Prismic documents: [${scope.documentIdsToDelete.join(
-          ', ',
-        )}]`,
+        `Deleting the following Prismic documents: [${scope.documentIdsToDelete
+          .map((id) => `"${id}"`)
+          .join(', ')}]`,
       ),
     ),
     RTE.chainFirstW((scope) =>
