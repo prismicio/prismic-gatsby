@@ -79,9 +79,7 @@ test('doc deletion deletes node', async (t) => {
   // This signals that the second doc has been deleted.
   const docs = [createPrismicAPIDocument(), createPrismicAPIDocument()]
   const preWebhookQueryResponse = createPrismicAPIQueryResponse(docs)
-  const postWebhookQueryResponse = createPrismicAPIQueryResponse(
-    docs.slice(0, 1),
-  )
+  const postWebhookQueryResponse = createPrismicAPIQueryResponse(docs.slice(1))
   const webhookBody = createWebhookAPIUpdateDocDeletion(pluginOptions, docs)
 
   server.use(createAPIRepositoryMockedRequest(pluginOptions))
@@ -95,21 +93,32 @@ test('doc deletion deletes node', async (t) => {
   gatsbyContext.webhookBody = webhookBody
 
   server.use(
-    createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse, {
-      q: `[${prismic.predicate.in('document.id', webhookBody.documents)}]`,
-    }),
+    createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse),
   )
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
-  for (const doc of docs.slice(1)) {
-    t.true(
-      (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-        sinon.match.has('prismicId', doc.id),
-      ),
-    )
-  }
+  t.true(
+    (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
+      sinon.match.has('prismicId', docs[0].id),
+    ),
+  )
+
+  // Does not touch deleted doc. We do not want to prevent garbage collection
+  // for deleted nodes.
+  t.false(
+    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+      sinon.match.has('prismicId', docs[0].id),
+    ),
+  )
+
+  // Touches all other docs. We want to prevent garbage collection.
+  t.true(
+    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+      sinon.match.has('prismicId', docs[1].id),
+    ),
+  )
 })
 
 test('release doc addition creates/updates node if plugin options release ID matches', async (t) => {
@@ -182,15 +191,13 @@ test('release doc deletion deletes node if plugin options release ID matches', a
   // This signals that the second doc has been deleted.
   const docs = [createPrismicAPIDocument(), createPrismicAPIDocument()]
   const preWebhookQueryResponse = createPrismicAPIQueryResponse(docs)
-  const postWebhookQueryResponse = createPrismicAPIQueryResponse(
-    docs.slice(0, 1),
-  )
+  const postWebhookQueryResponse = createPrismicAPIQueryResponse(docs.slice(1))
   const webhookBody = createWebhookAPIUpdateReleaseDocDeletion(
     pluginOptions,
     docs,
   )
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const webhookBodyReleaseDeletion = webhookBody.releases.deletion![0]
+  const webhookBodyReleaseDeletion = webhookBody.releases.update![0]
 
   pluginOptions.releaseID = webhookBodyReleaseDeletion.id
 
@@ -204,28 +211,39 @@ test('release doc deletion deletes node if plugin options release ID matches', a
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
+  // The next `sourceNodes` call will simulate a webhook trigger.
+  // We do this by setting the webhookBody value to gatsbyContext.
   gatsbyContext.webhookBody = webhookBody
 
   server.use(
     createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse, {
       ref: webhookBodyReleaseDeletion.ref,
-      q: `[${prismic.predicate.in(
-        'document.id',
-        webhookBodyReleaseDeletion.documents,
-      )}]`,
     }),
   )
 
   // @ts-expect-error - Partial gatsbyContext provided
   await sourceNodes(gatsbyContext, pluginOptions)
 
-  for (const doc of docs.slice(1)) {
-    t.true(
-      (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-        sinon.match.has('prismicId', doc.id),
-      ),
-    )
-  }
+  t.true(
+    (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
+      sinon.match.has('prismicId', docs[0].id),
+    ),
+  )
+
+  // Does not touch deleted doc. We do not want to prevent garbage collection
+  // for deleted nodes.
+  t.false(
+    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+      sinon.match.has('prismicId', docs[0].id),
+    ),
+  )
+
+  // Touches all other docs. We want to prevent garbage collection.
+  t.true(
+    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+      sinon.match.has('prismicId', docs[1].id),
+    ),
+  )
 })
 
 test('release doc deletion does nothing if plugin options release ID does not match', async (t) => {

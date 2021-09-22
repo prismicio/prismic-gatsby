@@ -7,7 +7,6 @@ import { isPrismicWebhookBodyForRepository } from './lib/isPrismicWebhookBodyFor
 import { isPrismicWebhookBodyTestTrigger } from './lib/isPrismicWebhookBodyTestTrigger'
 import { isValidWebhookSecret } from './lib/isValidWebhookSecret'
 import { reportWarning } from './lib/reportWarning'
-import { touchAllNodes } from './lib/touchAllNodes'
 
 import { Dependencies, PrismicWebhookBody } from './types'
 import { WEBHOOK_SECRET_MISMATCH_MSG } from './constants'
@@ -68,5 +67,4 @@ export const onWebhook: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
       O.fold(() => RTE.right(void 0), onPrismicWebhook),
     ),
   ),
-  RTE.chainW(touchAllNodes),
 )

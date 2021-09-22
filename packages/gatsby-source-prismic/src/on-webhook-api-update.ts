@@ -3,11 +3,13 @@ import * as A from 'fp-ts/Array'
 import * as s from 'fp-ts/string'
 import { pipe, constVoid } from 'fp-ts/function'
 
-import { Dependencies, PrismicWebhookBodyApiUpdate } from './types'
-import { reportInfo } from './lib/reportInfo'
-import { queryDocumentsByIds } from './lib/queryDocumentsByIds'
 import { deleteNodesForDocumentIds } from './lib/deleteNodesForDocumentIds'
-import { createNodes } from './lib/createNodes'
+import { queryDocumentsByIds } from './lib/queryDocumentsByIds'
+import { reportInfo } from './lib/reportInfo'
+import { sourceNodesForDocumentIds } from './lib/sourceNodesForDocumentIds'
+import { touchAllNodes } from './lib/touchAllNodes'
+
+import { Dependencies, PrismicWebhookBodyApiUpdate } from './types'
 
 /**
  * Extract all document IDs from a Prismic `api-update` webhook body. All
@@ -31,7 +33,9 @@ const extractApiUpdateWebhookBodyDocumentIds = (
         RTE.right,
       ),
     ),
-    RTE.map((scope) => [...scope.documentIds, ...scope.releaseDocumentIds]),
+    RTE.map((scope) => [
+      ...new Set([...scope.documentIds, ...scope.releaseDocumentIds]),
+    ]),
   )
 
 /**
@@ -40,8 +44,7 @@ const extractApiUpdateWebhookBodyDocumentIds = (
  *
  * This handler is implemented specifically for Gatsby Preview support.
  *
- * This handler performs delta changes to documents that have been updated or
- * deleted.
+ * This handler performs delta changes to documents that have been updated or deleted.
  *
  * - UPDATED documents: Nodes are updated in the Gatsby data layer.
  * - DELETED documents: Nodes are deleted from the Gatsby data layer.
@@ -85,8 +88,29 @@ export const onWebhookApiUpdate = (
       ),
     ),
     RTE.chainFirstW((scope) =>
+      reportInfo(
+        `Adding or updating the following Prismic documents: [${scope.documentIdsToUpdate
+          .map((id) => `"${id}"`)
+          .join(', ')}]`,
+      ),
+    ),
+    RTE.chainFirstW((scope) =>
+      reportInfo(
+        `Deleting the following Prismic documents: [${scope.documentIdsToDelete
+          .map((id) => `"${id}"`)
+          .join(', ')}]`,
+      ),
+    ),
+    RTE.chainFirstW((scope) =>
       deleteNodesForDocumentIds(scope.documentIdsToDelete),
     ),
-    RTE.chainFirstW((scope) => createNodes(scope.documentsToUpdate)),
+    RTE.chainFirstW((scope) =>
+      sourceNodesForDocumentIds(scope.documentIdsToUpdate),
+    ),
+    RTE.chainFirstW((scope) =>
+      touchAllNodes({
+        exceptPrismicIds: scope.documentIdsToDelete,
+      }),
+    ),
     RTE.map(constVoid),
   )

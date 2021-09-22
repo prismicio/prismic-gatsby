@@ -13,7 +13,7 @@ export const createWebhookAPIUpdateReleaseDocDeletion = (
   type: PrismicWebhookType.APIUpdate,
   masterRef: 'masterRef',
   releases: {
-    deletion: [
+    update: [
       {
         id: 'release',
         ref: 'release',
