@@ -93,9 +93,7 @@ test('doc deletion deletes node', async (t) => {
   gatsbyContext.webhookBody = webhookBody
 
   server.use(
-    createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse, {
-      q: `[${prismic.predicate.in('document.id', webhookBody.documents)}]`,
-    }),
+    createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse),
   )
 
   // @ts-expect-error - Partial gatsbyContext provided
@@ -220,10 +218,6 @@ test('release doc deletion deletes node if plugin options release ID matches', a
   server.use(
     createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse, {
       ref: webhookBodyReleaseDeletion.ref,
-      q: `[${prismic.predicate.in(
-        'document.id',
-        webhookBodyReleaseDeletion.documents,
-      )}]`,
     }),
   )
 
