@@ -3,10 +3,10 @@ import * as A from 'fp-ts/Array'
 import * as s from 'fp-ts/string'
 import { pipe, constVoid } from 'fp-ts/function'
 
-import { createNodes } from './lib/createNodes'
 import { deleteNodesForDocumentIds } from './lib/deleteNodesForDocumentIds'
 import { queryDocumentsByIds } from './lib/queryDocumentsByIds'
 import { reportInfo } from './lib/reportInfo'
+import { sourceNodesForDocumentIds } from './lib/sourceNodesForDocumentIds'
 import { touchAllNodes } from './lib/touchAllNodes'
 
 import { Dependencies, PrismicWebhookBodyApiUpdate } from './types'
@@ -104,7 +104,9 @@ export const onWebhookApiUpdate = (
     RTE.chainFirstW((scope) =>
       deleteNodesForDocumentIds(scope.documentIdsToDelete),
     ),
-    RTE.chainFirstW((scope) => createNodes(scope.documentsToUpdate)),
+    RTE.chainFirstW((scope) =>
+      sourceNodesForDocumentIds(scope.documentIdsToUpdate),
+    ),
     RTE.chainFirstW((scope) =>
       touchAllNodes({
         exceptPrismicIds: scope.documentIdsToDelete,
