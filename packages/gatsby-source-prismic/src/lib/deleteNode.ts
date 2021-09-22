@@ -11,8 +11,4 @@ import { Dependencies } from '../types'
 export const deleteNode = (
   node: gatsby.Node,
 ): RTE.ReaderTaskEither<Dependencies, never, void> =>
-  RTE.asks((deps) => {
-    console.log('Deleting node with Prismic ID: ', node.prismicId)
-
-    return deps.deleteNode(node)
-  })
+  RTE.asks((deps) => deps.deleteNode(node))
