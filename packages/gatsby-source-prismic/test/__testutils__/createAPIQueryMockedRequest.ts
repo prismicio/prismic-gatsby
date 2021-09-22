@@ -6,10 +6,10 @@ import { getMasterRef } from "./getMasterRef";
 import { isValidAccessToken } from "./isValidAccessToken";
 import { resolveURL } from "./resolveURL";
 
-import { PluginOptions } from "../../src";
+import { UnpreparedPluginOptions } from "../../src";
 
 type CreateAPIQueryMockedRequestConfig = {
-	pluginOptions: PluginOptions;
+	pluginOptions: UnpreparedPluginOptions;
 	repositoryResponse: prismicT.Repository;
 	queryResponse: prismicT.Query;
 	searchParams?: Partial<
@@ -23,7 +23,11 @@ export const createAPIQueryMockedRequest = (
 	config: CreateAPIQueryMockedRequestConfig,
 ): msw.RestHandler =>
 	msw.rest.get(
-		resolveURL(config.pluginOptions.apiEndpoint, "./documents/search"),
+		resolveURL(
+			config.pluginOptions.apiEndpoint ||
+				prismic.getEndpoint(config.pluginOptions.repositoryName),
+			"./documents/search",
+		),
 		(req, res, ctx) => {
 			const resolvedSearchParams: prismic.BuildQueryURLArgs = {
 				ref: getMasterRef(config.repositoryResponse),

@@ -8,6 +8,7 @@ import * as prismicCustomTypes from "@prismicio/custom-types-client";
 import * as gqlc from "graphql-compose";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import { NodeHelpers } from "gatsby-node-helpers";
+
 import { Runtime } from "./runtime";
 
 export type Mutable<T> = {
@@ -82,18 +83,31 @@ export interface Dependencies {
 	runtime: Runtime;
 }
 
-export interface PluginOptions extends gatsby.PluginOptions {
+export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	repositoryName: string;
 	accessToken?: string;
-	apiEndpoint: string;
-	customTypesApiToken?: string;
+	apiEndpoint?: string;
 	customTypesApiEndpoint?: string;
 	releaseID?: string;
 	graphQuery?: string;
 	fetchLinks?: string[];
-	lang: string;
+	lang?: string;
 	linkResolver?: prismicH.LinkResolverFunction;
 	htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer;
+	imageImgixParams?: imgixGatsby.ImgixUrlParams;
+	imagePlaceholderImgixParams?: imgixGatsby.ImgixUrlParams;
+	typePrefix?: string;
+	webhookSecret?: string;
+	shouldDownloadFiles?: Record<
+		string,
+		| boolean
+		| ((field: prismicT.ImageFieldImage | prismicT.LinkToMediaField) => boolean)
+	>;
+	createRemoteFileNode?: typeof gatsbyFs.createRemoteFileNode;
+	transformFieldName?: TransformFieldNameFn;
+	fetch?: prismic.FetchLike & prismicCustomTypes.FetchLike;
+
+	customTypesApiToken?: string;
 	/**
 	 * A record of all Custom Type API IDs mapped to their models.
 	 *
@@ -103,25 +117,28 @@ export interface PluginOptions extends gatsby.PluginOptions {
 	/**
 	 * A list of all Custom Types models using the Custom Types API object shape.
 	 */
-	customTypeModels: prismicT.CustomTypeModel[];
+	customTypeModels?: prismicT.CustomTypeModel[];
 	/**
 	 * A list of all Shared Slice models.
 	 */
-	sharedSliceModels: prismicT.SharedSliceModel[];
-	imageImgixParams: imgixGatsby.ImgixUrlParams;
-	imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams;
-	typePrefix?: string;
-	webhookSecret?: string;
-	shouldDownloadFiles: Record<
-		string,
-		| boolean
-		| ((field: prismicT.ImageFieldImage | prismicT.LinkToMediaField) => boolean)
+	sharedSliceModels?: prismicT.SharedSliceModel[];
+};
+
+export type PluginOptions = UnpreparedPluginOptions &
+	Required<
+		Pick<
+			UnpreparedPluginOptions,
+			| "apiEndpoint"
+			| "customTypeModels"
+			| "sharedSliceModels"
+			| "imageImgixParams"
+			| "imagePlaceholderImgixParams"
+			| "shouldDownloadFiles"
+			| "createRemoteFileNode"
+			| "transformFieldName"
+			| "fetch"
+		>
 	>;
-	plugins: [];
-	createRemoteFileNode?: typeof gatsbyFs.createRemoteFileNode;
-	transformFieldName?: TransformFieldNameFn;
-	fetch?: prismic.FetchLike & prismicCustomTypes.FetchLike;
-}
 
 export type FieldConfigCreator<
 	TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField,

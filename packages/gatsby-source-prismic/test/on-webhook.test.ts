@@ -30,7 +30,7 @@ test("touches all nodes to prevent garbage collection", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({

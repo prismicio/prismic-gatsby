@@ -34,7 +34,7 @@ test("reports received message", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({
@@ -73,7 +73,7 @@ test("doc addition creates/updates node", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({
@@ -122,7 +122,7 @@ test("doc deletion deletes node", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({
@@ -191,7 +191,7 @@ test("release doc addition creates/updates node if plugin options release ID mat
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 	);
@@ -237,7 +237,7 @@ test("release doc addition does nothing if plugin options release ID does not ma
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 	);
@@ -298,7 +298,7 @@ test("release doc deletion deletes node if plugin options release ID matches", a
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 	);
@@ -371,7 +371,7 @@ test("release doc deletion does nothing if plugin options release ID does not ma
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({

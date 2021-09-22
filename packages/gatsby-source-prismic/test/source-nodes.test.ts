@@ -29,7 +29,7 @@ test("creates nodes", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 	);
@@ -100,7 +100,7 @@ test("field names are normalized using transformFieldName option", async (t) => 
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 	);
@@ -151,7 +151,7 @@ test("uses apiEndpoint plugin option if provided", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 	);
@@ -185,7 +185,7 @@ test("does not modify the GraphQL schema", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({

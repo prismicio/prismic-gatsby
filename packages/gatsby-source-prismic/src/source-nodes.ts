@@ -7,7 +7,7 @@ import { constVoid, pipe } from "fp-ts/function";
 import { sourceNodesForAllDocuments } from "./lib/sourceNodesForAllDocuments";
 import { throwError } from "./lib/throwError";
 
-import { Dependencies, PluginOptions } from "./types";
+import { Dependencies, UnpreparedPluginOptions } from "./types";
 import { buildDependencies } from "./buildDependencies";
 import { onWebhook } from "./on-webhook";
 
@@ -38,8 +38,17 @@ const sourceNodesProgram: RTE.ReaderTaskEither<Dependencies, Error, void> =
  * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#sourceNodes
  */
 export const sourceNodes: NonNullable<gatsby.GatsbyNode["sourceNodes"]> =
-	async (gatsbyContext: gatsby.SourceNodesArgs, pluginOptions: PluginOptions) =>
-		await pipe(
-			sourceNodesProgram(buildDependencies(gatsbyContext, pluginOptions)),
+	async (
+		gatsbyContext: gatsby.SourceNodesArgs,
+		unpreparedPluginOptions: UnpreparedPluginOptions,
+	) => {
+		const dependencies = await buildDependencies(
+			gatsbyContext,
+			unpreparedPluginOptions,
+		);
+
+		return await pipe(
+			sourceNodesProgram(dependencies),
 			TE.fold(throwError, () => T.of(void 0)),
 		)();
+	};

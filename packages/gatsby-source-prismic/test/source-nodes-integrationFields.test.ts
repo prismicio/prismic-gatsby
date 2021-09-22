@@ -38,7 +38,7 @@ test("integration fields are normalized to inferred nodes", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 	);

@@ -103,3 +103,18 @@ export const MISSING_SCHEMAS_MSG =
  */
 export const MISSING_SCHEMA_MSG =
 	'JSON schema for "%s" is missing. If the schema is no longer in use, you may provide "{}" as the JSON schema.';
+
+export const FORBIDDEN_ACCESS_WITHOUT_ACCESS_TOKEN =
+	"Unable to access the Prismic repository. Check the repository name. If the repository is secured, provide an access token.";
+
+export const FORBIDDEN_ACCESS_WITH_ACCESS_TOKEN =
+	"Unable to access the Prismic repository. Check that the correct repository name and access token are provided";
+
+export const FORBIDDEN_CUSTOM_TYPES_API_ACCESS =
+	"Unable to access the Prismic Custom Types API. Check the customTypesApiToken option.";
+
+export const NON_EXISTENT_RELEASE_WITH_ACCESS_TOKEN_MSG =
+	"The given Release ID (%s) does not exist. If the Release ID is correct, check that your access token has permission to view Releases.";
+
+export const NON_EXISTENT_RELEASE_WITHOUT_ACCESS_TOKEN_MSG =
+	"The given Release ID (%s) does not exist.";

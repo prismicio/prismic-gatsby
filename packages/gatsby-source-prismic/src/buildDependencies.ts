@@ -5,8 +5,9 @@ import { createNodeHelpers } from "gatsby-node-helpers";
 import fetch from "node-fetch";
 
 import { GLOBAL_TYPE_PREFIX } from "./constants";
-import { Dependencies, PluginOptions } from "./types";
+import { Dependencies, UnpreparedPluginOptions } from "./types";
 import { createRuntime } from "./runtime";
+import { preparePluginOptions } from "./lib/preparePluginOptions";
 
 const defaultTransformFieldName = (fieldName: string) =>
 	fieldName.replace(/-/g, "_");
@@ -17,34 +18,38 @@ const defaultTransformFieldName = (fieldName: string) =>
  * This collection of dependencies is shared through the use of the `fp-ts/Reader` monad.
  *
  * @param gatsbyContext - Arguments provided to Gatsby's Node APIs.
- * @param pluginOptions - The plugin instance's options.
+ * @param unpreparedPluginOptions - The plugin instance's options.
  *
  * @returns Dependencies used throughout the plugin.
  * @see https://gcanti.github.io/fp-ts/modules/Reader.ts.html
  */
-export const buildDependencies = (
+export const buildDependencies = async (
 	gatsbyContext: gatsby.NodePluginArgs,
-	pluginOptions: PluginOptions,
-): Dependencies => {
+	unpreparedPluginOptions: UnpreparedPluginOptions,
+): Promise<Dependencies> => {
 	const prismicEndpoint =
-		pluginOptions.apiEndpoint ??
-		prismic.getEndpoint(pluginOptions.repositoryName);
+		unpreparedPluginOptions.apiEndpoint ??
+		prismic.getEndpoint(unpreparedPluginOptions.repositoryName);
 	const prismicClient = prismic.createClient(prismicEndpoint, {
-		fetch: pluginOptions.fetch || fetch,
-		accessToken: pluginOptions.accessToken,
+		fetch: unpreparedPluginOptions.fetch || fetch,
+		accessToken: unpreparedPluginOptions.accessToken,
 		defaultParams: {
-			lang: pluginOptions.lang,
-			fetchLinks: pluginOptions.fetchLinks,
-			graphQuery: pluginOptions.graphQuery,
+			lang: unpreparedPluginOptions.lang,
+			fetchLinks: unpreparedPluginOptions.fetchLinks,
+			graphQuery: unpreparedPluginOptions.graphQuery,
 		},
 	});
 
-	if (pluginOptions.releaseID) {
-		prismicClient.queryContentFromReleaseByID(pluginOptions.releaseID);
+	if (unpreparedPluginOptions.releaseID) {
+		prismicClient.queryContentFromReleaseByID(
+			unpreparedPluginOptions.releaseID,
+		);
 	}
 
 	const transformFieldName =
-		pluginOptions.transformFieldName || defaultTransformFieldName;
+		unpreparedPluginOptions.transformFieldName || defaultTransformFieldName;
+
+	const pluginOptions = await preparePluginOptions(unpreparedPluginOptions);
 
 	return {
 		pluginOptions,
@@ -74,7 +79,7 @@ export const buildDependencies = (
 			createContentDigest: gatsbyContext.createContentDigest,
 		}),
 		nodeHelpers: createNodeHelpers({
-			typePrefix: [GLOBAL_TYPE_PREFIX, pluginOptions.typePrefix]
+			typePrefix: [GLOBAL_TYPE_PREFIX, unpreparedPluginOptions.typePrefix]
 				.filter(Boolean)
 				.join(" "),
 			fieldPrefix: GLOBAL_TYPE_PREFIX,
@@ -82,14 +87,16 @@ export const buildDependencies = (
 			createContentDigest: gatsbyContext.createContentDigest,
 		}),
 		createRemoteFileNode:
-			pluginOptions.createRemoteFileNode || gatsbyFs.createRemoteFileNode,
+			unpreparedPluginOptions.createRemoteFileNode ||
+			gatsbyFs.createRemoteFileNode,
 		transformFieldName,
 		runtime: createRuntime({
 			typePrefix: GLOBAL_TYPE_PREFIX,
-			linkResolver: pluginOptions.linkResolver,
-			imageImgixParams: pluginOptions.imageImgixParams,
-			imagePlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
-			htmlSerializer: pluginOptions.htmlSerializer,
+			linkResolver: unpreparedPluginOptions.linkResolver,
+			imageImgixParams: unpreparedPluginOptions.imageImgixParams,
+			imagePlaceholderImgixParams:
+				unpreparedPluginOptions.imagePlaceholderImgixParams,
+			htmlSerializer: unpreparedPluginOptions.htmlSerializer,
 			transformFieldName,
 		}),
 	};
