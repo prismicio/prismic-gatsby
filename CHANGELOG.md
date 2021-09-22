@@ -3,28 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.1.4-debug.2](https://github.com/prismicio/prismic-gatsby/compare/v4.1.4-debug.1...v4.1.4-debug.2) (2021-09-13)
-
-**Note:** Version bump only for package @prismicio/gatsby
-
-
-
-
-
-## [4.1.4-debug.1](https://github.com/prismicio/prismic-gatsby/compare/v4.1.4-debug.0...v4.1.4-debug.1) (2021-09-13)
-
-**Note:** Version bump only for package @prismicio/gatsby
-
-
-
-
-
-## [4.1.4-debug.0](https://github.com/prismicio/prismic-gatsby/compare/v4.1.3...v4.1.4-debug.0) (2021-09-13)
+## [4.1.5](https://github.com/prismicio/prismic-gatsby/compare/v4.1.4...v4.1.5) (2021-09-15)
 
 
 ### Bug Fixes
 
-* add debug information for webhooks ([b19b0f3](https://github.com/prismicio/prismic-gatsby/commit/b19b0f3050364f077851d30cb486e6031b2a286d))
+* **sourec:** only normalize data field if it contains fields ([1eb81a2](https://github.com/prismicio/prismic-gatsby/commit/1eb81a223d1c3f45884bfc22c04645e2047df293))
+
+
+
+
+
+## [4.1.4](https://github.com/prismicio/prismic-gatsby/compare/v4.1.3...v4.1.4) (2021-09-15)
+
+
+### Bug Fixes
+
+* correctly resolve root document fields when using transformFieldName ([9175c7d](https://github.com/prismicio/prismic-gatsby/commit/9175c7d6681b2385abd5a7a5e2701183dd7e5515)), closes [#447](https://github.com/prismicio/prismic-gatsby/issues/447)
 
 
 
