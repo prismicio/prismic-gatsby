@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.8](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.7...v5.0.0-next.8) (2021-09-23)
+
+
+### Bug Fixes
+
+* **source:** correctly support Cloud Builds on Gatsby Cloud ([#450](https://github.com/prismicio/prismic-gatsby/issues/450)) ([555a37d](https://github.com/prismicio/prismic-gatsby/commit/555a37d592fee72ccf9cdc5958c5d81b45f48306))
+
+
+
+
+
 # [5.0.0-next.7](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.6...v5.0.0-next.7) (2021-09-18)
 
 
