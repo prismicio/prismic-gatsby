@@ -113,7 +113,7 @@ test("doc deletion deletes node", async (t) => {
 	});
 	const postWebhookQueryResponse = prismicM.api.query({
 		seed: t.title,
-		documents: documents.slice(0, 1),
+		documents: documents.slice(1),
 	});
 	const webhookBody = createWebhookAPIUpdateDocDeletion(
 		pluginOptions,
@@ -142,22 +142,32 @@ test("doc deletion deletes node", async (t) => {
 			pluginOptions,
 			repositoryResponse,
 			queryResponse: postWebhookQueryResponse,
-			searchParams: {
-				q: `[${prismic.predicate.in("document.id", webhookBody.documents)}]`,
-			},
 		}),
 	);
 
 	// @ts-expect-error - Partial gatsbyContext provided
 	await sourceNodes(gatsbyContext, pluginOptions);
 
-	for (const doc of documents.slice(1)) {
-		t.true(
-			(gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-				sinon.match.has("prismicId", doc.id),
-			),
-		);
-	}
+	t.true(
+		(gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
+
+	// Does not touch deleted doc. We do not want to prevent garbage collection
+	// for deleted nodes.
+	t.false(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
+
+	// Touches all other docs. We want to prevent garbage collection.
+	t.true(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[1].id),
+		),
+	);
 });
 
 test("release doc addition creates/updates node if plugin options release ID matches", async (t) => {
@@ -275,14 +285,14 @@ test("release doc deletion deletes node if plugin options release ID matches", a
 	});
 	const postWebhookQueryResponse = prismicM.api.query({
 		seed: t.title,
-		documents: documents.slice(0, 1),
+		documents: documents.slice(1),
 	});
 	const webhookBody = createWebhookAPIUpdateReleaseDocDeletion(
 		pluginOptions,
 		documents,
 	);
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	const webhookBodyReleaseDeletion = webhookBody.releases.deletion![0];
+	const webhookBodyReleaseDeletion = webhookBody.releases.update![0];
 
 	const repositoryResponse = prismicM.api.repository({ seed: t.title });
 	repositoryResponse.refs = [
@@ -325,10 +335,6 @@ test("release doc deletion deletes node if plugin options release ID matches", a
 			queryResponse: postWebhookQueryResponse,
 			searchParams: {
 				ref: webhookBodyReleaseDeletion.ref,
-				q: `[${prismic.predicate.in(
-					"document.id",
-					webhookBodyReleaseDeletion.documents,
-				)}]`,
 			},
 		}),
 	);
@@ -336,13 +342,26 @@ test("release doc deletion deletes node if plugin options release ID matches", a
 	// @ts-expect-error - Partial gatsbyContext provided
 	await sourceNodes(gatsbyContext, pluginOptions);
 
-	for (const doc of documents.slice(1)) {
-		t.true(
-			(gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-				sinon.match.has("prismicId", doc.id),
-			),
-		);
-	}
+	t.true(
+		(gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
+
+	// Does not touch deleted doc. We do not want to prevent garbage collection
+	// for deleted nodes.
+	t.false(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
+
+	// Touches all other docs. We want to prevent garbage collection.
+	t.true(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[1].id),
+		),
+	);
 });
 
 test("release doc deletion does nothing if plugin options release ID does not match", async (t) => {
@@ -355,7 +374,7 @@ test("release doc deletion does nothing if plugin options release ID does not ma
 		queryResponse.results,
 	);
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	const webhookBodyReleaseDeletion = webhookBody.releases.deletion![0];
+	const webhookBodyReleaseDeletion = webhookBody.releases.update![0];
 
 	const repositoryResponse = prismicM.api.repository({ seed: t.title });
 	repositoryResponse.refs = [

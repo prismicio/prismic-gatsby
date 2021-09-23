@@ -23,7 +23,13 @@ export const deleteNodesForDocumentIds = (
 				documentIds,
 				A.map(deps.nodeHelpers.createNodeId),
 				getNodes,
-				RTE.chain((nodes) => deleteNodes(nodes as Mutable<typeof nodes>)),
+				RTE.map((nodes) =>
+					pipe(
+						nodes as Mutable<typeof nodes>,
+						A.filter((node): node is NonNullable<typeof node> => node != null),
+					),
+				),
+				RTE.chain((nodes) => deleteNodes(nodes)),
 				RTE.map(constVoid),
 			),
 		),

@@ -1,7 +1,10 @@
 import * as RTE from "fp-ts/ReaderTaskEither";
+import { pipe } from "fp-ts/function";
+
+import { reportInfo } from "./lib/reportInfo";
+import { touchAllNodes } from "./lib/touchAllNodes";
 
 import { WEBHOOK_TEST_TRIGGER_SUCCESS_MSG } from "./constants";
-import { reportInfo } from "./lib/reportInfo";
 import { Dependencies } from "./types";
 
 /**
@@ -14,4 +17,7 @@ export const onWebhookTestTrigger: RTE.ReaderTaskEither<
 	Dependencies,
 	never,
 	void
-> = reportInfo(WEBHOOK_TEST_TRIGGER_SUCCESS_MSG);
+> = pipe(
+	reportInfo(WEBHOOK_TEST_TRIGGER_SUCCESS_MSG),
+	RTE.chainFirstW(() => touchAllNodes()),
+);

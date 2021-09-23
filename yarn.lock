@@ -10174,7 +10174,7 @@ gatsby-plugin-page-creator@^4.0.0-zz-next.1:
     lodash "^4.17.21"
 
 "gatsby-plugin-prismic-previews@link:packages/gatsby-plugin-prismic-previews":
-  version "5.0.0-next.5"
+  version "5.0.0-next.7"
   dependencies:
     "@imgix/gatsby" "^1.6.11"
     "@prismicio/client" "^6.0.0-alpha.15"
@@ -10427,7 +10427,7 @@ gatsby-source-filesystem@^4.0.0-next.0:
     xstate "^4.14.0"
 
 "gatsby-source-prismic@link:packages/gatsby-source-prismic":
-  version "5.0.0-next.4"
+  version "5.0.0-next.7"
   dependencies:
     "@imgix/gatsby" "^1.6.11"
     "@prismicio/client" "^6.0.0-alpha.15"
