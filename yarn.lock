@@ -10450,6 +10450,7 @@ gatsby-source-filesystem@^4.0.0-next.0:
     fp-ts "^2.10.5"
     gatsby-node-helpers "^1.2.1"
     gatsby-source-filesystem "^3.11.0"
+    node-fetch "^3.0.0"
     tiny-hashes "^1.0.1"
 
 gatsby-telemetry@3.0.0-alpha-9689ff.5+cf4d725430:
