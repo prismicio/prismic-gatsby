@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.6](https://github.com/prismicio/gatsby/compare/v4.1.5...v4.1.6) (2021-09-23)
+
+
+### Bug Fixes
+
+* **source:** correctly support Cloud Builds on Gatsby Cloud ([#450](https://github.com/prismicio/gatsby/issues/450)) ([555a37d](https://github.com/prismicio/gatsby/commit/555a37d592fee72ccf9cdc5958c5d81b45f48306))
+
+
+
+
+
 ## [4.1.5](https://github.com/prismicio/gatsby/compare/v4.1.4...v4.1.5) (2021-09-15)
 
 
