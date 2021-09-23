@@ -1,5 +1,6 @@
 import test from "ava";
 import * as sinon from "sinon";
+import * as gatsby from "gatsby";
 import * as prismicM from "@prismicio/mock";
 
 import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
@@ -11,6 +12,8 @@ import { findCreateTypesCall } from "./__testutils__/findCreateTypesCall";
 
 import { createSchemaCustomization } from "../src/gatsby-node";
 
+const noop = () => void 0;
+
 test("includes base fields", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
@@ -21,8 +24,11 @@ test("includes base fields", async (t) => {
 
 	pluginOptions.customTypeModels = [customTypeModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
@@ -72,8 +78,11 @@ test("includes UID field if included in the schema", async (t) => {
 
 	pluginOptions.customTypeModels = [customTypeModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
@@ -97,8 +106,11 @@ test("includes data fields if the schema contains fields", async (t) => {
 
 	pluginOptions.customTypeModels = [customTypeModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
@@ -126,8 +138,11 @@ test("dataRaw field resolves to raw data object", async (t) => {
 
 	pluginOptions.customTypeModels = [customTypeModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixFoo",
@@ -137,10 +152,8 @@ test("dataRaw field resolves to raw data object", async (t) => {
 		seed: t.title,
 		model: customTypeModel,
 	});
-	const nodeHelpers = createNodeHelpers(gatsbyContext, pluginOptions);
-	const node = nodeHelpers.createNodeFactory("foo")(document);
 	const resolver = call.config.fields.dataRaw.resolve;
-	const res = await resolver(node);
+	const res = await resolver(document);
 
 	t.true(res === document.data);
 });
@@ -155,8 +168,11 @@ test("url field resolves using linkResolver", async (t) => {
 	pluginOptions.customTypeModels = [customTypeModel];
 	pluginOptions.linkResolver = () => "linkResolver";
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixFoo",
@@ -167,11 +183,9 @@ test("url field resolves using linkResolver", async (t) => {
 		model: customTypeModel,
 		withURL: false,
 	});
-	const nodeHelpers = createNodeHelpers(gatsbyContext, pluginOptions);
-	const node = nodeHelpers.createNodeFactory("foo")(document);
 	const resolver = call.config.fields.url.resolve;
 
-	t.true(resolver(node) === "linkResolver");
+	t.true(resolver(document) === "linkResolver");
 });
 
 test("_previewable field resolves to Prismic ID", async (t) => {
@@ -183,8 +197,11 @@ test("_previewable field resolves to Prismic ID", async (t) => {
 
 	pluginOptions.customTypeModels = [customTypeModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixFoo",
@@ -214,8 +231,11 @@ test("data field type includes all data fields", async (t) => {
 	pluginOptions.customTypeModels = [customTypeModel];
 	pluginOptions.sharedSliceModels = [sharedSliceModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({

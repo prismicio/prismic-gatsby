@@ -4,6 +4,7 @@ import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
 import { constVoid, pipe } from "fp-ts/function";
 
+import { preparePluginOptions } from "./lib/preparePluginOptions";
 import { sourceNodesForAllDocuments } from "./lib/sourceNodesForAllDocuments";
 import { throwError } from "./lib/throwError";
 
@@ -42,10 +43,8 @@ export const sourceNodes: NonNullable<gatsby.GatsbyNode["sourceNodes"]> =
 		gatsbyContext: gatsby.SourceNodesArgs,
 		unpreparedPluginOptions: UnpreparedPluginOptions,
 	) => {
-		const dependencies = await buildDependencies(
-			gatsbyContext,
-			unpreparedPluginOptions,
-		);
+		const pluginOptions = await preparePluginOptions(unpreparedPluginOptions);
+		const dependencies = await buildDependencies(gatsbyContext, pluginOptions);
 
 		return await pipe(
 			sourceNodesProgram(dependencies),

@@ -12,7 +12,6 @@ export const createPluginOptions = (
 	return {
 		repositoryName,
 		accessToken: "accessToken",
-		customTypesApiToken: "customTypesApiToken",
 		typePrefix: "prefix",
 		webhookSecret: "secret",
 		linkResolver: () => "linkResolver",

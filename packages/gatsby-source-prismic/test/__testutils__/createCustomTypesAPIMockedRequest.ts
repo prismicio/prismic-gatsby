@@ -3,25 +3,30 @@ import * as prismicT from "@prismicio/types";
 
 import { PluginOptions } from "../../src";
 
-export const createCustomTypesAPIMockedRequest = (
+type CreateCustomTypesAPIMockedRequestConfig = {
 	pluginOptions: Pick<
 		PluginOptions,
 		"repositoryName" | "customTypesApiToken" | "customTypesApiEndpoint"
-	>,
-	response: prismicT.CustomTypeModel[],
+	>;
+	response: prismicT.CustomTypeModel[];
+};
+
+export const createCustomTypesAPIMockedRequest = (
+	config: CreateCustomTypesAPIMockedRequestConfig,
 ): msw.RestHandler =>
 	msw.rest.get(
-		pluginOptions.customTypesApiEndpoint ||
+		config.pluginOptions.customTypesApiEndpoint ||
 			"https://customtypes.prismic.io/customtypes",
 		(req, res, ctx) => {
 			const repositoryHeader = req.headers.get("repository");
 			const authorizationHeader = req.headers.get("Authorization");
 
 			if (
-				repositoryHeader === pluginOptions.repositoryName &&
-				authorizationHeader === `Bearer ${pluginOptions.customTypesApiToken}`
+				repositoryHeader === config.pluginOptions.repositoryName &&
+				authorizationHeader ===
+					`Bearer ${config.pluginOptions.customTypesApiToken}`
 			) {
-				return res(ctx.json(response));
+				return res(ctx.json(config.response));
 			} else {
 				return res(ctx.status(401));
 			}

@@ -10,6 +10,7 @@ import { createCustomType } from "./lib/createCustomType";
 import { createSharedSlice } from "./lib/createSharedSlice";
 import { createTypePath } from "./lib/createTypePath";
 import { createTypes } from "./lib/createTypes";
+import { preparePluginOptions } from "./lib/preparePluginOptions";
 import { throwError } from "./lib/throwError";
 
 import { buildAlternateLanguageType } from "./builders/buildAlternateLanguageType";
@@ -148,10 +149,8 @@ export const createSchemaCustomization: NonNullable<
 	gatsbyContext: gatsby.CreateSchemaCustomizationArgs,
 	unpreparedPluginOptions: UnpreparedPluginOptions,
 ) => {
-	const dependencies = await buildDependencies(
-		gatsbyContext,
-		unpreparedPluginOptions,
-	);
+	const pluginOptions = await preparePluginOptions(unpreparedPluginOptions);
+	const dependencies = await buildDependencies(gatsbyContext, pluginOptions);
 
 	return await pipe(
 		createSchemaCustomizationProgram(dependencies),

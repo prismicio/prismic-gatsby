@@ -2,11 +2,11 @@ import * as gatsby from "gatsby";
 import * as gatsbyNodeHelpers from "gatsby-node-helpers";
 import { PartialDeep } from "type-fest";
 
-import { PluginOptions } from "../../src";
+import { UnpreparedPluginOptions } from "../../src";
 
 export const createNodeHelpers = (
 	gatsbyContext: PartialDeep<gatsby.NodePluginArgs>,
-	pluginOptions: PluginOptions,
+	pluginOptions: UnpreparedPluginOptions,
 ): gatsbyNodeHelpers.NodeHelpers =>
 	gatsbyNodeHelpers.createNodeHelpers({
 		typePrefix: `Prismic ${pluginOptions.typePrefix}`,

@@ -1,5 +1,6 @@
 import test from "ava";
 import * as sinon from "sinon";
+import * as gatsby from "gatsby";
 import * as prismicM from "@prismicio/mock";
 
 import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
@@ -8,12 +9,17 @@ import { findCreateTypesCall } from "./__testutils__/findCreateTypesCall";
 
 import { createSchemaCustomization } from "../src/gatsby-node";
 
+const noop = () => void 0;
+
 test("creates base types", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
@@ -44,8 +50,11 @@ test("document field resolves to linked node ID", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const alternativeLanguageDocument = prismicM.value.document({
 		seed: t.title,

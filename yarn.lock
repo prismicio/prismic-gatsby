@@ -3254,7 +3254,12 @@
   dependencies:
     "@prismicio/types" "^0.1.12"
 
-"@prismicio/types@^0.1.12", "@prismicio/types@^0.1.6":
+"@prismicio/types@^0.1.12":
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.13.tgz#c824019ecaa4ba3599d304063a2f52be2a73e531"
+  integrity sha512-e0Talr86Il+rOuDOP351ojXQhB3l0oRCoGktyO1bHmrSh5NMKZ+8Q2LWewl7oWuGCynXXhu5ss82CS893wjKXQ==
+
+"@prismicio/types@^0.1.6":
   version "0.1.12"
   resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.12.tgz#01610887605a8387e05dc7bb3712c3e839a17740"
   integrity sha512-Ullv18q1Hw0DXvRSypzZlBmk4VWRKTG8hIhMJIUkOAOR+hDi84zLH94sGJF1wtlhiubcnXk0ak74/8qKON4mtA==
@@ -10439,7 +10444,7 @@ gatsby-source-filesystem@^4.0.0-next.0:
     xstate "^4.14.0"
 
 "gatsby-source-prismic@link:packages/gatsby-source-prismic":
-  version "5.0.0-next.7"
+  version "5.0.0-next.8"
   dependencies:
     "@imgix/gatsby" "^1.6.11"
     "@prismicio/client" "^6.0.0-alpha.15"

@@ -57,14 +57,15 @@ test.serial("passes on valid options", async (t) => {
 			pluginOptions,
 			repositoryResponse,
 		}),
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		msw.rest.get(pluginOptions.customTypesApiEndpoint!, (_req, res, ctx) => {
-			return res(ctx.json([]));
+		createCustomTypesAPIMockedRequest({
+			pluginOptions,
+			response: [],
 		}),
-		createCustomTypesAPISharedSlicesMockedRequest(pluginOptions, []),
+		createCustomTypesAPISharedSlicesMockedRequest({
+			pluginOptions,
+			response: [],
+		}),
 	);
-
-	server.use(createCustomTypesAPIMockedRequest(pluginOptions, []));
 
 	const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions);
 
