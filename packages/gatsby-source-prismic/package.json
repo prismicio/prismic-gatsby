@@ -33,13 +33,13 @@
     "prismic"
   ],
   "dependencies": {
-    "@imgix/gatsby": "^1.6.11",
-    "@prismicio/client": "6.0.0-alpha.8",
-    "@prismicio/custom-types-client": "^0.0.4",
-    "@prismicio/helpers": "^2.0.0-alpha.4",
-    "@prismicio/types": "^0.1.6",
+    "@imgix/gatsby": "^1.6.13",
+    "@prismicio/client": "6.0.0-beta.0",
+    "@prismicio/custom-types-client": "^0.0.6",
+    "@prismicio/helpers": "^2.0.0-beta.0",
+    "@prismicio/types": "^0.1.13",
     "camel-case": "^4.1.2",
-    "fp-ts": "^2.10.5",
+    "fp-ts": "^2.11.4",
     "gatsby-node-helpers": "^1.2.1",
     "gatsby-source-filesystem": "^3.11.0",
     "tiny-hashes": "^1.0.1"
