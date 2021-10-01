@@ -17,6 +17,7 @@ import {
 	MISSING_SCHEMA_MSG,
 	NON_EXISTENT_RELEASE_WITHOUT_ACCESS_TOKEN_MSG,
 	NON_EXISTENT_RELEASE_WITH_ACCESS_TOKEN_MSG,
+	REPORTER_TEMPLATE,
 } from "./constants";
 
 export const pluginOptionsSchema: NonNullable<
@@ -95,26 +96,42 @@ export const pluginOptionsSchema: NonNullable<
 			// Check access to the repository and, if given, the Release
 			try {
 				repository = await client.getRepository();
+				await client.get({ pageSize: 1 });
 			} catch (error) {
 				if (error instanceof Error) {
-					let message = error.message;
+					let message = sprintf(
+						REPORTER_TEMPLATE,
+						unpreparedPluginOptions.repositoryName,
+						error.message,
+					);
 
-					if (error instanceof prismic.ForbiddenError) {
-						message = unpreparedPluginOptions.accessToken
-							? FORBIDDEN_ACCESS_WITH_ACCESS_TOKEN
-							: FORBIDDEN_ACCESS_WITHOUT_ACCESS_TOKEN;
+					if (error instanceof prismic.ForbiddenError || prismic.PrismicError) {
+						message = sprintf(
+							REPORTER_TEMPLATE,
+							unpreparedPluginOptions.repositoryName,
+							unpreparedPluginOptions.accessToken
+								? FORBIDDEN_ACCESS_WITH_ACCESS_TOKEN
+								: FORBIDDEN_ACCESS_WITHOUT_ACCESS_TOKEN,
+						);
 					}
 
-					if (/ref could not be found/i.test(error.message)) {
-						message = unpreparedPluginOptions.accessToken
-							? sprintf(
-									NON_EXISTENT_RELEASE_WITH_ACCESS_TOKEN_MSG,
-									unpreparedPluginOptions.repositoryName,
-							  )
-							: sprintf(
-									NON_EXISTENT_RELEASE_WITHOUT_ACCESS_TOKEN_MSG,
-									unpreparedPluginOptions.repositoryName,
-							  );
+					if (
+						unpreparedPluginOptions.releaseID &&
+						/ref could not be found/i.test(error.message)
+					) {
+						message = sprintf(
+							REPORTER_TEMPLATE,
+							unpreparedPluginOptions.repositoryName,
+							unpreparedPluginOptions.accessToken
+								? sprintf(
+										NON_EXISTENT_RELEASE_WITH_ACCESS_TOKEN_MSG,
+										unpreparedPluginOptions.releaseID,
+								  )
+								: sprintf(
+										NON_EXISTENT_RELEASE_WITHOUT_ACCESS_TOKEN_MSG,
+										unpreparedPluginOptions.releaseID,
+								  ),
+						);
 					}
 
 					throw new Joi.ValidationError(message, [{ message }], error.name);
@@ -134,10 +151,18 @@ export const pluginOptionsSchema: NonNullable<
 					await customTypesClient.getAll();
 				} catch (error) {
 					if (error instanceof Error) {
-						let message = error.message;
+						let message = sprintf(
+							REPORTER_TEMPLATE,
+							unpreparedPluginOptions.repositoryName,
+							error.message,
+						);
 
 						if (error instanceof prismicCustomTypes.ForbiddenError) {
-							message = FORBIDDEN_CUSTOM_TYPES_API_ACCESS;
+							message = sprintf(
+								REPORTER_TEMPLATE,
+								unpreparedPluginOptions.repositoryName,
+								FORBIDDEN_CUSTOM_TYPES_API_ACCESS,
+							);
 						}
 
 						throw new Joi.ValidationError(message, [{ message }], error.name);
@@ -161,7 +186,11 @@ export const pluginOptionsSchema: NonNullable<
 					throw new Joi.ValidationError(
 						MISSING_SCHEMAS_MSG,
 						missingCustomTypeIds.map((id) => ({
-							message: sprintf(MISSING_SCHEMA_MSG, id),
+							message: sprintf(
+								REPORTER_TEMPLATE,
+								pluginOptions.repositoryName,
+								sprintf(MISSING_SCHEMA_MSG, id),
+							),
 						})),
 						pluginOptions.customTypeModels.map(
 							(customTypeModel) => customTypeModel.id,

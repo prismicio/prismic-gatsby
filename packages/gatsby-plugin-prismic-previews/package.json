@@ -89,7 +89,7 @@
 		"identity-obj-proxy": "^3.0.0",
 		"jsdom": "^16.7.0",
 		"msw": "^0.35.0",
-		"node-fetch": "^2.6.1",
+		"node-fetch": "^2.6.5",
 		"nyc": "^15.1.0",
 		"postcss": "^8.3.6",
 		"postcss-import": "^14.0.2",
