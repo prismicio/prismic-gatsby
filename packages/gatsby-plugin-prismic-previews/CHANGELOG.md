@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.7](https://github.com/prismicio/gatsby/compare/v4.1.6...v4.1.7) (2021-10-01)
+
+
+### Bug Fixes
+
+* update dependencies ([57ceb56](https://github.com/prismicio/gatsby/commit/57ceb5625bbfb989745845c50d770bca659ae4c1))
+
+
+
+
+
 ## [4.1.3](https://github.com/prismicio/gatsby/compare/v4.1.2...v4.1.3) (2021-09-01)
 
 
