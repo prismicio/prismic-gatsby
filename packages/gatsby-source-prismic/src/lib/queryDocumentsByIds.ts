@@ -24,5 +24,11 @@ export const queryDocumentsByIds = (
 ): RTE.ReaderTaskEither<Dependencies, Error, prismicT.PrismicDocument[]> =>
   pipe(
     RTE.ask<Dependencies>(),
-    RTE.chain((env) => RTE.fromTask(() => env.prismicClient.getAllByIDs(ids))),
+    RTE.chain((env) =>
+      RTE.fromTask(() =>
+        env.prismicClient.getAllByIDs(ids, {
+          pageSize: env.pluginOptions.pageSize,
+        }),
+      ),
+    ),
   )

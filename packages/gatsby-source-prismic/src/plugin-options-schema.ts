@@ -197,6 +197,9 @@ export const pluginOptionsSchema: NonNullable<
     fetchLinks: Joi.array().items(Joi.string().required()),
     graphQuery: Joi.string(),
     lang: Joi.string().default(DEFAULT_LANG),
+    // TODO: Remove the hardcoded default once this PR to @prismicio/client is merged:
+    // https://github.com/prismicio/prismic-client/pull/195
+    pageSize: Joi.number().default(100),
     linkResolver: Joi.function(),
     htmlSerializer: Joi.function(),
     schemas: Joi.object(),
@@ -209,8 +212,8 @@ export const pluginOptionsSchema: NonNullable<
     createRemoteFileNode: Joi.function().default(
       () => gatsbyFs.createRemoteFileNode,
     ),
-    transformFieldName: Joi.function().default(() => (fieldName: string) =>
-      fieldName.replace(/-/g, '_'),
+    transformFieldName: Joi.function().default(
+      () => (fieldName: string) => fieldName.replace(/-/g, '_'),
     ),
     fetch: Joi.function().default(() => fetch),
   })

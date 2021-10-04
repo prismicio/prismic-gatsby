@@ -33,6 +33,9 @@ export const pluginOptionsSchema: NonNullable<
     graphQuery: Joi.string(),
     fetchLinks: Joi.array().items(Joi.string().required()),
     lang: Joi.string().default(DEFAULT_LANG),
+    // TODO: Remove the hardcoded default once this PR to @prismicio/client is merged:
+    // https://github.com/prismicio/prismic-client/pull/195
+    pageSize: Joi.number().default(100),
     imageImgixParams: Joi.object().default(DEFAULT_IMGIX_PARAMS),
     imagePlaceholderImgixParams: Joi.object().default(
       DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
