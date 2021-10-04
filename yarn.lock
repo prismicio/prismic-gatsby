@@ -2919,20 +2919,19 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
   integrity sha512-VZMYa7+fXHdwIq1TDhSXoVmSPEGM/aa+6Aiq3nVVJ9bXr24zScr+NlKFKC3iPljA7ho/GAZr+d2jOf5GIRC30Q==
 
-"@prismicio/client@6.0.0-beta.0":
-  version "6.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@prismicio/client/-/client-6.0.0-beta.0.tgz#b43a207775bfc2f70a3d30138ad239a689bf5acf"
-  integrity sha512-MGKxEao/CeqjuBaKrNovtoFl6D/EClfHnCBaL8c50nD2kQJz8BziC8cHUAw/8eWqEFnJXLvLCP5NKiks+s3log==
+"@prismicio/client@6.0.0-alpha.8":
+  version "6.0.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/@prismicio/client/-/client-6.0.0-alpha.8.tgz#fdd086032e823b964ef63651b4a2aa9bedf29109"
+  integrity sha512-zp3c8mZ/Sm2tQdZCASGEEx2UGJnYS1elFwTEca7M2y/Qi3hPM+Agp4xNMM5UoAg+2m1VFAt151vfaEscc5q4Gw==
   dependencies:
-    "@prismicio/helpers" "^2.0.0-alpha.9"
-    "@prismicio/types" "^0.1.13"
+    "@prismicio/helpers" "^2.0.0-alpha.3"
 
 "@prismicio/custom-types-client@^0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@prismicio/custom-types-client/-/custom-types-client-0.0.6.tgz#774e1498b88a07b817292a5894208851c5dd4635"
   integrity sha512-/QeHmNzEtOMtEAZF7ZfRSSosSXGhA4dzQm7vczhxdBGIT23Bbj+h0I4hNlpJZ4n0UzmIYWtd45jYCguVo3hfqQ==
 
-"@prismicio/helpers@^2.0.0-alpha.9", "@prismicio/helpers@^2.0.0-beta.0":
+"@prismicio/helpers@^2.0.0-alpha.3", "@prismicio/helpers@^2.0.0-beta.0":
   version "2.0.0-beta.0"
   resolved "https://registry.yarnpkg.com/@prismicio/helpers/-/helpers-2.0.0-beta.0.tgz#493d07f81bde06d76928af94e99672ac9f429962"
   integrity sha512-2WLXcS9Q/8JU7maNo/3cUSsUKnjUMpuZTxVxCSaDxDcBACrXR3T2nSJKvzcO5jS5zzpAkJG6zCdjP3dQVRwPmw==
