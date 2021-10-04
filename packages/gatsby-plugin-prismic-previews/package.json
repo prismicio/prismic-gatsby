@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-prismic-previews",
-  "version": "4.1.7",
+  "version": "4.2.0",
   "description": "Gatsby plugin for integrating client-side Prismic previews support",
   "license": "Apache-2.0",
   "author": "Prismic <contact@prismic.io> (https://prismic.io)",

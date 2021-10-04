@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/prismicio/gatsby/compare/v4.1.7...v4.2.0) (2021-10-04)
+
+
+### Features
+
+* add `pageSize` option ([#456](https://github.com/prismicio/gatsby/issues/456)) ([72d6a68](https://github.com/prismicio/gatsby/commit/72d6a6860262293d3ade374387ac9ffa07b629da))
+
+
+
+
+
 ## [4.1.7](https://github.com/prismicio/gatsby/compare/v4.1.6...v4.1.7) (2021-10-01)
 
 
