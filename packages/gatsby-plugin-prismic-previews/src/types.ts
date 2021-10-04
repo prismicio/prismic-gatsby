@@ -23,6 +23,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   graphQuery?: string
   fetchLinks?: string[]
   lang: string
+  pageSize: number
   imageImgixParams: imgixGatsby.ImgixUrlParams
   imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams
   typePrefix?: string

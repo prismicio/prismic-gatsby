@@ -24,6 +24,7 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
     typePrefix: 'prefix',
     schemas: {},
     lang: DEFAULT_LANG,
+    pageSize: 100,
     webhookSecret: 'secret',
     imageImgixParams: DEFAULT_IMGIX_PARAMS,
     imagePlaceholderImgixParams: DEFAULT_PLACEHOLDER_IMGIX_PARAMS,

@@ -186,13 +186,16 @@ export const usePrismicPreviewBootstrap = (
         lang: repositoryPluginOptions.lang,
         fetchLinks: repositoryPluginOptions.fetchLinks,
         graphQuery: repositoryPluginOptions.graphQuery,
+        pageSize: repositoryPluginOptions.pageSize,
       },
     })
     client.enableAutoPreviews()
 
     let allDocuments: prismicT.PrismicDocument[]
     try {
-      allDocuments = await client.getAll()
+      allDocuments = await client.getAll({
+        pageSize: repositoryPluginOptions.pageSize,
+      })
     } catch (error) {
       if (
         error instanceof prismic.ForbiddenError &&

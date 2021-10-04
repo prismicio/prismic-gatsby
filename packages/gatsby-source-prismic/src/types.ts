@@ -72,6 +72,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
   graphQuery?: string
   fetchLinks?: string[]
   lang: string
+  pageSize?: number
   linkResolver?: prismicH.LinkResolverFunction
   htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer
   schemas: Record<string, prismicT.CustomTypeModelDefinition>
@@ -86,7 +87,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
 }
 
 export type FieldConfigCreator<
-  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField
+  TSchema extends prismicT.CustomTypeModelField = prismicT.CustomTypeModelField,
 > = (
   path: string[],
   schema: TSchema,
@@ -188,7 +189,7 @@ interface PrismicWebhookExperimentVariation {
 export type PrismicCustomTypeApiResponse = PrismicCustomTypeApiCustomType[]
 
 export interface PrismicCustomTypeApiCustomType<
-  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel
+  Model extends prismicT.CustomTypeModel = prismicT.CustomTypeModel,
 > {
   id: string
   label: string

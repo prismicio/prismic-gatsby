@@ -14,6 +14,7 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
     apiEndpoint: prismic.getEndpoint(repositoryName),
     typePrefix: 'prefix',
     lang: '*',
+    pageSize: 100,
     toolbar: 'new',
     imageImgixParams: { q: 100 },
     imagePlaceholderImgixParams: { w: 10 },

@@ -799,7 +799,7 @@ test.serial('group', async (t) => {
   )
 })
 
-test.serial('slices', async (t) => {
+test.serial.only('slices', async (t) => {
   const gatsbyContext = createGatsbyContext()
   const pluginOptions = createPluginOptions(t)
   const config = createRepositoryConfigs(pluginOptions)
