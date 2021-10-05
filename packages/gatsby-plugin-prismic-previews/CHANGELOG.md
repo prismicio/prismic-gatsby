@@ -85,6 +85,28 @@ option if you use the `localFile` field for Image and Link fields.
 
 
 
+# [4.2.0](https://github.com/prismicio/gatsby/compare/v4.1.7...v4.2.0) (2021-10-04)
+
+
+### Features
+
+* add `pageSize` option ([#456](https://github.com/prismicio/gatsby/issues/456)) ([72d6a68](https://github.com/prismicio/gatsby/commit/72d6a6860262293d3ade374387ac9ffa07b629da))
+
+
+
+
+
+## [4.1.7](https://github.com/prismicio/gatsby/compare/v4.1.6...v4.1.7) (2021-10-01)
+
+
+### Bug Fixes
+
+* update dependencies ([57ceb56](https://github.com/prismicio/gatsby/commit/57ceb5625bbfb989745845c50d770bca659ae4c1))
+
+
+
+
+
 ## [4.1.3](https://github.com/prismicio/gatsby/compare/v4.1.2...v4.1.3) (2021-09-01)
 
 
