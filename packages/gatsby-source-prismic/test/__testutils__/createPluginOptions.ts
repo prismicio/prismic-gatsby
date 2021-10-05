@@ -16,6 +16,9 @@ export const createPluginOptions = (
 		webhookSecret: "secret",
 		linkResolver: () => "linkResolver",
 		htmlSerializer: () => "htmlSerializer",
+		// TODO: Remove the hardcoded default once this PR to @prismicio/client is merged:
+		// https://github.com/prismicio/prismic-client/pull/195
+		pageSize: 100,
 		createRemoteFileNode: sinon.stub().resolves({ id: "remoteFileNodeId" }),
 		plugins: [],
 	};

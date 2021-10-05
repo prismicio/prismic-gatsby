@@ -115,7 +115,7 @@ export const FORBIDDEN_ACCESS_WITHOUT_ACCESS_TOKEN =
 	"Unable to access the Prismic repository. Check the repository name. If the repository is secured, provide an access token.";
 
 export const FORBIDDEN_ACCESS_WITH_ACCESS_TOKEN =
-	"Unable to access the Prismic repository. Check that the correct repository name and access token are provided";
+	"Unable to access the Prismic repository. Check that the correct repository name and access token are provided.";
 
 export const FORBIDDEN_CUSTOM_TYPES_API_ACCESS =
 	"Unable to access the Prismic Custom Types API. Check the customTypesApiToken option.";

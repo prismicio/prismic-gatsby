@@ -92,6 +92,7 @@ export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	graphQuery?: string;
 	fetchLinks?: string[];
 	lang?: string;
+	pageSize?: number;
 	linkResolver?: prismicH.LinkResolverFunction;
 	htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer;
 	imageImgixParams?: imgixGatsby.ImgixUrlParams;

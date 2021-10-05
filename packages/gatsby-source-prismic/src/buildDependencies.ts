@@ -32,6 +32,7 @@ export const buildDependencies = async (
 			lang: pluginOptions.lang,
 			fetchLinks: pluginOptions.fetchLinks,
 			graphQuery: pluginOptions.graphQuery,
+			pageSize: pluginOptions.pageSize,
 		},
 	});
 

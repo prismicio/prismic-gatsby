@@ -161,6 +161,7 @@ export const usePrismicPreviewBootstrap = (
 				lang: repositoryPluginOptions.lang,
 				fetchLinks: repositoryPluginOptions.fetchLinks,
 				graphQuery: repositoryPluginOptions.graphQuery,
+				pageSize: repositoryPluginOptions.pageSize,
 			},
 			fetch: config.fetch,
 		});

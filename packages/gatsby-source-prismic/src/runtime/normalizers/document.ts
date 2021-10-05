@@ -44,7 +44,7 @@ export const document = <Value extends prismicT.PrismicDocument>(
 			...config,
 			value: config.value["alternate_languages"],
 		}),
-		url: prismicH.documentAsLink(config.value, config.linkResolver),
+		url: prismicH.asLink(config.value, config.linkResolver),
 		data: normalize({
 			...config,
 			value: config.value.data,

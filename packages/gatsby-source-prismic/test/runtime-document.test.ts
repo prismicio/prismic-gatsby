@@ -19,7 +19,7 @@ test("normalizes documents", (t) => {
 	t.is(normalizedDocument.__typename, "PrismicSynergies");
 	t.is(normalizedDocument._previewable, document.id);
 
-	t.is(normalizedDocument.url, prismicH.documentAsLink(document));
+	t.is(normalizedDocument.url, prismicH.asLink(document));
 
 	t.is(typeof normalizedDocument.id, "string");
 	t.is(normalizedDocument.prismicId, document.id);

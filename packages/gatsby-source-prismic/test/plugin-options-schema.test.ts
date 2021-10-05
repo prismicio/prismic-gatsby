@@ -12,6 +12,7 @@ import { createPluginOptions } from "./__testutils__/createPluginOptions";
 
 import { UnpreparedPluginOptions } from "../src";
 import { pluginOptionsSchema } from "../src/plugin-options-schema";
+import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
 
 const server = mswn.setupServer();
 test.before(() => server.listen({ onUnhandledRequest: "error" }));
@@ -52,10 +53,20 @@ test.serial("passes on valid options", async (t) => {
 	});
 	repositoryResponse.refs = [...repositoryResponse.refs, releaseRef];
 
+	const queryResponse = prismicM.api.query({ seed: t.title });
+
 	server.use(
 		createAPIRepositoryMockedRequest({
 			pluginOptions,
 			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			repositoryResponse,
+			pluginOptions,
+			queryResponse,
+			searchParams: {
+				ref: releaseRef.ref,
+			},
 		}),
 		createCustomTypesAPIMockedRequest({
 			pluginOptions,
@@ -139,9 +150,18 @@ test.serial("fails on invalid customTypesApiToken", async (t) => {
 		customTypesApiToken: "customTypesApiToken",
 	};
 	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({ seed: t.title });
 
 	server.use(
-		createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
+		createAPIRepositoryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			repositoryResponse: repositoryResponse,
+			pluginOptions: { ...pluginOptions, plugins: [] },
+			queryResponse,
+		}),
 		// Intentionally making a failed 403 response.
 		msw.rest.get(
 			"https://customtypes.prismic.io/customtypes",
@@ -153,7 +173,7 @@ test.serial("fails on invalid customTypesApiToken", async (t) => {
 
 	t.false(res.isValid);
 	t.deepEqual(res.errors, [
-		"Unable to access the Prismic Custom Types API. Check the customTypesApiToken option.",
+		"gatsby-source-prismic(qwerty) - Unable to access the Prismic Custom Types API. Check the customTypesApiToken option.",
 	]);
 });
 
@@ -187,11 +207,17 @@ test.serial("checks that all schemas are provided", async (t) => {
 		seed: t.title,
 		customTypeModels: [customTypeModel],
 	});
+	const queryResponse = prismicM.api.query({ seed: t.title });
 
 	server.use(
 		createAPIRepositoryMockedRequest({
 			pluginOptions: pluginOptions,
 			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			repositoryResponse,
+			pluginOptions,
+			queryResponse,
 		}),
 	);
 

@@ -33,7 +33,6 @@ export const createAPIQueryMockedRequest = (
 				ref: getMasterRef(config.repositoryResponse),
 				integrationFieldsRef:
 					config.repositoryResponse.integrationFieldsRef ?? undefined,
-				pageSize: 100,
 				...config.searchParams,
 			};
 
