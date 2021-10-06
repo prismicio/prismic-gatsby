@@ -167,10 +167,7 @@ export const createCustomType = (
 					url: {
 						type: "String",
 						resolve: (source: PrismicAPIDocumentNode) =>
-							prismicH.asLink(
-								prismicH.documentToLinkField(source),
-								scope.pluginOptions.linkResolver,
-							),
+							prismicH.asLink(source, scope.pluginOptions.linkResolver),
 					},
 					[PREVIEWABLE_NODE_ID_FIELD]: {
 						type: "ID!",

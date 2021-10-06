@@ -186,10 +186,7 @@ test.serial("redirects to path on valid preview", async (t) => {
 
 	t.true(
 		(config.navigate as sinon.SinonStub).calledWith(
-			prismicH.asLink(
-				prismicH.documentToLinkField(document),
-				hookConfig[0].linkResolver,
-			),
+			prismicH.asLink(document, hookConfig[0].linkResolver),
 		),
 	);
 });
@@ -236,10 +233,7 @@ test.serial(
 
 		t.true(
 			result.getByTestId("prismicPreviewPath").textContent ===
-				prismicH.asLink(
-					prismicH.documentToLinkField(document),
-					hookConfig[0].linkResolver,
-				),
+				prismicH.asLink(document, hookConfig[0].linkResolver),
 		);
 		t.true((config.navigate as sinon.SinonStub).notCalled);
 	},
