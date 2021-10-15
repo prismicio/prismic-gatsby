@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-source-prismic",
-	"version": "5.0.0-next.8",
+	"version": "5.0.0-next.9",
 	"description": "Gatsby source plugin for building websites using Prismic as a data source",
 	"keywords": [
 		"gatsby",
