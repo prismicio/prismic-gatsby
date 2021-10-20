@@ -171,9 +171,7 @@ export const pluginOptionsSchema: NonNullable<
 						throw new Joi.ValidationError(message, [{ message }], error.name);
 					}
 				}
-			}
-
-			if (!unpreparedPluginOptions.customTypesApiToken) {
+			} else {
 				// Check if all Custom Type models have been provided only if a Custom
 				// Types API token is not proided. If a token is provided, we can
 				// assume we have all needed Custom Types.
