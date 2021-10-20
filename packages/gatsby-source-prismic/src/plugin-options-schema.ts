@@ -173,32 +173,38 @@ export const pluginOptionsSchema: NonNullable<
 				}
 			}
 
-			// Check if all Custom Type models have been provided
-			const pluginOptions = await preparePluginOptions(unpreparedPluginOptions);
-
-			if (repository) {
-				const missingCustomTypeIds = Object.keys(repository.types).filter(
-					(customTypeId) => {
-						return !pluginOptions.customTypeModels.some(
-							(customTypeModel) => customTypeModel.id === customTypeId,
-						);
-					},
+			if (!unpreparedPluginOptions.customTypesApiToken) {
+				// Check if all Custom Type models have been provided only if a Custom
+				// Types API token is not proided. If a token is provided, we can
+				// assume we have all needed Custom Types.
+				const pluginOptions = await preparePluginOptions(
+					unpreparedPluginOptions,
 				);
 
-				if (missingCustomTypeIds.length > 0) {
-					throw new Joi.ValidationError(
-						MISSING_SCHEMAS_MSG,
-						missingCustomTypeIds.map((id) => ({
-							message: sprintf(
-								REPORTER_TEMPLATE,
-								pluginOptions.repositoryName,
-								sprintf(MISSING_SCHEMA_MSG, id),
-							),
-						})),
-						pluginOptions.customTypeModels.map(
-							(customTypeModel) => customTypeModel.id,
-						),
+				if (repository) {
+					const missingCustomTypeIds = Object.keys(repository.types).filter(
+						(customTypeId) => {
+							return !pluginOptions.customTypeModels.some(
+								(customTypeModel) => customTypeModel.id === customTypeId,
+							);
+						},
 					);
+
+					if (missingCustomTypeIds.length > 0) {
+						throw new Joi.ValidationError(
+							MISSING_SCHEMAS_MSG,
+							missingCustomTypeIds.map((id) => ({
+								message: sprintf(
+									REPORTER_TEMPLATE,
+									pluginOptions.repositoryName,
+									sprintf(MISSING_SCHEMA_MSG, id),
+								),
+							})),
+							pluginOptions.customTypeModels.map(
+								(customTypeModel) => customTypeModel.id,
+							),
+						);
+					}
 				}
 			}
 		});
