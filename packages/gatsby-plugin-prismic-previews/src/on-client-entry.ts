@@ -1,9 +1,7 @@
 import * as gatsby from "gatsby";
 
-import { sprintf } from "./lib/sprintf";
-
 import { PluginOptions } from "./types";
-import { MISSING_STYLES_MSG, WINDOW_PLUGIN_OPTIONS_KEY } from "./constants";
+import { WINDOW_PLUGIN_OPTIONS_KEY } from "./constants";
 
 /**
  * Called when the Gatsby browser runtime first starts.
@@ -23,16 +21,6 @@ export const onClientEntry: NonNullable<gatsby.GatsbyBrowser["onClientEntry"]> =
 					...window.prismic,
 					endpoint: pluginOptions.apiEndpoint,
 				};
-			}
-
-			if (process.env.NODE_ENV === "development") {
-				const propertyValue = window
-					.getComputedStyle(window.document.body)
-					.getPropertyValue("--styles");
-
-				if (!propertyValue) {
-					console.warn(sprintf(MISSING_STYLES_MSG, "styles"));
-				}
 			}
 		}
 	};

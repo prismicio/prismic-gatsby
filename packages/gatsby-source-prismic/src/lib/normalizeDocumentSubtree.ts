@@ -159,7 +159,7 @@ const normalizeDocumentRecord = (
 		RTE.chain((deps) =>
 			pipe(
 				value,
-				mapRecordIndices(deps.pluginOptions.transformFieldName),
+				mapRecordIndices(deps.transformFieldName),
 				R.mapWithIndex((prop, propValue) =>
 					normalizeDocumentSubtree(kind, [...path, prop], propValue),
 				),

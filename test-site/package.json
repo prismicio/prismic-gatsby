@@ -11,10 +11,10 @@
     "format": "prettier --write 'src/**/*.{ts,tsx,md}'"
   },
   "dependencies": {
-    "gatsby": "4.0.0-alpha-9689ff.5",
-    "gatsby-plugin-image": "^1.11.0",
+    "gatsby": "^4.0.0-next.0",
+    "gatsby-plugin-image": "^2.0.0-next.0",
     "gatsby-plugin-prismic-previews": "link:../packages/gatsby-plugin-prismic-previews",
-    "gatsby-source-filesystem": "^3.11.0",
+    "gatsby-source-filesystem": "^4.0.0-next.0",
     "gatsby-source-prismic": "link:../packages/gatsby-source-prismic",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"

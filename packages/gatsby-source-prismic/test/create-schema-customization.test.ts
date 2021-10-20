@@ -1,5 +1,6 @@
 import test from "ava";
 import * as sinon from "sinon";
+import * as gatsby from "gatsby";
 import * as prismicM from "@prismicio/mock";
 
 import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
@@ -10,6 +11,8 @@ import { createPluginOptions } from "./__testutils__/createPluginOptions";
 
 import { createSchemaCustomization } from "../src/gatsby-node";
 
+const noop = () => void 0;
+
 test("creates type path nodes", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
@@ -17,8 +20,11 @@ test("creates type path nodes", async (t) => {
 	pluginOptions.customTypeModels = [createMockKitchenSinkCustomTypeModel(t)];
 	pluginOptions.sharedSliceModels = [createMockKitchenSinkSharedSliceModel(t)];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const calls = (gatsbyContext.actions.createNode as sinon.SinonStub)
 		.getCalls()
@@ -66,8 +72,11 @@ test("field names with dashes are transformed with underscores by default", asyn
 
 	pluginOptions.customTypeModels = [model];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const calls = (gatsbyContext.actions.createNode as sinon.SinonStub)
 		.getCalls()

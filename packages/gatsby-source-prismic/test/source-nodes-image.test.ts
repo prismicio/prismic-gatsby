@@ -53,7 +53,7 @@ test("image fields with images are normalized to include localFile field id", as
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({
@@ -127,7 +127,7 @@ test("images are not downloaded without configuring shouldDownloadFiles", async 
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({

@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-prismic",
-  "version": "5.0.0-next.1",
+  "version": "5.0.0-next.11",
   "description": "Gatsby source plugin for building websites using Prismic as a data source",
   "keywords": [
     "gatsby",
@@ -19,18 +19,18 @@
   "exports": {
     ".": {
       "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.js"
     },
-    "./gatsby-node": "./dist/gatsby-node.js",
+    "./gatsby-node": "./dist/gatsby-node.cjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "src",
-    "gatsby-node.cjs",
+    "gatsby-node.js",
     "fragments.js"
   ],
   "scripts": {
@@ -43,15 +43,16 @@
     "test": "yarn lint && yarn unit"
   },
   "dependencies": {
-    "@prismicio/client": "^6.0.0-alpha.15",
+    "@prismicio/client": "^6.0.0-beta.0",
     "@prismicio/custom-types-client": "^0.0.6",
-    "@prismicio/helpers": "^2.0.0-alpha.8",
-    "@prismicio/types": "^0.1.12",
+    "@prismicio/helpers": "^2.0.0-beta.0",
+    "@prismicio/types": "^0.1.13",
     "camel-case": "^4.1.2",
     "fp-ts": "^2.10.5",
     "gatsby-node-helpers": "^1.2.1",
     "gatsby-plugin-imgix-lite": "link:../../../../js/gatsby-plugin-imgix-lite",
     "gatsby-source-filesystem": "^3.11.0",
+    "node-fetch": "^2.6.5",
     "tiny-hashes": "^1.0.1"
   },
   "devDependencies": {
@@ -81,8 +82,8 @@
     "typescript": "^4.4.2"
   },
   "peerDependencies": {
-    "gatsby": "^4.0.0-alpha",
-    "gatsby-plugin-image": "^1.3.0-next.1"
+    "gatsby": "^4.0.0-next.0",
+    "gatsby-plugin-image": "^2.0.0-next.0"
   },
   "engines": {
     "node": ">=12.7.0"

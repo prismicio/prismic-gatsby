@@ -43,7 +43,7 @@ test("Link to Media fields are normalized to include localFile field id", async 
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({
@@ -101,7 +101,7 @@ test("linked media are not downloaded without configuring shouldDownloadFiles", 
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({
@@ -152,7 +152,7 @@ test("throws error if createRemoteFileNode throws", async (t) => {
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions,
+			pluginOptions: pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({

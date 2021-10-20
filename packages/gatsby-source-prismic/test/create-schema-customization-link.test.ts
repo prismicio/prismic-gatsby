@@ -1,5 +1,6 @@
 import test from "ava";
 import * as sinon from "sinon";
+import * as gatsby from "gatsby";
 import * as prismicM from "@prismicio/mock";
 import * as prismicT from "@prismicio/types";
 
@@ -9,12 +10,17 @@ import { findCreateTypesCall } from "./__testutils__/findCreateTypesCall";
 
 import { createSchemaCustomization } from "../src/gatsby-node";
 
+const noop = () => void 0;
+
 test("creates base types", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
@@ -69,8 +75,11 @@ test("document field resolves to linked node ID if link type is Document and doc
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixLinkType",
@@ -90,8 +99,11 @@ test("document field resolves to null if link type is Document and isBroken is t
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixLinkType",
@@ -112,8 +124,11 @@ test("document field resolves to null if link type is not Document", async (t) =
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixLinkType",

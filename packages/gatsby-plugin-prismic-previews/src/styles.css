@@ -5,8 +5,6 @@
 @import "tailwindcss/utilities";
 
 :root {
-	--styles: 1;
-
 	/* Skip @reach styles */
 	--reach-dialog: 1;
 }

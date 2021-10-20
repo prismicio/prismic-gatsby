@@ -1,3 +1,4 @@
+import * as prismic from "@prismicio/client";
 import * as prismicT from "@prismicio/types";
 
 import {
@@ -27,6 +28,9 @@ export const createWebhookAPIUpdateReleaseDocAddition = (
 	experiments: {},
 	documents: [],
 	domain: pluginOptions.repositoryName,
-	apiUrl: pluginOptions.apiEndpoint.replace(/(\.cdn|\/v2)/, ""),
+	apiUrl: (
+		pluginOptions.apiEndpoint ||
+		prismic.getEndpoint(pluginOptions.repositoryName)
+	).replace(/(\.cdn|\/v2)/, ""),
 	secret: pluginOptions.webhookSecret ?? null,
 });

@@ -1,13 +1,14 @@
+import * as prismic from "@prismicio/client";
 import * as prismicT from "@prismicio/types";
 
 import {
-	PluginOptions,
+	UnpreparedPluginOptions,
 	PrismicWebhookBodyApiUpdate,
 	PrismicWebhookType,
 } from "../../src";
 
 export const createWebhookAPIUpdateDocDeletion = (
-	pluginOptions: PluginOptions,
+	pluginOptions: UnpreparedPluginOptions,
 	documents: prismicT.PrismicDocument[],
 ): PrismicWebhookBodyApiUpdate => ({
 	type: PrismicWebhookType.APIUpdate,
@@ -18,6 +19,9 @@ export const createWebhookAPIUpdateDocDeletion = (
 	experiments: {},
 	documents: documents.map((doc) => doc.id),
 	domain: pluginOptions.repositoryName,
-	apiUrl: pluginOptions.apiEndpoint.replace(/(\.cdn|\/v2)/, ""),
+	apiUrl: (
+		pluginOptions.apiEndpoint ||
+		prismic.getEndpoint(pluginOptions.repositoryName)
+	).replace(/(\.cdn|\/v2)/, ""),
 	secret: pluginOptions.webhookSecret ?? null,
 });

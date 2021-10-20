@@ -1,10 +1,14 @@
 import * as gatsby from "gatsby";
 import * as prismic from "@prismicio/client";
+import * as gatsbyFs from "gatsby-source-filesystem";
 import { createNodeHelpers } from "gatsby-node-helpers";
 
 import { GLOBAL_TYPE_PREFIX } from "./constants";
 import { Dependencies, PluginOptions } from "./types";
 import { createRuntime } from "./runtime";
+
+const defaultTransformFieldName = (fieldName: string) =>
+	fieldName.replace(/-/g, "_");
 
 /**
  * Build the dependencies used by functions throughout the plugin.
@@ -17,26 +21,27 @@ import { createRuntime } from "./runtime";
  * @returns Dependencies used throughout the plugin.
  * @see https://gcanti.github.io/fp-ts/modules/Reader.ts.html
  */
-export const buildDependencies = (
+export const buildDependencies = async (
 	gatsbyContext: gatsby.NodePluginArgs,
 	pluginOptions: PluginOptions,
-): Dependencies => {
-	const prismicEndpoint =
-		pluginOptions.apiEndpoint ??
-		prismic.getEndpoint(pluginOptions.repositoryName);
-	const prismicClient = prismic.createClient(prismicEndpoint, {
+): Promise<Dependencies> => {
+	const prismicClient = prismic.createClient(pluginOptions.apiEndpoint, {
 		fetch: pluginOptions.fetch,
 		accessToken: pluginOptions.accessToken,
 		defaultParams: {
 			lang: pluginOptions.lang,
 			fetchLinks: pluginOptions.fetchLinks,
 			graphQuery: pluginOptions.graphQuery,
+			pageSize: pluginOptions.pageSize,
 		},
 	});
 
 	if (pluginOptions.releaseID) {
 		prismicClient.queryContentFromReleaseByID(pluginOptions.releaseID);
 	}
+
+	const transformFieldName =
+		pluginOptions.transformFieldName || defaultTransformFieldName;
 
 	return {
 		pluginOptions,
@@ -73,14 +78,16 @@ export const buildDependencies = (
 			createNodeId: gatsbyContext.createNodeId,
 			createContentDigest: gatsbyContext.createContentDigest,
 		}),
-		createRemoteFileNode: pluginOptions.createRemoteFileNode,
+		createRemoteFileNode:
+			pluginOptions.createRemoteFileNode || gatsbyFs.createRemoteFileNode,
+		transformFieldName,
 		runtime: createRuntime({
 			typePrefix: GLOBAL_TYPE_PREFIX,
 			linkResolver: pluginOptions.linkResolver,
 			imageImgixParams: pluginOptions.imageImgixParams,
 			imagePlaceholderImgixParams: pluginOptions.imagePlaceholderImgixParams,
 			htmlSerializer: pluginOptions.htmlSerializer,
-			transformFieldName: pluginOptions.transformFieldName,
+			transformFieldName,
 		}),
 	};
 };

@@ -1,5 +1,6 @@
 import test from "ava";
 import * as sinon from "sinon";
+import * as gatsby from "gatsby";
 import * as prismicM from "@prismicio/mock";
 
 import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
@@ -7,6 +8,8 @@ import { createMockCustomTypeModelWithFields } from "./__testutils__/createMockC
 import { createPluginOptions } from "./__testutils__/createPluginOptions";
 
 import { createSchemaCustomization } from "../src/gatsby-node";
+
+const noop = () => void 0;
 
 test("uses inferred type with link extension", async (t) => {
 	const gatsbyContext = createGatsbyContext();
@@ -19,8 +22,11 @@ test("uses inferred type with link extension", async (t) => {
 
 	pluginOptions.customTypeModels = [customTypeModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
@@ -49,8 +55,11 @@ test("creates inferred type using path", async (t) => {
 
 	pluginOptions.customTypeModels = [customTypeModel];
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({

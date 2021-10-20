@@ -3,6 +3,102 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.11](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.10...v5.0.0-next.11) (2021-10-20)
+
+
+### Bug Fixes
+
+* **source:** skip schema validation if Custom Types API is used ([de60737](https://github.com/prismicio/prismic-gatsby/commit/de60737ee798c80dbe7deda9f74ff9e4a4d7844c))
+
+
+
+
+
+# [5.0.0-next.10](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.9...v5.0.0-next.10) (2021-10-20)
+
+
+### Bug Fixes
+
+* **previews:** upgrade gatsby-source-prismic dependency ([c8e8e35](https://github.com/prismicio/prismic-gatsby/commit/c8e8e358dfd03f87221877cc369e4bbebed53e43))
+* **source:** skip data field normalization for documents without data fields ([356800a](https://github.com/prismicio/prismic-gatsby/commit/356800af11725b581d48b5952c00fc80b1f55144))
+
+
+
+
+
+# [5.0.0-next.9](https://github.com/prismicio/prismic-gatsby/compare/v4.2.0...v5.0.0-next.9) (2021-10-15)
+
+
+### Bug Fixes
+
+* use updated @prismicio/helpers `asLink` ([9f3c93f](https://github.com/prismicio/prismic-gatsby/commit/9f3c93f520f38174724e2b74fb9cdb08a48e9e63))
+
+
+### Features
+
+* improved plugin options validation messages ([f7b7ff9](https://github.com/prismicio/prismic-gatsby/commit/f7b7ff9adb6f8f57a1f9fe52f9e79c93e7ef528c))
+* support pageSize plugin option ([5cc03b3](https://github.com/prismicio/prismic-gatsby/commit/5cc03b302f5e9352fdf2472520b17e34c4cb2870))
+
+
+
+# [5.0.0-next.8](https://github.com/prismicio/prismic-gatsby/compare/v4.1.6...v5.0.0-next.8) (2021-09-23)
+
+
+### Features
+
+* **source:** move plugin option defaults to Gatsby Node APIs ([f92b995](https://github.com/prismicio/prismic-gatsby/commit/f92b995bc36f1f1335bc8eb653e64919e1169460))
+
+
+
+# [5.0.0-next.7](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.6...v5.0.0-next.7) (2021-09-18)
+
+
+### Bug Fixes
+
+* use non-.mjs exports ([318789e](https://github.com/prismicio/prismic-gatsby/commit/318789eb766f2cd97ec0c6a791183ab9bc7a72ef))
+
+
+
+# [5.0.0-next.6](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.5...v5.0.0-next.6) (2021-09-17)
+
+
+### Bug Fixes
+
+* move default function plugin options to Node APIs ([d1b39d7](https://github.com/prismicio/prismic-gatsby/commit/d1b39d755ebb5f4229caded3c20d43c12c2a660d))
+
+
+
+# [5.0.0-next.5](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.4...v5.0.0-next.5) (2021-09-16)
+
+
+### Bug Fixes
+
+* **previews:** optional repositoryConfigs option for withPrismicPreviewResolver ([29b3363](https://github.com/prismicio/prismic-gatsby/commit/29b3363b5582aac2aac9abd288b6bcc65f68a23e))
+
+
+
+# [5.0.0-next.4](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.3...v5.0.0-next.4) (2021-09-16)
+
+
+
+# [5.0.0-next.3](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.2...v5.0.0-next.3) (2021-09-16)
+
+
+### Bug Fixes
+
+* **previews:** remove missing styles message ([00de4ca](https://github.com/prismicio/prismic-gatsby/commit/00de4ca6d253e7a670894a1ca42c8153ae1601a4))
+
+
+
+# [5.0.0-next.2](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.1...v5.0.0-next.2) (2021-09-15)
+
+
+### Bug Fixes
+
+* include gatsby-node.js on npm ([29eba49](https://github.com/prismicio/prismic-gatsby/commit/29eba4916deeecb388dfe83f6eb70dbe0fbe0cf5))
+
+
+
 # [5.0.0-next.1](https://github.com/prismicio/prismic-gatsby/compare/v4.1.5...v5.0.0-next.1) (2021-09-15)
 
 
@@ -65,14 +161,90 @@ option if you use the `localFile` field for Image and Link fields.
 
 
 
+# [5.0.0-next.8](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.7...v5.0.0-next.8) (2021-09-23)
+
+
+### Bug Fixes
+
+* **source:** correctly support Cloud Builds on Gatsby Cloud ([#450](https://github.com/prismicio/prismic-gatsby/issues/450)) ([555a37d](https://github.com/prismicio/prismic-gatsby/commit/555a37d592fee72ccf9cdc5958c5d81b45f48306))
+
+
+
+
+
+# [5.0.0-next.7](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.6...v5.0.0-next.7) (2021-09-18)
+
+
+### Bug Fixes
+
+* use non-.mjs exports ([318789e](https://github.com/prismicio/prismic-gatsby/commit/318789eb766f2cd97ec0c6a791183ab9bc7a72ef))
+
+
+
+
+
+# [5.0.0-next.6](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.5...v5.0.0-next.6) (2021-09-17)
+
+
+### Bug Fixes
+
+* move default function plugin options to Node APIs ([d1b39d7](https://github.com/prismicio/prismic-gatsby/commit/d1b39d755ebb5f4229caded3c20d43c12c2a660d))
+
+
+
+
+
+# [5.0.0-next.5](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.4...v5.0.0-next.5) (2021-09-16)
+
+
+### Bug Fixes
+
+* **previews:** optional repositoryConfigs option for withPrismicPreviewResolver ([29b3363](https://github.com/prismicio/prismic-gatsby/commit/29b3363b5582aac2aac9abd288b6bcc65f68a23e))
+
+
+
+
+
+# [5.0.0-next.4](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.3...v5.0.0-next.4) (2021-09-16)
+
+**Note:** Version bump only for package @prismicio/gatsby
+
+
+
+
+
+# [5.0.0-next.3](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.2...v5.0.0-next.3) (2021-09-16)
+
+
+### Bug Fixes
+
+* **previews:** remove missing styles message ([00de4ca](https://github.com/prismicio/prismic-gatsby/commit/00de4ca6d253e7a670894a1ca42c8153ae1601a4))
+
+
+
+
+
+# [5.0.0-next.2](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.1...v5.0.0-next.2) (2021-09-15)
+
+
+### Bug Fixes
+
+* include gatsby-node.js on npm ([29eba49](https://github.com/prismicio/prismic-gatsby/commit/29eba4916deeecb388dfe83f6eb70dbe0fbe0cf5))
+
+
+
+
+
+# [5.0.0-next.1](https://github.com/prismicio/prismic-gatsby/compare/v4.1.5...v5.0.0-next.1) (2021-09-15)
+
+
+
 # [5.0.0-next.0](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-alpha.0...v5.0.0-next.0) (2021-09-14)
 
 
 ### Bug Fixes
 
 * provide better missing schema message ([ddb1d84](https://github.com/prismicio/prismic-gatsby/commit/ddb1d843e01dc87a502f3b4d4c38afc5d53fc9ad))
-
-
 
 
 
@@ -120,6 +292,39 @@ option if you use the `localFile` field for Image and Link fields.
 * Changes to Gatsby's query runner requires the plugin to
 download local files at bootstrap. Add a `shouldDownloadFiles` plugin
 option if you use the `localFile` field for Image and Link fields.
+
+
+
+
+
+# [4.2.0](https://github.com/prismicio/prismic-gatsby/compare/v4.1.7...v4.2.0) (2021-10-04)
+
+
+### Features
+
+* add `pageSize` option ([#456](https://github.com/prismicio/prismic-gatsby/issues/456)) ([72d6a68](https://github.com/prismicio/prismic-gatsby/commit/72d6a6860262293d3ade374387ac9ffa07b629da))
+
+
+
+
+
+## [4.1.7](https://github.com/prismicio/prismic-gatsby/compare/v4.1.6...v4.1.7) (2021-10-01)
+
+
+### Bug Fixes
+
+* update dependencies ([57ceb56](https://github.com/prismicio/prismic-gatsby/commit/57ceb5625bbfb989745845c50d770bca659ae4c1))
+
+
+
+
+
+## [4.1.6](https://github.com/prismicio/prismic-gatsby/compare/v4.1.5...v4.1.6) (2021-09-23)
+
+
+### Bug Fixes
+
+* **source:** correctly support Cloud Builds on Gatsby Cloud ([#450](https://github.com/prismicio/prismic-gatsby/issues/450)) ([555a37d](https://github.com/prismicio/prismic-gatsby/commit/555a37d592fee72ccf9cdc5958c5d81b45f48306))
 
 
 

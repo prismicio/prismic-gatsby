@@ -10,6 +10,7 @@ import { createCustomType } from "./lib/createCustomType";
 import { createSharedSlice } from "./lib/createSharedSlice";
 import { createTypePath } from "./lib/createTypePath";
 import { createTypes } from "./lib/createTypes";
+import { preparePluginOptions } from "./lib/preparePluginOptions";
 import { throwError } from "./lib/throwError";
 
 import { buildAlternateLanguageType } from "./builders/buildAlternateLanguageType";
@@ -25,7 +26,7 @@ import { buildSliceInterface } from "./builders/buildSliceInterface";
 import { buildStructuredTextType } from "./builders/buildStructuredTextType";
 import { buildTypePathType } from "./builders/buildTypePathType";
 
-import { Dependencies, Mutable, PluginOptions } from "./types";
+import { Dependencies, Mutable, UnpreparedPluginOptions } from "./types";
 import { buildDependencies } from "./buildDependencies";
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>();
@@ -146,11 +147,13 @@ export const createSchemaCustomization: NonNullable<
 	gatsby.GatsbyNode["createSchemaCustomization"]
 > = async (
 	gatsbyContext: gatsby.CreateSchemaCustomizationArgs,
-	pluginOptions: PluginOptions,
-) =>
-	await pipe(
-		createSchemaCustomizationProgram(
-			buildDependencies(gatsbyContext, pluginOptions),
-		),
+	unpreparedPluginOptions: UnpreparedPluginOptions,
+) => {
+	const pluginOptions = await preparePluginOptions(unpreparedPluginOptions);
+	const dependencies = await buildDependencies(gatsbyContext, pluginOptions);
+
+	return await pipe(
+		createSchemaCustomizationProgram(dependencies),
 		TE.fold(throwError, () => T.of(void 0)),
 	)();
+};

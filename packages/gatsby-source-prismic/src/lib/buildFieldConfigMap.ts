@@ -35,7 +35,7 @@ export const buildFieldConfigMap = (
 		RTE.chain((deps) =>
 			pipe(
 				fieldSchemas,
-				mapRecordIndices(deps.pluginOptions.transformFieldName),
+				mapRecordIndices(deps.transformFieldName),
 				R.mapWithIndex((name, schema) =>
 					toFieldConfig(pipe(path, A.append(name)), schema),
 				),

@@ -1,5 +1,6 @@
 import test from "ava";
 import * as sinon from "sinon";
+import * as gatsby from "gatsby";
 
 import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
 import { createPluginOptions } from "./__testutils__/createPluginOptions";
@@ -7,12 +8,17 @@ import { findCreateTypesCall } from "./__testutils__/findCreateTypesCall";
 
 import { createSchemaCustomization } from "../src/gatsby-node";
 
+const noop = () => void 0;
+
 test("creates base type", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	t.true(
 		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
@@ -46,8 +52,11 @@ test("text field resolves to text", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixStructuredTextType",
@@ -66,8 +75,11 @@ test("html field resolves to html", async (t) => {
 
 	delete pluginOptions.htmlSerializer;
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixStructuredTextType",
@@ -84,8 +96,11 @@ test("html field uses htmlSerializer if provided", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixStructuredTextType",
@@ -102,8 +117,11 @@ test("richText field resolves to richText value", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixStructuredTextType",
@@ -120,8 +138,11 @@ test("raw field resolves to raw value", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
 	const call = findCreateTypesCall(
 		"PrismicPrefixStructuredTextType",
