@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.10](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.9...v5.0.0-next.10) (2021-10-20)
+
+
+### Bug Fixes
+
+* **source:** skip data field normalization for documents without data fields ([356800a](https://github.com/prismicio/prismic-gatsby/commit/356800af11725b581d48b5952c00fc80b1f55144))
+
+
+
+
+
 # [5.0.0-next.9](https://github.com/prismicio/prismic-gatsby/compare/v4.2.0...v5.0.0-next.9) (2021-10-15)
 
 

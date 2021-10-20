@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.10](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.9...v5.0.0-next.10) (2021-10-20)
+
+
+### Bug Fixes
+
+* **previews:** upgrade gatsby-source-prismic dependency ([c8e8e35](https://github.com/prismicio/prismic-gatsby/commit/c8e8e358dfd03f87221877cc369e4bbebed53e43))
+
+
+
+
+
 # [5.0.0-next.9](https://github.com/prismicio/prismic-gatsby/compare/v4.2.0...v5.0.0-next.9) (2021-10-15)
 
 
