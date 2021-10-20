@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-next.11](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.10...v5.0.0-next.11) (2021-10-20)
+
+
+### Bug Fixes
+
+* **source:** skip schema validation if Custom Types API is used ([de60737](https://github.com/prismicio/prismic-gatsby/commit/de60737ee798c80dbe7deda9f74ff9e4a4d7844c))
+
+
+
+
+
 # [5.0.0-next.10](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.9...v5.0.0-next.10) (2021-10-20)
 
 
