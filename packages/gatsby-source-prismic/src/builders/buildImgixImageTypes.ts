@@ -4,6 +4,7 @@ import * as RTE from "fp-ts/ReaderTaskEither";
 import { pipe } from "fp-ts/function";
 
 import { Dependencies } from "../types";
+import { IMGIX_TYPE_PREFIX } from "../constants";
 
 /**
  * Builds a list of Imgix GraphQL types used by Image Custom Type fields. The
@@ -18,21 +19,21 @@ export const buildImgixImageTypes: RTE.ReaderTaskEither<
 	RTE.ask<Dependencies>(),
 	RTE.map((scope) => [
 		gatsbyImgix.buildFixedObjectType({
-			namespace: "Imgix",
+			namespace: IMGIX_TYPE_PREFIX,
 			cache: scope.cache,
 			schema: scope.schema,
 		}),
 		gatsbyImgix.buildFluidObjectType({
-			namespace: "Imgix",
+			namespace: IMGIX_TYPE_PREFIX,
 			cache: scope.cache,
 			schema: scope.schema,
 		}),
 		gatsbyImgix.buildImgixParamsInputObjectType({
-			namespace: "Imgix",
+			namespace: IMGIX_TYPE_PREFIX,
 			schema: scope.schema,
 		}),
 		gatsbyImgix.buildGatsbyImageDataPlaceholderEnum({
-			namespace: "Imgix",
+			namespace: IMGIX_TYPE_PREFIX,
 			schema: scope.schema,
 		}),
 	]),

@@ -11,6 +11,11 @@ export const PLUGIN_NAME = "gatsby-source-prismic";
 export const GLOBAL_TYPE_PREFIX = "Prismic";
 
 /**
+ * Prefix used for gatsby-plugin-imgix-lite types.
+ */
+export const IMGIX_TYPE_PREFIX = "Imgix";
+
+/**
  * Default endpoint used to fetch custom type JSON schemas from Prismic's Custom Type API.
  *
  * @see https://prismic.io/docs/technologies/custom-types-api

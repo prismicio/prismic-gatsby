@@ -13,6 +13,7 @@ import { name as packageName } from "../../package.json";
 import { sanitizeImageURL } from "../lib/sanitizeImageURL";
 
 import { Dependencies } from "../types";
+import { IMGIX_TYPE_PREFIX } from "../constants";
 
 /**
  * The minimum required GraphQL argument properties for an `@imgix/gatsby` field.
@@ -106,7 +107,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
 			withExistingURLImgixParameters(
 				// @ts-expect-error - complex type resolution issue
 				gatsbyImgix.buildUrlFieldConfig({
-					namespace: "Imgix",
+					namespace: IMGIX_TYPE_PREFIX,
 					defaultImgixParams: scope.pluginOptions.imageImgixParams,
 					generateImageSource,
 				}),
@@ -118,7 +119,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
 			withExistingURLImgixParameters(
 				// @ts-expect-error - complex type resolution issue
 				gatsbyImgix.buildFixedFieldConfig({
-					namespace: "Imgix",
+					namespace: IMGIX_TYPE_PREFIX,
 					defaultImgixParams: scope.pluginOptions.imageImgixParams,
 					defaultPlaceholderImgixParams:
 						scope.pluginOptions.imagePlaceholderImgixParams,
@@ -132,7 +133,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
 			withExistingURLImgixParameters(
 				// @ts-expect-error - complex type resolution issue
 				gatsbyImgix.buildFluidFieldConfig({
-					namespace: "Imgix",
+					namespace: IMGIX_TYPE_PREFIX,
 					defaultImgixParams: scope.pluginOptions.imageImgixParams,
 					defaultPlaceholderImgixParams:
 						scope.pluginOptions.imagePlaceholderImgixParams,
@@ -146,7 +147,7 @@ export const buildImageBaseFieldConfigMap: RTE.ReaderTaskEither<
 			withExistingURLImgixParameters(
 				// @ts-expect-error - complex type resolution issue
 				gatsbyImgix.buildGatsbyImageDataFieldConfig({
-					namespace: "Imgix",
+					namespace: IMGIX_TYPE_PREFIX,
 					cache: scope.cache,
 					pluginName: packageName,
 					defaultImgixParams: scope.pluginOptions.imageImgixParams,
