@@ -27,3 +27,20 @@ test("normalizes documents", (t) => {
 	t.is(normalizedDocument.internal.type, "PrismicSynergies");
 	t.is(typeof normalizedDocument.internal.contentDigest, "string");
 });
+
+test("normalizes documents without data fields", (t) => {
+	const model = prismicM.model.customType({ seed: t.title });
+	model.json = {};
+
+	const document = prismicM.value.document({
+		seed: t.title,
+		model,
+	});
+
+	const runtime = gatsbyPrismic.createRuntime();
+	runtime.registerCustomTypeModel(model);
+
+	const normalizedDocument = runtime.registerDocument(document);
+
+	t.deepEqual(normalizedDocument.data, {});
+});

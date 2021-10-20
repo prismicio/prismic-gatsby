@@ -12,6 +12,7 @@ import {
 	alternateLanguages,
 	NormalizedAlternateLanguagesValue,
 } from "./alternateLanguages";
+import { NormalizedDocumentDataValue } from "./documentData";
 
 export const isDocument = (
 	value: unknown,
@@ -45,12 +46,16 @@ export const document = <Value extends prismicT.PrismicDocument>(
 			value: config.value["alternate_languages"],
 		}),
 		url: prismicH.asLink(config.value, config.linkResolver),
-		data: normalize({
+		data: {},
+	};
+
+	if (Object.keys(config.value.data).length > 0) {
+		fields.data = normalize({
 			...config,
 			value: config.value.data,
 			path: [...config.path, "data"],
-		}),
-	};
+		}) as NormalizedDocumentDataValue<Value["data"]>;
+	}
 
 	return config.nodeHelpers.createNodeFactory(config.value.type)(
 		fields,
