@@ -3,6 +3,110 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/prismicio/prismic-gatsby/compare/v4.2.0...v5.0.0) (2021-10-21)
+
+
+### Features
+
+* support Gatsby 4 ([#466](https://github.com/prismicio/prismic-gatsby/issues/466)) ([d391580](https://github.com/prismicio/prismic-gatsby/commit/d391580a1ef5828b8bde018126eefdd859b54ae8))
+
+
+### BREAKING CHANGES
+
+* Changes to Gatsby's query runner requires the plugin to
+download local files at bootstrap. Add a `shouldDownloadFiles` plugin
+option if you use the `localFile` field for Image and Link fields.
+
+* v5.0.0-alpha.0
+
+* chore: link test-site to local packages
+
+* chore: add publish:next script
+
+* fix: provide better missing schema message
+
+* style: run prettier
+
+* chore: update dependencies
+
+* v5.0.0-next.0
+
+* chore: update gatsby-plugin-image
+
+* v5.0.0-next.1
+
+* chore: fix duplicated changelog
+
+* fix: include gatsby-node.js on npm
+
+* v5.0.0-next.2
+
+* fix(previews): remove missing styles message
+
+* v5.0.0-next.3
+
+* chore: update gatsby, gatsby-plugin-image peer dep
+
+* v5.0.0-next.4
+
+* fix(previews): optional repositoryConfigs option for withPrismicPreviewResolver
+
+* v5.0.0-next.5
+
+* fix: move default function plugin options to Node APIs
+
+* v5.0.0-next.6
+
+* fix: use non-.mjs exports
+
+This is primarily to support Storybook without special configuration.
+
+* v5.0.0-next.7
+
+* feat(source): move plugin option defaults to Gatsby Node APIs
+
+* v5.0.0-next.8
+
+* chore: update yarn.lock
+
+* refactor: plugin options validation
+
+* feat: improved plugin options validation messages
+
+* chore: merge CHANGELOG
+
+* feat: support pageSize plugin option
+
+* chore: update dependencies
+
+* fix: use updated @prismicio/helpers `asLink`
+
+* v5.0.0-next.9
+
+* fix(source): skip data field normalization for documents without data fields
+
+* fix(previews): upgrade gatsby-source-prismic dependency
+
+* v5.0.0-next.10
+
+* fix(source): skip schema validation if Custom Types API is used
+
+* v5.0.0-next.11
+
+* fix: update peerDependencies for Gatsby 4
+
+* chore: update test site dependencies
+
+* chore: do not format CHANGELOG with prettier
+
+* test: temporarily skip snapshot tests in CI
+
+* test: explicitly pass CI-skipped tests
+
+
+
+
+
 # [5.0.0-next.11](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0-next.10...v5.0.0-next.11) (2021-10-20)
 
 
