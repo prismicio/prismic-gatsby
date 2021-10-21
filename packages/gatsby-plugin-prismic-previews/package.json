@@ -86,6 +86,7 @@
 		"gatsby-plugin-image": "^1.11.0",
 		"gatsby-plugin-imgix-lite": "^0.0.1",
 		"gatsby-plugin-utils": "^1.11.0",
+		"gatsby-source-prismic": "^5.0.0-next.10",
 		"global-jsdom": "^8.1.0",
 		"identity-obj-proxy": "^3.0.0",
 		"jsdom": "^16.7.0",
