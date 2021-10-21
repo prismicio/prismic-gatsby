@@ -56,6 +56,8 @@ test("registering a custom type model adds its type paths", (t) => {
 
 	if (!IS_CI) {
 		t.snapshot(runtime.typePaths);
+	} else {
+		t.pass();
 	}
 });
 
@@ -68,6 +70,8 @@ test("multiple custom type models can be registered at once", (t) => {
 
 	if (!IS_CI) {
 		t.snapshot(runtime.typePaths);
+	} else {
+		t.pass();
 	}
 });
 
@@ -80,6 +84,8 @@ test("registering a custom type model without data fields does not add DocumentD
 	t.is(runtime.typePaths.length, 1);
 	if (!IS_CI) {
 		t.snapshot(runtime.typePaths);
+	} else {
+		t.pass();
 	}
 });
 
@@ -91,6 +97,8 @@ test("registering a shared slice model adds its type paths", (t) => {
 
 	if (!IS_CI) {
 		t.snapshot(runtime.typePaths);
+	} else {
+		t.pass();
 	}
 });
 
@@ -103,6 +111,8 @@ test("multiple shared slice models can be registered at once", (t) => {
 
 	if (!IS_CI) {
 		t.snapshot(runtime.typePaths);
+	} else {
+		t.pass();
 	}
 });
 

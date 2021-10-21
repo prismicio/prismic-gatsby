@@ -43,6 +43,8 @@ test("creates type path nodes", async (t) => {
 
 	if (!IS_CI) {
 		t.snapshot(calls);
+	} else {
+		t.pass();
 	}
 });
 
@@ -97,5 +99,7 @@ test("field names with dashes are transformed with underscores by default", asyn
 
 	if (!IS_CI) {
 		t.snapshot(calls);
+	} else {
+		t.pass();
 	}
 });
