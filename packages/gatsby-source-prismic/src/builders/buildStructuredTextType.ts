@@ -1,12 +1,12 @@
-import * as gatsby from 'gatsby'
-import * as prismicH from '@prismicio/helpers'
-import * as prismicT from '@prismicio/types'
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe, identity } from 'fp-ts/function'
+import * as gatsby from "gatsby";
+import * as prismicH from "@prismicio/helpers";
+import * as prismicT from "@prismicio/types";
+import * as RTE from "fp-ts/ReaderTaskEither";
+import { pipe, identity } from "fp-ts/function";
 
-import { buildObjectType } from '../lib/buildObjectType'
+import { buildObjectType } from "../lib/buildObjectType";
 
-import { Dependencies } from '../types'
+import { Dependencies } from "../types";
 
 /**
  * Builds a GraphQL Type used by StructuredText fields. The resulting type can
@@ -14,30 +14,36 @@ import { Dependencies } from '../types'
  */
 // TODO: Move typename to Dependencies (create in `buildDependencies.ts`).
 export const buildStructuredTextType: RTE.ReaderTaskEither<
-  Dependencies,
-  never,
-  gatsby.GatsbyGraphQLType
+	Dependencies,
+	never,
+	gatsby.GatsbyGraphQLType
 > = pipe(
-  RTE.ask<Dependencies>(),
-  RTE.chain((deps) =>
-    buildObjectType({
-      name: deps.nodeHelpers.createTypeName('StructuredTextType'),
-      fields: {
-        text: {
-          type: 'String',
-          resolve: (source: prismicT.RichTextField) => prismicH.asText(source),
-        },
-        html: {
-          type: 'String',
-          resolve: (source: prismicT.RichTextField) =>
-            prismicH.asHTML(
-              source,
-              deps.pluginOptions.linkResolver,
-              deps.pluginOptions.htmlSerializer,
-            ),
-        },
-        raw: { type: 'JSON', resolve: identity },
-      },
-    }),
-  ),
-)
+	RTE.ask<Dependencies>(),
+	RTE.chain((deps) =>
+		buildObjectType({
+			name: deps.nodeHelpers.createTypeName("StructuredTextType"),
+			fields: {
+				text: {
+					type: "String",
+					resolve: (source: prismicT.RichTextField) => prismicH.asText(source),
+				},
+				html: {
+					type: "String",
+					resolve: (source: prismicT.RichTextField) =>
+						prismicH.asHTML(
+							source,
+							deps.pluginOptions.linkResolver,
+							deps.pluginOptions.htmlSerializer,
+						),
+				},
+				richText: { type: "JSON", resolve: identity },
+				raw: {
+					type: "JSON",
+					resolve: identity,
+					deprecationReason:
+						"This field has been renamed to `richText`. The `richText` field has the same value the `raw` field.",
+				},
+			},
+		}),
+	),
+);

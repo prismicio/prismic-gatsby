@@ -1,36 +1,54 @@
-import * as gatsby from 'gatsby'
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import * as TE from 'fp-ts/TaskEither'
-import { pipe } from 'fp-ts/function'
+import * as prismicT from "@prismicio/types";
+import * as gatsbyFs from "gatsby-source-filesystem";
+import * as RTE from "fp-ts/ReaderTaskEither";
+import * as TE from "fp-ts/TaskEither";
+import { pipe } from "fp-ts/function";
 
-import { Dependencies } from '../types'
+import { Dependencies } from "../types";
+import { shouldDownloadFile } from "./shouldDownloadFile";
+
+type CreateRemoteFileNodeConfig = {
+	url: string;
+	field: prismicT.ImageFieldImage | prismicT.LinkToMediaField;
+	path: string[];
+};
 
 /**
- * Creates a File node with remote data using the environment's `createRemoteFileNode` function. The contents of the provided URL are attached to the node's data.
+ * Creates a File node with remote data using the environment's
+ * `createRemoteFileNode` function. The contents of the provided URL are
+ * attached to the node's data.
  *
- * @param url URL from which data is fetched.
+ * @param url - URL from which data is fetched.
  *
  * @returns The created File node.
  */
 export const createRemoteFileNode = (
-  url: string,
-): RTE.ReaderTaskEither<Dependencies, Error, gatsby.Node> =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chainW((deps) =>
-      RTE.fromTaskEither(
-        TE.tryCatch(
-          () =>
-            deps.createRemoteFileNode({
-              url,
-              store: deps.store,
-              cache: deps.cache,
-              createNode: deps.createNode,
-              createNodeId: deps.createNodeId,
-              reporter: deps.reporter,
-            }),
-          (e) => e as Error,
-        ),
-      ),
-    ),
-  )
+	config: CreateRemoteFileNodeConfig,
+): RTE.ReaderTaskEither<Dependencies, Error, gatsbyFs.FileSystemNode | null> =>
+	pipe(
+		RTE.ask<Dependencies>(),
+		RTE.bind("attemptDownload", () =>
+			shouldDownloadFile({
+				path: config.path,
+				field: config.field,
+			}),
+		),
+		RTE.chain((scope) =>
+			RTE.fromTaskEither(
+				TE.tryCatch(
+					() =>
+						scope.attemptDownload
+							? scope.createRemoteFileNode({
+									url: config.url,
+									store: scope.store,
+									cache: scope.cache,
+									createNode: scope.createNode,
+									createNodeId: scope.createNodeId,
+									reporter: scope.reporter,
+							  })
+							: Promise.resolve(null),
+					(e) => e as Error,
+				),
+			),
+		),
+	);

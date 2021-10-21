@@ -1,58 +1,61 @@
-import * as msw from 'msw'
-import * as prismic from '@prismicio/client'
+import * as msw from "msw";
+import * as prismic from "@prismicio/client";
+import * as prismicT from "@prismicio/types";
 
-import { isValidAccessToken } from './isValidAccessToken'
-import { resolveURL } from './resolveURL'
+import { isValidAccessToken } from "./isValidAccessToken";
+import { resolveURL } from "./resolveURL";
 
-import { PluginOptions } from '../../src'
+import { PluginOptions } from "../../src";
 
-interface APIQueryParams extends prismic.QueryParams {
-  accessToken?: string
-  ref?: string
-  q?: string
-}
+type CreateAPIQueryMockedRequestConfig = {
+	pluginOptions: PluginOptions;
+	repositoryResponse: prismicT.Repository;
+	queryResponse: prismicT.Query;
+	searchParams?: Partial<
+		Omit<prismic.BuildQueryURLArgs, "predicates"> & {
+			q: string;
+		}
+	>;
+};
 
 export const createAPIQueryMockedRequest = (
-  pluginOptions: PluginOptions,
-  queryResponse: prismic.Query,
-  searchParams: APIQueryParams = {},
+	config: CreateAPIQueryMockedRequestConfig,
 ): msw.RestHandler =>
-  msw.rest.get(
-    resolveURL(pluginOptions.apiEndpoint, './documents/search'),
-    (req, res, ctx) => {
-      const resolvedSearchParams = {
-        ref: 'master',
-        pageSize: 100,
-        lang: pluginOptions.lang,
-        fetchLinks: pluginOptions.fetchLinks,
-        graphQuery: pluginOptions.graphQuery,
-        ...searchParams,
-      }
+	msw.rest.get(
+		resolveURL(config.pluginOptions.apiEndpoint, "./documents/search"),
+		(req, res, ctx) => {
+			const resolvedSearchParams = {
+				ref: "master",
+				integrationFieldsRef:
+					config.repositoryResponse.integrationFieldsRef ?? undefined,
+				...config.searchParams,
+			};
 
-      const searchParamsMatch = Object.keys(resolvedSearchParams).every((key) =>
-        resolvedSearchParams[key as keyof APIQueryParams] == null
-          ? true
-          : req.url.searchParams.get(key) ===
-            resolvedSearchParams[key as keyof APIQueryParams]?.toString(),
-      )
+			const searchParamsMatch = Object.keys(resolvedSearchParams).every(
+				(key) =>
+					req.url.searchParams.get(key) ===
+					resolvedSearchParams[
+						key as keyof typeof resolvedSearchParams
+					]?.toString(),
+			);
 
-      if (
-        searchParamsMatch &&
-        isValidAccessToken(
-          searchParams.accessToken ?? pluginOptions.accessToken,
-          req,
-        )
-      ) {
-        return res(ctx.json(queryResponse))
-      } else {
-        return res(
-          ctx.status(403),
-          ctx.json({
-            error: '[MOCK ERROR]',
-            oauth_initiate: 'oauth_initiate',
-            oauth_token: 'oauth_token',
-          }),
-        )
-      }
-    },
-  )
+			if (
+				searchParamsMatch &&
+				isValidAccessToken(
+					config.searchParams?.accessToken ?? config.pluginOptions.accessToken,
+					req,
+				)
+			) {
+				return res(ctx.json(config.queryResponse));
+			} else {
+				return res(
+					ctx.status(403),
+					ctx.json({
+						error: "[MOCK ERROR]",
+						oauth_initiate: "oauth_initiate",
+						oauth_token: "oauth_token",
+					}),
+				);
+			}
+		},
+	);

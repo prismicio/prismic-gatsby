@@ -1,297 +1,232 @@
-import test from 'ava'
-import * as msw from 'msw'
-import * as mswn from 'msw/node'
-import * as prismic from '@prismicio/client'
-import {
-  testPluginOptionsSchema,
-  Joi,
-  validateOptionsSchema,
-} from 'gatsby-plugin-utils'
-import fetch from 'node-fetch'
+import test from "ava";
+import * as msw from "msw";
+import * as mswn from "msw/node";
+import * as prismicM from "@prismicio/mock";
+import { testPluginOptionsSchema } from "gatsby-plugin-utils";
+import fetch from "node-fetch";
 
-import kitchenSinkSchemaFixture from './__fixtures__/kitchenSinkSchema.json'
-import { createCustomTypesAPICustomType } from './__testutils__/createCustomTypesAPICustomType'
-import { createCustomTypesAPIMockedRequest } from './__testutils__/createCustomTypesAPIMockedRequest'
-import { isValidAccessToken } from './__testutils__/isValidAccessToken'
+import { createAPIRepositoryMockedRequest } from "./__testutils__/createAPIRepositoryMockedRequest";
+import { createCustomTypesAPIMockedRequest } from "./__testutils__/createCustomTypesAPIMockedRequest";
+import { createCustomTypesAPISharedSlicesMockedRequest } from "./__testutils__/createCustomTypesAPISharedSlicesMockedRequest";
+import { createPluginOptions } from "./__testutils__/createPluginOptions";
 
-import { PluginOptions, PrismicCustomTypeApiResponse } from '../src'
-import { pluginOptionsSchema } from '../src/plugin-options-schema'
+import { UnpreparedPluginOptions } from "../src";
+import { pluginOptionsSchema } from "../src/plugin-options-schema";
+import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
 
-const server = mswn.setupServer()
-test.before(() => server.listen({ onUnhandledRequest: 'error' }))
-test.afterEach(() => server.resetHandlers())
-test.after(() => server.close())
+const server = mswn.setupServer();
+test.before(() => server.listen({ onUnhandledRequest: "error" }));
+test.afterEach(() => server.resetHandlers());
+test.after(() => server.close());
 
-test.serial('passes on valid options', async (t) => {
-  const pluginOptions = {
-    repositoryName: 'string',
-    accessToken: 'string',
-    customTypesApiToken: 'string',
-    customTypesApiEndpoint: 'https://example-customTypesApiEndpoint.com',
-    apiEndpoint: 'https://example-apiEndpoint.com',
-    releaseID: 'string',
-    graphQuery: 'string',
-    lang: 'string',
-    linkResolver: (): void => void 0,
-    htmlSerializer: (): void => void 0,
-    schemas: { page: kitchenSinkSchemaFixture },
-    imageImgixParams: { q: 100 },
-    imagePlaceholderImgixParams: { q: 100 },
-    typePrefix: 'string',
-    webhookSecret: 'string',
-    createRemoteFileNode: (): void => void 0,
-    transformFieldName: (): void => void 0,
-    fetch,
-  }
+test.serial("passes on valid options", async (t) => {
+	const customTypeModel = prismicM.model.customType({ seed: t.title });
+	const sharedSliceModel = prismicM.model.sharedSlice({ seed: t.title });
+	const releaseRef = prismicM.api.ref({ seed: t.title });
 
-  server.use(
-    msw.rest.get(pluginOptions.apiEndpoint, (req, res, ctx) => {
-      if (isValidAccessToken(pluginOptions.accessToken, req)) {
-        return res(
-          ctx.json({
-            types: { page: 'Page' },
-            refs: [{ ref: 'master', isMasterRef: true }],
-          }),
-        )
-      } else {
-        return res(ctx.status(403))
-      }
-    }),
-  )
+	const pluginOptions: UnpreparedPluginOptions = {
+		repositoryName: "string",
+		accessToken: "string",
+		customTypesApiToken: "string",
+		customTypesApiEndpoint: "https://example-custom-types-api-endpoint.com",
+		apiEndpoint: "https://example-apiEndpoint.com",
+		releaseID: releaseRef.id,
+		graphQuery: "string",
+		lang: "string",
+		linkResolver: (): string => "",
+		htmlSerializer: {},
+		customTypeModels: [customTypeModel],
+		sharedSliceModels: [sharedSliceModel],
+		imageImgixParams: { q: 100 },
+		imagePlaceholderImgixParams: { q: 100 },
+		typePrefix: "string",
+		webhookSecret: "string",
+		// @ts-expect-error - noop purposely given for test
+		createRemoteFileNode: (): void => void 0,
+		transformFieldName: (x: string): string => x,
+		fetch,
+	};
 
-  server.use(createCustomTypesAPIMockedRequest(pluginOptions, []))
+	const repositoryResponse = prismicM.api.repository({
+		seed: t.title,
+		customTypeModels: [customTypeModel],
+	});
+	repositoryResponse.refs = [...repositoryResponse.refs, releaseRef];
 
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+	const queryResponse = prismicM.api.query({ seed: t.title });
 
-  t.deepEqual(res.errors, [])
-  t.true(res.isValid)
-})
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			repositoryResponse,
+			pluginOptions,
+			queryResponse,
+			searchParams: {
+				ref: releaseRef.ref,
+			},
+		}),
+		createCustomTypesAPIMockedRequest({
+			pluginOptions,
+			response: [],
+		}),
+		createCustomTypesAPISharedSlicesMockedRequest({
+			pluginOptions,
+			response: [],
+		}),
+	);
 
-test.serial('fails on missing options', async (t) => {
-  const pluginOptions = {}
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+	const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions);
 
-  t.false(res.isValid)
-  t.deepEqual(res.errors, [
-    '"repositoryName" is required',
-    '"value" must contain at least one of [schemas, customTypesApiToken]',
-  ])
-})
+	t.deepEqual(res.errors, []);
+	t.true(res.isValid);
+});
 
-test.serial('fails on invalid options', async (t) => {
-  const pluginOptions = {
-    repositoryName: Symbol(),
-    accessToken: Symbol(),
-    customTypesApiToken: Symbol(),
-    customTypesApiEndpoint: Symbol(),
-    apiEndpoint: Symbol(),
-    releaseID: Symbol(),
-    graphQuery: Symbol(),
-    lang: Symbol(),
-    linkResolver: Symbol(),
-    htmlSerializer: Symbol(),
-    schemas: Symbol(),
-    imageImgixParams: Symbol(),
-    imagePlaceholderImgixParams: Symbol(),
-    typePrefix: Symbol(),
-    webhookSecret: Symbol(),
-    createRemoteFileNode: Symbol(),
-    fetch: Symbol(),
-  }
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+test.serial("fails on missing options", async (t) => {
+	const pluginOptions = {
+		schemas: {},
+	};
+	const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions);
 
-  t.false(res.isValid)
-  t.deepEqual(res.errors, [
-    '"repositoryName" must be a string',
-    '"accessToken" must be a string',
-    '"apiEndpoint" must be a string',
-    '"customTypesApiToken" must be a string',
-    '"customTypesApiEndpoint" must be a string',
-    '"releaseID" must be a string',
-    '"graphQuery" must be a string',
-    '"lang" must be a string',
-    '"linkResolver" must be of type function',
-    '"htmlSerializer" must be of type function',
-    '"schemas" must be of type object',
-    '"imageImgixParams" must be of type object',
-    '"imagePlaceholderImgixParams" must be of type object',
-    '"typePrefix" must be a string',
-    '"webhookSecret" must be a string',
-    '"createRemoteFileNode" must be of type function',
-    '"fetch" must be of type function',
-  ])
-})
+	t.false(res.isValid);
+	t.deepEqual(res.errors, ['"repositoryName" is required']);
+});
 
-test.serial('fails on invalid customTypesApiToken', async (t) => {
-  const pluginOptions = {
-    repositoryName: 'qwerty',
-    customTypesApiToken: 'customTypesApiToken',
-  }
+test.serial("fails on invalid options", async (t) => {
+	const pluginOptions = {
+		repositoryName: Symbol(),
+		accessToken: Symbol(),
+		customTypesApiToken: Symbol(),
+		customTypesApiEndpoint: Symbol(),
+		apiEndpoint: Symbol(),
+		releaseID: Symbol(),
+		graphQuery: Symbol(),
+		lang: Symbol(),
+		linkResolver: Symbol(),
+		htmlSerializer: Symbol(),
+		schemas: Symbol(),
+		customTypeModels: Symbol(),
+		sharedSliceModels: Symbol(),
+		imageImgixParams: Symbol(),
+		imagePlaceholderImgixParams: Symbol(),
+		typePrefix: Symbol(),
+		webhookSecret: Symbol(),
+		shouldDownloadFiles: Symbol(),
+		createRemoteFileNode: Symbol(),
+		fetch: Symbol(),
+	};
+	const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions);
 
-  // Intentionally making a failed 403 response.
-  server.use(
-    msw.rest.get(
-      'https://customtypes.prismic.io/customtypes',
-      (_req, res, ctx) =>
-        res(ctx.status(403), ctx.json({ message: '[MOCK FORBIDDEN ERROR]' })),
-    ),
-  )
+	t.false(res.isValid);
+	t.deepEqual(res.errors, [
+		'"repositoryName" must be a string',
+		'"accessToken" must be a string',
+		'"apiEndpoint" must be a string',
+		'"customTypesApiToken" must be a string',
+		'"customTypesApiEndpoint" must be a string',
+		'"releaseID" must be a string',
+		'"graphQuery" must be a string',
+		'"lang" must be a string',
+		'"linkResolver" must be of type function',
+		'"htmlSerializer" must be one of [object]',
+		'"schemas" must be of type object',
+		'"customTypeModels" must be an array',
+		'"sharedSliceModels" must be an array',
+		'"imageImgixParams" must be of type object',
+		'"imagePlaceholderImgixParams" must be of type object',
+		'"typePrefix" must be a string',
+		'"webhookSecret" must be a string',
+		'"shouldDownloadFiles" must be of type object',
+		'"createRemoteFileNode" must be of type function',
+		'"fetch" must be of type function',
+	]);
+});
 
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+test.serial("fails on invalid customTypesApiToken", async (t) => {
+	const pluginOptions = {
+		repositoryName: "qwerty",
+		customTypesApiToken: "customTypesApiToken",
+	};
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({ seed: t.title });
 
-  t.false(res.isValid)
-  t.deepEqual(res.errors, ['[MOCK FORBIDDEN ERROR]'])
-})
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			repositoryResponse: repositoryResponse,
+			pluginOptions: { ...pluginOptions, plugins: [] },
+			queryResponse,
+		}),
+		// Intentionally making a failed 403 response.
+		msw.rest.get(
+			"https://customtypes.prismic.io/customtypes",
+			(_req, res, ctx) => res(ctx.status(403), ctx.json({})),
+		),
+	);
 
-test.serial('allows only one of qraphQuery or fetchLinks', async (t) => {
-  const pluginOptions = {
-    repositoryName: 'qwerty',
-    schemas: { page: kitchenSinkSchemaFixture },
-    graphQuery: 'string',
-    fetchLinks: ['string'],
-  }
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+	const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions);
 
-  t.false(res.isValid)
-  t.deepEqual(res.errors, [
-    '"value" contains a conflict between optional exclusive peers [fetchLinks, graphQuery]',
-  ])
-})
+	t.false(res.isValid);
+	t.deepEqual(res.errors, [
+		"gatsby-source-prismic(qwerty) - Unable to access the Prismic Custom Types API. Check the customTypesApiToken option.",
+	]);
+});
 
-test.serial('checks that all schemas are provided', async (t) => {
-  const pluginOptions = {
-    repositoryName: 'qwerty',
-    customTypesApiEndpoint: 'https://example.com',
-    schemas: { page: kitchenSinkSchemaFixture },
-  }
-  const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
+test.serial("allows only one of qraphQuery or fetchLinks", async (t) => {
+	const pluginOptions = {
+		repositoryName: "qwerty",
+		customTypeModels: [prismicM.model.customType({ seed: t.title })],
+		graphQuery: "string",
+		fetchLinks: ["string"],
+	};
+	const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions);
 
-  server.use(
-    msw.rest.get(apiEndpoint, (_req, res, ctx) =>
-      res(
-        ctx.json({
-          types: { page: 'Page', blogPost: 'Blog Post' },
-        }),
-      ),
-    ),
-  )
+	t.false(res.isValid);
+	t.deepEqual(res.errors, [
+		'"value" contains a conflict between optional exclusive peers [fetchLinks, graphQuery]',
+	]);
+});
 
-  server.use(createCustomTypesAPIMockedRequest(pluginOptions, []))
+test.serial("checks that all schemas are provided", async (t) => {
+	const pluginOptions = createPluginOptions(t);
+	pluginOptions.customTypeModels = [];
+	pluginOptions.customTypesApiToken = undefined;
 
-  const res = await testPluginOptionsSchema(pluginOptionsSchema, pluginOptions)
+	const { plugins, ...pluginOptionsWithoutPlugins } = pluginOptions;
 
-  t.false(res.isValid)
-  t.true(res.errors.length === 1)
-  t.true(/blogPost/.test(res.errors[0]))
-})
+	// This line is to ignore tsserver's unused variable wraning.
+	plugins;
 
-test.serial(
-  'populates schemas if customTypesApiToken is provided',
-  async (t) => {
-    const pluginOptions = {
-      repositoryName: 'qwerty',
-      customTypesApiToken: 'customTypesApiToken',
-      customTypesApiEndpoint: 'https://example.com',
-    }
-    const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
+	const customTypeModel = prismicM.model.customType({ seed: t.title });
+	const repositoryResponse = prismicM.api.repository({
+		seed: t.title,
+		customTypeModels: [customTypeModel],
+	});
+	const queryResponse = prismicM.api.query({ seed: t.title });
 
-    const customType1 = createCustomTypesAPICustomType()
-    const customType2 = createCustomTypesAPICustomType()
-    const customTypesResponse: PrismicCustomTypeApiResponse = [
-      customType1,
-      customType2,
-    ]
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			repositoryResponse,
+			pluginOptions,
+			queryResponse,
+		}),
+	);
 
-    server.use(
-      msw.rest.get(apiEndpoint, (_req, res, ctx) =>
-        res(
-          ctx.json({
-            types: {
-              [customType1.id]: customType1.label,
-              [customType2.id]: customType2.label,
-            },
-          }),
-        ),
-      ),
-    )
+	const res = await testPluginOptionsSchema(
+		pluginOptionsSchema,
+		pluginOptionsWithoutPlugins,
+	);
 
-    server.use(
-      createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
-    )
-
-    const schema = pluginOptionsSchema({ Joi })
-    const res = (await validateOptionsSchema(
-      schema,
-      pluginOptions,
-    )) as PluginOptions
-
-    t.deepEqual(res.schemas, {
-      [customType1.id]: customType1.json,
-      [customType2.id]: customType2.json,
-    })
-  },
-)
-
-test.serial(
-  'merges schemas if customTypesApiToken and schemas are provided',
-  async (t) => {
-    const customTypeNotInAPI = createCustomTypesAPICustomType()
-    const customTypeInAPI1 = createCustomTypesAPICustomType()
-    const customTypeInAPI2 = createCustomTypesAPICustomType()
-    const customTypesResponse: PrismicCustomTypeApiResponse = [
-      customTypeInAPI1,
-      customTypeInAPI2,
-    ]
-
-    const pluginOptions = {
-      repositoryName: 'qwerty',
-      customTypesApiToken: 'customTypesApiToken',
-      customTypesApiEndpoint: 'https://example.com',
-      schemas: {
-        [customTypeNotInAPI.id]: customTypeNotInAPI.json,
-        // Note that we are going to replace customTypeInAPI2 with
-        // customTypeNotInAPI, in which customTypeInAPI2 is part of the API
-        // response. The test at the end checks for this.
-        [customTypeInAPI2.id]: customTypeNotInAPI.json,
-      },
-    }
-    const apiEndpoint = prismic.getEndpoint(pluginOptions.repositoryName)
-
-    server.use(
-      msw.rest.get(apiEndpoint, (_req, res, ctx) =>
-        res(
-          ctx.json({
-            types: {
-              [customTypesResponse[0].id]: customTypesResponse[0].label,
-              [customTypesResponse[1].id]: customTypesResponse[1].label,
-            },
-          }),
-        ),
-      ),
-    )
-
-    server.use(
-      createCustomTypesAPIMockedRequest(pluginOptions, customTypesResponse),
-    )
-
-    const schema = pluginOptionsSchema({ Joi })
-    const res = (await validateOptionsSchema(
-      schema,
-      pluginOptions,
-    )) as PluginOptions
-
-    t.deepEqual(res.schemas, {
-      // We are testing that a schema provided in the plugin options, but not
-      // provided by the API, can be provided explicitly.
-      [customTypeNotInAPI.id]: customTypeNotInAPI.json,
-
-      // This custom type was not provided in the plugin options, but is provided
-      // by the API.
-      [customTypeInAPI1.id]: customTypeInAPI1.json,
-
-      // We are testing that a schema provided by the API can be overridden by
-      // one provided in plugin options.
-      [customTypeInAPI2.id]: customTypeNotInAPI.json,
-    })
-  },
-)
+	t.false(res.isValid);
+	t.true(res.errors.length === 1);
+	t.true(new RegExp(customTypeModel.id).test(res.errors[0]));
+});

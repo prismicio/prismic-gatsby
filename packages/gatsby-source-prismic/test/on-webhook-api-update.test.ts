@@ -1,267 +1,407 @@
-import test from 'ava'
-import * as sinon from 'sinon'
-import * as mswn from 'msw/node'
-import * as prismic from '@prismicio/client'
+import test from "ava";
+import * as sinon from "sinon";
+import * as mswn from "msw/node";
+import * as prismic from "@prismicio/client";
+import * as prismicM from "@prismicio/mock";
 
-import { createAPIQueryMockedRequest } from './__testutils__/createAPIQueryMockedRequest'
-import { createAPIRepositoryMockedRequest } from './__testutils__/createAPIRepositoryMockedRequest'
-import { createGatsbyContext } from './__testutils__/createGatsbyContext'
-import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPrismicAPIDocument } from './__testutils__/createPrismicAPIDocument'
-import { createPrismicAPIQueryResponse } from './__testutils__/createPrismicAPIQueryResponse'
-import { createWebhookAPIUpdateDocAddition } from './__testutils__/createWebhookAPIUpdateDocAddition'
-import { createWebhookAPIUpdateDocDeletion } from './__testutils__/createWebhookAPIUpdateDocDeletion'
-import { createWebhookAPIUpdateReleaseDocAddition } from './__testutils__/createWebhookAPIUpdateReleaseDocAddition'
-import { createWebhookAPIUpdateReleaseDocDeletion } from './__testutils__/createWebhookAPIUpdateReleaseDocDeletion'
+import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
+import { createAPIRepositoryMockedRequest } from "./__testutils__/createAPIRepositoryMockedRequest";
+import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
+import { createPluginOptions } from "./__testutils__/createPluginOptions";
+import { createWebhookAPIUpdateDocAddition } from "./__testutils__/createWebhookAPIUpdateDocAddition";
+import { createWebhookAPIUpdateDocDeletion } from "./__testutils__/createWebhookAPIUpdateDocDeletion";
+import { createWebhookAPIUpdateReleaseDocAddition } from "./__testutils__/createWebhookAPIUpdateReleaseDocAddition";
+import { createWebhookAPIUpdateReleaseDocDeletion } from "./__testutils__/createWebhookAPIUpdateReleaseDocDeletion";
 
-import { sourceNodes } from '../src/source-nodes'
+import { sourceNodes } from "../src/source-nodes";
 
-const server = mswn.setupServer()
-test.before(() => server.listen({ onUnhandledRequest: 'error' }))
-test.after(() => server.close())
+const server = mswn.setupServer();
+test.before(() => server.listen({ onUnhandledRequest: "error" }));
+test.after(() => server.close());
 
-test('reports received message', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
-  const queryResponse = createPrismicAPIQueryResponse()
-  const webhookBody = createWebhookAPIUpdateDocAddition(
-    pluginOptions,
-    queryResponse.results,
-  )
+test("reports received message", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  gatsbyContext.webhookBody = webhookBody
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({ seed: t.title });
+	const webhookBody = createWebhookAPIUpdateDocAddition(
+		pluginOptions,
+		queryResponse.results,
+	);
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
+	gatsbyContext.webhookBody = webhookBody;
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+		}),
+	);
 
-  t.true(
-    (gatsbyContext.reporter.info as sinon.SinonStub).calledWith(
-      sinon.match(/received/i),
-    ),
-  )
-})
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-test('doc addition creates/updates node', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
-  const queryResponse = createPrismicAPIQueryResponse()
-  const webhookBody = createWebhookAPIUpdateDocAddition(
-    pluginOptions,
-    queryResponse.results,
-  )
+	t.true(
+		(gatsbyContext.reporter.info as sinon.SinonStub).calledWith(
+			sinon.match(/received/i),
+		),
+	);
+});
 
-  gatsbyContext.webhookBody = webhookBody
+test("doc addition creates/updates node", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
+	const documents = [
+		prismicM.value.document({ seed: t.title }),
+		prismicM.value.document({ seed: t.title }),
+	];
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({ seed: t.title, documents });
+	const webhookBody = createWebhookAPIUpdateDocAddition(
+		pluginOptions,
+		queryResponse.results,
+	);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	gatsbyContext.webhookBody = webhookBody;
 
-  t.true(
-    webhookBody.documents.every((docId) =>
-      (gatsbyContext.actions.createNode as sinon.SinonStub).calledWith(
-        sinon.match.has('prismicId', docId),
-      ),
-    ),
-  )
-})
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			queryResponse,
+			repositoryResponse,
+		}),
+	);
 
-test('doc deletion deletes node', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-  // The query response only includes the first document of `docs`.
-  // But the webhook body includes both docs.
-  // This signals that the second doc has been deleted.
-  const docs = [createPrismicAPIDocument(), createPrismicAPIDocument()]
-  const preWebhookQueryResponse = createPrismicAPIQueryResponse(docs)
-  const postWebhookQueryResponse = createPrismicAPIQueryResponse(docs.slice(1))
-  const webhookBody = createWebhookAPIUpdateDocDeletion(pluginOptions, docs)
+	t.true(
+		webhookBody.documents.every((docId) =>
+			(gatsbyContext.actions.createNode as sinon.SinonStub).calledWith(
+				sinon.match.has("prismicId", docId),
+			),
+		),
+	);
+});
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(
-    createAPIQueryMockedRequest(pluginOptions, preWebhookQueryResponse),
-  )
+test("doc deletion deletes node", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	// The query response only includes the first document of `docs`.
+	// But the webhook body includes both docs.
+	// This signals that the second doc has been deleted.
+	const documents = [
+		prismicM.value.document({ seed: t.title }),
+		prismicM.value.document({ seed: t.title }),
+	];
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const preWebhookQueryResponse = prismicM.api.query({
+		seed: t.title,
+		documents,
+	});
+	const postWebhookQueryResponse = prismicM.api.query({
+		seed: t.title,
+		documents: documents.slice(1),
+	});
+	const webhookBody = createWebhookAPIUpdateDocDeletion(
+		pluginOptions,
+		documents,
+	);
 
-  gatsbyContext.webhookBody = webhookBody
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse: preWebhookQueryResponse,
+		}),
+	);
 
-  server.use(
-    createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse),
-  )
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	gatsbyContext.webhookBody = webhookBody;
 
-  t.true(
-    (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-      sinon.match.has('prismicId', docs[0].id),
-    ),
-  )
+	server.use(
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse: postWebhookQueryResponse,
+		}),
+	);
 
-  // Does not touch deleted doc. We do not want to prevent garbage collection
-  // for deleted nodes.
-  t.false(
-    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
-      sinon.match.has('prismicId', docs[0].id),
-    ),
-  )
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-  // Touches all other docs. We want to prevent garbage collection.
-  t.true(
-    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
-      sinon.match.has('prismicId', docs[1].id),
-    ),
-  )
-})
+	t.true(
+		(gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
 
-test('release doc addition creates/updates node if plugin options release ID matches', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
-  const queryResponse = createPrismicAPIQueryResponse()
-  const webhookBody = createWebhookAPIUpdateReleaseDocAddition(
-    pluginOptions,
-    queryResponse.results,
-  )
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const webhookBodyReleaseUpdate = webhookBody.releases.update![0]
+	// Does not touch deleted doc. We do not want to prevent garbage collection
+	// for deleted nodes.
+	t.false(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
 
-  gatsbyContext.webhookBody = webhookBody
-  pluginOptions.releaseID = webhookBodyReleaseUpdate.id
+	// Touches all other docs. We want to prevent garbage collection.
+	t.true(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[1].id),
+		),
+	);
+});
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      ref: webhookBodyReleaseUpdate.ref,
-      q: `[${prismic.predicate.in(
-        'document.id',
-        webhookBodyReleaseUpdate.documents,
-      )}]`,
-    }),
-  )
+test("release doc addition creates/updates node if plugin options release ID matches", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	const documents = [
+		prismicM.value.document({ seed: t.title }),
+		prismicM.value.document({ seed: t.title }),
+	];
+	const queryResponse = prismicM.api.query({ seed: t.title, documents });
+	const webhookBody = createWebhookAPIUpdateReleaseDocAddition(
+		pluginOptions,
+		queryResponse.results,
+	);
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const webhookBodyReleaseUpdate = webhookBody.releases.update![0];
 
-  for (const docId of webhookBodyReleaseUpdate.documents) {
-    t.true(
-      (gatsbyContext.actions.createNode as sinon.SinonStub).calledWith(
-        sinon.match.has('prismicId', docId),
-      ),
-    )
-  }
-})
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	repositoryResponse.refs = [
+		...repositoryResponse.refs,
+		{
+			...prismicM.api.ref({ seed: t.title }),
+			id: webhookBodyReleaseUpdate.id,
+			ref: webhookBodyReleaseUpdate.ref,
+		},
+	];
 
-test('release doc addition does nothing if plugin options release ID does not match', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
-  const queryResponse = createPrismicAPIQueryResponse([])
-  const webhookBody = createWebhookAPIUpdateReleaseDocAddition(
-    pluginOptions,
-    queryResponse.results,
-  )
+	gatsbyContext.webhookBody = webhookBody;
+	pluginOptions.releaseID = webhookBodyReleaseUpdate.id;
 
-  gatsbyContext.webhookBody = webhookBody
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+	);
+	server.use(
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+			searchParams: {
+				ref: webhookBodyReleaseUpdate.ref,
+				q: `[${prismic.predicate.in(
+					"document.id",
+					webhookBodyReleaseUpdate.documents,
+				)}]`,
+			},
+		}),
+	);
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(
-    createAPIQueryMockedRequest(pluginOptions, queryResponse, {
-      q: `[${prismic.predicate.in('document.id', [])}]`,
-    }),
-  )
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	for (const docId of webhookBodyReleaseUpdate.documents) {
+		t.true(
+			(gatsbyContext.actions.createNode as sinon.SinonStub).calledWith(
+				sinon.match.has("prismicId", docId),
+			),
+		);
+	}
+});
 
-  t.true((gatsbyContext.actions.createNode as sinon.SinonStub).notCalled)
-})
+test("release doc addition does nothing if plugin options release ID does not match", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-test('release doc deletion deletes node if plugin options release ID matches', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({ seed: t.title });
+	const webhookBody = createWebhookAPIUpdateReleaseDocAddition(
+		pluginOptions,
+		queryResponse.results,
+	);
 
-  // The query response only includes the first document of `docs`.
-  // But the webhook body includes both docs.
-  // This signals that the second doc has been deleted.
-  const docs = [createPrismicAPIDocument(), createPrismicAPIDocument()]
-  const preWebhookQueryResponse = createPrismicAPIQueryResponse(docs)
-  const postWebhookQueryResponse = createPrismicAPIQueryResponse(docs.slice(1))
-  const webhookBody = createWebhookAPIUpdateReleaseDocDeletion(
-    pluginOptions,
-    docs,
-  )
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const webhookBodyReleaseDeletion = webhookBody.releases.update![0]
+	gatsbyContext.webhookBody = webhookBody;
 
-  pluginOptions.releaseID = webhookBodyReleaseDeletion.id
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+	);
+	server.use(
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+			searchParams: {
+				q: `[${prismic.predicate.in("document.id", [])}]`,
+			},
+		}),
+	);
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(
-    createAPIQueryMockedRequest(pluginOptions, preWebhookQueryResponse, {
-      ref: webhookBodyReleaseDeletion.ref,
-    }),
-  )
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	t.true((gatsbyContext.actions.createNode as sinon.SinonStub).notCalled);
+});
 
-  // The next `sourceNodes` call will simulate a webhook trigger.
-  // We do this by setting the webhookBody value to gatsbyContext.
-  gatsbyContext.webhookBody = webhookBody
+test("release doc deletion deletes node if plugin options release ID matches", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  server.use(
-    createAPIQueryMockedRequest(pluginOptions, postWebhookQueryResponse, {
-      ref: webhookBodyReleaseDeletion.ref,
-    }),
-  )
+	// The query response only includes the first document of `docs`.
+	// But the webhook body includes both docs.
+	// This signals that the second doc has been deleted.
+	const documents = [
+		prismicM.value.document({ seed: t.title }),
+		prismicM.value.document({ seed: t.title }),
+	];
+	const preWebhookQueryResponse = prismicM.api.query({
+		seed: t.title,
+		documents,
+	});
+	const postWebhookQueryResponse = prismicM.api.query({
+		seed: t.title,
+		documents: documents.slice(1),
+	});
+	const webhookBody = createWebhookAPIUpdateReleaseDocDeletion(
+		pluginOptions,
+		documents,
+	);
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const webhookBodyReleaseDeletion = webhookBody.releases.update![0];
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	repositoryResponse.refs = [
+		...repositoryResponse.refs,
+		{
+			...prismicM.api.ref({ seed: t.title }),
+			id: webhookBodyReleaseDeletion.id,
+			ref: webhookBodyReleaseDeletion.ref,
+		},
+	];
 
-  t.true(
-    (gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
-      sinon.match.has('prismicId', docs[0].id),
-    ),
-  )
+	pluginOptions.releaseID = webhookBodyReleaseDeletion.id;
 
-  // Does not touch deleted doc. We do not want to prevent garbage collection
-  // for deleted nodes.
-  t.false(
-    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
-      sinon.match.has('prismicId', docs[0].id),
-    ),
-  )
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+	);
+	server.use(
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse: preWebhookQueryResponse,
+			searchParams: {
+				ref: webhookBodyReleaseDeletion.ref,
+			},
+		}),
+	);
 
-  // Touches all other docs. We want to prevent garbage collection.
-  t.true(
-    (gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
-      sinon.match.has('prismicId', docs[1].id),
-    ),
-  )
-})
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-test('release doc deletion does nothing if plugin options release ID does not match', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
-  const queryResponse = createPrismicAPIQueryResponse([])
-  const webhookBody = createWebhookAPIUpdateReleaseDocDeletion(
-    pluginOptions,
-    queryResponse.results,
-  )
+	gatsbyContext.webhookBody = webhookBody;
 
-  gatsbyContext.webhookBody = webhookBody
+	server.use(
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse: postWebhookQueryResponse,
+			searchParams: {
+				ref: webhookBodyReleaseDeletion.ref,
+			},
+		}),
+	);
 
-  server.use(createAPIRepositoryMockedRequest(pluginOptions))
-  server.use(createAPIQueryMockedRequest(pluginOptions, queryResponse))
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await sourceNodes(gatsbyContext, pluginOptions)
+	t.true(
+		(gatsbyContext.actions.deleteNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
 
-  t.true((gatsbyContext.actions.deleteNode as sinon.SinonStub).notCalled)
-})
+	// Does not touch deleted doc. We do not want to prevent garbage collection
+	// for deleted nodes.
+	t.false(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[0].id),
+		),
+	);
+
+	// Touches all other docs. We want to prevent garbage collection.
+	t.true(
+		(gatsbyContext.actions.touchNode as sinon.SinonStub).calledWith(
+			sinon.match.has("prismicId", documents[1].id),
+		),
+	);
+});
+
+test("release doc deletion does nothing if plugin options release ID does not match", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+
+	const queryResponse = prismicM.api.query({ seed: t.title });
+	const webhookBody = createWebhookAPIUpdateReleaseDocDeletion(
+		pluginOptions,
+		queryResponse.results,
+	);
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const webhookBodyReleaseDeletion = webhookBody.releases.update![0];
+
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	repositoryResponse.refs = [
+		...repositoryResponse.refs,
+		{
+			...prismicM.api.ref({ seed: t.title }),
+			id: webhookBodyReleaseDeletion.id,
+			ref: webhookBodyReleaseDeletion.ref,
+		},
+	];
+
+	gatsbyContext.webhookBody = webhookBody;
+
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+		}),
+	);
+
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
+
+	t.true((gatsbyContext.actions.deleteNode as sinon.SinonStub).notCalled);
+});

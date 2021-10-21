@@ -20,21 +20,21 @@ appears toward the top of the page. This will hide Gatsby's default development
 
 ```typescript
 function withPrismicUnpublishedPreview(
-  WrappedComponent: React.ComponentType,
-  repositoryConfigs: {
-    repositoryName: string
-    linkResolver: LinkResolver
-    htmlSerializer?: HTMLSerializer
-    transformFieldName?: FieldNameTransformer
-    componentResolver: (
-      nodes: PrismicNode[],
-    ) => React.ComponentType | undefined | null
-    dataResolver?: (
-      nodes: PrismicNode[],
-      data: Record<string, unknown>,
-    ) => Record<string, unknown>
-  }[],
-): React.ComponentType
+	WrappedComponent: React.ComponentType,
+	repositoryConfigs: {
+		repositoryName: string;
+		linkResolver: LinkResolver;
+		htmlSerializer?: HTMLSerializer;
+		transformFieldName?: FieldNameTransformer;
+		componentResolver: (
+			nodes: PrismicNode[],
+		) => React.ComponentType | undefined | null;
+		dataResolver?: (
+			nodes: PrismicNode[],
+			data: Record<string, unknown>,
+		) => Record<string, unknown>;
+	}[],
+): React.ComponentType;
 ```
 
 - **`WrappedComponent`**<br/>The page component to which Prismic unpublished
@@ -113,54 +113,53 @@ continue to be accessible within the previewed component.
 ```javascript
 // src/pages/404.js
 
-import * as React from 'react'
-import { graphql } from 'gatsby'
+import * as React from "react";
+import { graphql } from "gatsby";
 import {
-  withPrismicUnpublishedPreview,
-  componentResolverFromMap,
-} from 'gatsby-plugin-prismic-previews'
+	withPrismicUnpublishedPreview,
+	componentResolverFromMap,
+} from "gatsby-plugin-prismic-previews";
 
-import { linkResolver } from '../linkResolver'
+import { linkResolver } from "../linkResolver";
 
-import PageTemplate from './PageTemplate'
+import PageTemplate from "./PageTemplate";
 
 const NotFoundPage = ({ data }) => {
-  const page = data.prismicPage
+	const page = data.prismicPage;
 
-  return (
-    <div>
-      <h1>{page.data.title.text}</h1>
-    </div>
-  )
-}
+	return (
+		<div>
+			<h1>{page.data.title.text}</h1>
+		</div>
+	);
+};
 
 export default withPrismicUnpublishedPreview(PageTemplate, [
-  {
-    repositoryName: 'my-repository-name',
-    linkResolver,
-    componentResolver: componentResolverFromMap({
-      page: PageTemplate,
-    }),
-  },
-])
+	{
+		repositoryName: "my-repository-name",
+		linkResolver,
+		componentResolver: componentResolverFromMap({
+			page: PageTemplate,
+		}),
+	},
+]);
 
 export const query = graphql`
-  query NotFoundPage {
-    prismicPage(id: { eq: "404" }) {
-      _previewable
-      data {
-        title {
-          text
-        }
-      }
-    }
-  }
-`
+	query NotFoundPage {
+		prismicPage(id: { eq: "404" }) {
+			_previewable
+			data {
+				title {
+					text
+				}
+			}
+		}
+	}
+`;
 ```
 
 [hoc]: https://reactjs.org/docs/higher-order-components.html
 [link-resolver]: https://prismic.io/docs/technologies/link-resolver-gatsby
 [gsp]: https://github.com/angeloashmore/gatsby-source-prismic
-[html-serializer]:
-  https://prismic.io/docs/technologies/html-serializer-javascript
+[html-serializer]: https://prismic.io/docs/technologies/html-serializer-javascript
 [usemergeprismicpreviewdata]: ./useMergePrismicPreviewData.md

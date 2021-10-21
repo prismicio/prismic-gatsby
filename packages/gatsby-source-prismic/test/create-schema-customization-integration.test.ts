@@ -1,72 +1,74 @@
-import test from 'ava'
-import * as sinon from 'sinon'
-import * as prismicT from '@prismicio/types'
+import test from "ava";
+import * as sinon from "sinon";
+import * as gatsby from "gatsby";
+import * as prismicM from "@prismicio/mock";
 
-import { createGatsbyContext } from './__testutils__/createGatsbyContext'
-import { createPluginOptions } from './__testutils__/createPluginOptions'
+import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
+import { createMockCustomTypeModelWithFields } from "./__testutils__/createMockCustomTypeModelWithFields";
+import { createPluginOptions } from "./__testutils__/createPluginOptions";
 
-import { createSchemaCustomization } from '../src/gatsby-node'
+import { createSchemaCustomization } from "../src/gatsby-node";
 
-test('uses inferred type with link extension', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
+const noop = () => void 0;
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        integration: {
-          type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-          config: { label: 'Integration', catalog: 'catalog' },
-        },
-      },
-    },
-  }
+test("uses inferred type with link extension", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await createSchemaCustomization(gatsbyContext, pluginOptions)
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		integrationFields: prismicM.model.integrationFields({ seed: t.title }),
+	});
+	customTypeModel.id = "foo";
 
-  t.true(
-    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
-      kind: 'OBJECT',
-      config: sinon.match({
-        name: 'PrismicPrefixFooDataType',
-        fields: {
-          integration: sinon.match({
-            type: 'PrismicPrefixFooDataIntegrationIntegrationType',
-            extensions: { link: {} },
-          }),
-        },
-      }),
-    }),
-  )
-})
+	pluginOptions.customTypeModels = [customTypeModel];
 
-test('creates inferred type using path', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
 
-  pluginOptions.schemas = {
-    foo: {
-      Main: {
-        integration: {
-          type: prismicT.CustomTypeModelFieldType.IntegrationFields,
-          config: { label: 'Integration', catalog: 'catalog' },
-        },
-      },
-    },
-  }
+	t.true(
+		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+			kind: "OBJECT",
+			config: sinon.match({
+				name: "PrismicPrefixFooDataType",
+				fields: {
+					integrationFields: sinon.match({
+						type: "PrismicPrefixFooDataIntegrationFieldsIntegrationType",
+						extensions: { link: {} },
+					}),
+				},
+			}),
+		}),
+	);
+});
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await createSchemaCustomization(gatsbyContext, pluginOptions)
+test("creates inferred type using path", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  t.true(
-    (gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
-      kind: 'OBJECT',
-      config: sinon.match({
-        name: 'PrismicPrefixFooDataIntegrationIntegrationType',
-        interfaces: ['Node'],
-        extensions: { infer: true },
-      }),
-    }),
-  )
-})
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		integrationFields: prismicM.model.integrationFields({ seed: t.title }),
+	});
+	customTypeModel.id = "foo";
+
+	pluginOptions.customTypeModels = [customTypeModel];
+
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
+
+	t.true(
+		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+			kind: "OBJECT",
+			config: sinon.match({
+				name: "PrismicPrefixFooDataIntegrationFieldsIntegrationType",
+				interfaces: ["Node"],
+				extensions: { infer: true },
+			}),
+		}),
+	);
+});

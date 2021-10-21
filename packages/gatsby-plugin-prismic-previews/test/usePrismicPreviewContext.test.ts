@@ -1,164 +1,195 @@
-import test from 'ava'
-import { renderHook, act, cleanup } from '@testing-library/react-hooks'
-import browserEnv from 'browser-env'
+import test from "ava";
+import { renderHook, act, cleanup } from "@testing-library/react-hooks";
+import browserEnv from "browser-env";
+import * as prismicM from "@prismicio/mock";
 
-import { clearAllCookies } from './__testutils__/clearAllCookies'
-import { createGatsbyContext } from './__testutils__/createGatsbyContext'
-import { createPluginOptions } from './__testutils__/createPluginOptions'
-import { createPrismicAPIDocumentNodeInput } from './__testutils__/createPrismicAPIDocumentNodeInput'
+import { clearAllCookies } from "./__testutils__/clearAllCookies";
+import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
+import { createPluginOptions } from "./__testutils__/createPluginOptions";
 
 import {
-  PrismicContextActionType,
-  PrismicPreviewProvider,
-  usePrismicPreviewAccessToken,
-  usePrismicPreviewContext,
-} from '../src'
-import { onClientEntry } from '../src/gatsby-browser'
+	PluginOptions,
+	PrismicContextActionType,
+	PrismicPreviewProvider,
+	PrismicRepositoryConfigs,
+	usePrismicPreviewAccessToken,
+	usePrismicPreviewContext,
+} from "../src";
+import { onClientEntry } from "../src/gatsby-browser";
+
+const createConfig = (
+	pluginOptions: PluginOptions,
+): PrismicRepositoryConfigs => [
+	{
+		repositoryName: pluginOptions.repositoryName,
+		linkResolver: (doc): string => `/${doc.uid}`,
+		componentResolver: () => null,
+	},
+];
 
 test.before(() => {
-  browserEnv(['window', 'document'])
-  window.requestAnimationFrame = function (callback) {
-    return setTimeout(callback, 0)
-  }
-})
+	browserEnv(["window", "document"]);
+	window.requestAnimationFrame = function (callback) {
+		return setTimeout(callback, 0);
+	};
+});
 test.beforeEach(() => {
-  clearAllCookies()
-})
+	clearAllCookies();
+});
 test.afterEach(() => {
-  cleanup()
-})
+	cleanup();
+});
 
-test.serial('returns context with repository options', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
+test.serial("returns context with repository options", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(() => usePrismicPreviewContext(), {
-    wrapper: PrismicPreviewProvider,
-  })
+	// @ts-expect-error - Partial gatsbyContext provided
+	await onClientEntry(gatsbyContext, pluginOptions);
+	const { result } = renderHook(() => usePrismicPreviewContext(), {
+		wrapper: PrismicPreviewProvider,
+	});
 
-  const context = result.current[0]
+	const context = result.current[0];
 
-  t.true(context.isBootstrapped === false)
-  t.deepEqual(context.nodes, {})
-  t.deepEqual(context.pluginOptionsStore, {
-    [pluginOptions.repositoryName]: pluginOptions,
-  })
-  t.deepEqual(context.typePathsStore, {})
-})
+	t.true(context.isBootstrapped === false);
+	t.deepEqual(context.pluginOptionsStore, {
+		[pluginOptions.repositoryName]: pluginOptions,
+	});
+});
 
 test.serial(
-  'initial state contains access token if persisted in cookie',
-  async (t) => {
-    const gatsbyContext = createGatsbyContext()
-    const pluginOptions = createPluginOptions(t)
-    pluginOptions.accessToken = undefined
+	"initial state contains access token if persisted in cookie",
+	async (t) => {
+		const gatsbyContext = createGatsbyContext();
+		const pluginOptions = createPluginOptions(t);
+		pluginOptions.accessToken = undefined;
 
-    const persistedAccessToken = 'persistedAccessToken'
+		const persistedAccessToken = "persistedAccessToken";
 
-    // @ts-expect-error - Partial gatsbyContext provided
-    await onClientEntry(gatsbyContext, pluginOptions)
+		// @ts-expect-error - Partial gatsbyContext provided
+		await onClientEntry(gatsbyContext, pluginOptions);
 
-    const { result: accessTokenResult } = renderHook(
-      () => usePrismicPreviewAccessToken(pluginOptions.repositoryName),
-      { wrapper: PrismicPreviewProvider },
-    )
-    act(() => {
-      accessTokenResult.current[1].set(persistedAccessToken, true)
-    })
+		const { result: accessTokenResult } = renderHook(
+			() => usePrismicPreviewAccessToken(pluginOptions.repositoryName),
+			{ wrapper: PrismicPreviewProvider },
+		);
+		act(() => {
+			accessTokenResult.current[1].set(persistedAccessToken, true);
+		});
 
-    const { result } = renderHook(() => usePrismicPreviewContext(), {
-      wrapper: PrismicPreviewProvider,
-    })
+		const { result } = renderHook(() => usePrismicPreviewContext(), {
+			wrapper: PrismicPreviewProvider,
+		});
 
-    t.true(
-      result.current[0].pluginOptionsStore[pluginOptions.repositoryName]
-        .accessToken === persistedAccessToken,
-    )
-  },
-)
+		t.true(
+			result.current[0].pluginOptionsStore[pluginOptions.repositoryName]
+				.accessToken === persistedAccessToken,
+		);
+	},
+);
 
-test.serial('SetAccessToken action sets the access token', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
+test.serial("SetAccessToken action sets the access token", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(() => usePrismicPreviewContext(), {
-    wrapper: PrismicPreviewProvider,
-  })
-  const dispatch = result.current[1]
+	// @ts-expect-error - Partial gatsbyContext provided
+	await onClientEntry(gatsbyContext, pluginOptions);
+	const { result } = renderHook(() => usePrismicPreviewContext(), {
+		wrapper: PrismicPreviewProvider,
+	});
+	const dispatch = result.current[1];
 
-  const newAccessToken = 'newAccessToken'
-  act(() => {
-    dispatch({
-      type: PrismicContextActionType.SetAccessToken,
-      payload: {
-        repositoryName: pluginOptions.repositoryName,
-        accessToken: newAccessToken,
-      },
-    })
-  })
+	const newAccessToken = "newAccessToken";
+	act(() => {
+		dispatch({
+			type: PrismicContextActionType.SetAccessToken,
+			payload: {
+				repositoryName: pluginOptions.repositoryName,
+				accessToken: newAccessToken,
+			},
+		});
+	});
 
-  const context = result.current[0]
+	const context = result.current[0];
 
-  t.true(
-    context.pluginOptionsStore[pluginOptions.repositoryName].accessToken ===
-      newAccessToken,
-  )
-})
+	t.true(
+		context.pluginOptionsStore[pluginOptions.repositoryName].accessToken ===
+			newAccessToken,
+	);
+});
 
-test.serial('AppendNodes action adds nodes', async (t) => {
-  const gatsbyContext = createGatsbyContext()
-  const pluginOptions = createPluginOptions(t)
+test.serial("AppendDocuments action adds documents", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+	const config = createConfig(pluginOptions);
 
-  // @ts-expect-error - Partial gatsbyContext provided
-  await onClientEntry(gatsbyContext, pluginOptions)
-  const { result } = renderHook(() => usePrismicPreviewContext(), {
-    wrapper: PrismicPreviewProvider,
-  })
-  const dispatch = result.current[1]
+	// @ts-expect-error - Partial gatsbyContext provided
+	await onClientEntry(gatsbyContext, pluginOptions);
+	const { result } = renderHook(() => usePrismicPreviewContext(), {
+		wrapper: PrismicPreviewProvider,
+	});
 
-  const nodes = [
-    createPrismicAPIDocumentNodeInput(),
-    createPrismicAPIDocumentNodeInput(),
-  ]
+	act(() => {
+		const dispatch = result.current[1];
 
-  act(() => {
-    dispatch({
-      type: PrismicContextActionType.AppendNodes,
-      payload: { nodes },
-    })
-  })
+		dispatch({
+			type: PrismicContextActionType.SetupRuntime,
+			payload: {
+				repositoryName: pluginOptions.repositoryName,
+				repositoryConfig: config[0],
+				pluginOptions,
+			},
+		});
+	});
 
-  const context = result.current[0]
+	const model = prismicM.model.customType();
+	const documents = [
+		prismicM.value.document({ model }),
+		prismicM.value.document({ model }),
+	];
+	result.current[0].runtimeStore[
+		pluginOptions.repositoryName
+	].registerCustomTypeModels([model]);
 
-  t.deepEqual(context.nodes, {
-    [nodes[0].prismicId]: nodes[0],
-    [nodes[1].prismicId]: nodes[1],
-  })
-})
+	act(() => {
+		const dispatch = result.current[1];
+
+		dispatch({
+			type: PrismicContextActionType.RegisterDocuments,
+			payload: { repositoryName: pluginOptions.repositoryName, documents },
+		});
+	});
+
+	const context = result.current[0];
+
+	t.deepEqual(
+		context.runtimeStore[pluginOptions.repositoryName].nodes.map(
+			(node) => node.prismicId,
+		),
+		documents.map((document) => document.id),
+	);
+});
 
 test.serial(
-  'Bootstrapped action marks repository as bootstrapped',
-  async (t) => {
-    const gatsbyContext = createGatsbyContext()
-    const pluginOptions = createPluginOptions(t)
+	"Bootstrapped action marks repository as bootstrapped",
+	async (t) => {
+		const gatsbyContext = createGatsbyContext();
+		const pluginOptions = createPluginOptions(t);
 
-    // @ts-expect-error - Partial gatsbyContext provided
-    await onClientEntry(gatsbyContext, pluginOptions)
-    const { result } = renderHook(() => usePrismicPreviewContext(), {
-      wrapper: PrismicPreviewProvider,
-    })
-    const dispatch = result.current[1]
+		// @ts-expect-error - Partial gatsbyContext provided
+		await onClientEntry(gatsbyContext, pluginOptions);
+		const { result } = renderHook(() => usePrismicPreviewContext(), {
+			wrapper: PrismicPreviewProvider,
+		});
+		const dispatch = result.current[1];
 
-    t.true(result.current[0].isBootstrapped === false)
+		t.true(result.current[0].isBootstrapped === false);
 
-    act(() => {
-      dispatch({ type: PrismicContextActionType.Bootstrapped })
-    })
+		act(() => {
+			dispatch({ type: PrismicContextActionType.Bootstrapped });
+		});
 
-    t.true(result.current[0].isBootstrapped)
-  },
-)
+		t.true(result.current[0].isBootstrapped);
+	},
+);

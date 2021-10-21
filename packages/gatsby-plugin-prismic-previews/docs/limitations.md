@@ -21,10 +21,8 @@ To mitigate this limitation, use Gatsby's
 [`useStaticQuery`][gatsby-usestaticquery] within your components as much as
 possible to scope your queries.
 
-[gatsby-graphql-aliasing]:
-  https://www.gatsbyjs.com/docs/graphql-reference/#aliasing
-[gatsby-usestaticquery]:
-  https://www.gatsbyjs.com/docs/how-to/querying-data/use-static-query/
+[gatsby-graphql-aliasing]: https://www.gatsbyjs.com/docs/graphql-reference/#aliasing
+[gatsby-usestaticquery]: https://www.gatsbyjs.com/docs/how-to/querying-data/use-static-query/
 
 ### GraphQL schema customizations
 

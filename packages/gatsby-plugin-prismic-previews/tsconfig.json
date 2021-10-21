@@ -1,10 +1,20 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "./",
-    "resolveJsonModule": true,
-    "jsx": "react",
-    "allowJs": true
-  },
-  "include": ["src", "test", "types", ".storybook"]
+	"compilerOptions": {
+		"strict": true,
+		"skipLibCheck": true,
+
+		"target": "esnext",
+		"module": "commonjs",
+		"declaration": false,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+
+		"forceConsistentCasingInFileNames": true,
+		"jsx": "preserve",
+		"lib": ["esnext", "dom", "dom.iterable"],
+		"types": ["node"]
+	},
+	"exclude": ["node_modules", "dist", "examples"]
 }

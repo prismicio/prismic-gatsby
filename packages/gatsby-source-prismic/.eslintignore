@@ -1,0 +1,40 @@
+# .gitignore copy
+
+# custom
+dist
+examples/**/package-lock.json
+
+# os
+.DS_Store
+._*
+
+# node
+logs
+*.log
+node_modules
+
+# yarn
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.yarn-integrity
+yarn.lock
+
+# npm
+npm-debug.log*
+
+# tests
+coverage
+.eslintcache
+.nyc_output
+
+# .env
+.env
+.env.test
+.env*.local
+
+# vscode
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace

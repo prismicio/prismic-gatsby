@@ -3,7 +3,7 @@
  * not detect the exports if the module is re-exported as a whole.
  */
 
-const gatsbySSR = require('./dist/gatsby-ssr')
+import * as gatsbySSR from "./dist/gatsby-ssr";
 
-exports.onRenderBody = gatsbySSR.onRenderBody
-exports.wrapRootElement = gatsbySSR.wrapRootElement
+export const onRenderBody = gatsbySSR.onRenderBody;
+export const wrapRootElement = gatsbySSR.wrapRootElement;

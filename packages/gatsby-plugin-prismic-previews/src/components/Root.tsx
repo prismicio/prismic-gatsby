@@ -1,9 +1,17 @@
-import * as React from 'react'
+import * as React from "react";
+import root from "react-shadow";
+
+import styles from "../styles.css";
 
 type RootProps = {
-  children?: React.ReactNode
-}
+	children?: React.ReactNode;
+};
 
-export const Root = ({ children }: RootProps): JSX.Element => (
-  <div className="gppp-root">{children}</div>
-)
+export const Root = ({ children }: RootProps): JSX.Element => {
+	return (
+		<root.div>
+			<div className="root">{children}</div>
+			<style type="text/css">{styles}</style>
+		</root.div>
+	);
+};

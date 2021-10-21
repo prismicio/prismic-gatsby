@@ -1,26 +1,26 @@
-import * as React from 'react'
-import clsx from 'clsx'
+import * as React from "react";
+import clsx from "clsx";
 
 type ButtonProps = {
-  variant: 'purple' | 'white' | 'whiteOutline'
-} & React.ButtonHTMLAttributes<HTMLButtonElement>
+	variant: "purple" | "white" | "whiteOutline";
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button = ({
-  className,
-  variant,
-  ...props
+	className,
+	variant,
+	...props
 }: ButtonProps): JSX.Element => (
-  <button
-    {...props}
-    className={clsx(
-      'gppp-py-4 gppp-px-5 gppp-text-center gppp-rounded gppp-min-w-7.5rem gppp-border',
-      variant === 'purple' &&
-        'gppp-bg-purple-50 gppp-text-white gppp-border-purple-50 gppp-transition hover:gppp-bg-purple-40 focus:gppp-bg-purple-40 hover:gppp-border-purple-40 focus:gppp-borer-purple-40',
-      variant === 'white' &&
-        'gppp-bg-white gppp-border-slate-90 gppp-text-slate-60 hover:gppp-border-slate-70 focus:gppp-border-slate-70 hover:gppp-text-slate-30 focus:gppp-text-slate-30 gppp-transition',
-      variant === 'whiteOutline' &&
-        'gppp-bg-transparent gppp-border-white gppp-text-white hover:gppp-bg-white hover:gppp-bg-opacity-10 focus:gppp-bg-white focus:gppp-bg-opacity-10 gppp-transition',
-      className,
-    )}
-  />
-)
+	<button
+		{...props}
+		className={clsx(
+			"py-4 px-5 text-center rounded min-w-7.5rem border",
+			variant === "purple" &&
+				"bg-purple-50 text-white border-purple-50 transition hover:bg-purple-40 focus:bg-purple-40 hover:border-purple-40 focus:borer-purple-40",
+			variant === "white" &&
+				"bg-white border-slate-90 text-slate-60 hover:border-slate-70 focus:border-slate-70 hover:text-slate-30 focus:text-slate-30 transition",
+			variant === "whiteOutline" &&
+				"bg-transparent border-white text-white hover:bg-white hover:bg-opacity-10 focus:bg-white focus:bg-opacity-10 transition",
+			className,
+		)}
+	/>
+);

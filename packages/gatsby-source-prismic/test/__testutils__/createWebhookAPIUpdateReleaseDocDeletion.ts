@@ -1,32 +1,36 @@
-import * as prismicT from '@prismicio/types'
+import * as prismic from "@prismicio/client";
+import * as prismicT from "@prismicio/types";
 
 import {
-  PluginOptions,
-  PrismicWebhookBodyApiUpdate,
-  PrismicWebhookType,
-} from '../../src'
+	UnpreparedPluginOptions,
+	PrismicWebhookBodyApiUpdate,
+	PrismicWebhookType,
+} from "../../src";
 
 export const createWebhookAPIUpdateReleaseDocDeletion = (
-  pluginOptions: PluginOptions,
-  documents: prismicT.PrismicDocument[],
+	pluginOptions: UnpreparedPluginOptions,
+	documents: prismicT.PrismicDocument[],
 ): PrismicWebhookBodyApiUpdate => ({
-  type: PrismicWebhookType.APIUpdate,
-  masterRef: 'masterRef',
-  releases: {
-    update: [
-      {
-        id: 'release',
-        ref: 'release',
-        label: 'release',
-        documents: documents.map((doc) => doc.id),
-      },
-    ],
-  },
-  masks: {},
-  tags: {},
-  experiments: {},
-  documents: [],
-  domain: pluginOptions.repositoryName,
-  apiUrl: pluginOptions.apiEndpoint.replace(/(\.cdn|\/v2)/, ''),
-  secret: pluginOptions.webhookSecret ?? null,
-})
+	type: PrismicWebhookType.APIUpdate,
+	masterRef: "masterRef",
+	releases: {
+		update: [
+			{
+				id: "release",
+				ref: "release",
+				label: "release",
+				documents: documents.map((doc) => doc.id),
+			},
+		],
+	},
+	masks: {},
+	tags: {},
+	experiments: {},
+	documents: [],
+	domain: pluginOptions.repositoryName,
+	apiUrl: (
+		pluginOptions.apiEndpoint ||
+		prismic.getEndpoint(pluginOptions.repositoryName)
+	).replace(/(\.cdn|\/v2)/, ""),
+	secret: pluginOptions.webhookSecret ?? null,
+});

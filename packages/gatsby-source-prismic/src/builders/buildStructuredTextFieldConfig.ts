@@ -1,10 +1,7 @@
-import * as prismicT from '@prismicio/types'
-import * as RTE from 'fp-ts/ReaderTaskEither'
-import { pipe } from 'fp-ts/function'
+import * as RTE from "fp-ts/ReaderTaskEither";
+import { pipe } from "fp-ts/function";
 
-import { createTypePath } from '../lib/createTypePath'
-
-import { Dependencies, FieldConfigCreator } from '../types'
+import { Dependencies, FieldConfigCreator } from "../types";
 
 /**
  * Builds a GraphQL field configuration object for a StructuredText Custom Type
@@ -13,15 +10,12 @@ import { Dependencies, FieldConfigCreator } from '../types'
  *
  * This function registers a typepath for the field.
  *
- * @param path Path to the field.
+ * @param path - Path to the field.
  *
  * @returns GraphQL field configuration object.
  */
-export const buildStructuredTextFieldConfig: FieldConfigCreator = (path) =>
-  pipe(
-    RTE.ask<Dependencies>(),
-    RTE.chainFirst(() =>
-      createTypePath(path, prismicT.CustomTypeModelFieldType.StructuredText),
-    ),
-    RTE.map((deps) => deps.nodeHelpers.createTypeName('StructuredTextType')),
-  )
+export const buildStructuredTextFieldConfig: FieldConfigCreator = () =>
+	pipe(
+		RTE.ask<Dependencies>(),
+		RTE.map((deps) => deps.nodeHelpers.createTypeName("StructuredTextType")),
+	);

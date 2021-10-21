@@ -1,29 +1,34 @@
-import * as msw from 'msw'
-import * as prismicCustomTypes from '@prismicio/custom-types-client'
+import * as msw from "msw";
+import * as prismicT from "@prismicio/types";
 
-import { PluginOptions } from '../../src'
+import { PluginOptions } from "../../src";
+
+type CreateCustomTypesAPIMockedRequestConfig = {
+	pluginOptions: Pick<
+		PluginOptions,
+		"repositoryName" | "customTypesApiToken" | "customTypesApiEndpoint"
+	>;
+	response: prismicT.CustomTypeModel[];
+};
 
 export const createCustomTypesAPIMockedRequest = (
-  pluginOptions: Pick<
-    PluginOptions,
-    'repositoryName' | 'customTypesApiToken' | 'customTypesApiEndpoint'
-  >,
-  response: prismicCustomTypes.CustomType[],
+	config: CreateCustomTypesAPIMockedRequestConfig,
 ): msw.RestHandler =>
-  msw.rest.get(
-    pluginOptions.customTypesApiEndpoint ||
-      'https://customtypes.prismic.io/customtypes',
-    (req, res, ctx) => {
-      const repositoryHeader = req.headers.get('repository')
-      const authorizationHeader = req.headers.get('Authorization')
+	msw.rest.get(
+		config.pluginOptions.customTypesApiEndpoint ||
+			"https://customtypes.prismic.io/customtypes",
+		(req, res, ctx) => {
+			const repositoryHeader = req.headers.get("repository");
+			const authorizationHeader = req.headers.get("Authorization");
 
-      if (
-        repositoryHeader === pluginOptions.repositoryName &&
-        authorizationHeader === `Bearer ${pluginOptions.customTypesApiToken}`
-      ) {
-        return res(ctx.json(response))
-      } else {
-        return res(ctx.status(401))
-      }
-    },
-  )
+			if (
+				repositoryHeader === config.pluginOptions.repositoryName &&
+				authorizationHeader ===
+					`Bearer ${config.pluginOptions.customTypesApiToken}`
+			) {
+				return res(ctx.json(config.response));
+			} else {
+				return res(ctx.status(401));
+			}
+		},
+	);
