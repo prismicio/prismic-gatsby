@@ -3,7 +3,6 @@ import * as gatsbyFs from "gatsby-source-filesystem";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
-import * as util from "util";
 
 import { Dependencies } from "../types";
 import { shouldDownloadFile } from "./shouldDownloadFile";
