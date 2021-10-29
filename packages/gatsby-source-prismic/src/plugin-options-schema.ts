@@ -69,9 +69,13 @@ export const pluginOptionsSchema: NonNullable<
 		imagePlaceholderImgixParams: Joi.object(),
 		typePrefix: Joi.string(),
 		webhookSecret: Joi.string(),
-		shouldDownloadFiles: Joi.object().pattern(
-			Joi.string(),
-			Joi.alternatives(Joi.boolean(), Joi.function()),
+		shouldDownloadFiles: Joi.alternatives(
+			Joi.boolean(),
+			Joi.function(),
+			Joi.object().pattern(
+				Joi.string(),
+				Joi.alternatives(Joi.boolean(), Joi.function()),
+			),
 		),
 		createRemoteFileNode: Joi.function(),
 		transformFieldName: Joi.function(),

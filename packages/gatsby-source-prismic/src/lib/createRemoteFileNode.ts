@@ -3,9 +3,11 @@ import * as gatsbyFs from "gatsby-source-filesystem";
 import * as RTE from "fp-ts/ReaderTaskEither";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
+import * as util from "util";
 
 import { Dependencies } from "../types";
 import { shouldDownloadFile } from "./shouldDownloadFile";
+import { getFromOrSetToCache } from "./getFromOrSetToCache";
 
 type CreateRemoteFileNodeConfig = {
 	url: string;
@@ -34,20 +36,23 @@ export const createRemoteFileNode = (
 			}),
 		),
 		RTE.chain((scope) =>
-			RTE.fromTaskEither(
-				TE.tryCatch(
-					() =>
-						scope.attemptDownload
-							? scope.createRemoteFileNode({
-									url: config.url,
-									store: scope.store,
-									cache: scope.cache,
-									createNode: scope.createNode,
-									createNodeId: scope.createNodeId,
-									reporter: scope.reporter,
-							  })
-							: Promise.resolve(null),
-					(e) => e as Error,
+			getFromOrSetToCache(
+				`file-node-${config.url}`,
+				RTE.fromTaskEither(
+					TE.tryCatch(
+						() =>
+							scope.attemptDownload
+								? scope.createRemoteFileNode({
+										url: config.url,
+										store: scope.store,
+										cache: scope.cache,
+										createNode: scope.createNode,
+										createNodeId: scope.createNodeId,
+										reporter: scope.reporter,
+								  })
+								: Promise.resolve(null),
+						(e) => e as Error,
+					),
 				),
 			),
 		),

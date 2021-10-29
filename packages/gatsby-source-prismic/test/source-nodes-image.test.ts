@@ -127,7 +127,7 @@ test("images are not downloaded without configuring shouldDownloadFiles", async 
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions: pluginOptions,
+			pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({
