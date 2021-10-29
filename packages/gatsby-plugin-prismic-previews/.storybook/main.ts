@@ -2,6 +2,9 @@ import postcss from "postcss";
 import type { StorybookConfig } from "@storybook/react/types";
 
 export default {
+	core: {
+		builder: "webpack5",
+	},
 	typescript: {
 		check: false,
 	},

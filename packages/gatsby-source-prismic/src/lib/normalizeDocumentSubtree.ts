@@ -18,6 +18,7 @@ import { createNodeOfType } from "./createNodeOfType";
 import { mapRecordIndices } from "./mapRecordIndices";
 import { createRemoteFileNode } from "./createRemoteFileNode";
 import { PRISMIC_API_IMAGE_FIELDS } from "../constants";
+import { removeURLParameter } from "./removeAutoURLParameter";
 
 /**
  * Determines if a value is a record.
@@ -473,7 +474,7 @@ export const normalizeDocumentSubtree = (
 										R.mapWithIndex((thumbnailName, thumbnail) =>
 											thumbnail.url
 												? createRemoteFileNode({
-														url: thumbnail.url,
+														url: removeURLParameter(thumbnail.url, "auto"),
 														path: [...path, thumbnailName],
 														field: thumbnail,
 												  })
@@ -496,7 +497,7 @@ export const normalizeDocumentSubtree = (
 						RTE.bind("fileNode", (scope) => {
 							return scope.value.url
 								? createRemoteFileNode({
-										url: scope.value.url,
+										url: removeURLParameter(scope.value.url, "auto"),
 										path,
 										field: scope.value,
 								  })

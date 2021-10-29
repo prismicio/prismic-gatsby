@@ -1,7 +1,5 @@
 import * as prismicT from "@prismicio/types";
 import * as RTE from "fp-ts/ReaderTaskEither";
-import * as R from "fp-ts/Record";
-import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 
 import { Dependencies } from "../types";
@@ -18,17 +16,33 @@ export const shouldDownloadFile = (
 ): RTE.ReaderTaskEither<Dependencies, never, boolean> =>
 	pipe(
 		RTE.ask<Dependencies>(),
-		RTE.bind("path", () => RTE.right(dotPath(config.path))),
-		RTE.bindW("predicate", (scope) =>
-			pipe(
-				scope.pluginOptions.shouldDownloadFiles,
-				R.lookup(scope.path),
-				O.map((predicate) =>
-					typeof predicate === "boolean" ? () => predicate : predicate,
-				),
-				O.getOrElseW(() => () => false),
-				RTE.right,
-			),
-		),
+		RTE.bindW("predicate", (scope) => {
+			const { shouldDownloadFiles } = scope.pluginOptions;
+			const fieldPath = dotPath(config.path);
+
+			switch (typeof shouldDownloadFiles) {
+				case "boolean": {
+					return RTE.right(() => shouldDownloadFiles);
+				}
+
+				case "function": {
+					return RTE.right(shouldDownloadFiles);
+				}
+
+				case "object": {
+					const fieldPredicate = shouldDownloadFiles[fieldPath];
+
+					if (fieldPredicate) {
+						if (typeof fieldPredicate === "boolean") {
+							return RTE.right(() => fieldPredicate);
+						} else if (typeof fieldPredicate === "function") {
+							return RTE.right(fieldPredicate);
+						}
+					}
+				}
+			}
+
+			return RTE.right(() => false);
+		}),
 		RTE.map((scope) => scope.predicate(config.field)),
 	);

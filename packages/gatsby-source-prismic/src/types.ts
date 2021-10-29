@@ -83,6 +83,10 @@ export interface Dependencies {
 	runtime: Runtime;
 }
 
+type ShouldDownloadFilesPredicate = (
+	field: prismicT.ImageFieldImage | prismicT.LinkToMediaField,
+) => boolean;
+
 export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	repositoryName: string;
 	accessToken?: string;
@@ -99,11 +103,10 @@ export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	imagePlaceholderImgixParams?: imgixGatsby.ImgixUrlParams;
 	typePrefix?: string;
 	webhookSecret?: string;
-	shouldDownloadFiles?: Record<
-		string,
+	shouldDownloadFiles?:
 		| boolean
-		| ((field: prismicT.ImageFieldImage | prismicT.LinkToMediaField) => boolean)
-	>;
+		| ShouldDownloadFilesPredicate
+		| Record<string, boolean | ShouldDownloadFilesPredicate>;
 	createRemoteFileNode?: typeof gatsbyFs.createRemoteFileNode;
 	transformFieldName?: TransformFieldNameFn;
 	fetch?: prismic.FetchLike & prismicCustomTypes.FetchLike;
