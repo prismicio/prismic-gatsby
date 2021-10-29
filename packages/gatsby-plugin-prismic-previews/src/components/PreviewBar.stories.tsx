@@ -26,7 +26,10 @@ export const Bootstrapping = (): JSX.Element => {
 	return (
 		<>
 			<Root>
-				<PreviewBar visibility={isHidden ? "hidden" : "visible"}>
+				<PreviewBar
+					visibility={isHidden ? "hidden" : "visible"}
+					onDismiss={toggleIsHidden}
+				>
 					Preparing content…
 				</PreviewBar>
 			</Root>
@@ -49,7 +52,10 @@ export const Refreshing = (): JSX.Element => {
 	return (
 		<>
 			<Root>
-				<PreviewBar visibility={isHidden ? "hidden" : "visible"}>
+				<PreviewBar
+					visibility={isHidden ? "hidden" : "visible"}
+					onDismiss={toggleIsHidden}
+				>
 					Refreshing content…
 				</PreviewBar>
 			</Root>
@@ -72,7 +78,11 @@ export const Error = (): JSX.Element => {
 	return (
 		<>
 			<Root>
-				<PreviewBar visibility={isHidden ? "hidden" : "visible"} variant="red">
+				<PreviewBar
+					visibility={isHidden ? "hidden" : "visible"}
+					onDismiss={toggleIsHidden}
+					variant="error"
+				>
 					<span style={{ fontWeight: 600, marginRight: 10 }}>Error</span>
 					<span style={{ color: "#ea8aa1" }}>Message printed to console</span>
 				</PreviewBar>
@@ -96,7 +106,11 @@ export const AccessTokenNeeded = (): JSX.Element => {
 	return (
 		<>
 			<Root>
-				<PreviewBar visibility={isHidden ? "hidden" : "visible"} variant="red">
+				<PreviewBar
+					visibility={isHidden ? "hidden" : "visible"}
+					onDismiss={toggleIsHidden}
+					variant="error"
+				>
 					<form style={{ display: "flex", pointerEvents: "auto" }}>
 						<span style={{ marginRight: 10, alignSelf: "center" }}>
 							Enter your access token

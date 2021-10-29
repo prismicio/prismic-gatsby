@@ -3,7 +3,7 @@ import * as React from "react";
 import { Logo } from "./Logo";
 
 type PreviewBarProps = {
-	variant?: "default" | "red";
+	variant?: "default" | "error";
 	visibility?: "visible" | "hidden";
 	children?: React.ReactNode;
 	onDismiss?: () => void;
@@ -19,25 +19,26 @@ export const PreviewBar = ({
 		<div
 			style={{
 				position: "fixed",
-				bottom: 0,
+				top: 0,
 				left: 0,
+				bottom: 0,
 				right: 0,
 				padding: 30,
 				display: "flex",
-				justifyContent: "flex-end",
+				justifyContent: variant === "error" ? "center" : "flex-end",
+				alignItems: variant === "error" ? "center" : "flex-end",
 				pointerEvents: "none",
-				transitionDuration: "150ms",
-				transitionProperty: "transform, opacity",
-				transform:
-					visibility === "hidden" ? "translateY(10px)" : "translateY(0px)",
+				transition: "opacity 150ms",
 				opacity: visibility === "hidden" ? 0 : 1,
+				background: variant === "error" ? "rgba(80, 0, 0, 0.5)" : undefined,
 			}}
 		>
 			<div
 				style={{
 					position: "relative",
-					background: variant === "red" ? "#a31033" : "#f6f6f6",
-					color: variant === "red" ? "#fff" : "#666",
+					marginBottom: variant === "error" ? "25vh" : undefined,
+					background: variant === "error" ? "#a31033" : "#f6f6f6",
+					color: variant === "error" ? "#fff" : "#666",
 					borderRadius: 6,
 					overflow: "hidden",
 					display: "flex",
@@ -45,12 +46,15 @@ export const PreviewBar = ({
 					boxShadow:
 						"0 1px 2px rgba(0, 0, 0, 0.2), 0 0 100px 60px rgba(0, 0, 0, 0.15)",
 					letterSpacing: "-0.25px",
+					transition: "transform 150ms",
+					transform:
+						visibility === "hidden" ? "translateY(10px)" : "translateY(0px)",
 				}}
 			>
 				<div
 					style={{
-						background: variant === "red" ? "#c4133e" : "#fff",
-						color: variant === "red" ? undefined : "#2c2c2c",
+						background: variant === "error" ? "#c4133e" : "#fff",
+						color: variant === "error" ? undefined : "#2c2c2c",
 						fontWeight: 600,
 						display: "flex",
 						alignItems: "center",
@@ -76,7 +80,7 @@ export const PreviewBar = ({
 							alignSelf: "stretch",
 							padding: "0 12px",
 							margin: "-12px -12px -12px 0",
-							color: variant === "red" ? "#ea8aa1" : "#b4b4b4",
+							color: variant === "error" ? "#ea8aa1" : "#b4b4b4",
 							pointerEvents: "auto",
 						}}
 					>
