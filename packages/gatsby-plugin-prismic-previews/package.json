@@ -38,14 +38,14 @@
 	],
 	"scripts": {
 		"build": "siroc build",
+		"build-storybook": "build-storybook",
 		"dev": "siroc build --watch",
 		"format": "prettier --write .",
-		"prepare": "yarn build",
 		"lint": "eslint --ext .js,.ts .",
-		"unit": "nyc ava",
+		"prepare": "yarn build",
+		"storybook": "start-storybook --quiet -p 6006",
 		"test": "yarn lint && yarn unit",
-		"build-storybook": "build-storybook",
-		"storybook": "start-storybook --quiet -p 6006"
+		"unit": "nyc ava"
 	},
 	"dependencies": {
 		"@imgix/gatsby": "^1.6.13",

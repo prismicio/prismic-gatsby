@@ -37,10 +37,10 @@
 		"build": "siroc build",
 		"dev": "siroc build --watch",
 		"format": "prettier --write .",
-		"prepare": "yarn build",
 		"lint": "eslint --ext .js,.ts .",
-		"unit": "nyc ava",
-		"test": "yarn lint && yarn unit"
+		"prepare": "yarn build",
+		"test": "yarn lint && yarn unit",
+		"unit": "nyc ava"
 	},
 	"dependencies": {
 		"@imgix/gatsby": "^1.6.13",
