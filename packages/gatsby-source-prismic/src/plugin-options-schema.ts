@@ -35,9 +35,7 @@ export const pluginOptionsSchema: NonNullable<
 		fetchLinks: Joi.array().items(Joi.string().required()),
 		graphQuery: Joi.string(),
 		lang: Joi.string(),
-		// TODO: Remove the hardcoded default once this PR to @prismicio/client is merged:
-		// https://github.com/prismicio/prismic-client/pull/195
-		pageSize: Joi.number().default(100),
+		pageSize: Joi.number(),
 		linkResolver: Joi.function(),
 		htmlSerializer: Joi.alternatives(
 			Joi.object().pattern(
@@ -173,10 +171,11 @@ export const pluginOptionsSchema: NonNullable<
 				}
 			}
 
+			// Check if all Custom Type models have been provided
+			// only if a Custom Types API token is not proided. If
+			// a token is provided, we can assume we have all
+			// needed Custom Types.
 			if (!unpreparedPluginOptions.customTypesApiToken) {
-				// Check if all Custom Type models have been provided only if a Custom
-				// Types API token is not proided. If a token is provided, we can
-				// assume we have all needed Custom Types.
 				const pluginOptions = await preparePluginOptions(
 					unpreparedPluginOptions,
 				);
