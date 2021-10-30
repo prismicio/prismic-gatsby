@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2](https://github.com/prismicio/prismic-gatsby/compare/v5.0.1...v5.0.2) (2021-10-30)
+
+
+### Bug Fixes
+
+* **previews:** resolve CORS error with `@prismicio/client` ([1d66749](https://github.com/prismicio/prismic-gatsby/commit/1d6674912d5780de37d8cad78c56b59b0d83b92a))
+
+
+
+
+
 ## [5.0.1](https://github.com/prismicio/prismic-gatsby/compare/v5.0.0...v5.0.1) (2021-10-29)
 
 
