@@ -138,7 +138,7 @@ test.serial("fails on invalid options", async (t) => {
 		'"imagePlaceholderImgixParams" must be of type object',
 		'"typePrefix" must be a string',
 		'"webhookSecret" must be a string',
-		'"shouldDownloadFiles" must be of type object',
+		'"shouldDownloadFiles" must be one of [boolean, object]',
 		'"createRemoteFileNode" must be of type function',
 		'"fetch" must be of type function',
 	]);
@@ -230,3 +230,61 @@ test.serial("checks that all schemas are provided", async (t) => {
 	t.true(res.errors.length === 1);
 	t.true(new RegExp(customTypeModel.id).test(res.errors[0]));
 });
+
+test.serial(
+	"supports shouldDownloadFiles as boolean, function, or object of boolean/function",
+	async (t) => {
+		const pluginOptions: UnpreparedPluginOptions = {
+			repositoryName: "qwerty",
+			schemas: {},
+		};
+
+		const repositoryResponse = prismicM.api.repository({ seed: t.title });
+		const queryResponse = prismicM.api.query({ seed: t.title });
+
+		server.use(
+			createAPIRepositoryMockedRequest({
+				pluginOptions,
+				repositoryResponse,
+			}),
+			createAPIQueryMockedRequest({
+				repositoryResponse,
+				pluginOptions,
+				queryResponse,
+			}),
+		);
+
+		// With boolean
+		t.true(
+			(
+				await testPluginOptionsSchema(pluginOptionsSchema, {
+					...pluginOptions,
+					shouldDownloadFiles: true,
+				})
+			).isValid,
+		);
+
+		// With function
+		t.true(
+			(
+				await testPluginOptionsSchema(pluginOptionsSchema, {
+					...pluginOptions,
+					shouldDownloadFiles: () => true,
+				})
+			).isValid,
+		);
+
+		// With object mapping field path to boolean or function
+		t.true(
+			(
+				await testPluginOptionsSchema(pluginOptionsSchema, {
+					...pluginOptions,
+					shouldDownloadFiles: {
+						"foo.data.bar": true,
+						"baz.data.qux": () => true,
+					},
+				})
+			).isValid,
+		);
+	},
+);

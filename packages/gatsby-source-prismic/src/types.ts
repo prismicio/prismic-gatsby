@@ -83,6 +83,10 @@ export interface Dependencies {
 	runtime: Runtime;
 }
 
+type ShouldDownloadFilesPredicate = (
+	field: prismicT.ImageFieldImage | prismicT.LinkToMediaField,
+) => boolean;
+
 export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	repositoryName: string;
 	accessToken?: string;
@@ -95,6 +99,14 @@ export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	pageSize?: number;
 	linkResolver?: prismicH.LinkResolverFunction;
 	htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer;
+	imageImgixParams?: gatsbyImgix.ImgixParams;
+	imagePlaceholderImgixParams?: gatsbyImgix.ImgixParams;
+	typePrefix?: string;
+	webhookSecret?: string;
+	shouldDownloadFiles?:
+		| boolean
+		| ShouldDownloadFilesPredicate
+		| Record<string, boolean | ShouldDownloadFilesPredicate>;
 	createRemoteFileNode?: typeof gatsbyFs.createRemoteFileNode;
 	transformFieldName?: TransformFieldNameFn;
 	fetch?: prismic.FetchLike & prismicCustomTypes.FetchLike;
@@ -113,16 +125,7 @@ export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	/**
 	 * A list of all Shared Slice models.
 	 */
-	sharedSliceModels: prismicT.SharedSliceModel[];
-	imageImgixParams: gatsbyImgix.ImgixParams;
-	imagePlaceholderImgixParams: gatsbyImgix.ImgixParams;
-	typePrefix?: string;
-	webhookSecret?: string;
-	shouldDownloadFiles: Record<
-		string,
-		| boolean
-		| ((field: prismicT.ImageFieldImage | prismicT.LinkToMediaField) => boolean)
-	>;
+	sharedSliceModels?: prismicT.SharedSliceModel[];
 };
 
 export type PluginOptions = UnpreparedPluginOptions &

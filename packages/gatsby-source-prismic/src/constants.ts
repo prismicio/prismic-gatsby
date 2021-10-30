@@ -16,14 +16,6 @@ export const GLOBAL_TYPE_PREFIX = "Prismic";
 export const IMGIX_TYPE_PREFIX = "Imgix";
 
 /**
- * Default endpoint used to fetch custom type JSON schemas from Prismic's Custom Type API.
- *
- * @see https://prismic.io/docs/technologies/custom-types-api
- */
-export const DEFAULT_CUSTOM_TYPES_API_ENDPOINT =
-	"https://customtypes.prismic.io/customtypes";
-
-/**
  * Prismic API document fields returned for image fields that are **not** thumbnails.
  *
  * These fields are filtered out from the API response to extract the field's

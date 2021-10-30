@@ -103,6 +103,66 @@ test("image fields with images are normalized to include localFile field id", as
 	);
 });
 
+test("downloaded images remove the `auto` URL parameter", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		image: prismicM.model.image({
+			seed: t.title,
+			thumbnailsCount: 1,
+		}),
+	});
+	const thumbnailName =
+		customTypeModel.json.Main.image.config.thumbnails[0].name;
+	const document = prismicM.value.document({
+		seed: t.title,
+		model: customTypeModel,
+	});
+
+	// Add an `auto` URL parameter manually
+	document.data.image.url = `${document.data.image.url}&auto=compress,format`;
+	document.data.image[
+		thumbnailName
+	].url = `${document.data.image[thumbnailName].url}&auto=compress,format`;
+
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({
+		seed: t.title,
+		documents: [document],
+	});
+
+	pluginOptions.customTypeModels = [customTypeModel];
+	pluginOptions.shouldDownloadFiles = true;
+
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+		}),
+	);
+
+	// @ts-expect-error - Partial gatsbyContext provided
+	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
+
+	const createRemoteFileNodeCalls = (
+		pluginOptions.createRemoteFileNode as sinon.SinonStub
+	).getCalls();
+
+	for (const call of createRemoteFileNodeCalls) {
+		const url = new URL(call.firstArg.url);
+
+		t.false(url.searchParams.has("auto"));
+	}
+});
+
 test("images are not downloaded without configuring shouldDownloadFiles", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
@@ -127,7 +187,7 @@ test("images are not downloaded without configuring shouldDownloadFiles", async 
 
 	server.use(
 		createAPIRepositoryMockedRequest({
-			pluginOptions: pluginOptions,
+			pluginOptions,
 			repositoryResponse,
 		}),
 		createAPIQueryMockedRequest({

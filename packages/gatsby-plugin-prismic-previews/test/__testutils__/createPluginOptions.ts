@@ -14,9 +14,6 @@ export const createPluginOptions = (t: ava.ExecutionContext): PluginOptions => {
 		apiEndpoint: prismic.getEndpoint(repositoryName),
 		typePrefix: "prefix",
 		lang: "*",
-		// TODO: Remove the hardcoded default once this PR to @prismicio/client is merged:
-		// https://github.com/prismicio/prismic-client/pull/195
-		pageSize: 100,
 		toolbar: "new",
 		imageImgixParams: { q: 100 },
 		imagePlaceholderImgixParams: { w: 10 },
