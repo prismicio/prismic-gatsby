@@ -3,6 +3,7 @@
 # custom
 dist
 examples/**/package-lock.json
+CHANGELOG.md
 
 # os
 .DS_Store
