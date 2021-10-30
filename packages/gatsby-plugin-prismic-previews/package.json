@@ -49,7 +49,7 @@
 	},
 	"dependencies": {
 		"@imgix/gatsby": "^1.6.13",
-		"@prismicio/client": "^6.0.0-beta.0",
+		"@prismicio/client": "^6.0.0-beta.2",
 		"@prismicio/helpers": "^2.0.0-beta.0",
 		"@prismicio/types": "^0.1.13",
 		"@reach/dialog": "^0.16.0",
