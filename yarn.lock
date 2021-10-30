@@ -2640,9 +2640,9 @@
   integrity sha512-IXf3XA7+XyN7CP9gGh/XB0UxVMlvARGEgGXLubFICsUMGz6Q+DU+i4gGlpOxTjKvXjkJDJC8YdqdKkDj9qZHEQ==
 
 "@prismicio/client@^6.0.0-beta.0":
-  version "6.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@prismicio/client/-/client-6.0.0-beta.1.tgz#ba86f8d71a978491eac69c4b16c31bf6634bb435"
-  integrity sha512-hxVfYHs8Vzrqs/Opg9tZ7njhnYd+EIEfwADievk6Dd3yMsLrQupAQjRGnla1fjdVS/LprdbCCGud9spnbxsqew==
+  version "6.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@prismicio/client/-/client-6.0.0-beta.2.tgz#4089b65aca48141b7d245d8c1cdcb15d3c3ebc46"
+  integrity sha512-VBBNwmsm1DisoIp5jKa2f+tIBVNLb1M3a4S/++63XhTsf4prATIGPREHdMFIdj70k9Jq51CqGiIyUUY+2OHZyQ==
   dependencies:
     "@prismicio/helpers" "^2.0.0-beta.0"
     "@prismicio/types" "^0.1.15"
@@ -9674,7 +9674,7 @@ gatsby-plugin-page-creator@^4.0.0:
     lodash "^4.17.21"
 
 "gatsby-plugin-prismic-previews@link:packages/gatsby-plugin-prismic-previews":
-  version "5.0.0"
+  version "5.0.1"
   dependencies:
     "@imgix/gatsby" "^1.6.13"
     "@prismicio/client" "^6.0.0-beta.0"
@@ -9810,7 +9810,7 @@ gatsby-source-filesystem@^4.0.0:
     xstate "^4.14.0"
 
 "gatsby-source-prismic@link:packages/gatsby-source-prismic":
-  version "5.0.0"
+  version "5.0.1"
   dependencies:
     "@imgix/gatsby" "^1.6.13"
     "@prismicio/client" "^6.0.0-beta.0"
