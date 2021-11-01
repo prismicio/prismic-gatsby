@@ -60,6 +60,10 @@ export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
 				kind: "INPUT_OBJECT",
 				config,
 			})),
+			buildScalarType: sinon.stub().callsFake((config) => ({
+				kind: "SCALAR",
+				config,
+			})),
 		},
 		getNode: sinon.stub().callsFake((id: string) => nodeStore.get(id)),
 		getNodes: sinon.stub().callsFake(() => [...nodeStore.values()]),
