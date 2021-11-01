@@ -1,7 +1,5 @@
-import * as O from "fp-ts/Option";
-
-export const getURLSearchParam = (key: string): O.Option<string> => {
+export const getURLSearchParam = (key: string): string | undefined => {
 	const params = new URLSearchParams(window.location.search);
 
-	return O.fromNullable(params.get(key));
+	return params.get(key) ?? undefined;
 };

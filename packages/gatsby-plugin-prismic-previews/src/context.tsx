@@ -1,351 +1,313 @@
 import * as React from "react";
 import * as gatsbyPrismic from "gatsby-source-prismic";
-import * as prismicT from "@prismicio/types";
 import * as cookie from "es-cookie";
 
 import { sprintf } from "./lib/sprintf";
 
 import {
+	PluginOptions,
+	PrismicRepositoryConfig,
+	PrismicUnpublishedRepositoryConfig,
+} from "./types";
+import {
 	COOKIE_ACCESS_TOKEN_NAME,
+	MISSING_PLUGIN_MSG,
 	WINDOW_PLUGIN_OPTIONS_KEY,
 	WINDOW_PROVIDER_PRESENCE_KEY,
 } from "./constants";
-import {
-	PluginOptions,
-	PrismicRepositoryConfig,
-	PrismicUnpublishedRepositoryConfigs,
-} from "./types";
 
-export type PrismicContextValue = readonly [
-	PrismicContextState,
-	React.Dispatch<PrismicContextAction>,
-];
+export enum StateKind {
+	/**
+	 * Initial state. Preview session state unknown.
+	 */
+	Init = "init",
 
-export enum PrismicPreviewState {
-	IDLE = "IDLE",
-	RESOLVING = "RESOLVING",
-	RESOLVED = "RESOLVED",
-	BOOTSTRAPPING = "BOOTSTRAPPING",
-	ACTIVE = "ACTIVE",
-	PROMPT_FOR_ACCESS_TOKEN = "PROMPT_FOR_ACCESS_TOKEN",
-	FAILED = "FAILED",
-	NOT_PREVIEW = "NOT_PREVIEW",
+	/**
+	 * Not a preview session.
+	 */
+	NotPreview = "notPreview",
+
+	/**
+	 * Preview URL is being resolve.
+	 */
+	Resolving = "resolving",
+
+	/**
+	 * Preview URL has been resolved.
+	 */
+	Resolved = "resolved",
+
+	/**
+	 * Fetching preview content.
+	 */
+	Bootstrapping = "bootstrapping",
+
+	/**
+	 * Preview session is active and preview content is ready for use.
+	 */
+	Bootstrapped = "bootstrapped",
+
+	/**
+	 * Preview failed for any reason.
+	 */
+	Failed = "failed",
 }
 
-export type PrismicContextState = {
+type State<RepositoryName extends string = string> = {
 	/**
 	 * The repository name of the preview session, if active.
 	 */
-	activeRepositoryName: string | undefined;
-	/**
-	 * The repository name of the preview session, if active.
-	 */
-	previewState: PrismicPreviewState;
-	/**
-	 * The error if the preview produced a failure.
-	 */
-	error?: Error;
-	/**
-	 * The resolved preview path if entered from a preview resolver page.
-	 */
-	resolvedPath?: string;
-	/**
-	 * Determines if all preview content has been fetched and prepared.
-	 */
-	isBootstrapped: boolean;
+	activeRepositoryName: RepositoryName | undefined;
+
 	/**
 	 * Record of `gatsby-source-prismic` runtimes keyed by their repository name.
 	 */
-	runtimeStore: Record<string, gatsbyPrismic.Runtime>;
+	runtimeStore: Record<RepositoryName, gatsbyPrismic.Runtime>;
+
 	/**
 	 * Record of plugin options keyed by their repository name.
 	 */
-	pluginOptionsStore: Record<string, PluginOptions>;
+	pluginOptionsStore: Record<RepositoryName, PluginOptions>;
+
 	/**
 	 * Configuration for each repository
 	 */
-	repositoryConfigs: PrismicUnpublishedRepositoryConfigs;
-};
+	repositoryConfigs: PrismicUnpublishedRepositoryConfig<RepositoryName>[];
+} & (
+	| {
+			state: StateKind.Init;
+			stateContext: undefined;
+	  }
+	| {
+			state: StateKind.NotPreview;
+			stateContext: undefined;
+	  }
+	| {
+			state: StateKind.Resolving;
+			stateContext: undefined;
+	  }
+	| {
+			state: StateKind.Resolved;
+			stateContext: {
+				/**
+				 * The resolved URL of the previewed document.
+				 */
+				resolvedURL: string;
+			};
+	  }
+	| {
+			state: StateKind.Bootstrapping;
+			stateContext: undefined;
+	  }
+	| {
+			state: StateKind.Bootstrapped;
+			stateContext: undefined;
+	  }
+	| {
+			state: StateKind.Failed;
+			stateContext: {
+				/**
+				 * The error encountered during a preview session.
+				 */
+				error: Error;
+			};
+	  }
+);
 
-export enum PrismicContextActionType {
-	SetActiveRepositoryName = "SetActiveRepositoryName",
-	SetAccessToken = "SetAccessToken",
+export enum ActionKind {
+	// States
+	NotAPreview,
+	StartResolving,
+	Resolved,
+	StartBootstrapping,
+	Bootstrapped,
+	Failed,
 
-	SetupRuntime = "SetupRuntime",
-	RegisterDocuments = "RegisterDocuments",
-	ImportTypePaths = "ImportTypePaths",
-
-	StartResolving = "StartResolving",
-	Resolved = "Resolved",
-
-	StartBootstrapping = "StartBootstrapping",
-	Bootstrapped = "Bootstrapped",
-
-	Failed = "Failed",
-	NotAPreview = "NotAPreview",
-	PromptForAccessToken = "PromptForAccessToken",
-
-	GoToIdle = "GoToIdle",
+	// Utilities
+	SetAccessToken,
+	RegisterRuntime,
 }
 
-export type PrismicContextAction =
+type Action =
 	| {
-			type: PrismicContextActionType.SetActiveRepositoryName;
+			type: ActionKind.NotAPreview;
+	  }
+	| {
+			type: ActionKind.StartResolving;
 			payload: { repositoryName: string };
 	  }
 	| {
-			type: PrismicContextActionType.SetAccessToken;
-			payload: { repositoryName: string; accessToken: string };
+			type: ActionKind.Resolved;
+			payload: { resolvedURL: string };
 	  }
 	| {
-			type: PrismicContextActionType.SetupRuntime;
-			payload: {
-				repositoryName: string;
-				repositoryConfig: PrismicRepositoryConfig;
-				pluginOptions: PluginOptions;
-			};
+			type: ActionKind.StartBootstrapping;
+			payload: { repositoryName: string };
 	  }
 	| {
-			type: PrismicContextActionType.RegisterDocuments;
-			payload: {
-				repositoryName: string;
-				documents: prismicT.PrismicDocument[];
-			};
+			type: ActionKind.Bootstrapped;
 	  }
 	| {
-			type: PrismicContextActionType.ImportTypePaths;
-			payload: { repositoryName: string; typePathsExport: string };
-	  }
-	| {
-			type: PrismicContextActionType.StartResolving;
-	  }
-	| {
-			type: PrismicContextActionType.Resolved;
-			payload: { path: string };
-	  }
-	| {
-			type: PrismicContextActionType.StartBootstrapping;
-	  }
-	| {
-			type: PrismicContextActionType.Bootstrapped;
-	  }
-	| {
-			type: PrismicContextActionType.NotAPreview;
-	  }
-	| {
-			type: PrismicContextActionType.PromptForAccessToken;
-	  }
-	| {
-			type: PrismicContextActionType.Failed;
+			type: ActionKind.Failed;
 			payload: { error: Error };
 	  }
 	| {
-			type: PrismicContextActionType.Failed;
-			payload: { error: Error };
+			type: ActionKind.SetAccessToken;
+			payload: {
+				repositoryName: string;
+				accessToken: string;
+			};
 	  }
 	| {
-			type: PrismicContextActionType.GoToIdle;
+			type: ActionKind.RegisterRuntime;
+			payload: {
+				repositoryName: string;
+				runtime: gatsbyPrismic.Runtime;
+			};
 	  };
 
-export const contextReducer = (
-	state: PrismicContextState,
-	action: PrismicContextAction,
-): PrismicContextState => {
+const initialState: State = {
+	state: StateKind.Init,
+	stateContext: undefined,
+	activeRepositoryName: undefined,
+	runtimeStore: {},
+	pluginOptionsStore: {},
+	repositoryConfigs: [],
+};
+
+const initState = <RepositoryName extends string = string>(
+	repositoryConfigs: PrismicUnpublishedRepositoryConfig<RepositoryName>[],
+): State => {
+	const state = {
+		...initialState,
+		repositoryConfigs,
+	};
+
+	// Copy plugin options into state. The plugin options store was set on
+	// `window` in `on-client-entry.ts`.
+	if (typeof window !== "undefined") {
+		// Warn the user if no `gatsby-plugin-prismic-previews`
+		// instances were registered in `gatsby-config.js`. An
+		// undefined pluginOptionsStore signals this case.
+		if (
+			process.env.NODE_ENV === "development" &&
+			!window[WINDOW_PLUGIN_OPTIONS_KEY]
+		) {
+			console.warn(MISSING_PLUGIN_MSG);
+		}
+
+		state.pluginOptionsStore = { ...window[WINDOW_PLUGIN_OPTIONS_KEY] };
+
+		// If a repository does not have an access token configured,
+		// attempt to hydrate it with an access token persisted in
+		// a cookie.
+		const repositoryNames = Object.keys(state.pluginOptionsStore);
+		for (const repositoryName of repositoryNames) {
+			if (!state.pluginOptionsStore[repositoryName].accessToken) {
+				const cookieName = sprintf(COOKIE_ACCESS_TOKEN_NAME, repositoryName);
+
+				state.pluginOptionsStore[repositoryName].accessToken =
+					cookie.get(cookieName);
+			}
+		}
+	}
+
+	return state;
+};
+
+const reducer = (state: State, action: Action): State => {
 	switch (action.type) {
-		case PrismicContextActionType.SetActiveRepositoryName: {
+		case ActionKind.NotAPreview: {
+			return {
+				...initialState,
+				state: StateKind.NotPreview,
+			};
+		}
+
+		case ActionKind.StartResolving: {
 			return {
 				...state,
+				state: StateKind.Resolving,
+				stateContext: undefined,
 				activeRepositoryName: action.payload.repositoryName,
 			};
 		}
 
-		case PrismicContextActionType.SetupRuntime: {
-			const runtime = gatsbyPrismic.createRuntime({
-				linkResolver: action.payload.repositoryConfig.linkResolver,
-				htmlSerializer: action.payload.repositoryConfig.htmlSerializer,
-				transformFieldName: action.payload.repositoryConfig.transformFieldName,
-				typePrefix: action.payload.pluginOptions.typePrefix,
-				imageImgixParams: action.payload.pluginOptions.imageImgixParams,
-				imagePlaceholderImgixParams:
-					action.payload.pluginOptions.imagePlaceholderImgixParams,
-			});
-
+		case ActionKind.Resolved: {
 			return {
 				...state,
-				runtimeStore: {
-					...state.runtimeStore,
-					[action.payload.repositoryName]: runtime,
-				},
+				state: StateKind.Resolved,
+				stateContext: { resolvedURL: action.payload.resolvedURL },
 			};
 		}
 
-		case PrismicContextActionType.RegisterDocuments: {
-			const runtime = state.runtimeStore[action.payload.repositoryName];
-
-			if (runtime) {
-				runtime.registerDocuments(action.payload.documents);
-			} else {
-				throw new Error(
-					`A runtime for repository "${action.payload.repositoryName}" as not found`,
-				);
-			}
-
-			return state;
+		case ActionKind.StartBootstrapping: {
+			return {
+				...state,
+				state: StateKind.Bootstrapping,
+				stateContext: undefined,
+				activeRepositoryName: action.payload.repositoryName,
+			};
 		}
 
-		case PrismicContextActionType.ImportTypePaths: {
-			const runtime = state.runtimeStore[action.payload.repositoryName];
-
-			if (runtime) {
-				runtime.importTypePaths(action.payload.typePathsExport);
-			} else {
-				throw new Error(
-					`A runtime for repository "${action.payload.repositoryName}" as not found`,
-				);
-			}
-
-			return state;
+		case ActionKind.Bootstrapped: {
+			return {
+				...state,
+				state: StateKind.Bootstrapped,
+				stateContext: undefined,
+			};
 		}
 
-		case PrismicContextActionType.SetAccessToken: {
-			const repositoryName = action.payload.repositoryName;
+		case ActionKind.Failed: {
+			return {
+				...state,
+				state: StateKind.Failed,
+				stateContext: { error: action.payload.error },
+			};
+		}
 
+		case ActionKind.SetAccessToken: {
 			return {
 				...state,
 				pluginOptionsStore: {
 					...state.pluginOptionsStore,
-					[repositoryName]: {
-						...state.pluginOptionsStore[repositoryName],
+					[action.payload.repositoryName]: {
+						...state.pluginOptionsStore[action.payload.repositoryName],
 						accessToken: action.payload.accessToken,
 					},
 				},
 			};
 		}
 
-		case PrismicContextActionType.StartResolving: {
+		case ActionKind.RegisterRuntime: {
 			return {
 				...state,
-				previewState: PrismicPreviewState.RESOLVING,
-			};
-		}
-
-		case PrismicContextActionType.Resolved: {
-			return {
-				...state,
-				previewState: PrismicPreviewState.RESOLVED,
-				resolvedPath: action.payload.path,
-			};
-		}
-
-		case PrismicContextActionType.StartBootstrapping: {
-			return {
-				...state,
-				previewState: PrismicPreviewState.BOOTSTRAPPING,
-				isBootstrapped: false,
-			};
-		}
-
-		case PrismicContextActionType.Bootstrapped: {
-			return {
-				...state,
-				previewState: PrismicPreviewState.ACTIVE,
-				isBootstrapped: true,
-			};
-		}
-
-		case PrismicContextActionType.Failed: {
-			return {
-				...state,
-				previewState: PrismicPreviewState.FAILED,
-				error: action.payload.error,
-			};
-		}
-
-		case PrismicContextActionType.NotAPreview: {
-			return {
-				...state,
-				previewState: PrismicPreviewState.NOT_PREVIEW,
-			};
-		}
-
-		case PrismicContextActionType.PromptForAccessToken: {
-			return {
-				...state,
-				previewState: PrismicPreviewState.PROMPT_FOR_ACCESS_TOKEN,
-			};
-		}
-
-		case PrismicContextActionType.GoToIdle: {
-			return {
-				...state,
-				previewState: PrismicPreviewState.IDLE,
+				runtimeStore: {
+					...state.runtimeStore,
+					[action.payload.repositoryName]: action.payload.runtime,
+				},
 			};
 		}
 	}
 };
 
-const defaultInitialState: PrismicContextState = {
-	activeRepositoryName: undefined,
-	previewState: PrismicPreviewState.IDLE,
-	isBootstrapped: false,
-	runtimeStore: {},
-	pluginOptionsStore: {},
-	repositoryConfigs: [],
-};
+export type PrismicContextType = [State, React.Dispatch<Action>];
 
-const createInitialState = (
-	repositoryConfigs = defaultInitialState.repositoryConfigs,
-): PrismicContextState => {
-	const pluginOptionsStore =
-		typeof window === "undefined"
-			? {}
-			: window[WINDOW_PLUGIN_OPTIONS_KEY] || {};
-	const repositoryNames = Object.keys(pluginOptionsStore);
-
-	const injectedPluginOptionsStore = repositoryNames.reduce(
-		(acc: Record<string, PluginOptions>, repositoryName) => {
-			const persistedAccessTokenCookieName = sprintf(
-				COOKIE_ACCESS_TOKEN_NAME,
-				repositoryName,
-			);
-			const persistedAccessToken = cookie.get(persistedAccessTokenCookieName);
-
-			acc[repositoryName] = pluginOptionsStore[repositoryName];
-
-			if (acc[repositoryName].accessToken == null && persistedAccessToken) {
-				acc[repositoryName].accessToken = persistedAccessToken;
-			}
-
-			return acc;
-		},
-		{},
-	);
-
-	return {
-		...defaultInitialState,
-		pluginOptionsStore: injectedPluginOptionsStore,
-		repositoryConfigs,
-	};
-};
-
-const defaultContextValue: PrismicContextValue = [
-	defaultInitialState,
+export const PrismicContext = React.createContext<PrismicContextType>([
+	initialState,
 	() => void 0,
-];
+]);
 
-export const PrismicContext = React.createContext(defaultContextValue);
-
-export type PrismicProviderProps = {
-	repositoryConfigs?: PrismicUnpublishedRepositoryConfigs;
+export type PrismicProviderProps<RepositoryName extends string = string> = {
+	repositoryConfigs?: PrismicUnpublishedRepositoryConfig<RepositoryName>[];
 	children?: React.ReactNode;
 };
 
-export const PrismicPreviewProvider = ({
-	repositoryConfigs,
+export const PrismicPreviewProvider = <RepositoryName extends string = string>({
+	repositoryConfigs = [],
 	children,
-}: PrismicProviderProps): JSX.Element => {
-	const initialState = createInitialState(repositoryConfigs);
-	const reducerTuple = React.useReducer(contextReducer, initialState);
+}: PrismicProviderProps<RepositoryName>): JSX.Element => {
+	const reducerTuple = React.useReducer(reducer, repositoryConfigs, initState);
 
 	if (typeof window !== "undefined") {
 		window[WINDOW_PROVIDER_PRESENCE_KEY] = true;

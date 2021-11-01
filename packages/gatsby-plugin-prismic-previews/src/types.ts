@@ -69,19 +69,19 @@ export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
 
 export type PrismicRepositoryConfigs = PrismicRepositoryConfig[];
 
-export type PrismicUnpublishedRepositoryConfig = SetRequired<
-	PrismicRepositoryConfig,
-	"componentResolver"
->;
+export type PrismicUnpublishedRepositoryConfig<
+	RepositoryName extends string = string,
+> = SetRequired<PrismicRepositoryConfig<RepositoryName>, "componentResolver">;
 
-export type PrismicUnpublishedRepositoryConfigs =
-	PrismicUnpublishedRepositoryConfig[];
+export type PrismicUnpublishedRepositoryConfigs<
+	RepositoryName extends string = string,
+> = PrismicUnpublishedRepositoryConfig<RepositoryName>[];
 
-export type PrismicRepositoryConfig = {
+export type PrismicRepositoryConfig<RepositoryName extends string = string> = {
 	/**
 	 * Name of the repository to be configured.
 	 */
-	repositoryName: string;
+	repositoryName: RepositoryName;
 
 	/**
 	 * Link Resolver for the repository. This should be the same Link Resolver

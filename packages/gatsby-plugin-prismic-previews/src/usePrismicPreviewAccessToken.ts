@@ -4,18 +4,16 @@ import * as cookie from "es-cookie";
 import { sprintf } from "./lib/sprintf";
 
 import { COOKIE_ACCESS_TOKEN_NAME } from "./constants";
-import { PrismicContextActionType } from "./context";
+import { ActionKind } from "./context";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
 
-export type SetAccessTokenFn = (
-	accessToken: string,
-	remember?: boolean,
-) => void;
-
-type UsePrismicPreviewAccessTokenActions = {
-	set: SetAccessTokenFn;
-	removeCookie(): void;
-};
+type UsePrismicPreviewAccessTokenReturnType = readonly [
+	accessToken: string | undefined,
+	actions: {
+		set: (accessToken: string, remember?: boolean) => void;
+		removeCookie(): void;
+	},
+];
 
 /**
  * React hook that reads and sets a Prismic access token for a repository. This
@@ -25,10 +23,7 @@ type UsePrismicPreviewAccessTokenActions = {
  */
 export const usePrismicPreviewAccessToken = (
 	repositoryName?: string,
-): readonly [
-	accessToken: string | undefined,
-	actions: UsePrismicPreviewAccessTokenActions,
-] => {
+): UsePrismicPreviewAccessTokenReturnType => {
 	const [contextState, contextDispatch] = usePrismicPreviewContext();
 
 	const cookieName = repositoryName
@@ -53,7 +48,7 @@ export const usePrismicPreviewAccessToken = (
 			}
 
 			contextDispatch({
-				type: PrismicContextActionType.SetAccessToken,
+				type: ActionKind.SetAccessToken,
 				payload: { repositoryName, accessToken },
 			});
 

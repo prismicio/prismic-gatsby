@@ -7,16 +7,12 @@ import { FetchLike, PrismicRepositoryConfigs } from "./types";
 import { usePrismicPreviewResolver } from "./usePrismicPreviewResolver";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
 
-import {
-	PrismicContextActionType,
-	PrismicContextState,
-	PrismicPreviewState,
-} from "./context";
+import { StateKind } from "./context";
 import { PrismicPreviewUI } from "./components/PrismicPreviewUI";
 
 export interface WithPrismicPreviewResolverProps {
 	isPrismicPreview: boolean | null;
-	prismicPreviewPath: PrismicContextState["resolvedPath"];
+	prismicPreviewPath: string | undefined;
 }
 
 export type WithPrismicPreviewResolverConfig = {
@@ -45,39 +41,47 @@ export const withPrismicPreviewResolver = <TProps extends gatsby.PageProps>(
 	config: WithPrismicPreviewResolverConfig = {},
 ): React.ComponentType<TProps> => {
 	const WithPrismicPreviewResolver = (props: TProps): React.ReactElement => {
-		const [contextState, contextDispatch] = usePrismicPreviewContext();
-		const resolvePreview = usePrismicPreviewResolver(repositoryConfigs, {
-			fetch: config.fetch,
-		});
+		const [contextState] = usePrismicPreviewContext();
+		const { resolvePreview, uncheckedResolvePreview } =
+			usePrismicPreviewResolver(repositoryConfigs, {
+				fetch: config.fetch,
+			});
 
 		const isPreview =
-			contextState.previewState === PrismicPreviewState.IDLE
+			contextState.state === StateKind.Init
 				? null
-				: contextState.previewState !== PrismicPreviewState.NOT_PREVIEW;
+				: contextState.state !== StateKind.NotPreview;
 
 		const afterAccessTokenSet = React.useCallback(() => {
-			contextDispatch({ type: PrismicContextActionType.GoToIdle });
-			resolvePreview();
-		}, [resolvePreview, contextDispatch]);
+			uncheckedResolvePreview();
+		}, [uncheckedResolvePreview]);
 
 		React.useEffect(() => {
 			resolvePreview();
 		}, [resolvePreview]);
 
 		React.useEffect(() => {
-			if (contextState.resolvedPath && (config.autoRedirect ?? true)) {
+			if (
+				contextState.state === StateKind.Resolved &&
+				contextState.stateContext.resolvedURL &&
+				(config.autoRedirect ?? true)
+			) {
 				const navigate = config.navigate || gatsby.navigate;
 
-				navigate(contextState.resolvedPath);
+				navigate(contextState.stateContext.resolvedURL);
 			}
-		}, [contextState.resolvedPath]);
+		}, [contextState.state, contextState.stateContext]);
 
 		return (
 			<>
 				<WrappedComponent
 					{...props}
 					isPrismicPreview={isPreview}
-					prismicPreviewPath={contextState.resolvedPath}
+					prismicPreviewPath={
+						contextState.state === StateKind.Resolved
+							? contextState.stateContext.resolvedURL
+							: undefined
+					}
 				/>
 				<PrismicPreviewUI afterAccessTokenSet={afterAccessTokenSet} />
 			</>

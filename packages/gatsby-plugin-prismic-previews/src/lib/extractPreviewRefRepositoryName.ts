@@ -1,35 +1,33 @@
-import * as O from "fp-ts/Option";
+const extractFirstSubdomain = (host: string): string => host.split(".")[0];
 
-const extractFirstSubdomain = (host: string): O.Option<string> =>
-	O.fromNullable(host.split(".")[0]);
-
-const parseObjectRef = (previewRef: string): O.Option<string> => {
+const parseObjectRef = (previewRef: string): string | undefined => {
 	try {
 		const parsed = JSON.parse(previewRef);
 		const keys = Object.keys(parsed);
 		const domainKey = keys.find((key) => /\.prismic\.io$/.test(key));
 
-		return domainKey ? extractFirstSubdomain(domainKey) : O.none;
+		return domainKey ? extractFirstSubdomain(domainKey) : undefined;
 	} catch {
-		return O.none;
+		return undefined;
 	}
 };
 
-const parseURLRef = (previewRef: string): O.Option<string> => {
+const parseURLRef = (previewRef: string): string | undefined => {
 	try {
 		const url = new URL(previewRef);
 
 		return extractFirstSubdomain(url.host);
 	} catch {
-		return O.none;
+		return undefined;
 	}
 };
 
 export const extractPreviewRefRepositoryName = (
 	previewRef: string,
-): O.Option<string> => {
+): string | undefined => {
 	const fromObjectRef = parseObjectRef(previewRef);
-	if (O.isSome(fromObjectRef)) {
+
+	if (fromObjectRef) {
 		return fromObjectRef;
 	} else {
 		return parseURLRef(previewRef);

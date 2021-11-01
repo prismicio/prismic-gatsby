@@ -87,7 +87,7 @@ export const FIELD_VALUE_TYPE_PATH_MISMATCH_MSG =
  * Message used when a repository configuration is not provided.
  */
 export const MISSING_REPOSITORY_CONFIG_MSG =
-	'A configuration object could not be found for repository "%s". Check that the repository is configured in your app\'s %s.';
+	'A configuration object could not be found for repository "%s". Check that the repository is configured in your app\'s <PrismicPreviewProvider>.';
 
 /**
  * Message used when repository plugin options are not provided.
@@ -102,3 +102,11 @@ export const MISSING_PROVIDER_MSG = `A <PrismicPreviewProvider> was not found in
 
 See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/#wrapRootElement
 See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/#wrapRootElement`;
+
+/**
+ * Message used when no `gatsby-plugin-prismic-preview` instance is configured
+ * in `gatsby-config.js`.
+ */
+export const MISSING_PLUGIN_MSG = `gatsby-plugin-prismic-preview was not included in your app's gatsby-config.js. It must be added for previews to work.
+
+See: https://prismic.io/docs/technologies/previews-gatsby`;

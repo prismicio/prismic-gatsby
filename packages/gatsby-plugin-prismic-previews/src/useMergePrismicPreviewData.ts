@@ -5,7 +5,7 @@ import { isPlainObject } from "./lib/isPlainObject";
 import { isProxy } from "./lib/isProxy";
 
 import { UnknownRecord } from "./types";
-import { PrismicPreviewState } from "./context";
+import { StateKind } from "./context";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
 
 /**
@@ -134,11 +134,7 @@ export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
 			? state.runtimeStore[state.activeRepositoryName]
 			: undefined;
 
-		if (
-			!config.skip &&
-			runtime &&
-			state.previewState === PrismicPreviewState.ACTIVE
-		) {
+		if (!config.skip && runtime && state.state === StateKind.Bootstrapped) {
 			return traverseAndReplace(staticData, runtime);
 		} else {
 			return { data: staticData, isPreview: false };
