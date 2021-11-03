@@ -7,6 +7,7 @@ import nodeFetch from "node-fetch";
 import { UnpreparedPluginOptions, PluginOptions } from "../types";
 import {
 	DEFAULT_IMGIX_PARAMS,
+	DEFAULT_LANG,
 	DEFAULT_PLACEHOLDER_IMGIX_PARAMS,
 } from "../constants";
 
@@ -80,6 +81,7 @@ export const preparePluginOptions = async (
 		fetch: nodeFetch,
 		customTypeModels: [],
 		sharedSliceModels: [],
+		lang: DEFAULT_LANG,
 		...unpreparedPluginOptions,
 	};
 
