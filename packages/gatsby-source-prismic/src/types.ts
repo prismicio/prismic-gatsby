@@ -74,6 +74,7 @@ export interface Dependencies {
 	reporter: gatsby.Reporter;
 	reportInfo: gatsby.Reporter["info"];
 	reportWarning: gatsby.Reporter["warn"];
+	reportVerbose: gatsby.Reporter["verbose"];
 	globalNodeHelpers: NodeHelpers;
 	nodeHelpers: NodeHelpers;
 	pluginOptions: PluginOptions;

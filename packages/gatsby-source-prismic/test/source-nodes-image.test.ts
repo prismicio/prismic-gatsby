@@ -163,7 +163,7 @@ test("downloaded images remove the `auto` URL parameter", async (t) => {
 	}
 });
 
-test("downloaded image file nodes are cached and touched", async (t) => {
+test("downloaded image file nodes are cached, touched, and logged", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
 
