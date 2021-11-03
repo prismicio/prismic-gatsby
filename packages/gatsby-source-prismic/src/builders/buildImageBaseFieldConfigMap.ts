@@ -23,7 +23,7 @@ import { Dependencies } from "../types";
 const resolveUrl = (source: prismicT.ImageField): string | null =>
 	source.url
 		? sanitizeImageURL(stripURLQueryParameters(source.url))
-		: source.url;
+		: source.url ?? null;
 
 /**
  * Returns the width of an image from the value of an Image field.
