@@ -163,6 +163,58 @@ test("downloaded images remove the `auto` URL parameter", async (t) => {
 	}
 });
 
+test("downloaded image file nodes are cached and touched", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		image: prismicM.model.image({
+			seed: t.title,
+			thumbnailsCount: 1,
+		}),
+	});
+	const document = prismicM.value.document({
+		seed: t.title,
+		model: customTypeModel,
+	});
+
+	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	const queryResponse = prismicM.api.query({
+		seed: t.title,
+		documents: [document],
+	});
+
+	pluginOptions.customTypeModels = [customTypeModel];
+	pluginOptions.shouldDownloadFiles = true;
+
+	server.use(
+		createAPIRepositoryMockedRequest({
+			pluginOptions: pluginOptions,
+			repositoryResponse,
+		}),
+		createAPIQueryMockedRequest({
+			pluginOptions,
+			repositoryResponse,
+			queryResponse,
+		}),
+	);
+
+	// @ts-expect-error - Partial gatsbyContext provided
+	await createSchemaCustomization(gatsbyContext, pluginOptions);
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
+
+	t.is((pluginOptions.createRemoteFileNode as sinon.SinonStub).callCount, 2);
+	t.is((gatsbyContext.actions.touchNode as sinon.SinonStub).callCount, 2);
+
+	// @ts-expect-error - Partial gatsbyContext provided
+	await sourceNodes(gatsbyContext, pluginOptions);
+
+	// createRemoteFileNode should not be called again since the nodes are cached
+	t.is((pluginOptions.createRemoteFileNode as sinon.SinonStub).callCount, 2);
+	t.is((gatsbyContext.actions.touchNode as sinon.SinonStub).callCount, 4);
+});
+
 test("images are not downloaded without configuring shouldDownloadFiles", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);

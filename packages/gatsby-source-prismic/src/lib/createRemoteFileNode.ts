@@ -7,6 +7,7 @@ import { pipe } from "fp-ts/function";
 import { Dependencies } from "../types";
 import { shouldDownloadFile } from "./shouldDownloadFile";
 import { getFromOrSetToCache } from "./getFromOrSetToCache";
+import { touchNode } from "./touchNode";
 
 type CreateRemoteFileNodeConfig = {
 	url: string;
@@ -55,4 +56,5 @@ export const createRemoteFileNode = (
 				),
 			),
 		),
+		RTE.chainFirst((node) => (node ? touchNode(node) : RTE.right(null))),
 	);
