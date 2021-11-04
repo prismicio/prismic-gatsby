@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.4](https://github.com/prismicio/prismic-gatsby/compare/v5.0.3...v5.0.4) (2021-11-03)
+
+
+### Bug Fixes
+
+* add verbose log when downloading files ([e3d4adf](https://github.com/prismicio/prismic-gatsby/commit/e3d4adf3b0ac0db1571cc03208ae2af87c87c4fd))
+* **source:** restore fetching documents of all languages by defualt ([def010a](https://github.com/prismicio/prismic-gatsby/commit/def010a2ce0db5180cd3140b5368cc94c35ca4b6))
+
+
+
+
+
+## [5.0.3](https://github.com/prismicio/prismic-gatsby/compare/v5.0.2...v5.0.3) (2021-11-03)
+
+
+### Bug Fixes
+
+* ensure cached localFile fields are not null ([#472](https://github.com/prismicio/prismic-gatsby/issues/472)) ([b2d9d01](https://github.com/prismicio/prismic-gatsby/commit/b2d9d018fa61fddc8c901c98b3040f0b1ac6214e))
+
+
+
+
+
 ## [5.0.2](https://github.com/prismicio/prismic-gatsby/compare/v5.0.1...v5.0.2) (2021-10-30)
 
 

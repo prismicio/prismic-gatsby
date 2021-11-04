@@ -7,6 +7,8 @@ import { pipe } from "fp-ts/function";
 import { Dependencies } from "../types";
 import { shouldDownloadFile } from "./shouldDownloadFile";
 import { getFromOrSetToCache } from "./getFromOrSetToCache";
+import { touchNode } from "./touchNode";
+import { reportVerbose } from "./reportVerbose";
 
 type CreateRemoteFileNodeConfig = {
 	url: string;
@@ -34,6 +36,11 @@ export const createRemoteFileNode = (
 				field: config.field,
 			}),
 		),
+		RTE.chainFirst((scope) =>
+			scope.attemptDownload
+				? reportVerbose(`Attempting to download and cache file: ${config.url}`)
+				: RTE.right(void 0),
+		),
 		RTE.chain((scope) =>
 			getFromOrSetToCache(
 				`file-node-${config.url}`,
@@ -55,4 +62,5 @@ export const createRemoteFileNode = (
 				),
 			),
 		),
+		RTE.chainFirst((node) => (node ? touchNode(node) : RTE.right(null))),
 	);

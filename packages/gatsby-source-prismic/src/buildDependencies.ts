@@ -56,6 +56,7 @@ export const buildDependencies = async (
 		reporter: gatsbyContext.reporter,
 		reportInfo: gatsbyContext.reporter.info,
 		reportWarning: gatsbyContext.reporter.warn,
+		reportVerbose: gatsbyContext.reporter.verbose,
 		buildUnionType: gatsbyContext.schema.buildUnionType,
 		buildObjectType: gatsbyContext.schema.buildObjectType,
 		buildEnumType: gatsbyContext.schema.buildEnumType,

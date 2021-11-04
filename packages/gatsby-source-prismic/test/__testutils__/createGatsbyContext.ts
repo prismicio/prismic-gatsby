@@ -39,6 +39,7 @@ export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
 			createFieldExtension: sinon.stub(),
 		},
 		reporter: {
+			verbose: sinon.stub(),
 			info: sinon.stub(),
 			warn: sinon.stub(),
 		},

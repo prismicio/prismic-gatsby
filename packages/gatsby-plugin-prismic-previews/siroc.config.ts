@@ -10,7 +10,7 @@ export default defineSirocConfig({
 	},
 	hooks: {
 		"build:done": () => {
-			console.log("Copying static files from ./static into ./dist");
+			console.info("Copying static files from ./static into ./dist");
 
 			const staticDir = path.resolve("./static");
 			const files = fs.readdirSync(staticDir);
