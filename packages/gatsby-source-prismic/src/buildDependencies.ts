@@ -61,6 +61,7 @@ export const buildDependencies = async (
 		buildObjectType: gatsbyContext.schema.buildObjectType,
 		buildEnumType: gatsbyContext.schema.buildEnumType,
 		buildInterfaceType: gatsbyContext.schema.buildInterfaceType,
+		buildScalarType: gatsbyContext.schema.buildScalarType,
 		getNode: gatsbyContext.getNode,
 		getNodes: gatsbyContext.getNodes,
 		schema: gatsbyContext.schema,

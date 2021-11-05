@@ -173,7 +173,7 @@ export const image = <Value extends prismicT.ImageField>(
 	for (const thumbnailName of thumbnailNames) {
 		result.thumbnails[thumbnailName as keyof typeof result.thumbnails] =
 			buildImageField({
-				value: config.value[thumbnailName],
+				value: config.value[thumbnailName as keyof typeof config.value],
 				imageImgixParams: config.imageImgixParams,
 				imagePlaceholderImgixParams: config.imagePlaceholderImgixParams,
 			});

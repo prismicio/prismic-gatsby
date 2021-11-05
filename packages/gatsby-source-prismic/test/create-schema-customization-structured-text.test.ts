@@ -35,11 +35,11 @@ test("creates base type", async (t) => {
 						resolve: sinon.match.func,
 					}),
 					richText: sinon.match({
-						type: "JSON",
+						type: "PrismicStructuredText!",
 						resolve: sinon.match.func,
 					}),
 					raw: sinon.match({
-						type: "JSON",
+						type: "PrismicStructuredText!",
 						resolve: sinon.match.func,
 					}),
 				},
