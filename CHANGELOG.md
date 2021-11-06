@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/prismicio/prismic-gatsby/compare/v5.1.0...v5.1.1) (2021-11-06)
+
+
+### Bug Fixes
+
+* **source:** support Slices without non-repeat/repeat models ([5821cf0](https://github.com/prismicio/prismic-gatsby/commit/5821cf0970002a63df096090aed1f3a4fdfc92fb))
+
+
+
+
+
 # [5.1.0](https://github.com/prismicio/prismic-gatsby/compare/v5.0.4...v5.1.0) (2021-11-05)
 
 
