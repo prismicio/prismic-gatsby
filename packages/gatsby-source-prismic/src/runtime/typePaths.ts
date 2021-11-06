@@ -50,7 +50,7 @@ const fieldToTypePaths = <
 		}
 
 		case prismicT.CustomTypeModelSliceType.Slice: {
-			const primary = Object.entries(model["non-repeat"]).flatMap(
+			const primary = Object.entries(model["non-repeat"] || {}).flatMap(
 				([fieldId, fieldModel]) =>
 					fieldToTypePaths(
 						[...path, "primary", transformFieldName(fieldId)],
@@ -59,7 +59,7 @@ const fieldToTypePaths = <
 					),
 			);
 
-			const items = Object.entries(model.repeat).flatMap(
+			const items = Object.entries(model.repeat || {}).flatMap(
 				([fieldId, fieldModel]) =>
 					fieldToTypePaths(
 						[...path, "items", transformFieldName(fieldId)],
