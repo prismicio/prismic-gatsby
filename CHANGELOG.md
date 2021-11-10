@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/prismicio/prismic-gatsby/compare/v5.2.0...v5.2.1) (2021-11-10)
+
+
+### Bug Fixes
+
+* replace `@prismicio/client`'s `getAll` with `dangerouslyGetAll` ([50c0ef2](https://github.com/prismicio/prismic-gatsby/commit/50c0ef2e1628394c29755380f26926428436dd2a))
+
+
+
+
+
 # [5.2.0](https://github.com/prismicio/prismic-gatsby/compare/v5.1.1...v5.2.0) (2021-11-10)
 
 
