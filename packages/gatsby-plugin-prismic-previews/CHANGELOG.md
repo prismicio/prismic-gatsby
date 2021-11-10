@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/prismicio/prismic-gatsby/compare/v5.1.1...v5.2.0) (2021-11-10)
+
+
+### Features
+
+* add `routes` option to support Route Resolver ([#479](https://github.com/prismicio/prismic-gatsby/issues/479)) ([731f1a1](https://github.com/prismicio/prismic-gatsby/commit/731f1a119dabf1d19c9a1bd661fd158854e22fc1))
+
+
+
+
+
 ## [5.0.3](https://github.com/prismicio/prismic-gatsby/compare/v5.0.2...v5.0.3) (2021-11-03)
 
 **Note:** Version bump only for package gatsby-plugin-prismic-previews
