@@ -33,6 +33,7 @@ export interface PluginOptions extends gatsby.PluginOptions {
 	accessToken?: string;
 	promptForAccessToken?: boolean;
 	apiEndpoint: string;
+	routes?: prismic.Route[];
 	graphQuery?: string;
 	fetchLinks?: string[];
 	lang: string;

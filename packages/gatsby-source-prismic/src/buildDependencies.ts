@@ -28,6 +28,7 @@ export const buildDependencies = async (
 	const prismicClient = prismic.createClient(pluginOptions.apiEndpoint, {
 		fetch: pluginOptions.fetch,
 		accessToken: pluginOptions.accessToken,
+		routes: pluginOptions.routes,
 		defaultParams: {
 			lang: pluginOptions.lang,
 			fetchLinks: pluginOptions.fetchLinks,

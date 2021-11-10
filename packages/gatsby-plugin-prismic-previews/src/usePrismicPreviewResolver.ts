@@ -108,6 +108,7 @@ export const usePrismicPreviewResolver = (
 			prismic.getEndpoint(repositoryName.value);
 		const client = prismic.createClient(endpoint, {
 			accessToken: repositoryPluginOptions.accessToken,
+			routes: repositoryPluginOptions.routes,
 			defaultParams: {
 				lang: repositoryPluginOptions.lang,
 				fetchLinks: repositoryPluginOptions.fetchLinks,
