@@ -170,7 +170,7 @@ export const usePrismicPreviewBootstrap = (
 
 		let allDocuments: prismicT.PrismicDocument[];
 		try {
-			allDocuments = await client.getAll();
+			allDocuments = await client.dangerouslyGetAll();
 		} catch (error) {
 			if (
 				error instanceof prismic.ForbiddenError &&

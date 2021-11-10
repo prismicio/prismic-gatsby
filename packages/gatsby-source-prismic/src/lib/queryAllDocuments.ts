@@ -25,7 +25,7 @@ export const queryAllDocuments: RTE.ReaderTaskEither<
 	RTE.ask<Dependencies>(),
 	RTE.chain((env) =>
 		RTE.fromTask(() =>
-			env.prismicClient.getAll({
+			env.prismicClient.dangerouslyGetAll({
 				pageSize: env.pluginOptions.pageSize,
 			}),
 		),
