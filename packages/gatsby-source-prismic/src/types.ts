@@ -100,6 +100,7 @@ export type UnpreparedPluginOptions = gatsby.PluginOptions & {
 	lang?: string;
 	pageSize?: number;
 	linkResolver?: prismicH.LinkResolverFunction;
+	routes?: prismic.Route[];
 	htmlSerializer?: prismicH.HTMLFunctionSerializer | prismicH.HTMLMapSerializer;
 	imageImgixParams?: imgixGatsby.ImgixUrlParams;
 	imagePlaceholderImgixParams?: imgixGatsby.ImgixUrlParams;

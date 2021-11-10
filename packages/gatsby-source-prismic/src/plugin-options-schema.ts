@@ -37,6 +37,13 @@ export const pluginOptionsSchema: NonNullable<
 		lang: Joi.string(),
 		pageSize: Joi.number(),
 		linkResolver: Joi.function(),
+		routes: Joi.array().items(
+			Joi.object({
+				type: Joi.string().required(),
+				path: Joi.string().required(),
+				resolvers: Joi.object().pattern(Joi.string(), Joi.string().required()),
+			}),
+		),
 		htmlSerializer: Joi.alternatives(
 			Joi.object().pattern(
 				Joi.allow(...Object.keys(prismicH.Element)),

@@ -30,6 +30,13 @@ export const pluginOptionsSchema: NonNullable<
 		apiEndpoint: Joi.string().default((parent) =>
 			prismic.getEndpoint(parent.repositoryName),
 		),
+		routes: Joi.array().items(
+			Joi.object({
+				type: Joi.string().required(),
+				path: Joi.string().required(),
+				resolvers: Joi.object().pattern(Joi.string(), Joi.string().required()),
+			}),
+		),
 		graphQuery: Joi.string(),
 		fetchLinks: Joi.array().items(Joi.string().required()),
 		lang: Joi.string().default(DEFAULT_LANG),
