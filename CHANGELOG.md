@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.2-no-store.0](https://github.com/prismicio/prismic-gatsby/compare/v5.2.1...v5.2.2-no-store.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* **previews:** use more aggressive cache avoidance when fetching type paths ([da385aa](https://github.com/prismicio/prismic-gatsby/commit/da385aa9b70b9239a3facfb3043435dae15ccc81))
+
+
+
+
+
 ## [5.2.1](https://github.com/prismicio/prismic-gatsby/compare/v5.2.0...v5.2.1) (2021-11-10)
 
 
