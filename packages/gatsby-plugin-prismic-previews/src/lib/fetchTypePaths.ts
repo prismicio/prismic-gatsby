@@ -26,7 +26,7 @@ export const fetchTypePaths = async (
 			//
 			// Type paths are only fetched at bootstrap so the additional network time
 			// this imposes should be minimal.
-			cache: "no-cache",
+			cache: "no-store",
 		});
 		const text = await res.text();
 
