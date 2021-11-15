@@ -8,7 +8,6 @@ import { pipe, constVoid } from "fp-ts/function";
 import { createAllDocumentTypesType } from "./lib/createAllDocumentTypesType";
 import { createCustomType } from "./lib/createCustomType";
 import { createSharedSlice } from "./lib/createSharedSlice";
-import { createTypePath } from "./lib/createTypePath";
 import { createTypes } from "./lib/createTypes";
 import { preparePluginOptions } from "./lib/preparePluginOptions";
 import { throwError } from "./lib/throwError";
@@ -24,10 +23,12 @@ import { buildLinkTypeEnumType } from "./builders/buildLinkTypeEnumType";
 import { buildSharedSliceInterface } from "./builders/buildSharedSliceInterface";
 import { buildSliceInterface } from "./builders/buildSliceInterface";
 import { buildStructuredTextType } from "./builders/buildStructuredTextType";
-import { buildTypePathType } from "./builders/buildTypePathType";
 
 import { Dependencies, Mutable, UnpreparedPluginOptions } from "./types";
 import { buildDependencies } from "./buildDependencies";
+import { getFromCache } from "./lib/getFromCache";
+import { setToCache } from "./lib/setToCache";
+import { TYPE_PATHS_EXPORTS_CACHE_KEY } from "./constants";
 
 const GatsbyGraphQLTypeM = A.getMonoid<gatsby.GatsbyGraphQLType>();
 
@@ -52,7 +53,6 @@ export const createBaseTypes: RTE.ReaderTaskEither<Dependencies, never, void> =
 					buildSliceInterface,
 					buildSharedSliceInterface,
 					buildStructuredTextType,
-					buildTypePathType,
 				],
 				RTE.sequenceArray,
 			),
@@ -98,7 +98,7 @@ const createSharedSlices: RTE.ReaderTaskEither<
 	RTE.map((types) => types as Mutable<typeof types>),
 );
 
-const createTypePaths: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
+const cacheTypePaths: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
 	RTE.ask<Dependencies>(),
 	RTE.chainFirst((scope) =>
 		RTE.right(
@@ -114,9 +114,23 @@ const createTypePaths: RTE.ReaderTaskEither<Dependencies, Error, void> = pipe(
 			),
 		),
 	),
-	RTE.bind("typePaths", (scope) => RTE.right(scope.runtime.typePaths)),
-	RTE.chainFirstW((scope) =>
-		pipe(scope.typePaths, A.map(createTypePath), RTE.sequenceArray),
+	RTE.bind("typePathsExport", (scope) =>
+		RTE.right(scope.runtime.exportTypePaths()),
+	),
+	RTE.bind("cachedTypePaths", () =>
+		pipe(
+			getFromCache<Record<string, string>>(TYPE_PATHS_EXPORTS_CACHE_KEY),
+			RTE.orElse(() => RTE.right({} as Record<string, string>)),
+		),
+	),
+	RTE.chainFirst((scope) =>
+		pipe(
+			{
+				...scope.cachedTypePaths,
+				[scope.pluginOptions.repositoryName]: scope.typePathsExport,
+			},
+			setToCache(TYPE_PATHS_EXPORTS_CACHE_KEY),
+		),
 	),
 	RTE.map(constVoid),
 );
@@ -134,7 +148,7 @@ const createSchemaCustomizationProgram: RTE.ReaderTaskEither<
 	RTE.chainFirst(() => createSharedSlices),
 	RTE.bind("customTypeTypes", () => createCustomTypes),
 	RTE.chainFirstW((scope) => createAllDocumentTypesType(scope.customTypeTypes)),
-	RTE.chainFirst(() => createTypePaths),
+	RTE.chainFirst(() => cacheTypePaths),
 	RTE.map(constVoid),
 );
 

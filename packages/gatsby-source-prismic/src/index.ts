@@ -8,3 +8,5 @@
 export * from "./types";
 export * from "./constants";
 export * from "./runtime";
+
+export { getExportedTypePathsStore } from "./getExportedTypePathsStore";

@@ -11,6 +11,11 @@ export const PLUGIN_NAME = "gatsby-source-prismic";
 export const GLOBAL_TYPE_PREFIX = "Prismic";
 
 /**
+ * Name of the cached value containing type path exports for each registered repository.
+ */
+export const TYPE_PATHS_EXPORTS_CACHE_KEY = "typePathsExportsStore";
+
+/**
  * Default endpoint used to fetch custom type JSON schemas from Prismic's Custom Type API.
  *
  * @see https://prismic.io/docs/technologies/custom-types-api

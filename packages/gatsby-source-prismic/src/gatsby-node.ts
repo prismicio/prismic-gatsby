@@ -7,5 +7,6 @@
  */
 
 export { createSchemaCustomization } from "./create-schema-customization";
+export { onCreateWebpackConfig } from "./on-create-webpack-config";
 export { pluginOptionsSchema } from "./plugin-options-schema";
 export { sourceNodes } from "./source-nodes";

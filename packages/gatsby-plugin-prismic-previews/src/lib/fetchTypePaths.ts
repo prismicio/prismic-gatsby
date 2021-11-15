@@ -1,9 +1,6 @@
-import * as gatsby from "gatsby";
 import * as E from "fp-ts/Either";
 
 import { FetchLike } from "../types";
-
-import { buildTypePathsStoreFilename } from "./buildTypePathsStoreFilename";
 
 type FetchTypePathsConfig = {
 	repositoryName: string;
@@ -13,24 +10,23 @@ type FetchTypePathsConfig = {
 export const fetchTypePaths = async (
 	config: FetchTypePathsConfig,
 ): Promise<E.Either<Error, string>> => {
-	const filename = buildTypePathsStoreFilename(config.repositoryName);
-	const url = gatsby.withAssetPrefix(`/static/${filename}`);
+	const url = __GATSBY_PLUGIN_PRISMIC_PREVIEWS_TYPE_PATHS_URL__;
 	const fetchFn = config.fetch || globalThis.fetch;
 
 	try {
-		const res = await fetchFn(url, {
-			// We opt out of the cache to ensure we always fetch the latest type paths.
-			// Since the URL to the type paths JSON file is always the same (a hashed
-			// version of the repository name), some servers may not properly cache
-			// bust the resource.
-			//
-			// Type paths are only fetched at bootstrap so the additional network time
-			// this imposes should be minimal.
-			cache: "no-cache",
-		});
-		const text = await res.text();
+		const res = await fetchFn(url);
+		const json: Record<string, string> = await res.json();
+		const typePaths = json[config.repositoryName];
 
-		return E.right(text);
+		if (typePaths) {
+			return E.right(typePaths);
+		} else {
+			return E.left(
+				new Error(
+					`Type paths for ${config.repositoryName} were not included in the export.`,
+				),
+			);
+		}
 	} catch (error) {
 		return E.left(error as Error);
 	}

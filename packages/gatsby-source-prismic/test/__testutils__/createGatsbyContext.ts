@@ -1,14 +1,20 @@
 import * as sinon from "sinon";
 import * as gatsby from "gatsby";
-import { PartialDeep } from "type-fest";
+import { PartialDeep, SetRequired } from "type-fest";
 
 const createCache = () => {
 	const cache = new Map();
 
 	return {
-		get: (key: string) => Promise.resolve(cache.get(key)),
-		set: <T>(key: string, value: T) => Promise.resolve(cache.set(key, value)),
-		clear: () => cache.clear(),
+		get: sinon
+			.stub()
+			.callsFake((key: string) => Promise.resolve(cache.get(key))),
+		set: sinon
+			.stub()
+			.callsFake(<T>(key: string, value: T) =>
+				Promise.resolve(cache.set(key, value)),
+			),
+		clear: sinon.stub().callsFake(() => cache.clear()),
 	};
 };
 
@@ -17,6 +23,7 @@ export const createGatsbyContext = (): PartialDeep<gatsby.NodePluginArgs> & {
 	// present. Add other properties only as needed.
 	actions: Partial<gatsby.NodePluginArgs["actions"]>;
 	reporter: Partial<gatsby.NodePluginArgs["reporter"]>;
+	cache: SetRequired<Partial<gatsby.GatsbyCache>, "get" | "set">;
 } => {
 	const nodeStore = new Map();
 	const cache = createCache();
