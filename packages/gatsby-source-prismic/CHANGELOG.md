@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.2](https://github.com/prismicio/prismic-gatsby/compare/v5.2.1...v5.2.2) (2021-11-15)
+
+
+### Bug Fixes
+
+* **previews:** restore `dataRaw` document field ([3ab85ea](https://github.com/prismicio/prismic-gatsby/commit/3ab85ea0132f71df4ba54e9a1df4f1ee5c876353))
+
+
+
+
+
 ## [5.2.1](https://github.com/prismicio/prismic-gatsby/compare/v5.2.0...v5.2.1) (2021-11-10)
 
 
