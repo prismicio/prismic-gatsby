@@ -26,13 +26,13 @@ type NormalizeDocumentConfig<Value extends prismicT.PrismicDocument> =
 export type NormalizedDocumentValue<
 	Value extends prismicT.PrismicDocument = prismicT.PrismicDocument,
 > = Omit<Value, "alternate_languages" | "data"> & {
+	__typename: string;
+	_previewable: string;
+	prismicId: string;
 	alternate_languages: NormalizedAlternateLanguagesValue;
 	data: NormalizedValueMap<Value["data"]>;
-} & gatsby.NodeInput & {
-		__typename: string;
-		_previewable: string;
-		prismicId: string;
-	};
+	dataRaw: Value["data"];
+} & gatsby.NodeInput;
 
 export const document = <Value extends prismicT.PrismicDocument>(
 	config: NormalizeDocumentConfig<Value>,
@@ -47,6 +47,7 @@ export const document = <Value extends prismicT.PrismicDocument>(
 		}),
 		url: prismicH.asLink(config.value, config.linkResolver),
 		data: {},
+		dataRaw: config.value.data,
 	};
 
 	if (Object.keys(config.value.data).length > 0) {

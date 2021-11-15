@@ -24,6 +24,8 @@ test("normalizes documents", (t) => {
 	t.is(typeof normalizedDocument.id, "string");
 	t.is(normalizedDocument.prismicId, document.id);
 
+	t.is(normalizedDocument.dataRaw, document.data);
+
 	t.is(normalizedDocument.internal.type, "PrismicSynergies");
 	t.is(typeof normalizedDocument.internal.contentDigest, "string");
 });
