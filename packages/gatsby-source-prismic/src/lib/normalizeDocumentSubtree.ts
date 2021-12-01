@@ -390,6 +390,7 @@ export const normalizeDocumentSubtree = (
 							createNodeOfType({ ...scope.value, id: scope.id }, "EmbedType"),
 						),
 						RTE.map((node) => node.id),
+						RTE.orElseW(() => RTE.right(null)),
 					);
 				}
 
