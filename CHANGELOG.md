@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.3](https://github.com/prismicio/prismic-gatsby/compare/v5.2.2...v5.2.3) (2021-12-01)
+
+
+### Bug Fixes
+
+* **source:** resolve "Unable to serialize object as a key" error on empty Embed fields ([5afb496](https://github.com/prismicio/prismic-gatsby/commit/5afb496b4376b069be5f863a87de5bb2265e5425)), closes [#484](https://github.com/prismicio/prismic-gatsby/issues/484)
+
+
+
+
+
 ## [5.2.2](https://github.com/prismicio/prismic-gatsby/compare/v5.2.1...v5.2.2) (2021-11-15)
 
 
