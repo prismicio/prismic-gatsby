@@ -1,15 +1,23 @@
-import * as React from 'react'
-import { graphql, PageProps, Link } from 'gatsby'
+import * as React from "react";
+import { graphql, PageProps, Link } from "gatsby";
 import {
   withPrismicPreview,
   WithPrismicPreviewProps,
-} from 'gatsby-plugin-prismic-previews'
+} from "gatsby-plugin-prismic-previews";
 
-import { repositoryConfigs } from '../prismicPreviews'
+import { repositoryConfigs } from "../prismicPreviews";
+
+export const config = async () => {
+  return ({ params }) => {
+    return {
+      defer: true,
+    };
+  };
+};
 
 const KitchenSinkPage = (
   props: PageProps<Record<string, any>> &
-    WithPrismicPreviewProps<Record<string, any>>,
+    WithPrismicPreviewProps<Record<string, any>>
 ): JSX.Element => {
   return (
     <div>
@@ -25,25 +33,25 @@ const KitchenSinkPage = (
         </li>
       </ul>
       <hr />
-      <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
+      <pre style={{ backgroundColor: "lightgray", padding: "2rem" }}>
         <code>isPrismicPreview: {props.isPrismicPreview?.toString()}</code>
       </pre>
       <hr />
-      <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
+      <pre style={{ backgroundColor: "lightgray", padding: "2rem" }}>
         <code>
           {JSON.stringify(
             props.data.prismicPrefixKitchenSink.data.with_dashes_title,
             null,
-            2,
+            2
           )}
         </code>
       </pre>
       <hr />
       <pre
         style={{
-          backgroundColor: 'lightgray',
-          padding: '2rem',
-          overflow: 'auto',
+          backgroundColor: "lightgray",
+          padding: "2rem",
+          overflow: "auto",
         }}
       >
         <code>
@@ -51,16 +59,16 @@ const KitchenSinkPage = (
             props.data.prismicPrefixKitchenSink.data.body[0]?.primary
               .first_option_nonrepeat_title.html,
             null,
-            2,
+            2
           )}
         </code>
       </pre>
       <hr />
       <pre
         style={{
-          backgroundColor: 'lightgray',
-          padding: '2rem',
-          overflow: 'auto',
+          backgroundColor: "lightgray",
+          padding: "2rem",
+          overflow: "auto",
         }}
       >
         <code>
@@ -70,16 +78,16 @@ const KitchenSinkPage = (
       <hr />
       <pre
         style={{
-          backgroundColor: 'lightgray',
-          padding: '2rem',
-          overflow: 'auto',
+          backgroundColor: "lightgray",
+          padding: "2rem",
+          overflow: "auto",
         }}
       >
         <code>
           {JSON.stringify(
             props.data.prismicPrefixKitchenSink.data.title.html,
             null,
-            2,
+            2
           )}
         </code>
       </pre>
@@ -96,10 +104,10 @@ const KitchenSinkPage = (
       </pre>
       */}
     </div>
-  )
-}
+  );
+};
 
-export default withPrismicPreview(KitchenSinkPage, repositoryConfigs)
+export default withPrismicPreview(KitchenSinkPage, repositoryConfigs);
 
 export const query = graphql`
   query ($uid: String!) {
@@ -134,4 +142,4 @@ export const query = graphql`
       }
     }
   }
-`
+`;

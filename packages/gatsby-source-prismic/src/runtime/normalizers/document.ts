@@ -51,6 +51,7 @@ export const document = <Value extends prismicT.PrismicDocument>(
 	};
 
 	if (Object.keys(config.value.data).length > 0) {
+		// @ts-expect-error - TODO: Fix this type error
 		fields.data = normalize({
 			...config,
 			value: config.value.data,

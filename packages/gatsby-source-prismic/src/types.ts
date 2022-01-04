@@ -160,8 +160,8 @@ export type FieldConfigCreator<
 
 export type PrismicTypePathType =
 	| PrismicSpecialType
-	| prismicT.CustomTypeModelFieldType
-	| prismicT.CustomTypeModelSliceType;
+	| typeof prismicT.CustomTypeModelFieldType[keyof typeof prismicT.CustomTypeModelFieldType]
+	| typeof prismicT.CustomTypeModelSliceType[keyof typeof prismicT.CustomTypeModelSliceType];
 
 export enum PrismicSpecialType {
 	Document = "Document",

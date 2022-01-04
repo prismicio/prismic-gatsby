@@ -20,8 +20,8 @@ export type NormalizeStructuredTextConfig<
 	Pick<NormalizerDependencies, "linkResolver" | "htmlSerializer">;
 
 export type NormalizedStructuredTextValue<Value extends StructuredTextField> = {
-	html: string;
-	text: string;
+	html: string | null;
+	text: string | null;
 	richText: Value;
 	raw: Value;
 };
