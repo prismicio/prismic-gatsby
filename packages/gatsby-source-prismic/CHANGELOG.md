@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.4](https://github.com/prismicio/prismic-gatsby/compare/v5.2.3...v5.2.4) (2022-01-10)
+
+
+### Bug Fixes
+
+* **source:** exclude empty Slice Zones in GraphQL type ([23cb131](https://github.com/prismicio/prismic-gatsby/commit/23cb1316dd081249ec1788c6963eeba0a3e2c077))
+
+
+
+
+
 ## [5.2.3](https://github.com/prismicio/prismic-gatsby/compare/v5.2.2...v5.2.3) (2021-12-01)
 
 
