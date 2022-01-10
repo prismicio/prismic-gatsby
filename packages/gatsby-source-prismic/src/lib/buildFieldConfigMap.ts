@@ -42,4 +42,9 @@ export const buildFieldConfigMap = (
 				R.sequence(RTE.ApplicativeSeq),
 			),
 		),
+		RTE.map(
+			R.filter((fieldConfig): fieldConfig is NonNullable<typeof fieldConfig> =>
+				Boolean(fieldConfig),
+			),
+		),
 	);

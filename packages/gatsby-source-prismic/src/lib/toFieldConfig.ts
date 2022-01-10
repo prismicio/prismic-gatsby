@@ -26,6 +26,9 @@ import { buildIntegrationFieldConfig } from "../builders/buildIntegrationFieldCo
  * Returns a GraphQL field configuration object for a Custom Type field. The
  * resulting configuration object can be used in a GraphQL type.
  *
+ * In some cases, `undefined` will be returned. Fields that return `undefined`
+ * should be omitted from the GraphQL schema.
+ *
  * @param path - Path to the field.
  * @param schema - Schema definition for the field.
  *
@@ -37,7 +40,7 @@ export const toFieldConfig = (
 ): RTE.ReaderTaskEither<
 	Dependencies,
 	Error,
-	gqlc.ObjectTypeComposerFieldConfigDefinition<unknown, unknown>
+	gqlc.ObjectTypeComposerFieldConfigDefinition<unknown, unknown> | undefined
 > => {
 	switch (schema.type) {
 		case prismicT.CustomTypeModelFieldType.Boolean: {
@@ -85,7 +88,11 @@ export const toFieldConfig = (
 		}
 
 		case prismicT.CustomTypeModelFieldType.Slices: {
-			return buildSlicesFieldConfig(path, schema);
+			if (Object.keys(schema.config.choices).length > 0) {
+				return buildSlicesFieldConfig(path, schema);
+			} else {
+				return RTE.right(undefined);
+			}
 		}
 
 		case prismicT.CustomTypeModelFieldType.StructuredText: {
