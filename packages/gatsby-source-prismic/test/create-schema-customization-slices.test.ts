@@ -239,6 +239,43 @@ test("creates types for each slice choice", async (t) => {
 	);
 });
 
+test("slice zones with no slices are excluded from the custom type", async (t) => {
+	const gatsbyContext = createGatsbyContext();
+	const pluginOptions = createPluginOptions(t);
+
+	const customTypeModel = createMockCustomTypeModelWithFields(t, {
+		// Including an extra field so we have something to check for in the test.
+		keyText: prismicM.model.keyText({ seed: t.title }),
+		// This field should not be included in the Custom Type's type.
+		slices: prismicM.model.sliceZone({
+			seed: t.title,
+			choices: {},
+		}),
+	});
+	customTypeModel.id = "foo";
+
+	pluginOptions.customTypeModels = [customTypeModel];
+
+	await createSchemaCustomization(
+		gatsbyContext as gatsby.CreateSchemaCustomizationArgs,
+		pluginOptions,
+		noop,
+	);
+
+	t.true(
+		(gatsbyContext.actions.createTypes as sinon.SinonStub).calledWith({
+			kind: "OBJECT",
+			config: {
+				name: "PrismicPrefixFooDataType",
+				fields: {
+					keyText: "String",
+				},
+			},
+		}),
+		"The `slices` Slice Zone should not be included",
+	);
+});
+
 test("id field resolves to a unique id", async (t) => {
 	const gatsbyContext = createGatsbyContext();
 	const pluginOptions = createPluginOptions(t);
