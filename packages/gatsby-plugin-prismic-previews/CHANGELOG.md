@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.5](https://github.com/prismicio/prismic-gatsby/compare/v5.2.4...v5.2.5) (2022-01-11)
+
+
+### Bug Fixes
+
+* update @prismicio/imgix (fixes [#488](https://github.com/prismicio/prismic-gatsby/issues/488)) ([7eb0269](https://github.com/prismicio/prismic-gatsby/commit/7eb02693d750f01c06a34bf4c5c781a872ee7a01))
+
+
+
+
+
 ## [5.2.1](https://github.com/prismicio/prismic-gatsby/compare/v5.2.0...v5.2.1) (2021-11-10)
 
 

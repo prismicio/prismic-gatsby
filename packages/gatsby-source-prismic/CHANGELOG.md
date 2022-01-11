@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.5](https://github.com/prismicio/prismic-gatsby/compare/v5.2.4...v5.2.5) (2022-01-11)
+
+
+### Bug Fixes
+
+* support Shared Slices without primary/items models ([db83f3d](https://github.com/prismicio/prismic-gatsby/commit/db83f3ddc0e70a4d00044149a1fd1cf78615412e))
+* update @prismicio/imgix (fixes [#488](https://github.com/prismicio/prismic-gatsby/issues/488)) ([7eb0269](https://github.com/prismicio/prismic-gatsby/commit/7eb02693d750f01c06a34bf4c5c781a872ee7a01))
+
+
+
+
+
 ## [5.2.4](https://github.com/prismicio/prismic-gatsby/compare/v5.2.3...v5.2.4) (2022-01-10)
 
 
