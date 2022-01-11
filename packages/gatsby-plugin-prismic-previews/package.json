@@ -48,7 +48,7 @@
 		"unit": "nyc ava"
 	},
 	"dependencies": {
-		"@imgix/gatsby": "^1.6.13",
+		"@imgix/gatsby": "^1.7.5",
 		"@prismicio/client": "^6.0.0-beta.2",
 		"@prismicio/helpers": "^2.0.0-beta.0",
 		"@prismicio/types": "^0.1.13",
