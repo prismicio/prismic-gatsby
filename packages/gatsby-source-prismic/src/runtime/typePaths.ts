@@ -140,7 +140,7 @@ export const sharedSliceModelToTypePaths = <
 	transformFieldName: TransformFieldNameFn,
 ): TypePath[] => {
 	return sharedSliceModel.variations.flatMap((variation) => {
-		const primary = Object.entries(variation.primary).flatMap(
+		const primary = Object.entries(variation.primary || {}).flatMap(
 			([fieldId, fieldModel]) =>
 				fieldToTypePaths(
 					[
@@ -154,7 +154,7 @@ export const sharedSliceModelToTypePaths = <
 				),
 		);
 
-		const items = Object.entries(variation.items).flatMap(
+		const items = Object.entries(variation.items || {}).flatMap(
 			([fieldId, fieldModel]) =>
 				fieldToTypePaths(
 					[
