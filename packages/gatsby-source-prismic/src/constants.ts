@@ -43,7 +43,6 @@ export const DEFAULT_IMGIX_PARAMS = {
 
 	// The following values are not included by Prismic's URLs by default.
 	fit: "max",
-	q: 50,
 } as const;
 
 /**
