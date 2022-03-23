@@ -55,7 +55,13 @@ export type WriteTypePathsToFilesystemArgs = {
 
 // TODO: Delete
 export interface PrismicAPIDocumentNodeInput<
-	TData = prismicT.PrismicDocument["data"],
+	TData extends Record<
+		string,
+		prismicT.AnyRegularField | prismicT.GroupField | prismicT.SliceZone
+	> = Record<
+		string,
+		prismicT.AnyRegularField | prismicT.GroupField | prismicT.SliceZone
+	>,
 > extends prismicT.PrismicDocument<TData>,
 		gatsby.NodeInput {
 	prismicId: string;

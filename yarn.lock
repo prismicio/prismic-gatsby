@@ -2647,14 +2647,6 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.2.tgz#0798c03351f0dea1a5a4cabddf26a55a7cbee590"
   integrity sha512-IXf3XA7+XyN7CP9gGh/XB0UxVMlvARGEgGXLubFICsUMGz6Q+DU+i4gGlpOxTjKvXjkJDJC8YdqdKkDj9qZHEQ==
 
-"@prismicio/client@^6.0.0-beta.2":
-  version "6.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@prismicio/client/-/client-6.0.0-beta.3.tgz#848876d236730eb6503fc7541f17000f19a10114"
-  integrity sha512-AZn0u5Ah6q4PGAlGvKyVSv3OfAbM1DjGpbZWedkMiBGJ6t/tB5GyaIh2Znsfdkw8QuL80041yURdsGXaQeE2HQ==
-  dependencies:
-    "@prismicio/helpers" "^2.0.0-beta.0"
-    "@prismicio/types" "^0.1.15"
-
 "@prismicio/client@^6.4.2":
   version "6.4.2"
   resolved "https://registry.yarnpkg.com/@prismicio/client/-/client-6.4.2.tgz#9a226c466acb55d2db22350e8850ebfb4fb35378"
@@ -2667,15 +2659,6 @@
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/@prismicio/custom-types-client/-/custom-types-client-0.0.7.tgz#f55ee5f1d5f9e1307ed2ecca6a5e47dff1ecb91a"
   integrity sha512-pf0rG1rwKAEQ5WeGTG4vyxzW6FFG2iySgrGCAbil5XvHTajwJ1qdG53h0bU71AQRXZmL7b48YFdI7DQcy5ASFw==
-
-"@prismicio/helpers@^2.0.0-beta.0":
-  version "2.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@prismicio/helpers/-/helpers-2.0.0-beta.2.tgz#f38869c93dfe2720a157a3175aa2bab184bb83a7"
-  integrity sha512-N/ckRKc79ayruykD3Y30Qu7WN42eonnQz3dM+74zUKywD+jVDtHESvWjoJI/MCQYwQan0bG5wetH4sfD6pFnrg==
-  dependencies:
-    "@prismicio/richtext" "^2.0.0-beta.1"
-    "@prismicio/types" "^0.1.17"
-    escape-html "^1.0.3"
 
 "@prismicio/helpers@^2.2.1":
   version "2.2.1"
@@ -2696,13 +2679,6 @@
     change-case "^4.1.2"
     faker "^5.5.3"
 
-"@prismicio/richtext@^2.0.0-beta.1":
-  version "2.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@prismicio/richtext/-/richtext-2.0.0-beta.1.tgz#2487f071a80f486d6b20d1badfce25ca3f3ccea3"
-  integrity sha512-9LA+dcEtncprfjpPdQWsRThuFpDA0ID1Ne0yJJHVlKKl9qUDDfV7fbN714W2dxEV2zWRip/lyLlnfMOAABjE/w==
-  dependencies:
-    "@prismicio/types" "^0.1.15"
-
 "@prismicio/richtext@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@prismicio/richtext/-/richtext-2.0.1.tgz#6342f071601d88e99ca03faab382202087fd55a5"
@@ -2710,15 +2686,15 @@
   dependencies:
     "@prismicio/types" "^0.1.22"
 
-"@prismicio/types@^0.1.13", "@prismicio/types@^0.1.15", "@prismicio/types@^0.1.17", "@prismicio/types@^0.1.6":
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.17.tgz#79979e2f98297c04fe0869bf80be224d9f120a4d"
-  integrity sha512-zjzuBT3vpYSA8rkWztJ8S1u0Qsu0pE1casSEblBMeoml6IjDoDVSaRZ6jftAxmkwhiuK6Rg/k3JkFDVSYELO+Q==
-
 "@prismicio/types@^0.1.22", "@prismicio/types@^0.1.27":
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.27.tgz#7f2fd91f1781a6da62630438b828230df72ae2b3"
   integrity sha512-+Oc7EFcp6RGVMvFKQl9y9D4HtBhHeOtE0asfYhedCflQDf3OOzjE8POIu1bXTkk8i1kEWM3oYvz6yLN4yAyGWQ==
+
+"@prismicio/types@^0.1.6":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.17.tgz#79979e2f98297c04fe0869bf80be224d9f120a4d"
+  integrity sha512-zjzuBT3vpYSA8rkWztJ8S1u0Qsu0pE1casSEblBMeoml6IjDoDVSaRZ6jftAxmkwhiuK6Rg/k3JkFDVSYELO+Q==
 
 "@reach/dialog@^0.16.0":
   version "0.16.2"
@@ -9715,9 +9691,9 @@ gatsby-plugin-page-creator@^4.0.0, gatsby-plugin-page-creator@^4.1.0:
   version "5.2.5"
   dependencies:
     "@imgix/gatsby" "^1.7.5"
-    "@prismicio/client" "^6.0.0-beta.2"
-    "@prismicio/helpers" "^2.0.0-beta.0"
-    "@prismicio/types" "^0.1.13"
+    "@prismicio/client" "^6.4.2"
+    "@prismicio/helpers" "^2.2.1"
+    "@prismicio/types" "^0.1.27"
     "@reach/dialog" "^0.16.0"
     camel-case "^4.1.2"
     clsx "^1.1.1"
