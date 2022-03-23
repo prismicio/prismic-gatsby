@@ -63,7 +63,6 @@ test("normalizes Image fields", (t) => {
 	const url = new URL(document.data.image.url!);
 	url.searchParams.set("fit", "max");
 	url.searchParams.set("auto", "compress,format");
-	url.searchParams.set("q", "50");
 
 	t.is(normalizedDocument.data.image.alt, document.data.image.alt);
 	t.is(normalizedDocument.data.image.url, decodeURIComponent(url.toString()));

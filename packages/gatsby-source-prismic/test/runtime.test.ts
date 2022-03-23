@@ -23,7 +23,6 @@ test("createRuntime creates a Runtime instance with default config", (t) => {
 	t.deepEqual(runtime.config.imageImgixParams, {
 		auto: "compress,format",
 		fit: "max",
-		q: 50,
 	});
 	t.deepEqual(runtime.config.imagePlaceholderImgixParams, {
 		w: 100,
@@ -39,7 +38,7 @@ test("config can be passed on creation", (t) => {
 		typePrefix: "typePrefix",
 		linkResolver: (doc) => `/${doc.uid}`,
 		htmlSerializer: { heading1: () => "heading1" },
-		imageImgixParams: { q: 50 },
+		imageImgixParams: { q: 60 },
 		imagePlaceholderImgixParams: { q: 30 },
 		transformFieldName: (fieldName) => fieldName,
 	};
