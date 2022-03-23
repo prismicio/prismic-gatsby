@@ -118,7 +118,7 @@ export const preparePluginOptions = async (
 			fetch: result.fetch,
 		});
 
-		const customTypeModels = await customTypesClient.getAll();
+		const customTypeModels = await customTypesClient.getAllCustomTypes();
 		const sharedSliceModels = await customTypesClient.getAllSharedSlices();
 
 		// Models provided to `customTypeModels` take priority.

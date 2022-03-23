@@ -2655,10 +2655,18 @@
     "@prismicio/helpers" "^2.0.0-beta.0"
     "@prismicio/types" "^0.1.15"
 
-"@prismicio/custom-types-client@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@prismicio/custom-types-client/-/custom-types-client-0.0.6.tgz#774e1498b88a07b817292a5894208851c5dd4635"
-  integrity sha512-/QeHmNzEtOMtEAZF7ZfRSSosSXGhA4dzQm7vczhxdBGIT23Bbj+h0I4hNlpJZ4n0UzmIYWtd45jYCguVo3hfqQ==
+"@prismicio/client@^6.4.2":
+  version "6.4.2"
+  resolved "https://registry.yarnpkg.com/@prismicio/client/-/client-6.4.2.tgz#9a226c466acb55d2db22350e8850ebfb4fb35378"
+  integrity sha512-2WIqKEuusPXdEY36PfhXQDfniGT1Gp+ORMkvJEz9cjxMscQQDcxaQjMqZHlYArLMKn/NyhqE3hlxeJ/QasUPgA==
+  dependencies:
+    "@prismicio/helpers" "^2.2.1"
+    "@prismicio/types" "^0.1.27"
+
+"@prismicio/custom-types-client@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@prismicio/custom-types-client/-/custom-types-client-0.0.7.tgz#f55ee5f1d5f9e1307ed2ecca6a5e47dff1ecb91a"
+  integrity sha512-pf0rG1rwKAEQ5WeGTG4vyxzW6FFG2iySgrGCAbil5XvHTajwJ1qdG53h0bU71AQRXZmL7b48YFdI7DQcy5ASFw==
 
 "@prismicio/helpers@^2.0.0-beta.0":
   version "2.0.0-beta.2"
@@ -2668,6 +2676,16 @@
     "@prismicio/richtext" "^2.0.0-beta.1"
     "@prismicio/types" "^0.1.17"
     escape-html "^1.0.3"
+
+"@prismicio/helpers@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@prismicio/helpers/-/helpers-2.2.1.tgz#de45c74d259ce6adf54fca3bd413631418b1435d"
+  integrity sha512-WFfS5CpPJ1PTNU/cqx3XnO8mnbfI8bEgAnWqD57IS5Pqy8YcK8oW5VSR7nw2wPowJjWTuf8j59YtE5uiHi6aCQ==
+  dependencies:
+    "@prismicio/richtext" "^2.0.1"
+    "@prismicio/types" "^0.1.27"
+    escape-html "^1.0.3"
+    imgix-url-builder "^0.0.3"
 
 "@prismicio/mock@^0.0.6":
   version "0.0.6"
@@ -2685,10 +2703,22 @@
   dependencies:
     "@prismicio/types" "^0.1.15"
 
+"@prismicio/richtext@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@prismicio/richtext/-/richtext-2.0.1.tgz#6342f071601d88e99ca03faab382202087fd55a5"
+  integrity sha512-sM+eusvE4PsKnwefDRd0ai3Ny59XJ54dn6xfwq0Fyqj0LAcuyB2gRjSufbIqYOZ1r4JKMQArDKrypNEcrbBFkA==
+  dependencies:
+    "@prismicio/types" "^0.1.22"
+
 "@prismicio/types@^0.1.13", "@prismicio/types@^0.1.15", "@prismicio/types@^0.1.17", "@prismicio/types@^0.1.6":
   version "0.1.17"
   resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.17.tgz#79979e2f98297c04fe0869bf80be224d9f120a4d"
   integrity sha512-zjzuBT3vpYSA8rkWztJ8S1u0Qsu0pE1casSEblBMeoml6IjDoDVSaRZ6jftAxmkwhiuK6Rg/k3JkFDVSYELO+Q==
+
+"@prismicio/types@^0.1.22", "@prismicio/types@^0.1.27":
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/@prismicio/types/-/types-0.1.27.tgz#7f2fd91f1781a6da62630438b828230df72ae2b3"
+  integrity sha512-+Oc7EFcp6RGVMvFKQl9y9D4HtBhHeOtE0asfYhedCflQDf3OOzjE8POIu1bXTkk8i1kEWM3oYvz6yLN4yAyGWQ==
 
 "@reach/dialog@^0.16.0":
   version "0.16.2"
@@ -9682,7 +9712,7 @@ gatsby-plugin-page-creator@^4.0.0, gatsby-plugin-page-creator@^4.1.0:
     lodash "^4.17.21"
 
 "gatsby-plugin-prismic-previews@link:packages/gatsby-plugin-prismic-previews":
-  version "5.2.1"
+  version "5.2.5"
   dependencies:
     "@imgix/gatsby" "^1.7.5"
     "@prismicio/client" "^6.0.0-beta.2"
@@ -9818,13 +9848,13 @@ gatsby-source-filesystem@^4.0.0:
     xstate "^4.14.0"
 
 "gatsby-source-prismic@link:packages/gatsby-source-prismic":
-  version "5.2.4"
+  version "5.2.5"
   dependencies:
     "@imgix/gatsby" "^1.7.5"
-    "@prismicio/client" "^6.0.0-beta.2"
-    "@prismicio/custom-types-client" "^0.0.6"
-    "@prismicio/helpers" "^2.0.0-beta.0"
-    "@prismicio/types" "^0.1.13"
+    "@prismicio/client" "^6.4.2"
+    "@prismicio/custom-types-client" "^0.0.7"
+    "@prismicio/helpers" "^2.2.1"
+    "@prismicio/types" "^0.1.27"
     camel-case "^4.1.2"
     fp-ts "^2.10.5"
     gatsby-node-helpers "^1.2.1"
@@ -11254,6 +11284,11 @@ ignore@^5.1.1, ignore@^5.1.4, ignore@^5.1.8:
   version "5.1.9"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.9.tgz#9ec1a5cbe8e1446ec60d4420060d43aa6e7382fb"
   integrity sha512-2zeMQpbKz5dhZ9IwL0gbxSW5w0NK/MSAMtNuhgIHEPmaU3vPdKPL0UdvUCXs5SS4JAwsBxysK5sFMW8ocFiVjQ==
+
+imgix-url-builder@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/imgix-url-builder/-/imgix-url-builder-0.0.3.tgz#9f386de64cdd1363d352a7f6313fd7dacd8fb282"
+  integrity sha512-8Oc2Cn4+jF06sEfJcVPlWYfD2F6RjrwIMbk1xEzux8unoB5LsvFc/GL1BQ47HPaeE12ReX2nMUcjUslGYWLxHA==
 
 imgix-url-params@^11.11.2:
   version "11.11.3"
