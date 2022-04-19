@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Dialog } from "@reach/dialog";
+import { DialogContent, DialogOverlay } from "@reach/dialog";
 import clsx from "clsx";
 
 import { Root } from "./Root";
@@ -62,45 +62,51 @@ export const Modal = ({
 	"aria-label": ariaLabel,
 }: ModalProps): JSX.Element => {
 	return (
-		<Dialog isOpen={isOpen} onDismiss={onDismiss} aria-label={ariaLabel}>
-			<Root>
-				<div className="z-max bg-black bg-opacity-60 fixed inset-0 overflow-auto">
-					<div className="w-full max-w-34rem mx-auto mt-20vh px-4">
-						<div
-							className={clsx(
-								"rounded-lg shadow-lg px-7 py-8 relative sm:px-10",
-								variant === "base" && "bg-white text-slate-30",
-								variant === "red" && "bg-red-40 text-white",
-							)}
-							data-gatsby-plugin-prismic-previews-repository-name={
-								repositoryName
-							}
-						>
-							<div className="grid gap-7">
-								<PrismicLogo
-									fillWhite={variant === "red"}
-									className="block mx-auto w-11 h-11"
-								/>
-								<div>{children}</div>
-							</div>
-
-							<button
+		<DialogOverlay
+			isOpen={isOpen}
+			onDismiss={onDismiss}
+			dangerouslyBypassFocusLock={true}
+		>
+			<DialogContent aria-label={ariaLabel}>
+				<Root>
+					<div className="z-max bg-black bg-opacity-60 fixed inset-0 overflow-auto">
+						<div className="w-full max-w-34rem mx-auto mt-20vh px-4">
+							<div
 								className={clsx(
-									"absolute top-5 right-5 transition  sm:top-6 sm:right-6 p-2 -m-2",
-									variant === "base" &&
-										"text-slate-90 hover:text-slate-60 focus:text-slate-60",
-									variant === "red" &&
-										"text-red-80 hover:text-white focus:text-white",
+									"rounded-lg shadow-lg px-7 py-8 relative sm:px-10",
+									variant === "base" && "bg-white text-slate-30",
+									variant === "red" && "bg-red-40 text-white",
 								)}
-								onClick={onDismiss}
+								data-gatsby-plugin-prismic-previews-repository-name={
+									repositoryName
+								}
 							>
-								<span className="sr-only">Close modal</span>
-								<CloseSVG className="w-5 h-5" />
-							</button>
+								<div className="grid gap-7">
+									<PrismicLogo
+										fillWhite={variant === "red"}
+										className="block mx-auto w-11 h-11"
+									/>
+									<div>{children}</div>
+								</div>
+
+								<button
+									className={clsx(
+										"absolute top-5 right-5 transition  sm:top-6 sm:right-6 p-2 -m-2",
+										variant === "base" &&
+											"text-slate-90 hover:text-slate-60 focus:text-slate-60",
+										variant === "red" &&
+											"text-red-80 hover:text-white focus:text-white",
+									)}
+									onClick={onDismiss}
+								>
+									<span className="sr-only">Close modal</span>
+									<CloseSVG className="w-5 h-5" />
+								</button>
+							</div>
 						</div>
 					</div>
-				</div>
-			</Root>
-		</Dialog>
+				</Root>
+			</DialogContent>
+		</DialogOverlay>
 	);
 };
