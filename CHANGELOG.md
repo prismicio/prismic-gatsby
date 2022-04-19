@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.6](https://github.com/prismicio/prismic-gatsby/compare/v5.2.5...v5.2.6) (2022-04-19)
+
+
+### Bug Fixes
+
+* **previews:** retain correct scroll position during preview bootstrapping ([#504](https://github.com/prismicio/prismic-gatsby/issues/504)) ([46803df](https://github.com/prismicio/prismic-gatsby/commit/46803df0147f6c909369b82c976e14aac2053543))
+* remove default q=50 Imgix parameter for Gatsby images ([1067bd0](https://github.com/prismicio/prismic-gatsby/commit/1067bd0c63ffbd7ebd6ee3dca76c0631c1fc1a66))
+
+
+
+
+
 ## [5.2.5](https://github.com/prismicio/prismic-gatsby/compare/v5.2.4...v5.2.5) (2022-01-11)
 
 
