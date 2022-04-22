@@ -84,7 +84,7 @@ const sliceValueRefinement = (value: unknown): value is prismicT.Slice =>
 const sharedSliceValueRefinement = (
 	value: unknown,
 ): value is prismicT.SharedSlice =>
-	slicesValueRefinement(value) && "variation" in value;
+	sliceValueRefinement(value) && "variation" in value;
 
 /**
  * Determines if a value is a Slice Zone.
