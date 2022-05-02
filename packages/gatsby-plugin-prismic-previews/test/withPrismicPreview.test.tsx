@@ -166,7 +166,7 @@ test.serial("merges data if preview data is available", async (t) => {
 			searchParams: { ref },
 		}),
 		createTypePathsMockedRequest(
-			"a9101d270279c16322571b8448d7a329.json",
+			pluginOptions.repositoryName,
 			runtime.typePaths,
 		),
 	);
@@ -231,7 +231,7 @@ test.serial("handles custom types without a data field", async (t) => {
 			searchParams: { ref },
 		}),
 		createTypePathsMockedRequest(
-			"eac4669530f66bef76da4016f1111055.json",
+			pluginOptions.repositoryName,
 			runtime.typePaths,
 		),
 	);

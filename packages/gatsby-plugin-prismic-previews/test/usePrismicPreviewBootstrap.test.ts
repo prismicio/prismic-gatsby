@@ -118,7 +118,7 @@ test.serial(
 				searchParams: { ref },
 			}),
 			createTypePathsMockedRequest(
-				"fa7e36097b060b84eb14d0df1009fa58.json",
+				pluginOptions.repositoryName,
 				runtime.typePaths,
 			),
 		);
@@ -187,7 +187,7 @@ test.serial("does nothing if already bootstrapped", async (t) => {
 			searchParams: { ref },
 		}),
 		createTypePathsMockedRequest(
-			"d6c42f6728e21ab594cd600ff04e4913.json",
+			pluginOptions.repositoryName,
 			runtime.typePaths,
 		),
 	);

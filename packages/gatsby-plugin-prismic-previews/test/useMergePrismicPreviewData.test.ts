@@ -112,7 +112,7 @@ test.serial(
 				searchParams: { ref },
 			}),
 			createTypePathsMockedRequest(
-				"d26c1607b46a831c5d238303c3cbf489.json",
+				pluginOptions.repositoryName,
 				runtime.typePaths,
 			),
 		);
@@ -194,7 +194,7 @@ test("allows skipping", async (t) => {
 			searchParams: { ref },
 		}),
 		createTypePathsMockedRequest(
-			"87ec42108faaca92ab06c427cf0b3b9d.json",
+			pluginOptions.repositoryName,
 			runtime.typePaths,
 		),
 	);
