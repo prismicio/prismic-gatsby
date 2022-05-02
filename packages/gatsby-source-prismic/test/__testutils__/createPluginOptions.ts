@@ -1,13 +1,13 @@
 import * as ava from "ava";
 import * as sinon from "sinon";
-import * as crypto from "crypto";
 
 import { UnpreparedPluginOptions } from "../../src/types";
+import { md5 } from "./md5";
 
 export const createPluginOptions = (
 	t: ava.ExecutionContext,
 ): UnpreparedPluginOptions => {
-	const repositoryName = crypto.createHash("md5").update(t.title).digest("hex");
+	const repositoryName = md5(t.title);
 
 	return {
 		repositoryName,

@@ -1,5 +1,6 @@
 import * as prismicT from "@prismicio/types";
-import md5 from "tiny-hashes/md5";
+
+import { md5 } from "./md5";
 
 const createId = () => md5(Math.random().toString());
 

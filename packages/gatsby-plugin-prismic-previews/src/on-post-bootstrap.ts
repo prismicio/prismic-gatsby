@@ -2,7 +2,6 @@ import * as gatsby from "gatsby";
 import * as gatsbyPrismic from "gatsby-source-prismic";
 import * as path from "path";
 import { createNodeHelpers } from "gatsby-node-helpers";
-import md5 from "tiny-hashes/md5";
 
 import { serializeTypePathNodes } from "./lib/serializeTypePathsNodes";
 import { sprintf } from "./lib/sprintf";
@@ -49,8 +48,9 @@ export const onPostBootstrap: NonNullable<
 
 	const serializedTypePaths = serializeTypePathNodes(typePathNodes);
 
-	const filename = `${md5(
-		sprintf(TYPE_PATHS_BASENAME_TEMPLATE, pluginOptions.repositoryName),
+	const filename = `${sprintf(
+		TYPE_PATHS_BASENAME_TEMPLATE,
+		pluginOptions.repositoryName,
 	)}.json`;
 	const publicPath = path.join("public", "static", filename);
 

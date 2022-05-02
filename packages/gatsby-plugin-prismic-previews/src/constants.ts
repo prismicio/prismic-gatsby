@@ -34,7 +34,7 @@ export const QUERY_PAGE_SIZE = 100;
 /**
  * Template used to generate a hash for a collection of type paths.
  */
-export const TYPE_PATHS_BASENAME_TEMPLATE = "type-paths-store %s";
+export const TYPE_PATHS_BASENAME_TEMPLATE = "type-paths___%s";
 
 /**
  * Identifier used to store plugin options on `window` to pass to other parts of
