@@ -22,7 +22,7 @@ import { serializeTypePaths } from "./serializeTypePaths";
 import { serializePath } from "./serializePath";
 
 // `createNodeId` would normally create a hash from its input, but we can treat
-// it as an identify function since we are using it within the context of
+// it as an identity function since we are using it within the context of
 // Prismic documents with unique IDs.
 const createNodeId = (input: string): string => input;
 
