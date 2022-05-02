@@ -3,6 +3,7 @@ import * as gatsbyPrismic from "gatsby-source-prismic";
 import * as path from "path";
 import { createNodeHelpers } from "gatsby-node-helpers";
 
+import { buildTypePathsStoreFilename } from "./lib/buildTypePathsStoreFilename";
 import { serializeTypePathNodes } from "./lib/serializeTypePathsNodes";
 import { sprintf } from "./lib/sprintf";
 
@@ -10,7 +11,6 @@ import {
 	TYPE_PATHS_MISSING_NODE_MSG,
 	WROTE_TYPE_PATHS_TO_FS_MSG,
 	REPORTER_TEMPLATE,
-	TYPE_PATHS_BASENAME_TEMPLATE,
 } from "./constants";
 import { PluginOptions } from "./types";
 
@@ -48,10 +48,7 @@ export const onPostBootstrap: NonNullable<
 
 	const serializedTypePaths = serializeTypePathNodes(typePathNodes);
 
-	const filename = `${sprintf(
-		TYPE_PATHS_BASENAME_TEMPLATE,
-		pluginOptions.repositoryName,
-	)}.json`;
+	const filename = buildTypePathsStoreFilename(pluginOptions.repositoryName);
 	const publicPath = path.join("public", "static", filename);
 
 	await pluginOptions.writeTypePathsToFilesystem({
