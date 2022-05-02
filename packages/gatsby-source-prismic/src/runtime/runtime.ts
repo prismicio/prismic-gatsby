@@ -28,7 +28,7 @@ const createNodeId = (input: string): string => input;
 
 // `createContentDigest` would normally create a hash from its input, but we
 // can treat it as a stubbed function since a Gatsby node's
-// `internal.contentDigest` property is an internal document. In a runtime
+// `internal.contentDigest` property is an internal field. In a runtime
 // preview, we don't need the digest.
 const createContentDigest = <T>(_input: T): string =>
 	"contentDigest is not supported during previews";
