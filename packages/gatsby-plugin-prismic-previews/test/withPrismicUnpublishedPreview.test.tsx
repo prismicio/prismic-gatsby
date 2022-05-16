@@ -192,7 +192,7 @@ test.serial("merges data if preview data is available", async (t) => {
 			searchParams: { ref },
 		}),
 		createTypePathsMockedRequest(
-			"a9101d270279c16322571b8448d7a329.json",
+			pluginOptions.repositoryName,
 			runtime.typePaths,
 		),
 	);

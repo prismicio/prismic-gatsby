@@ -35,7 +35,7 @@ test("saves serialized typepaths to filesystem", async (t) => {
 
 	t.is(
 		writeTypePathsToFilesystemCall.publicPath,
-		"public/static/3e66cce7662062ad5137e62e8bb62096.json",
+		`public/static/type-paths___${pluginOptions.repositoryName}.json`,
 	);
 
 	t.deepEqual(

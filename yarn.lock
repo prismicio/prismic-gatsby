@@ -9688,7 +9688,7 @@ gatsby-plugin-page-creator@^4.0.0, gatsby-plugin-page-creator@^4.1.0:
     lodash "^4.17.21"
 
 "gatsby-plugin-prismic-previews@link:packages/gatsby-plugin-prismic-previews":
-  version "5.2.5"
+  version "5.2.6"
   dependencies:
     "@imgix/gatsby" "^1.7.5"
     "@prismicio/client" "^6.4.2"
@@ -9824,7 +9824,7 @@ gatsby-source-filesystem@^4.0.0:
     xstate "^4.14.0"
 
 "gatsby-source-prismic@link:packages/gatsby-source-prismic":
-  version "5.2.5"
+  version "5.2.6"
   dependencies:
     "@imgix/gatsby" "^1.7.5"
     "@prismicio/client" "^6.4.2"
@@ -9836,7 +9836,6 @@ gatsby-source-filesystem@^4.0.0:
     gatsby-node-helpers "^1.2.1"
     gatsby-source-filesystem "^4.0.0"
     node-fetch "^2.6.5"
-    tiny-hashes "^1.0.1"
 
 gatsby-telemetry@^3.0.0, gatsby-telemetry@^3.1.0:
   version "3.1.0"

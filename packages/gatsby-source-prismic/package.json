@@ -52,8 +52,7 @@
 		"fp-ts": "^2.10.5",
 		"gatsby-node-helpers": "^1.2.1",
 		"gatsby-source-filesystem": "^4.0.0",
-		"node-fetch": "^2.6.5",
-		"tiny-hashes": "^1.0.1"
+		"node-fetch": "^2.6.5"
 	},
 	"devDependencies": {
 		"@prismicio/mock": "^0.0.6",

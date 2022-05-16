@@ -3,7 +3,6 @@ import * as prismicH from "@prismicio/helpers";
 import * as imgixGatsby from "@imgix/gatsby";
 import * as nodeHelpers from "gatsby-node-helpers";
 import { pipe } from "fp-ts/function";
-import md5 from "tiny-hashes/md5";
 
 import { SerializedTypePath, TransformFieldNameFn, TypePath } from "../types";
 import { normalize } from "./normalize";
@@ -22,8 +21,17 @@ import { NormalizedDocumentValue } from "./normalizers";
 import { serializeTypePaths } from "./serializeTypePaths";
 import { serializePath } from "./serializePath";
 
-const createNodeId = (input: string): string => md5(input);
-const createContentDigest = <T>(input: T): string => md5(JSON.stringify(input));
+// `createNodeId` would normally create a hash from its input, but we can treat
+// it as an identity function since we are using it within the context of
+// Prismic documents with unique IDs.
+const createNodeId = (input: string): string => input;
+
+// `createContentDigest` would normally create a hash from its input, but we
+// can treat it as a stubbed function since a Gatsby node's
+// `internal.contentDigest` property is an internal field. In a runtime
+// preview, we don't need the digest.
+const createContentDigest = <T>(_input: T): string =>
+	"contentDigest is not supported during previews";
 
 export type RuntimeConfig = {
 	typePrefix?: string;
