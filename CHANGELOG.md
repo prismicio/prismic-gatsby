@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.8](https://github.com/prismicio/prismic-gatsby/compare/v5.2.7...v5.2.8) (2022-05-19)
+
+
+### Bug Fixes
+
+* **previews:** support React 18 ([#508](https://github.com/prismicio/prismic-gatsby/issues/508)) ([6f55e01](https://github.com/prismicio/prismic-gatsby/commit/6f55e01efb55825699a99f6c47a6c1e780ad73e7))
+
+
+
+
+
 ## [5.2.7](https://github.com/prismicio/prismic-gatsby/compare/v5.2.6...v5.2.7) (2022-05-16)
 
 **Note:** Version bump only for package @prismicio/gatsby
