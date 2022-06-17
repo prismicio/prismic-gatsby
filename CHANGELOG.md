@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.9](https://github.com/prismicio/prismic-gatsby/compare/v5.2.8...v5.2.9) (2022-06-17)
+
+
+### Bug Fixes
+
+* apply same fix to typepath generation ([8ad9af3](https://github.com/prismicio/prismic-gatsby/commit/8ad9af3a06aad32423453305417b37cf00815c9e))
+* support Slice Zones with missing `choices` property ([eb0386f](https://github.com/prismicio/prismic-gatsby/commit/eb0386fbb4b8e3e682b09957f4cef8942e96e0e8))
+
+
+
+
+
 ## [5.2.8](https://github.com/prismicio/prismic-gatsby/compare/v5.2.7...v5.2.8) (2022-05-19)
 
 
