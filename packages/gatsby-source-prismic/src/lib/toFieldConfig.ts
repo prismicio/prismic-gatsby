@@ -88,7 +88,10 @@ export const toFieldConfig = (
 		}
 
 		case prismicT.CustomTypeModelFieldType.Slices: {
-			if (Object.keys(schema.config.choices).length > 0) {
+			if (
+				schema.config.choices &&
+				Object.keys(schema.config.choices).length > 0
+			) {
 				return buildSlicesFieldConfig(path, schema);
 			} else {
 				return RTE.right(undefined);

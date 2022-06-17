@@ -33,7 +33,10 @@ const fieldToTypePaths = <
 		}
 
 		case prismicT.CustomTypeModelFieldType.Slices: {
-			const choices = Object.entries(model.config.choices)
+			const choices = (
+				(model.config.choices && Object.entries(model.config.choices)) ||
+				[]
+			)
 				.filter(
 					(entry): entry is [string, prismicT.CustomTypeModelSlice] =>
 						entry[1].type === prismicT.CustomTypeModelSliceType.Slice,
