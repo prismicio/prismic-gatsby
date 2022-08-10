@@ -361,6 +361,7 @@ export interface PluginOptions extends GatsbyPluginOptions {
   fetchLinks?: string[]
   schemas: Schemas
   lang?: string
+  pageSize?: number
   shouldDownloadImage?: ShouldDownloadImage
   shouldNormalizeImage?: ShouldDownloadImage
   typePathsFilenamePrefix?: string
