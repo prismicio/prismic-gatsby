@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.4.0](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.6...v3.4.0) (2022-08-10)
+
+
+### Features
+
+* add `pageSize` plugin option ([#518](https://github.com/angeloashmore/gatsby-source-prismic/issues/518)) ([92f8e3e](https://github.com/angeloashmore/gatsby-source-prismic/commit/92f8e3e94c069e28653c92dd7a8c4f7594467a36))
+
 ### [3.3.6](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.5...v3.3.6) (2021-04-22)
 
 ### [3.3.5](https://github.com/angeloashmore/gatsby-source-prismic/compare/v3.3.4...v3.3.5) (2021-04-22)
