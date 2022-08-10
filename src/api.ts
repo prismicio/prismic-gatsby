@@ -63,6 +63,7 @@ export const fetchAllDocuments = async (
     accessToken,
     fetchLinks,
     lang,
+    pageSize,
   } = pluginOptions
   const { reporter } = gatsbyContext
 
@@ -84,7 +85,14 @@ export const fetchAllDocuments = async (
   if (fetchLinks) queryOptions.fetchLinks = fetchLinks
   if (lang) queryOptions.lang = lang
 
-  return await pagedGet(client, queryOptions, 1, API_PAGE_SIZE, [], reporter)
+  return await pagedGet(
+    client,
+    queryOptions,
+    1,
+    pageSize || API_PAGE_SIZE,
+    [],
+    reporter,
+  )
 }
 
 export async function fetchDocumentsByIds(
