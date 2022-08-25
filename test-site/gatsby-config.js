@@ -19,6 +19,8 @@ module.exports = {
           kitchen_sink: require("./schemas/kitchen_sink.json"),
           without_uid: require("./schemas/without_uid.json"),
           without_data: require("./schemas/without_data.json"),
+          with_empty_slice_models: require("./schemas/with_empty_slice_models.json"),
+          with_thumbnail_using_dashes: {},
           not_used: {},
           test: {},
         },
