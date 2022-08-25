@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.10-benchmark.0](https://github.com/prismicio/prismic-gatsby/compare/v5.2.9...v5.2.10-benchmark.0) (2022-08-25)
+
+
+### Features
+
+* add source nodes timer ([6bc8e38](https://github.com/prismicio/prismic-gatsby/commit/6bc8e3897531c356d39f618488f9ca77e587f37e))
+
+
+
+
+
 ## [5.2.9](https://github.com/prismicio/prismic-gatsby/compare/v5.2.8...v5.2.9) (2022-06-17)
 
 

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.10-benchmark.0](https://github.com/prismicio/prismic-gatsby/compare/v5.2.9...v5.2.10-benchmark.0) (2022-08-25)
+
+
+### Bug Fixes
+
+* **source:** support Slice Zones with missing `choices` property ([#511](https://github.com/prismicio/prismic-gatsby/issues/511)) ([bab9ca8](https://github.com/prismicio/prismic-gatsby/commit/bab9ca8678631645b682498781d494a6ef86eb46))
+
+
+### Features
+
+* add preview loading timer ([87d0e82](https://github.com/prismicio/prismic-gatsby/commit/87d0e82f58e8e5ad62a36ba1a019884a86b9b831))
+* add source nodes timer ([6bc8e38](https://github.com/prismicio/prismic-gatsby/commit/6bc8e3897531c356d39f618488f9ca77e587f37e))
+
+
+
+
+
 ## [5.2.9](https://github.com/prismicio/prismic-gatsby/compare/v5.2.8...v5.2.9) (2022-06-17)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.10-benchmark.0](https://github.com/prismicio/prismic-gatsby/compare/v5.2.9...v5.2.10-benchmark.0) (2022-08-25)
+
+
+### Features
+
+* add preview loading timer ([87d0e82](https://github.com/prismicio/prismic-gatsby/commit/87d0e82f58e8e5ad62a36ba1a019884a86b9b831))
+
+
+
+
+
 ## [5.2.8](https://github.com/prismicio/prismic-gatsby/compare/v5.2.7...v5.2.8) (2022-05-19)
 
 
