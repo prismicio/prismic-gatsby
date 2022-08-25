@@ -21,6 +21,8 @@ import {
 } from "./context";
 import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
 
+const PREVIEW_LOADING_TIME_LABEL = "Preview loading time";
+
 export type UsePrismicPreviewBootstrapConfig = {
 	fetch?: FetchLike;
 };
@@ -77,6 +79,8 @@ export const usePrismicPreviewBootstrap = (
 				type: PrismicContextActionType.NotAPreview,
 			});
 		}
+
+		console.time(PREVIEW_LOADING_TIME_LABEL);
 
 		contextDispatch({
 			type: PrismicContextActionType.SetActiveRepositoryName,
@@ -198,6 +202,8 @@ export const usePrismicPreviewBootstrap = (
 		contextDispatch({
 			type: PrismicContextActionType.Bootstrapped,
 		});
+
+		console.timeEnd(PREVIEW_LOADING_TIME_LABEL);
 	}, [
 		repositoryConfigs,
 		contextState.repositoryConfigs,
