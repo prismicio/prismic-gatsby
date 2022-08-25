@@ -6,6 +6,8 @@ import { createNodeHelpers } from "gatsby-node-helpers";
 import { GLOBAL_TYPE_PREFIX } from "./constants";
 import { Dependencies, PluginOptions } from "./types";
 import { createRuntime } from "./runtime";
+import { sprintf } from "./lib/sprintf";
+import { REPORTER_TEMPLATE } from ".";
 
 const defaultTransformFieldName = (fieldName: string) =>
 	fieldName.replace(/-/g, "_");
@@ -93,6 +95,8 @@ export const buildDependencies = async (
 			transformFieldName,
 		}),
 
-		sourceNodesTimer: gatsbyContext.reporter.activityTimer("Source nodes"),
+		sourceNodesTimer: gatsbyContext.reporter.activityTimer(
+			sprintf(REPORTER_TEMPLATE, pluginOptions.repositoryName, "Source nodes"),
+		),
 	};
 };
