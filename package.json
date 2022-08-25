@@ -7,6 +7,7 @@
     "build": "yarn workspaces run build",
     "publish:canary": "lerna publish --canary",
     "publish:slicemachine": "lerna publish --dist-tag slicemachine --preid slicemachine",
+    "publish:benchmark": "lerna publish prerelease --dist-tag benchmark --preid benchmark",
     "publish:alpha": "lerna publish --dist-tag alpha --preid alpha",
     "publish:beta": "lerna publish --dist-tag beta --preid beta",
     "publish:next": "lerna publish --dist-tag next --preid next",
