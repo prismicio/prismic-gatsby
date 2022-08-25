@@ -15,9 +15,14 @@ export const sourceNodesForAllDocuments: RTE.ReaderTaskEither<
 	Dependencies,
 	Error,
 	void
-> = pipe(
-	queryAllDocuments,
-	RTE.chainW(normalizeDocuments),
-	RTE.chainW((docs) => createGloballyUniqueNodes(docs as Mutable<typeof docs>)),
-	RTE.map(constVoid),
-);
+> = (deps) => {
+	return pipe(
+		queryAllDocuments,
+		RTE.chainW(normalizeDocuments),
+		RTE.chainW((docs) =>
+			createGloballyUniqueNodes(docs as Mutable<typeof docs>),
+		),
+		RTE.chainFirst(() => RTE.fromIO(() => deps.sourceNodesTimer.end())),
+		RTE.map(constVoid),
+	)(deps);
+};

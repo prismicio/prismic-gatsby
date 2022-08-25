@@ -83,6 +83,8 @@ export interface Dependencies {
 	createRemoteFileNode: typeof gatsbyFs.createRemoteFileNode;
 	transformFieldName: TransformFieldNameFn;
 	runtime: Runtime;
+
+	sourceNodesTimer: ReturnType<gatsby.Reporter["activityTimer"]>;
 }
 
 type ShouldDownloadFilesPredicate = (

@@ -23,6 +23,7 @@ export const queryAllDocuments: RTE.ReaderTaskEither<
 	prismicT.PrismicDocument[]
 > = pipe(
 	RTE.ask<Dependencies>(),
+	RTE.chainFirst((env) => RTE.fromIO(() => env.sourceNodesTimer.start())),
 	RTE.chain((env) =>
 		RTE.fromTask(() =>
 			env.prismicClient.dangerouslyGetAll({

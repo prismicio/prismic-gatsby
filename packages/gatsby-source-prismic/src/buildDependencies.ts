@@ -92,5 +92,7 @@ export const buildDependencies = async (
 			htmlSerializer: pluginOptions.htmlSerializer,
 			transformFieldName,
 		}),
+
+		sourceNodesTimer: gatsbyContext.reporter.activityTimer("Source nodes"),
 	};
 };
