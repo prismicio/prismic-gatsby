@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.10-benchmark.1](https://github.com/prismicio/prismic-gatsby/compare/v5.2.10-benchmark.0...v5.2.10-benchmark.1) (2022-08-26)
+
+**Note:** Version bump only for package gatsby-plugin-prismic-previews
+
+
+
+
+
 ## [5.2.10-benchmark.0](https://github.com/prismicio/prismic-gatsby/compare/v5.2.9...v5.2.10-benchmark.0) (2022-08-25)
 
 
