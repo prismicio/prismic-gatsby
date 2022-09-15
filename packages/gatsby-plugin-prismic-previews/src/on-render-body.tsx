@@ -35,34 +35,35 @@ const getToolbarScriptURL = (
  */
 // TODO: Explore what happens when multiple instances of the plugin are
 // configured. Will multiple toolbars cause conflicts?
-export const onRenderBody: NonNullable<gatsby.GatsbySSR["onRenderBody"]> =
-	async (
-		gatsbyContext: gatsby.RenderBodyArgs,
-		pluginOptions: PluginOptions,
-	) => {
-		const toolbarScriptUrl = getToolbarScriptURL(
-			pluginOptions.repositoryName,
-			pluginOptions.toolbar,
-		);
+export const onRenderBody: NonNullable<
+	gatsby.GatsbySSR["onRenderBody"]
+> = async (
+	gatsbyContext: gatsby.RenderBodyArgs,
+	pluginOptions: PluginOptions,
+) => {
+	const toolbarScriptUrl = getToolbarScriptURL(
+		pluginOptions.repositoryName,
+		pluginOptions.toolbar,
+	);
 
-		gatsbyContext.setHeadComponents([
-			<link
-				rel="preconnect"
-				key="preconnect-prismic-toolbar"
-				href={toolbarScriptUrl.origin}
-			/>,
-			<link
-				rel="dns-prefetch"
-				key="dns-prefetch-prismic-toolbar"
-				href={toolbarScriptUrl.origin}
-			/>,
-		]);
+	gatsbyContext.setHeadComponents([
+		<link
+			rel="preconnect"
+			key="preconnect-prismic-toolbar"
+			href={toolbarScriptUrl.origin}
+		/>,
+		<link
+			rel="dns-prefetch"
+			key="dns-prefetch-prismic-toolbar"
+			href={toolbarScriptUrl.origin}
+		/>,
+	]);
 
-		gatsbyContext.setPostBodyComponents([
-			<script
-				src={toolbarScriptUrl.href}
-				defer={true}
-				key={`prismic-toolbar-${pluginOptions.repositoryName}`}
-			/>,
-		]);
-	};
+	gatsbyContext.setPostBodyComponents([
+		<script
+			src={toolbarScriptUrl.href}
+			defer={true}
+			key={`prismic-toolbar-${pluginOptions.repositoryName}`}
+		/>,
+	]);
+};

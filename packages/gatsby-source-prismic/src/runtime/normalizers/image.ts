@@ -154,7 +154,7 @@ const buildImageField = <Value extends prismicT.ImageFieldImage>(
 	}
 };
 
-export const image = <Value extends prismicT.ImageField>(
+export const image = <Value extends prismicT.ImageField<string>>(
 	config: NormalizeImageConfig<Value>,
 ): NormalizedImageValue<Value> => {
 	const result = {

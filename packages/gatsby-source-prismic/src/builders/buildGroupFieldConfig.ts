@@ -21,12 +21,13 @@ import { Dependencies, FieldConfigCreator } from "../types";
  *
  * @returns GraphQL field configuration object.
  */
-export const buildGroupFieldConfig: FieldConfigCreator<prismicT.CustomTypeModelGroupField> =
-	(path, schema) =>
-		pipe(
-			RTE.ask<Dependencies>(),
-			RTE.chain(() => buildSchemaRecordType(path, schema.config.fields)),
-			RTE.chainFirstW(createType),
-			RTE.map(getTypeName),
-			RTE.map(listTypeName),
-		);
+export const buildGroupFieldConfig: FieldConfigCreator<
+	prismicT.CustomTypeModelGroupField
+> = (path, schema) =>
+	pipe(
+		RTE.ask<Dependencies>(),
+		RTE.chain(() => buildSchemaRecordType(path, schema.config.fields)),
+		RTE.chainFirstW(createType),
+		RTE.map(getTypeName),
+		RTE.map(listTypeName),
+	);

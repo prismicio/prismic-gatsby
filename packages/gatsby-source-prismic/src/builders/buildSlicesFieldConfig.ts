@@ -210,43 +210,41 @@ const buildSliceTypes = (
  *
  * @returns GraphQL field configuration object.
  */
-export const buildSlicesFieldConfig: FieldConfigCreator<prismicT.CustomTypeModelSliceZoneField> =
-	(path, schema) =>
-		pipe(
-			RTE.ask<Dependencies>(),
-			RTE.chain((deps) =>
-				pipe(
-					buildSliceTypes(path, schema.config.choices),
-					RTE.chainW((types) =>
-						buildUnionType({
-							name: deps.nodeHelpers.createTypeName([...path, "SlicesType"]),
-							types,
-							resolveType: (source: prismicT.Slice | prismicT.SharedSlice) =>
-								pipe(
-									source,
-									O.fromPredicate(
-										(source): source is prismicT.SharedSlice =>
-											"variation" in source,
-									),
-									O.map((source) =>
-										deps.nodeHelpers.createTypeName([
-											source.slice_type,
-											source.variation,
-										]),
-									),
-									O.getOrElse(() =>
-										deps.nodeHelpers.createTypeName([
-											...path,
-											source.slice_type,
-										]),
-									),
+export const buildSlicesFieldConfig: FieldConfigCreator<
+	prismicT.CustomTypeModelSliceZoneField
+> = (path, schema) =>
+	pipe(
+		RTE.ask<Dependencies>(),
+		RTE.chain((deps) =>
+			pipe(
+				buildSliceTypes(path, schema.config.choices),
+				RTE.chainW((types) =>
+					buildUnionType({
+						name: deps.nodeHelpers.createTypeName([...path, "SlicesType"]),
+						types,
+						resolveType: (source: prismicT.Slice | prismicT.SharedSlice) =>
+							pipe(
+								source,
+								O.fromPredicate(
+									(source): source is prismicT.SharedSlice =>
+										"variation" in source,
 								),
-						}),
-					),
-					RTE.chainFirstW(createType),
-					RTE.map(
-						flow(getTypeName, requiredTypeName, listTypeName, requiredTypeName),
-					),
+								O.map((source) =>
+									deps.nodeHelpers.createTypeName([
+										source.slice_type,
+										source.variation,
+									]),
+								),
+								O.getOrElse(() =>
+									deps.nodeHelpers.createTypeName([...path, source.slice_type]),
+								),
+							),
+					}),
+				),
+				RTE.chainFirstW(createType),
+				RTE.map(
+					flow(getTypeName, requiredTypeName, listTypeName, requiredTypeName),
 				),
 			),
-		);
+		),
+	);
