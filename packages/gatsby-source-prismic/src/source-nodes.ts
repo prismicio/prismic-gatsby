@@ -38,16 +38,17 @@ const sourceNodesProgram: RTE.ReaderTaskEither<Dependencies, Error, void> =
  *
  * @see https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/#sourceNodes
  */
-export const sourceNodes: NonNullable<gatsby.GatsbyNode["sourceNodes"]> =
-	async (
-		gatsbyContext: gatsby.SourceNodesArgs,
-		unpreparedPluginOptions: UnpreparedPluginOptions,
-	) => {
-		const pluginOptions = await preparePluginOptions(unpreparedPluginOptions);
-		const dependencies = await buildDependencies(gatsbyContext, pluginOptions);
+export const sourceNodes: NonNullable<
+	gatsby.GatsbyNode["sourceNodes"]
+> = async (
+	gatsbyContext: gatsby.SourceNodesArgs,
+	unpreparedPluginOptions: UnpreparedPluginOptions,
+) => {
+	const pluginOptions = await preparePluginOptions(unpreparedPluginOptions);
+	const dependencies = await buildDependencies(gatsbyContext, pluginOptions);
 
-		return await pipe(
-			sourceNodesProgram(dependencies),
-			TE.fold(throwError, () => T.of(void 0)),
-		)();
-	};
+	return await pipe(
+		sourceNodesProgram(dependencies),
+		TE.fold(throwError, () => T.of(void 0)),
+	)();
+};
