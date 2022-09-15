@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.10](https://github.com/prismicio/prismic-gatsby/compare/v5.2.9...v5.2.10) (2022-09-15)
+
+
+### Bug Fixes
+
+* omit `target` attribute on links without a target ([#520](https://github.com/prismicio/prismic-gatsby/issues/520)) ([abfb55e](https://github.com/prismicio/prismic-gatsby/commit/abfb55e37bdd431cebe78caaebe0f939dd8d7fd7))
+
+
+
+
+
 ## [5.2.8](https://github.com/prismicio/prismic-gatsby/compare/v5.2.7...v5.2.8) (2022-05-19)
 
 

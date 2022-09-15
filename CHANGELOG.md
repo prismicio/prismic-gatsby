@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.10](https://github.com/prismicio/prismic-gatsby/compare/v5.2.9...v5.2.10) (2022-09-15)
+
+
+### Bug Fixes
+
+* omit `target` attribute on links without a target ([#520](https://github.com/prismicio/prismic-gatsby/issues/520)) ([abfb55e](https://github.com/prismicio/prismic-gatsby/commit/abfb55e37bdd431cebe78caaebe0f939dd8d7fd7))
+* **source:** support Slice Zones with missing `choices` property ([#511](https://github.com/prismicio/prismic-gatsby/issues/511)) ([bab9ca8](https://github.com/prismicio/prismic-gatsby/commit/bab9ca8678631645b682498781d494a6ef86eb46))
+
+
+
+
+
 ## [5.2.9](https://github.com/prismicio/prismic-gatsby/compare/v5.2.8...v5.2.9) (2022-06-17)
 
 
