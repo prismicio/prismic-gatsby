@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/prismicio/prismic-gatsby/compare/v5.2.10...v5.3.0) (2023-03-14)
+
+
+### Features
+
+* support Gatsby 5 ([#529](https://github.com/prismicio/prismic-gatsby/issues/529)) ([1971ce2](https://github.com/prismicio/prismic-gatsby/commit/1971ce24ee8f663df2e30ab71ff49508100bdeff))
+
+
+
+
+
 ## [5.2.10](https://github.com/prismicio/prismic-gatsby/compare/v5.2.9...v5.2.10) (2022-09-15)
 
 
