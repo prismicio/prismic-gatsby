@@ -20,6 +20,7 @@ module.exports = {
           without_uid: require("./schemas/without_uid.json"),
           without_data: require("./schemas/without_data.json"),
           with_empty_slice_models: require("./schemas/with_empty_slice_models.json"),
+          conflicting_thumbnail_names: require("./schemas/conflicting_thumbnail_names.json"),
           with_thumbnail_using_dashes: {},
           not_used: {},
           test: {},
