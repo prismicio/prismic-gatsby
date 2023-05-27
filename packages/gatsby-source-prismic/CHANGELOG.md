@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/prismicio/prismic-gatsby/compare/v5.3.0...v5.3.1) (2023-05-27)
+
+
+### Bug Fixes
+
+* update `@imgix/gatsby` to support Gatsby v5.10.0 ([#532](https://github.com/prismicio/prismic-gatsby/issues/532)) ([c729e0a](https://github.com/prismicio/prismic-gatsby/commit/c729e0aa64823db3a2c3f64b6cee1a56f42078b8))
+
+
+
+
+
 ## [5.3.1-alpha.0](https://github.com/prismicio/prismic-gatsby/compare/v5.3.0...v5.3.1-alpha.0) (2023-05-26)
 
 
