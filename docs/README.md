@@ -2,11 +2,6 @@
 
 Documentation for `gatsby-source-prismic` and `gatsby-plugin-prismic-previews` is organized into the following sections.
 
-- [**Getting Started**](./01-getting-started.md)
-- [**Query the API**](./02-query-the-api)
-- [**Templating**](./03-templating)
-- [**Beyond the API**](./04-beyond-the-api)
-
 - [**Overview**](./01-overview.md)
 - [**Set up Prismic**](./02-set-up-prismic.md)
 - [**Fetch Data**](./03-fetch-data.md)
