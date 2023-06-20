@@ -1,9 +1,20 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "./",
-    "resolveJsonModule": true,
-    "jsx": "react"
-  },
-  "include": ["src"]
+	"compilerOptions": {
+		"strict": true,
+		"skipLibCheck": true,
+
+		"target": "esnext",
+		"module": "esnext",
+		"declaration": false,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+
+		"forceConsistentCasingInFileNames": true,
+		"jsx": "preserve",
+		"lib": ["esnext", "dom"],
+		"types": ["node"]
+	},
+	"exclude": ["node_modules", "dist", "examples"]
 }

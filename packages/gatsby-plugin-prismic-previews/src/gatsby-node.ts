@@ -1,2 +1,4 @@
-export { pluginOptionsSchema } from "./plugin-options-schema";
-export { onPostBootstrap } from "./on-post-bootstrap";
+export { onCreateWebpackConfig } from "./gatsby-node/onCreateWebpackConfig";
+export { onPostBootstrap } from "./gatsby-node/onPostBootstrap";
+export { onPreBootstrap } from "./gatsby-node/onPreBootstrap";
+export { pluginOptionsSchema } from "./gatsby-node/pluginOptionsSchema";

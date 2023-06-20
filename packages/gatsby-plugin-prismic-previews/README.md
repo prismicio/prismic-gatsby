@@ -9,10 +9,10 @@
 
 Integrate live [Prismic Previews][prismic-previews] into a static [Gatsby][gatsby] site to enable editors a seamless content editing experience.
 
-- 🤝 Integrates tightly with the [Gatsby Prismic source plugin][gatsby-source-prismic]
-- 👁 Refreshes preview content automatically as changes are saved in Prismic
-- 🚅 Adds the [Prismic Toolbar][prismic-toolbar] with an in-app edit button and preview link sharing.
-- 🌩 No extra infrastructure or costs required (specifically, [Gatsby Cloud][gatsby-cloud] is not required)
+- 🤝 &nbsp;Integrates tightly with the [Gatsby Prismic source plugin][gatsby-source-prismic]
+- 👁 &nbsp;Refreshes preview content automatically as changes are saved in Prismic
+- 🚅 &nbsp;Adds the [Prismic Toolbar][prismic-toolbar] with an in-app edit button and preview link sharing.
+- 🌩 &nbsp;No extra infrastructure or costs required (specifically, [Gatsby Cloud][gatsby-cloud] is not required)
 
 ## Install
 
@@ -34,18 +34,20 @@ Whether you're helping us fix bugs, improve the docs, or spread the word, we'd l
 
 **Suggesting an improvement**: [Open an issue][repo-feature-request] explaining your improvement or feature so we can discuss and learn more.
 
-**Submitting code changes**: For small fixes, feel free to [open a PR][repo-pull-requests] with a description of your changes. For large changes, please first [open an issue][repo-feature-request] so we can discuss if and how the changes should be implemented.
+**Submitting code changes**: For small fixes, feel free to [open a pull request][repo-pull-requests] with a description of your changes. For large changes, please first [open an issue][repo-feature-request] so we can discuss if and how the changes should be implemented.
+
+For more clarity on this project and its structure you can also check out the detailed [CONTRIBUTING.md][contributing] document.
 
 ## License
 
 ```
-Copyright 2013-2021 Prismic <contact@prismic.io> (https://prismic.io)
+Copyright 2013-2022 Prismic <contact@prismic.io> (https://prismic.io)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,21 +61,22 @@ limitations under the License.
 [prismic]: https://prismic.io
 [gatsby]: https://www.gatsbyjs.com/
 [prismic-previews]: https://prismic.io/docs/core-concepts/preview-setup
-[gatsby-source-prismic]: https://github.com/prismicio/gatsby/tree/main/packages/gatsby-source-prismic
+[gatsby-source-prismic]: https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages/gatsby-source-prismic
 [prismic-toolbar]: https://prismic.io/docs/technologies/previews-and-the-prismic-toolbar-javascript
 [gatsby-cloud]: https://www.gatsbyjs.com/products/cloud/
 
 <!-- TODO: Replace link with a more useful one if available -->
 
 [prismic-docs]: https://prismic.io/docs/technologies/gatsby
-[changelog]: https://github.com/prismicio/gatsby/blob/main/packages/gatsby-plugin-prismic-previews/CHANGELOG.md
+[changelog]: https://github.com/prismicio-community/prismic-gatsby-early-access/blob/main/packages/gatsby-plugin-prismic-previews/CHANGELOG.md
+[contributing]: https://github.com/prismicio-community/prismic-gatsby-early-access/blob/main/CONTRIBUTING.md
 
 <!-- TODO: Replace link with a more useful one if available -->
 
 [forum-question]: https://community.prismic.io
-[repo-bug-report]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=bug&template=bug_report.md&title=
-[repo-feature-request]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
-[repo-pull-requests]: https://github.com/prismicio/gatsby/pulls
+[repo-bug-report]: https://github.com/prismicio-community/prismic-gatsby-early-access/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/prismicio-community/prismic-gatsby-early-access/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/prismicio-community/prismic-gatsby-early-access/pulls
 
 <!-- Badges -->
 
@@ -81,10 +84,10 @@ limitations under the License.
 [npm-version-href]: https://npmjs.com/package/gatsby-plugin-prismic-previews
 [npm-downloads-src]: https://img.shields.io/npm/dm/gatsby-plugin-prismic-previews.svg
 [npm-downloads-href]: https://npmjs.com/package/gatsby-plugin-prismic-previews
-[github-actions-ci-src]: https://github.com/prismicio/gatsby/workflows/ci/badge.svg
-[github-actions-ci-href]: https://github.com/prismicio/gatsby/actions?query=workflow%3Aci
-[codecov-src]: https://img.shields.io/codecov/c/github/prismicio/gatsby.svg
-[codecov-href]: https://codecov.io/gh/prismicio/gatsby
+[github-actions-ci-src]: https://github.com/prismicio-community/prismic-gatsby-early-access/workflows/ci/badge.svg
+[github-actions-ci-href]: https://github.com/prismicio-community/prismic-gatsby-early-access/actions?query=workflow%3Aci
+[codecov-src]: https://img.shields.io/codecov/c/github/prismicio-community/prismic-gatsby-early-access.svg
+[codecov-href]: https://codecov.io/gh/prismicio-community/prismic-gatsby-early-access
 [conventional-commits-src]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg
 [conventional-commits-href]: https://conventionalcommits.org
 [license-src]: https://img.shields.io/npm/l/gatsby-plugin-prismic-previews.svg

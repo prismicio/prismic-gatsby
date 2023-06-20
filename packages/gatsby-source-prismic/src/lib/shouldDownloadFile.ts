@@ -1,48 +1,45 @@
-import * as prismicT from "@prismicio/types";
-import * as RTE from "fp-ts/ReaderTaskEither";
-import { pipe } from "fp-ts/function";
+import type { ImageFieldImage, LinkToMediaField } from "@prismicio/client";
 
-import { Dependencies } from "../types";
+import type { PluginOptions } from "../types";
 
-import { dotPath } from "./dotPath";
-
-type ShouldDownloadFileConfig = {
+type ShouldDownloadFileArgs = {
 	path: string[];
-	field: prismicT.ImageFieldImage | prismicT.LinkToMediaField;
+	field: ImageFieldImage<"filled"> | LinkToMediaField<"filled">;
+	pluginOptions: PluginOptions;
 };
 
-export const shouldDownloadFile = (
-	config: ShouldDownloadFileConfig,
-): RTE.ReaderTaskEither<Dependencies, never, boolean> =>
-	pipe(
-		RTE.ask<Dependencies>(),
-		RTE.bindW("predicate", (scope) => {
-			const { shouldDownloadFiles } = scope.pluginOptions;
-			const fieldPath = dotPath(config.path);
+export const shouldDownloadFile = async (
+	args: ShouldDownloadFileArgs,
+): Promise<boolean> => {
+	const fieldDotPath = args.path.join(".");
 
-			switch (typeof shouldDownloadFiles) {
-				case "boolean": {
-					return RTE.right(() => shouldDownloadFiles);
-				}
+	switch (typeof args.pluginOptions.shouldDownloadFiles) {
+		case "boolean": {
+			return args.pluginOptions.shouldDownloadFiles;
+		}
 
-				case "function": {
-					return RTE.right(shouldDownloadFiles);
-				}
+		case "function": {
+			return await args.pluginOptions.shouldDownloadFiles(args.field);
+		}
 
-				case "object": {
-					const fieldPredicate = shouldDownloadFiles[fieldPath];
+		case "object": {
+			const predicate = args.pluginOptions.shouldDownloadFiles[fieldDotPath];
 
-					if (fieldPredicate) {
-						if (typeof fieldPredicate === "boolean") {
-							return RTE.right(() => fieldPredicate);
-						} else if (typeof fieldPredicate === "function") {
-							return RTE.right(fieldPredicate);
-						}
+			if (predicate) {
+				switch (typeof predicate) {
+					case "boolean": {
+						return predicate;
+					}
+
+					case "function": {
+						return await predicate(args.field);
 					}
 				}
 			}
+		}
 
-			return RTE.right(() => false);
-		}),
-		RTE.map((scope) => scope.predicate(config.field)),
-	);
+		default: {
+			return false;
+		}
+	}
+};

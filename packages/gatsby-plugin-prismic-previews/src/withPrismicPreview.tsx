@@ -1,82 +1,62 @@
 import * as React from "react";
-import * as gatsby from "gatsby";
 
+import { getActiveRepositoryName } from "./lib/getActiveRepositoryName";
 import { getComponentDisplayName } from "./lib/getComponentDisplayName";
 
-import { FetchLike, PrismicRepositoryConfigs, UnknownRecord } from "./types";
-import { usePrismicPreviewBootstrap } from "./usePrismicPreviewBootstrap";
+import type { PagePropsLike } from "./types";
+
 import { useMergePrismicPreviewData } from "./useMergePrismicPreviewData";
-import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
-import { PrismicContextActionType } from "./context";
+import { usePrismicPreviewStore } from "./usePrismicPreviewStore";
 
-import { PrismicPreviewUI } from "./components/PrismicPreviewUI";
-
-export interface WithPrismicPreviewProps<
-	TStaticData extends UnknownRecord = UnknownRecord,
-> {
-	isPrismicPreview: boolean | null;
-	prismicPreviewOriginalData: TStaticData;
-}
-
-export type WithPrismicPreviewConfig = {
-	mergePreviewData?: boolean;
-	fetch?: FetchLike;
+export type WithPrismicPreviewProps<TProps = Record<string, unknown>> = {
+	originalData: TProps;
+	isPrismicPreview: boolean;
 };
 
-/**
- * A React higher order component (HOC) that wraps a Gatsby page to
- * automatically merge previewed content during a Prismic preview session.
- *
- * @param WrappedComponent - The Gatsby page component.
- * @param usePrismicPreviewBootstrapConfig - Configuration determining how the
- *   preview session is managed.
- * @param config - Configuration determining how the HOC handes previewed content.
- *
- * @returns `WrappedComponent` with automatic Prismic preview data.
- */
-export const withPrismicPreview = <
-	TStaticData extends UnknownRecord,
-	TProps extends gatsby.PageProps<TStaticData>,
->(
-	WrappedComponent: React.ComponentType<
-		TProps & WithPrismicPreviewProps<TStaticData>
-	>,
-	repositoryConfigs: PrismicRepositoryConfigs = [],
-	config: WithPrismicPreviewConfig = {},
+export const withPrismicPreview = <TProps extends PagePropsLike>(
+	WrappedComponent: React.ComponentType<TProps>,
 ): React.ComponentType<TProps> => {
-	const WithPrismicPreview = (props: TProps): React.ReactElement => {
-		const [, contextDispatch] = usePrismicPreviewContext();
-		const bootstrapPreview = usePrismicPreviewBootstrap(repositoryConfigs, {
-			fetch: config.fetch,
-		});
-		const mergedData = useMergePrismicPreviewData(props.data, {
-			skip: config.mergePreviewData,
-		});
+	const WithPrismicPreview = (props: TProps): JSX.Element => {
+		const isBootstrapped = usePrismicPreviewStore(
+			(state) => state.isBootstrapped,
+		);
 
-		const afterAccessTokenSet = React.useCallback(() => {
-			contextDispatch({ type: PrismicContextActionType.GoToIdle });
-			bootstrapPreview();
-		}, [bootstrapPreview, contextDispatch]);
+		const [isPrismicPreview, setIsPrismicPreview] = React.useState<
+			boolean | null
+		>(null);
+		const mergedData = useMergePrismicPreviewData(props.data);
 
 		React.useEffect(() => {
-			bootstrapPreview();
-		}, [bootstrapPreview]);
+			const abortController = new AbortController();
+
+			if (!isBootstrapped) {
+				const repositoryName = getActiveRepositoryName();
+				setIsPrismicPreview(!!repositoryName);
+
+				if (repositoryName) {
+					import("./lib/bootstrapPrismicPreview").then((mod) =>
+						mod.default(repositoryName, abortController),
+					);
+				}
+			}
+
+			return () => abortController.abort();
+		}, [isBootstrapped]);
 
 		return (
-			<>
-				<WrappedComponent
-					{...props}
-					data={mergedData.data}
-					isPrismicPreview={mergedData.isPreview}
-					prismicPreviewOriginalData={props.data}
-				/>
-				<PrismicPreviewUI afterAccessTokenSet={afterAccessTokenSet} />
-			</>
+			<WrappedComponent
+				{...props}
+				data={mergedData}
+				originalData={props.data}
+				isPrismicPreview={isPrismicPreview}
+			/>
 		);
 	};
 
-	const wrappedComponentName = getComponentDisplayName(WrappedComponent);
-	WithPrismicPreview.displayName = `withPrismicPreview(${wrappedComponentName})`;
+	if (process.env.NODE_ENV === "development") {
+		const wrappedComponentName = getComponentDisplayName(WrappedComponent);
+		WithPrismicPreview.displayName = `withPrismicPreview(${wrappedComponentName})`;
+	}
 
 	return WithPrismicPreview;
 };

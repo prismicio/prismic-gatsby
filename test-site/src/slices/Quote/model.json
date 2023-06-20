@@ -1,0 +1,35 @@
+{
+	"id": "quote",
+	"type": "SharedSlice",
+	"name": "Quote",
+	"description": "Quote",
+	"variations": [
+		{
+			"id": "default",
+			"name": "Default",
+			"docURL": "...",
+			"version": "sktwi1xtmkfgx8626",
+			"description": "Quote",
+			"primary": {
+				"quote": {
+					"type": "StructuredText",
+					"config": {
+						"label": "Quote",
+						"placeholder": "Quote without quotation marks",
+						"allowTargetBlank": true,
+						"single": "heading2"
+					}
+				},
+				"source": {
+					"type": "Text",
+					"config": {
+						"label": "Source",
+						"placeholder": "Source of the quote"
+					}
+				}
+			},
+			"items": {},
+			"imageUrl": "https://images.prismic.io/slice-machine/621a5ec4-0387-4bc5-9860-2dd46cbc07cd_default_ss.png?auto=compress,format"
+		}
+	]
+}

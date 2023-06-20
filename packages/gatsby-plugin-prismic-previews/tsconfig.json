@@ -4,7 +4,7 @@
 		"skipLibCheck": true,
 
 		"target": "esnext",
-		"module": "commonjs",
+		"module": "esnext",
 		"declaration": false,
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
@@ -13,8 +13,9 @@
 
 		"forceConsistentCasingInFileNames": true,
 		"jsx": "preserve",
-		"lib": ["esnext", "dom", "dom.iterable"],
+		"lib": ["esnext", "dom"],
 		"types": ["node"]
 	},
+	"include": ["**/*.ts", "**/*.tsx", "types.d.ts"],
 	"exclude": ["node_modules", "dist", "examples"]
 }

@@ -1,0 +1,57 @@
+{
+	"id": "settings",
+	"label": "Settings",
+	"repeatable": false,
+	"status": true,
+	"json": {
+		"Main": {
+			"name": {
+				"type": "StructuredText",
+				"config": {
+					"label": "Name",
+					"placeholder": "Name of your blog (e.g. your name)",
+					"allowTargetBlank": false,
+					"single": "heading1"
+				}
+			},
+			"description": {
+				"type": "StructuredText",
+				"config": {
+					"label": "Description",
+					"placeholder": "Short description of your blog",
+					"allowTargetBlank": false,
+					"single": "paragraph"
+				}
+			},
+			"profilePicture": {
+				"type": "Image",
+				"config": {
+					"label": "Profile Picture",
+					"constraint": {
+						"width": 2000,
+						"height": 2000
+					},
+					"thumbnails": []
+				}
+			},
+			"newsletterDescription": {
+				"type": "StructuredText",
+				"config": {
+					"label": "Newsletter Description",
+					"placeholder": "Text above the sign up form",
+					"allowTargetBlank": true,
+					"multi": "heading1,paragraph,strong,em,hyperlink,list-item,o-list-item"
+				}
+			},
+			"newsletterDisclaimer": {
+				"type": "StructuredText",
+				"config": {
+					"label": "Newsletter Disclaimer",
+					"placeholder": "Small text below sign up form",
+					"allowTargetBlank": true,
+					"multi": "paragraph,em,strong,hyperlink"
+				}
+			}
+		}
+	}
+}

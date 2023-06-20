@@ -1,90 +1,45 @@
-import * as gatsby from "gatsby";
-import * as imgixGatsby from "@imgix/gatsby";
-import * as gatsbyPrismic from "gatsby-source-prismic";
-import * as prismic from "@prismicio/client";
-import * as prismicT from "@prismicio/types";
-import * as prismicH from "@prismicio/helpers";
-import { SetRequired } from "type-fest";
+import type {
+	HTMLRichTextFunctionSerializer,
+	HTMLRichTextMapSerializer,
+	LinkResolverFunction,
+	PrismicDocument,
+	Route,
+} from "@prismicio/client";
+import type { ImgixURLParams } from "imgix-url-builder";
 
-/**
- * A universal API to make network requests. A subset of the `fetch()` API.
- */
-export type FetchLike = (
-	input: string,
-	init?: RequestInitLike,
-) => Promise<ResponseLike>;
-
-/**
- * The minimum required properties from RequestInit.
- */
-export interface RequestInitLike extends prismic.RequestInitLike {
-	cache?: RequestCache;
-}
-
-/**
- * The minimum required properties from Response.
- */
-export interface ResponseLike extends prismic.ResponseLike {
-	text(): Promise<string>;
-}
-
-export interface PluginOptions extends gatsby.PluginOptions {
+export type PluginOptions = {
 	repositoryName: string;
 	accessToken?: string;
-	promptForAccessToken?: boolean;
-	apiEndpoint: string;
-	routes?: prismic.Route[];
-	graphQuery?: string;
-	fetchLinks?: string[];
-	lang: string;
-	pageSize?: number;
-	imageImgixParams: imgixGatsby.ImgixUrlParams;
-	imagePlaceholderImgixParams: imgixGatsby.ImgixUrlParams;
-	typePrefix?: string;
-	toolbar: "new" | "legacy";
-	plugins: [];
-	writeTypePathsToFilesystem: (
-		args: WriteTypePathsToFilesystemArgs,
-	) => void | Promise<void>;
-}
+	apiEndpoint?: string;
+	graphQLEndpoint?: string;
+	routes?: Route[];
+	lang?: string;
+	predicates?: string | string[];
 
-export type WriteTypePathsToFilesystemArgs = {
-	publicPath: string;
-	serializedTypePaths: string;
+	typePrefix?: string;
+
+	imageImgixParams?: ImgixURLParams;
+	imagePlaceholderImgixParams?: ImgixURLParams;
+} & (
+	| {
+			fetchLinks?: string[];
+			graphQuery?: never;
+	  }
+	| {
+			fetchLinks?: never;
+			graphQuery?: string;
+	  }
+);
+
+// Plugins options for public use in `gatsby-config.js`.
+export type PublicPluginOptions = PluginOptions & {
+	// `undefined` is included to support process.env values. The plugin's
+	// `pluginOptionsSchema` will ensure `repositoryName` contains a string value
+	// at runtime.
+	repositoryName: PluginOptions["repositoryName"] | undefined;
 };
 
-// TODO: Delete
-export interface PrismicAPIDocumentNodeInput<
-	TData extends Record<
-		string,
-		prismicT.AnyRegularField | prismicT.GroupField | prismicT.SliceZone
-	> = Record<
-		string,
-		prismicT.AnyRegularField | prismicT.GroupField | prismicT.SliceZone
-	>,
-> extends prismicT.PrismicDocument<TData>,
-		gatsby.NodeInput {
-	prismicId: string;
-}
-
-export type FieldNameTransformer = (fieldName: string) => string;
-
-export type UnknownRecord<K extends PropertyKey = PropertyKey> = Record<
-	K,
-	unknown
->;
-
-export type PrismicRepositoryConfigs = PrismicRepositoryConfig[];
-
-export type PrismicUnpublishedRepositoryConfig = SetRequired<
-	PrismicRepositoryConfig,
-	"componentResolver"
->;
-
-export type PrismicUnpublishedRepositoryConfigs =
-	PrismicUnpublishedRepositoryConfig[];
-
-export type PrismicRepositoryConfig = {
+export type RepositoryConfig = {
 	/**
 	 * Name of the repository to be configured.
 	 */
@@ -94,13 +49,13 @@ export type PrismicRepositoryConfig = {
 	 * Link Resolver for the repository. This should be the same Link Resolver
 	 * provided to `gatsby-source-prismic`'s plugin options.
 	 */
-	linkResolver?: prismicH.LinkResolverFunction;
+	linkResolver?: LinkResolverFunction;
 
 	/**
 	 * HTML Serializer for the repository. This should be the same HTML Serializer
 	 * provided to `gatsby-source-prismic`'s plugin options.
 	 */
-	htmlSerializer?: prismicH.HTMLMapSerializer | prismicH.HTMLFunctionSerializer;
+	htmlSerializer?: HTMLRichTextMapSerializer | HTMLRichTextFunctionSerializer;
 
 	/**
 	 * Field name transformer for the repository. This should be the same function
@@ -110,7 +65,7 @@ export type PrismicRepositoryConfig = {
 	 *
 	 * @returns Transformed version of `fieldName`.
 	 */
-	transformFieldName?: FieldNameTransformer;
+	transformFieldName?: (fieldName: string) => string;
 
 	/**
 	 * Determines the React component to render during an unpublished preview.
@@ -122,13 +77,17 @@ export type PrismicRepositoryConfig = {
 	 * @returns The React component to render. If no component is returned, the
 	 *   wrapped component will be rendered.
 	 */
-	componentResolver?<P>(
-		nodes: gatsbyPrismic.NormalizedDocumentValue[],
-	): React.ComponentType<P> | undefined | null;
+	componentResolver?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	| Record<string, React.ComponentType<any>>
+		| ((
+				nodes: unknown[],
+		  ) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
+		  React.ComponentType<any> | undefined | null);
 
 	/**
 	 * Determines the data passed to a Gatsby page during an unpublished preview.
-	 * The value returned from this function is passed directly to the `data` prop.
+	 * The value returned from this function is passed directly to the `data`
+	 * prop.
 	 *
 	 * @param nodes - List of nodes that have URLs resolved to the current page.
 	 * @param data - The original page's `data` prop.
@@ -136,7 +95,24 @@ export type PrismicRepositoryConfig = {
 	 * @returns The value that will be passed to the page's `data` prop.
 	 */
 	dataResolver?<TData extends Record<string, unknown>>(
-		nodes: gatsbyPrismic.NormalizedDocumentValue[],
+		nodes: unknown,
 		data: TData,
 	): Record<string, unknown>;
+};
+
+export type NormalizedDocument = PrismicDocument & {
+	__typename: string;
+	_previewable: string;
+	prismicId: string;
+	dataRaw: PrismicDocument["data"];
+	raw: PrismicDocument;
+	data: unknown;
+};
+
+export type PagePropsLike = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data?: Record<string, any>;
+	location?: {
+		pathname?: string;
+	};
 };

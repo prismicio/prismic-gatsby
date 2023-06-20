@@ -1,12 +1,5 @@
 <!--- Provide a general summary of your changes in the title above -->
 
-## Package
-
-<!--- Which packages are affected? Put an `x` in all the boxes that apply: -->
-
-- [ ] gatsby-source-prismic
-- [ ] gatsby-plugin-prismic-previews
-
 ## Types of changes
 
 <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->

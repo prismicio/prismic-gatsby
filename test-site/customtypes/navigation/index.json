@@ -1,0 +1,44 @@
+{
+	"id": "navigation",
+	"label": "Navigation",
+	"repeatable": false,
+	"status": true,
+	"json": {
+		"Main": {
+			"homepageLabel": {
+				"type": "StructuredText",
+				"config": {
+					"label": "Homepage Label",
+					"placeholder": "Label for the homepage link",
+					"allowTargetBlank": false,
+					"single": "heading3"
+				}
+			},
+			"links": {
+				"type": "Group",
+				"config": {
+					"label": "Links",
+					"fields": {
+						"label": {
+							"type": "StructuredText",
+							"config": {
+								"label": "Label",
+								"placeholder": "Optional - Label for the link",
+								"allowTargetBlank": false,
+								"single": "heading3"
+							}
+						},
+						"link": {
+							"type": "Link",
+							"config": {
+								"label": "Link",
+								"placeholder": "Link for navigation item",
+								"select": null
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
