@@ -34,9 +34,9 @@ For multiple documents, it's more likely that you would loop over the results 
 
 ```javascript
 <ul>
-  {documents.map((item) => {
-    <li key={item.id}>{item.data.example_key_text}</li>;
-  })}
+	{documents.map((item) => {
+		<li key={item.id}>{item.data.example_key_text}</li>;
+	})}
 </ul>
 ```
 
@@ -144,12 +144,12 @@ To template a Group, you can use a `map()` method to loop over the results. Here
 
 ```javascript
 <ul>
-  {document.data.example_group.map((item) => (
-    <li key={item.id}>
-      {item.example_key_text}
-      {item.example_number}
-    </li>
-  ))}
+	{document.data.example_group.map((item) => (
+		<li key={item.id}>
+			{item.example_key_text}
+			{item.example_number}
+		</li>
+	))}
 </ul>
 
 // Outputs as a list of items
@@ -212,19 +212,19 @@ Wrap your app with `<PrismicProvider>` in a centralized location such as the `g
 
 ```javascript
 import * as React from "react";
-import { Link } from "gatsby";
 import { PrismicProvider } from "@prismicio/react";
+import { Link } from "gatsby";
 
 function App({ children }) {
-  return (
-    <PrismicProvider
-      internalLinkComponent={({ href, ...props }) => (
-        <Link to={href} {...props} />
-      )}
-    >
-      {children}
-    </PrismicProvider>
-  );
+	return (
+		<PrismicProvider
+			internalLinkComponent={({ href, ...props }) => (
+				<Link to={href} {...props} />
+			)}
+		>
+			{children}
+		</PrismicProvider>
+	);
 }
 ```
 
@@ -234,7 +234,7 @@ After that, pass your Link or Content Relationship field to `<PrismicLink>` and
 import { PrismicLink } from "@prismicio/react";
 
 <PrismicLink field={document.data.example_content_relationship}>
-  Example Link
+	Example Link
 </PrismicLink>;
 ```
 
@@ -246,8 +246,8 @@ For example, here we have a Content Relationship field called `example_content_
 
 ```javascript
 <p>
-  {" "}
-  Written by: {document.data.example_content_relationship.data.author_name}
+	{" "}
+	Written by: {document.data.example_content_relationship.data.author_name}
 </p>
 // <strong>Written by: Jane Doe</strong>
 ```
@@ -262,8 +262,8 @@ You can template images using an `img` tag, or a `picture` tag if you have m
 
 ```javascript
 <img
-  src={document.data.example_image.url}
-  alt={document.data.example_image.alt}
+	src={document.data.example_image.url}
+	alt={document.data.example_image.alt}
 />
 ```
 
@@ -307,13 +307,13 @@ You can query image data for `gatsby-plugin-image`'s `GatsbyImage` component 
 
 ```graphql
 query Home {
-  prismicHomepage {
-    data {
-      example_image {
-        gatsbyImageData
-      }
-    }
-  }
+	prismicHomepage {
+		data {
+			example_image {
+				gatsbyImageData
+			}
+		}
+	}
 }
 ```
 
@@ -335,19 +335,19 @@ You must list which files should be downloaded in the `shouldDownloadFiles` opti
 
 ```graphql
 query Pages {
-  allPrismicPage {
-    nodes {
-      data {
-        photo {
-          localFile {
-            childImageSharp {
-              gatsbyImageData
-            }
-          }
-        }
-      }
-    }
-  }
+	allPrismicPage {
+		nodes {
+			data {
+				photo {
+					localFile {
+						childImageSharp {
+							gatsbyImageData
+						}
+					}
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -355,21 +355,21 @@ query Pages {
 
 ```javascript
 module.exports = {
-  plugins: [
-    {
-      resolve: "gatsby-source-prismic",
-      options: {
-        // Alongside your other options...
-        shouldDownloadFiles: {
-          // Download a Page `photo` image:
-          "page.data.photo": true,
-        },
-      },
-    },
-    "gatsby-plugin-image",
-    "gatsby-plugin-sharp",
-    "gatsby-transformer-sharp",
-  ],
+	plugins: [
+		{
+			resolve: "gatsby-source-prismic",
+			options: {
+				// Alongside your other options...
+				shouldDownloadFiles: {
+					// Download a Page `photo` image:
+					"page.data.photo": true,
+				},
+			},
+		},
+		"gatsby-plugin-image",
+		"gatsby-plugin-sharp",
+		"gatsby-transformer-sharp",
+	],
 };
 ```
 
@@ -386,8 +386,8 @@ import { ImageGallerySlice } from "./ImageGallerySlice";
 import { QuoteSlice } from "./QuoteSlice";
 
 export const components = {
-  quote: QuoteSlice,
-  image_gallery: ImageGallerySlice,
+	quote: QuoteSlice,
+	image_gallery: ImageGallerySlice,
 };
 ```
 
@@ -396,12 +396,13 @@ Then, we import that file into the page where we render the SliceZone. The `comp
 ```javascript
 // Truncated page file example
 import { SliceZone } from "@prismicio/react";
+
 import { components } from "../slices";
 
 const PageTemplate = ({ data }) => {
-  const pageContent = data.prismicPage;
+	const pageContent = data.prismicPage;
 
-  return <SliceZone slices={pageContent.data} components={components} />;
+	return <SliceZone slices={pageContent.data} components={components} />;
 };
 
 // ...

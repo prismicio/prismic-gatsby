@@ -23,23 +23,23 @@ Start by creating a `linkResolver.js` file. Our example resolves page routes fo
 
 ```javascript
 exports.linkResolver = (doc) => {
-  // URL for a category type
-  if (doc.type === "category") {
-    return `/category/${doc.uid}`;
-  }
+	// URL for a category type
+	if (doc.type === "category") {
+		return `/category/${doc.uid}`;
+	}
 
-  // URL for a product type
-  if (doc.type === "product") {
-    return `/product/${doc.uid}`;
-  }
+	// URL for a product type
+	if (doc.type === "product") {
+		return `/product/${doc.uid}`;
+	}
 
-  // URL for a page type
-  if (doc.type === "page") {
-    return `/${doc.uid}`;
-  }
+	// URL for a page type
+	if (doc.type === "page") {
+		return `/${doc.uid}`;
+	}
 
-  // Backup for all other types
-  return "/";
+	// Backup for all other types
+	return "/";
 };
 ```
 
@@ -57,21 +57,21 @@ After you've created the Link Resolver file, add it to the plugin configuration 
 // Truncated example gatsby-config.js file
 
 require("dotenv").config({
-  path: `.env.${process.env.NODE_ENV}`,
+	path: `.env.${process.env.NODE_ENV}`,
 });
 
 module.exports = {
-  // ...
-  plugins: [
-    {
-      resolve: "gatsby-source-prismic",
-      options: {
-        repositoryName: process.env.GATSBY_PRISMIC_REPO_NAME,
-        linkResolver: require("./path-to-your-linkResolver").linkResolver,
-        // ...
-      },
-    },
-  ],
+	// ...
+	plugins: [
+		{
+			resolve: "gatsby-source-prismic",
+			options: {
+				repositoryName: process.env.GATSBY_PRISMIC_REPO_NAME,
+				linkResolver: require("./path-to-your-linkResolver").linkResolver,
+				// ...
+			},
+		},
+	],
 };
 ```
 

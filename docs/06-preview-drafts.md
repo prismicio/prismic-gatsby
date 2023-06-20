@@ -82,21 +82,21 @@ In this example, we use the basic setup options. Update it with the ones that ap
 
 ```javascript
 require("dotenv").config({
-  path: `.env.${process.env.NODE_ENV}`,
+	path: `.env.${process.env.NODE_ENV}`,
 });
 module.exports = {
-  plugins: [
-    {
-      resolve: "gatsby-plugin-prismic-previews",
-      options: {
-        repositoryName: process.env.GATSBY_PRISMIC_REPO_NAME,
-        accessToken: process.env.PRISMIC_ACCESS_TOKEN,
-        routes: require("./path-to-your-routeResolver").routeResolver,
-        linkResolver: require("./path-to-your-linkResolver").linkResolver,
-      },
-    },
-    // All other plugins and configurations
-  ],
+	plugins: [
+		{
+			resolve: "gatsby-plugin-prismic-previews",
+			options: {
+				repositoryName: process.env.GATSBY_PRISMIC_REPO_NAME,
+				accessToken: process.env.PRISMIC_ACCESS_TOKEN,
+				routes: require("./path-to-your-routeResolver").routeResolver,
+				linkResolver: require("./path-to-your-linkResolver").linkResolver,
+			},
+		},
+		// All other plugins and configurations
+	],
 };
 ```
 
@@ -118,27 +118,27 @@ Then, update the values to match your repository information and project details
 ```javascript
 import * as React from "react";
 import {
-  PrismicPreviewProvider,
-  componentResolverFromMap,
+	PrismicPreviewProvider,
+	componentResolverFromMap,
 } from "gatsby-plugin-prismic-previews";
 
 import { linkResolver } from "./path-to-your-linkResolver";
 import PageTemplate from "./path-to-your-page-templates";
 
 export const wrapRootElement = ({ element }) => (
-  <PrismicPreviewProvider
-    repositoryConfigs={[
-      {
-        repositoryName: process.env.GATSBY_PRISMIC_REPO_NAME,
-        linkResolver,
-        componentResolver: componentResolverFromMap({
-          page: PageTemplate,
-        }),
-      },
-    ]}
-  >
-    {element}
-  </PrismicPreviewProvider>
+	<PrismicPreviewProvider
+		repositoryConfigs={[
+			{
+				repositoryName: process.env.GATSBY_PRISMIC_REPO_NAME,
+				linkResolver,
+				componentResolver: componentResolverFromMap({
+					page: PageTemplate,
+				}),
+			},
+		]}
+	>
+		{element}
+	</PrismicPreviewProvider>
 );
 ```
 
@@ -155,11 +155,11 @@ import * as React from "react";
 import { withPrismicPreviewResolver } from "gatsby-plugin-prismic-previews";
 
 const PreviewPage = () => {
-  return (
-    <div>
-      <h1>Loading preview…</h1>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Loading preview…</h1>
+		</div>
+	);
 };
 
 export default withPrismicPreviewResolver(PreviewPage);
@@ -183,26 +183,26 @@ import { graphql } from "gatsby";
 import { withPrismicPreview } from "gatsby-plugin-prismic-previews";
 
 const PageTemplate = ({ data }) => {
-  const document = data.prismicPage.data;
+	const document = data.prismicPage.data;
 
-  return (
-    <div>
-      <h1>{document.title.text}</h1>
-    </div>
-  );
+	return (
+		<div>
+			<h1>{document.title.text}</h1>
+		</div>
+	);
 };
 
 export const query = graphql`
-  query PageTemplate($id: String) {
-    prismicPage(id: { eq: $id }) {
-      _previewable
-      data {
-        title {
-          text
-        }
-      }
-    }
-  }
+	query PageTemplate($id: String) {
+		prismicPage(id: { eq: $id }) {
+			_previewable
+			data {
+				title {
+					text
+				}
+			}
+		}
+	}
 `;
 
 export default withPrismicPreview(PageTemplate);
@@ -219,11 +219,11 @@ import * as React from "react";
 import { withPrismicUnpublishedPreview } from "gatsby-plugin-prismic-previews";
 
 const NotFoundPage = () => {
-  return (
-    <div>
-      <h1>Not found</h1>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Not found</h1>
+		</div>
+	);
 };
 
 export default withPrismicUnpublishedPreview(NotFoundPage);
@@ -239,25 +239,25 @@ This is what a `useStaticQuery` could look like:
 
 ```javascript
 import * as React from "react";
-import { useStaticQuery, graphql } from "gatsby";
+import { graphql, useStaticQuery } from "gatsby";
 import { useMergePrismicPreviewData } from "gatsby-plugin-prismic-previews";
 
 const NonPageComponent = () => {
-  const staticData = useStaticQuery(graphql`
-    query NonPageQuery {
-      prismicSettings {
-        _previewable
-        data {
-          site_title {
-            text
-          }
-        }
-      }
-    }
-  `);
-  const { data, isPreview } = useMergePrismicPreviewData(staticData);
+	const staticData = useStaticQuery(graphql`
+		query NonPageQuery {
+			prismicSettings {
+				_previewable
+				data {
+					site_title {
+						text
+					}
+				}
+			}
+		}
+	`);
+	const { data, isPreview } = useMergePrismicPreviewData(staticData);
 
-  return <h1>{data.prismicSettings.data.site_title.text}</h1>;
+	return <h1>{data.prismicSettings.data.site_title.text}</h1>;
 };
 
 export default NonPageComponent;
@@ -271,7 +271,7 @@ Note that the component is not wrapped in `withPrismicPreview`. The page which c
 
 If you'd like to get more in-depth information about how the `gatsby-plugin-prismic-previews` plugin options works, refer to the dedicated article:
 
-- [**null**](https://prismic.io/docs/technical-reference/gatsby-plugin-prismic-previews)<br/>Technical reference for the Gatsby and Prismic previews plugin.
+- [**`gatsby-plugin-prismic-previews`**](https://prismic.io/docs/technical-reference/gatsby-plugin-prismic-previews)<br/>Technical reference for the Gatsby and Prismic previews plugin.
 
 - **Next article**: [Deploy your App](./07-deploy.md)
 - **Previous article**: [Template Content](./05-template-content.md)

@@ -1,9 +1,9 @@
-import type { GatsbyConfig } from "gatsby";
-import type { PluginOptions as GatsbySourcePrismicPluginOptions } from "gatsby-source-prismic";
-import type { PluginOptions as GatsbyPluginPrismicPreviewsPluginOptions } from "gatsby-plugin-prismic-previews";
 import dotenv from "dotenv";
-import path from "path";
 import fs from "fs";
+import type { GatsbyConfig } from "gatsby";
+import type { PluginOptions as GatsbyPluginPrismicPreviewsPluginOptions } from "gatsby-plugin-prismic-previews";
+import type { PluginOptions as GatsbySourcePrismicPluginOptions } from "gatsby-source-prismic";
+import path from "path";
 
 import { linkResolver } from "./src/linkResolver";
 

@@ -15,13 +15,13 @@ Here's a query for a single document:
 
 ```graphql
 query MyQuery($id: String) {
-  prismicExampleCustomType(id: { eq: $id }) {
-    data {
-      example_title {
-        text
-      }
-    }
-  }
+	prismicExampleCustomType(id: { eq: $id }) {
+		data {
+			example_title {
+				text
+			}
+		}
+	}
 }
 ```
 
@@ -37,15 +37,15 @@ Here's a query for all documents of a repeatable type:
 
 ```graphql
 query MyQuery {
-  allPrismicExampleCustomType {
-    nodes {
-      data {
-        example_title {
-          text
-        }
-      }
-    }
-  }
+	allPrismicExampleCustomType {
+		nodes {
+			data {
+				example_title {
+					text
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -77,22 +77,22 @@ For example, look at this page query that uses fragments. Both queries work the 
 
 ```graphql
 query pageQuery($id: String, $lang: String) {
-  prismicPage(id: { eq: $id }, lang: { eq: $lang }) {
-    data {
-      body {
-        ... on PrismicSliceType {
-          id
-          slice_label
-          slice_type
-        }
-        ...PageDataBodyEmailSignup
-        ...PageDataBodyFullWidthImage
-        ...PageDataBodyHeadlineWithButton
-        ...PageDataBodyInfoWithImage
-        ...PageDataBodyTextInfo
-      }
-    }
-  }
+	prismicPage(id: { eq: $id }, lang: { eq: $lang }) {
+		data {
+			body {
+				... on PrismicSliceType {
+					id
+					slice_label
+					slice_type
+				}
+				...PageDataBodyEmailSignup
+				...PageDataBodyFullWidthImage
+				...PageDataBodyHeadlineWithButton
+				...PageDataBodyInfoWithImage
+				...PageDataBodyTextInfo
+			}
+		}
+	}
 }
 ```
 
@@ -100,63 +100,63 @@ query pageQuery($id: String, $lang: String) {
 
 ```graphql
 query pageQuery($id: String, $lang: String) {
-  prismicPage(id: { eq: $id }, lang: { eq: $lang }) {
-    data {
-      body {
-        ... on PrismicSliceType {
-          id
-          slice_label
-          slice_type
-        }
-        ... on PrismicPageDataBodyEmailSignup {
-          id
-          primary {
-            section_title {
-              richText
-            }
-          }
-          slice_type
-        }
-        ... on PrismicPageDataBodyFullWidthImage {
-          id
-          primary {
-            image {
-              alt
-              url
-            }
-          }
-          slice_type
-        }
-        ... on PrismicPageDataBodyHeadlineWithButton {
-          id
-          primary {
-            description {
-              richText
-            }
-          }
-          slice_type
-        }
-        ... on PrismicPageDataBodyInfoWithImage {
-          id
-          primary {
-            text {
-              richText
-            }
-          }
-          slice_label
-        }
-        ... on PrismicPageDataBodyTextInfo {
-          id
-          primary {
-            section_title {
-              richText
-            }
-          }
-          slice_type
-        }
-      }
-    }
-  }
+	prismicPage(id: { eq: $id }, lang: { eq: $lang }) {
+		data {
+			body {
+				... on PrismicSliceType {
+					id
+					slice_label
+					slice_type
+				}
+				... on PrismicPageDataBodyEmailSignup {
+					id
+					primary {
+						section_title {
+							richText
+						}
+					}
+					slice_type
+				}
+				... on PrismicPageDataBodyFullWidthImage {
+					id
+					primary {
+						image {
+							alt
+							url
+						}
+					}
+					slice_type
+				}
+				... on PrismicPageDataBodyHeadlineWithButton {
+					id
+					primary {
+						description {
+							richText
+						}
+					}
+					slice_type
+				}
+				... on PrismicPageDataBodyInfoWithImage {
+					id
+					primary {
+						text {
+							richText
+						}
+					}
+					slice_label
+				}
+				... on PrismicPageDataBodyTextInfo {
+					id
+					primary {
+						section_title {
+							richText
+						}
+					}
+					slice_type
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -194,15 +194,15 @@ Here is an example to get all the Page type documents that mention the term "Art
 
 ```graphql
 query MyQuery {
-  allPrismicPage(filter: { data: { content: { text: { regex: "/Art/i" } } } }) {
-    nodes {
-      data {
-        content {
-          richText
-        }
-      }
-    }
-  }
+	allPrismicPage(filter: { data: { content: { text: { regex: "/Art/i" } } } }) {
+		nodes {
+			data {
+				content {
+					richText
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -212,11 +212,11 @@ Use the `filter` argument with metadata fields as values to filter out the res
 
 ```graphql
 query MyQuery {
-  allPrismicPage(filter: { first_publication_date: { eq: "2021-11-15" } }) {
-    nodes {
-      uid
-    }
-  }
+	allPrismicPage(filter: { first_publication_date: { eq: "2021-11-15" } }) {
+		nodes {
+			uid
+		}
+	}
 }
 ```
 
@@ -240,13 +240,13 @@ You can use Prismic fields at the top level of your documents to filter out the 
 
 ```graphql
 query MyPages {
-  allPrismicPage(filter: { data: { example_boolean: { eq: true } } }) {
-    nodes {
-      data {
-        example_boolean
-      }
-    }
-  }
+	allPrismicPage(filter: { data: { example_boolean: { eq: true } } }) {
+		nodes {
+			data {
+				example_boolean
+			}
+		}
+	}
 }
 ```
 
@@ -280,11 +280,11 @@ In this example, the results of the documents are sorted in ascending order `AS
 
 ```graphql
 query MyPages {
-  allPrismicPage(sort: { fields: last_publication_date, order: ASC }) {
-    nodes {
-      uid
-    }
-  }
+	allPrismicPage(sort: { fields: last_publication_date, order: ASC }) {
+		nodes {
+			uid
+		}
+	}
 }
 ```
 
@@ -294,11 +294,11 @@ You can limit the number of documents retrieved in your response. In this exampl
 
 ```graphql
 query MyPages {
-  allPrismicPage(limit: 3) {
-    nodes {
-      uid
-    }
-  }
+	allPrismicPage(limit: 3) {
+		nodes {
+			uid
+		}
+	}
 }
 ```
 
@@ -308,11 +308,11 @@ You can skip over some results. In this example query, we skip the first three 
 
 ```graphql
 query MyPages {
-  allPrismicPage(skip: 3) {
-    nodes {
-      uid
-    }
-  }
+	allPrismicPage(skip: 3) {
+		nodes {
+			uid
+		}
+	}
 }
 ```
 
@@ -336,11 +336,11 @@ Here's what retrieving any of these would look like:
 
 ```graphql
 query MyQuery {
-  prismicPage {
-    data {
-      example_number
-    }
-  }
+	prismicPage {
+		data {
+			example_number
+		}
+	}
 }
 ```
 
@@ -361,15 +361,15 @@ Let's take a look at examples of all the possible values you can retrieve from e
 
 ```graphql
 query MyQuery {
-  prismicPage {
-    data {
-      example_title {
-        text
-        richText
-        html
-      }
-    }
-  }
+	prismicPage {
+		data {
+			example_title {
+				text
+				richText
+				html
+			}
+		}
+	}
 }
 ```
 
@@ -377,33 +377,33 @@ query MyQuery {
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_image {
-        url
-        dimensions {
-          width
-          height
-        }
-        thumbnails {
-          desktop {
-            url
-            dimensions {
-              height
-              width
-            }
-          }
-          tablet {
-            url
-            dimensions {
-              height
-              width
-            }
-          }
-        }
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_image {
+				url
+				dimensions {
+					width
+					height
+				}
+				thumbnails {
+					desktop {
+						url
+						dimensions {
+							height
+							width
+						}
+					}
+					tablet {
+						url
+						dimensions {
+							height
+							width
+						}
+					}
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -411,23 +411,23 @@ query MyQuery {
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_content_relationship {
-        link_type
-        document {
-          ... on PrismicExampleCustomType {
-            url
-            data {
-              example_title {
-                richText
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_content_relationship {
+				link_type
+				document {
+					... on PrismicExampleCustomType {
+						url
+						data {
+							example_title {
+								richText
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -435,24 +435,24 @@ query MyQuery {
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_external_link {
-        id
-        isBroken
-        lang
-        link_type
-        raw
-        size
-        slug
-        tags
-        target
-        type
-        uid
-        url
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_external_link {
+				id
+				isBroken
+				lang
+				link_type
+				raw
+				size
+				slug
+				tags
+				target
+				type
+				uid
+				url
+			}
+		}
+	}
 }
 ```
 
@@ -460,25 +460,25 @@ query MyQuery {
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_link_to_media {
-        id
-        isBroken
-        lang
-        link_type
-        raw
-        size
-        slug
-        tags
-        target
-        type
-        uid
-        url
-        document
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_link_to_media {
+				id
+				isBroken
+				lang
+				link_type
+				raw
+				size
+				slug
+				tags
+				target
+				type
+				uid
+				url
+				document
+			}
+		}
+	}
 }
 ```
 
@@ -486,26 +486,26 @@ query MyQuery {
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_embed {
-        author_name
-        author_url
-        embed_url
-        height
-        html
-        provider_name
-        provider_url
-        thumbnail_height
-        thumbnail_url
-        thumbnail_width
-        title
-        type
-        version
-        width
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_embed {
+				author_name
+				author_url
+				embed_url
+				height
+				html
+				provider_name
+				provider_url
+				thumbnail_height
+				thumbnail_url
+				thumbnail_width
+				title
+				type
+				version
+				width
+			}
+		}
+	}
 }
 ```
 
@@ -513,14 +513,14 @@ query MyQuery {
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_geopoint {
-        latitude
-        longitude
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_geopoint {
+				latitude
+				longitude
+			}
+		}
+	}
 }
 ```
 
@@ -528,13 +528,13 @@ query MyQuery {
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_group {
-        example_number_in_list
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_group {
+				example_number_in_list
+			}
+		}
+	}
 }
 ```
 
@@ -546,23 +546,23 @@ In this example, we are telling the query to retrieve a document linked in the `
 
 ```graphql
 query MyQuery {
-  prismicPost {
-    data {
-      example_content_relationship {
-        link_type
-        document {
-          ... on PrismicExampleCustomType {
-            url
-            data {
-              example_title {
-                richText
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+	prismicPost {
+		data {
+			example_content_relationship {
+				link_type
+				document {
+					... on PrismicExampleCustomType {
+						url
+						data {
+							example_title {
+								richText
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -580,29 +580,29 @@ In the following example, we have a Page Custom Type with one Slice called `pla
 
 ```graphql
 query MyQuery {
-  prismicPage {
-    data {
-      body {
-        ... on PrismicPageDataBodyPlaylist {
-          slice_label
-          slice_type
-          primary {
-            playlist_name {
-              richText
-            }
-          }
-          fields {
-            song {
-              url
-            }
-            author {
-              richText
-            }
-          }
-        }
-      }
-    }
-  }
+	prismicPage {
+		data {
+			body {
+				... on PrismicPageDataBodyPlaylist {
+					slice_label
+					slice_type
+					primary {
+						playlist_name {
+							richText
+						}
+					}
+					fields {
+						song {
+							url
+						}
+						author {
+							richText
+						}
+					}
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -616,20 +616,20 @@ Here's an example for a singleton query:
 
 ```graphql
 query MyQuery {
-  prismicPage {
-    uid
-    id
-    lang
-    type
-    last_publication_date
-    first_publication_date
-    alternate_languages {
-      lang
-      type
-      uid
-      id
-    }
-  }
+	prismicPage {
+		uid
+		id
+		lang
+		type
+		last_publication_date
+		first_publication_date
+		alternate_languages {
+			lang
+			type
+			uid
+			id
+		}
+	}
 }
 ```
 
@@ -637,22 +637,22 @@ Here's an example for repeatable documents:
 
 ```graphql
 query MyQuery {
-  allPrismicPost {
-    nodes {
-      uid
-      id
-      lang
-      type
-      last_publication_date
-      first_publication_date
-      alternate_languages {
-        lang
-        type
-        uid
-        id
-      }
-    }
-  }
+	allPrismicPost {
+		nodes {
+			uid
+			id
+			lang
+			type
+			last_publication_date
+			first_publication_date
+			alternate_languages {
+				lang
+				type
+				uid
+				id
+			}
+		}
+	}
 }
 ```
 
