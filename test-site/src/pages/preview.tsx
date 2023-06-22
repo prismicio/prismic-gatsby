@@ -1,6 +1,6 @@
 import {
-	withPrismicPreviewResolver,
 	WithPrismicPreviewResolverProps,
+	withPrismicPreviewResolver,
 } from "gatsby-plugin-prismic-previews";
 
 function PreviewPage({ isPrismicPreview }: WithPrismicPreviewResolverProps) {

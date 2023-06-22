@@ -1,7 +1,7 @@
-import { graphql, PageProps } from "gatsby";
+import { PageProps, graphql } from "gatsby";
 import {
-	withPrismicPreview,
 	WithPrismicPreviewProps,
+	withPrismicPreview,
 } from "gatsby-plugin-prismic-previews";
 
 function KitchenSinkPage(
