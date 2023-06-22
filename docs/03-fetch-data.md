@@ -1,15 +1,17 @@
 # Fetch Data
 
-On this page, you'll learn how to retrieve content in from your Prismic repository using the Gatsby source plugin.
+On this page, you'll learn how to retrieve content from your Prismic repository using the Gatsby source plugin.
 
 ---
 
 ## Basic queries
 
-The Prismic and Gatsby plugin schema gives you two options to write your queries using the API ID of your document's Custom Type (in these examples, the Custom Type’s API ID is `ExampleCustomType`):
+You have two options to write your queries: one that returns a single document and another that returns all documents of a type. Which one you use depends on how you plan to use your content.
 
-1. `prismicExampleCustomType`: Queries a single document of a given type with optional filtering parameters.
-1. `allPrismicExampleCustomType`: Queries all documents of a given type.
+The following examples query for one or multiple documents for a Custom Type named `ExampleCustomType`:
+
+- `prismicExampleCustomType`: Queries a single document of a given type with optional filtering parameters.
+- `allPrismicExampleCustomType`: Queries all documents of a given type.
 
 Here's a query for a single document:
 
@@ -28,10 +30,10 @@ query MyQuery($id: String) {
 Let's break down the syntax in the above example:
 
 - `query`: The GraphQL reserved word for writing a query
-- `MyQuery:` The name of the query
+- `MyQuery`: The name of the query
 - `($id: String)`: The [variable declaration](https://www.gatsbyjs.com/docs/how-to/querying-data/page-query/#how-to-add-query-variables-to-a-page-query) for the page ID
 - `prismicExampleCustomType(id: {eq: $id})`: The singleton query, filtered by the ID that is provided when the query runs
-- `example_title:` The field to return
+- `example_title`: The field to return
 
 Here's a query for all documents of a repeatable type:
 
@@ -51,36 +53,22 @@ query MyQuery {
 
 This syntax is similar to the singleton query. However, it uses `allPrismicExampleCustomType` instead of `prismicExampleCustomType`, and it doesn't need to filter by ID.
 
-We recommend that you store the response in a variable called `document`:
-
-**Single document**:
-
-```javascript
-const document = data.prismicAuthor;
-```
-
-**Multiple queries**:
-
-```javascript
-const documents = data.allPrismicPages.nodes;
-```
-
 ## Fragments
 
 Fragments are a way to break down large queries into smaller ones, making them reusable and unique to a component's code. Page queries become more transparent, and Slice components more modular. Everything that belongs to the Slice is in the same component file.
 
 In Prismic, Slice components and the Slice Zone are great use cases for Fragments.
 
-For example, look at this page query that uses fragments. Both queries work the same way. Only fragments make the code shorter and more\*\* \*\*legible.
+For example, look at this page query that uses fragments. Both queries work the same way, but the first example with fragments make the code shorter and more\*\* \*\*legible.
 
-**with fragments**:
+**With fragments**:
 
 ```graphql
 query pageQuery($id: String, $lang: String) {
 	prismicPage(id: { eq: $id }, lang: { eq: $lang }) {
 		data {
 			body {
-				... on PrismicSliceType {
+				... on PrismicSlice {
 					id
 					slice_label
 					slice_type
@@ -96,14 +84,14 @@ query pageQuery($id: String, $lang: String) {
 }
 ```
 
-**without fragments**:
+**Without fragments**:
 
 ```graphql
 query pageQuery($id: String, $lang: String) {
 	prismicPage(id: { eq: $id }, lang: { eq: $lang }) {
 		data {
 			body {
-				... on PrismicSliceType {
+				... on PrismicSlice {
 					id
 					slice_label
 					slice_type
@@ -174,7 +162,7 @@ The most common arguments you will use are:
 - `limit`: limit the number of results
 - `skip`: skip over a number of results
 
-Explore all the available filtering options in the [GraphQL Playground](https://www.gatsbyjs.com/docs/using-graphql-playground/), accessible at [http://localhost:8000/\_\_\_graphql](http://localhost:8000/___graphql), when running your project in development.
+Explore all the available filtering options in the [GraphiQL Playground](https://www.gatsbyjs.com/docs/using-graphql-playground/), accessible at [http://localhost:8000/\_\_\_graphql](http://localhost:8000/___graphql), when running your project in development.
 
 > **You can only use fields from the Static Zone as arguments**
 >
@@ -182,7 +170,7 @@ Explore all the available filtering options in the [GraphQL Playground](https:/
 
 ### Filter by search
 
-You can use the `regex` argument to search for documents that contain a given term or terms written as a regular expression in a string. It searches the term(s) in fields that retrieve string values, such ad the following field types:
+You can use the `regex` argument to search for documents that contain a given term or terms written as a regular expression in a string. It searches the term(s) in fields that retrieve string values, such as the following field types:
 
 - Rich Text
 - Title
@@ -540,9 +528,9 @@ query MyQuery {
 
 ### Nested Content
 
-Content Relationship fields use the [union type](https://graphql.org/learn/schema/#union-types) to specify the content you need from a linked document.
+Use the [union type](https://graphql.org/learn/schema/#union-types) `... on` syntax to query fields from Content relationship field's nested content.
 
-In this example, we are telling the query to retrieve a document linked in the `example_content_relationship` field:
+In this example, we are querying a linked document in the `example_content_relationship` field:
 
 ```graphql
 query MyQuery {
@@ -576,7 +564,7 @@ We use the [union type](https://graphql.org/learn/schema/#union-types) inside 
 
 Where `ExampleCustomType` is the name of your Custom Type and `ExampleSlice` is the Slice's name.
 
-In the following example, we have a Page Custom Type with one Slice called `playlist` with fields in both the repeatable (`fields`) and non-repeatable (`primary`) zones:
+In the following example, we have a Page Custom Type with one Slice called `playlist` with fields in both the repeatable (`items`) and non-repeatable (`primary`) zones:
 
 ```graphql
 query MyQuery {
@@ -591,7 +579,7 @@ query MyQuery {
 							richText
 						}
 					}
-					fields {
+					items {
 						song {
 							url
 						}
@@ -610,9 +598,9 @@ query MyQuery {
 
 In singleton-type queries, the metadata fields are found in the first node of the query.
 
-In repeatable type queries, the metadata fields are found inside edges > node.
+In repeatable type queries, the metadata fields are found inside edges > nodes.
 
-Here's an example for a singleton query:
+Here's an example of a singleton query:
 
 ```graphql
 query MyQuery {

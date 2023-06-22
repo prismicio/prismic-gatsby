@@ -4,19 +4,15 @@ On this page, you'll learn how to template Prismic content in your Gatsby applic
 
 ---
 
-> **Prismic React Templating**
->
-> These docs use the latest version `@prismicio/react`. Follow [the migration guide](https://prismic.io/docs/prismic-react-v2-migration-guide) to update your project if you're still using `prismic-reactjs` V1.
-
 > **🕙 Before reading**
 >
-> This page assumes that you have [saved the response](https://prismic.io/docs/technologies/query-basics-gatsby#save-the-response) of your queries in a variable named `document`.
+> This page assumes that you have [saved the response](./03-fetch-data.md#save-the-response) of your queries in a variable named `document`.
 
 ## Intro to templating
 
-[Prismic content](https://prismic.io/docs/core-concepts#fields) comes in more than a dozen field types. Most of these are fields with primitive values, like Numbers or Booleans. Others are more complex structured values, like Titles, Rich Texts, and Links.
+[Prismic content](https://prismic.io/docs/core-concepts#fields) comes in more than a dozen field types. Most of those fields contain primitive values, like Numbers or Booleans. Others contain more complex structured values, like Titles, Rich Texts, and Links.
 
-Before starting to template your content, you need to access [the data from the API response](https://prismic.io/docs/technologies/query-basics-gatsby#structure-of-the-api-response). It will depend on whether you've queried for multiple documents or a single one. Then, you might access a single data field like this:
+Before starting to template your content, you need to query [data from your documents](./03-fetch-data.md#structure-of-the-api-response). Once you've queried your data, you might access a single data field like this:
 
 **Multiple documents**:
 
@@ -30,12 +26,12 @@ documents[0].data.example_key_text;
 document.data.example_key_text;
 ```
 
-For multiple documents, it's more likely that you would loop over the results array and template each data field, like this:
+If you queried for multiple documents, you will likely want to loop over the results array and template each data field, like this:
 
-```javascript
+```html
 <ul>
-	{documents.map((item) => {
-		<li key={item.id}>{item.data.example_key_text}</li>;
+	{documents.map((item) =>{
+	<li key="{item.id}">{item.data.example_key_text}</li>
 	})}
 </ul>
 ```
@@ -54,7 +50,7 @@ These are the fields that retrieve primitive values:
 
 The Date and Timestamp fields are both delivered as Strings on the API, but they can do more with a bit of parsing. You can use Gatsby's built-in [date and timestamp formatting capabilities](https://www.gatsbyjs.com/docs/graphql-reference/#dates).
 
-Once you've already learned how to [retrieve fields](https://prismic.io/docs/retrieve-fields-and-slices-gatsby) from a query, you can inject them directly into your application:
+Once you've already learned how to [retrieve fields](./03-fetch-data.md) from a query, you can inject them directly into your application:
 
 **Boolean**:
 
@@ -142,13 +138,10 @@ You can template an Embed field using the `html` value from the response:
 
 To template a Group, you can use a `map()` method to loop over the results. Here's a usage example:
 
-```javascript
+```html
 <ul>
 	{document.data.example_group.map((item) => (
-		<li key={item.id}>
-			{item.example_key_text}
-			{item.example_number}
-		</li>
+	<li key="{item.id}">{item.example_key_text} {item.example_number}</li>
 	))}
 </ul>
 
@@ -157,9 +150,7 @@ To template a Group, you can use a `map()` method to loop over the results. Here
 
 ## Rich Text and Titles
 
-Rich Text and Titles are delivered in an array that contains information about the text structure. Use the `richText` field and the `<PrismicRichText>` component from the `@prismicio/react` kit. Or, use the `text` field if you want to render plain text.
-
-**richText**:
+Rich Text and Titles are delivered in an array that contains information about the text structure. Use the `richText` field and the `[<PrismicRichText>](https://prismic.io/docs/technical-reference/prismicio-react#prismicrichtext)` component from the `@prismicio/react` package.
 
 ```javascript
 import { PrismicRichText } from "@prismicio/react";
@@ -167,21 +158,9 @@ import { PrismicRichText } from "@prismicio/react";
 <PrismicRichText field={document.data.example_rich_text.richText} />;
 ```
 
-**text**:
-
-```javascript
-import { PrismicText } from '@prismicio/react'
-
-<PrismicText field={document.data.example_title} />
-
-// or
-
-<h1>{document.data.example_title.text}</h1>
-```
-
 > **Using custom React components**
 >
-> To modify the output of a Rich Text field, provide a `component` list to override the components prop. The list of components maps an element type to its React component. Here is an example using a custom component for paragraphs.
+> To modify the output of a Rich Text field, provide a `component` list to override the components prop. The list of components maps an element type to its React component. Here is an example using a custom component for first-level headings and paragraphs.
 >
 > ```
 > <PrismicRichText
@@ -245,10 +224,7 @@ To access the data from a linked document, access the `document.data` node fro
 For example, here we have a Content Relationship field called `example_content_relationship` linked to another Custom Type. We retrieve a Key Text field that has an API ID of `author_name`:
 
 ```javascript
-<p>
-	{" "}
-	Written by: {document.data.example_content_relationship.data.author_name}
-</p>
+<p>Written by: {document.data.example_content_relationship.data.author_name}</p>
 // <strong>Written by: Jane Doe</strong>
 ```
 
@@ -294,34 +270,52 @@ Images from Prismic can be automatically optimized and scaled using Gatsby's ima
 
 You can process image data for `gatsby-plugin-image` using one of the following methods:
 
-- **On-the-fly transformed using Imgix (recommended)**: Images are not downloaded to your computer or server and instead are transformed using Prismic's Imgix integration to resize images on the fly.
+- **On-the-fly transformed using Imgix (recommended)**: Images are not downloaded to your computer or server and instead are transformed using Prismic's [Imgix](https://imgix.com/) integration to resize images on the fly.
 - **Locally transformed at build-time**: Images are downloaded to your computer or server, resizing images at build-time.
 
 You can apply image processing to any Image field and its thumbnails on a document. Image processing of inline images added to Rich Text fields is currently not supported.
 
 ### Imgix transformed images
 
-Using this method, images are manipulated on Imgix's servers at request time, eliminating the need to download and resize images on your computer or server. This results in faster build times.
+This method manipulates images on Imgix's servers at request time, eliminating the need to download and resize images on your computer or server. This results in faster build times.
 
-You can query image data for `gatsby-plugin-image`'s `GatsbyImage` component like in the following example:
+You can query the image and its alt for `gatsby-plugin-image` like in the following example:
 
 ```graphql
 query Home {
-	prismicHomepage {
+	prismicPage {
 		data {
 			example_image {
 				gatsbyImageData
+				alt
 			}
 		}
 	}
 }
 ```
 
+Then, pass your Image and alt values to `<GatsbyImage>` component:
+
+```javascript
+import { GatsbyImage } from "gatsby-plugin-image";
+
+const Page = ({ data }) => {
+	return (
+		<div>
+			<GatsbyImage
+				image={data.prismicPage.data.example_image.gatsbyImageData}
+				alt={data.prismicPage.data.example_image.alt}
+			/>
+		</div>
+	);
+};
+```
+
 Arguments can be passed to the `gatsbyImageData` field to change its presentation. See [Gatsby's official documentation on the Gatsby Image plugin](https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-plugin-image/) to learn more about the available arguments.
 
 ### Locally transformed images
 
-Using this method, images are downloaded to your computer or server and resized locally. Images are served from the same host as the rest of your app. This incurs additional build time as image processing is time-consuming.
+This method allows images to be downloaded to your computer or server and resized locally. Images are served from the same host as the rest of your app. This incurs additional build time as image processing is time-consuming.
 
 To use local image processing, you need the following plugins in your project's `gatsby-config.js`:
 
@@ -329,7 +323,7 @@ To use local image processing, you need the following plugins in your project's�
 - [gatsby-plugin-sharp](https://www.gatsbyjs.com/plugins/gatsby-plugin-sharp/)
 - [gatsby-transformer-sharp](https://www.gatsbyjs.com/plugins/gatsby-transformer-sharp/)
 
-You must list which files should be downloaded in the `shouldDownloadFiles` option of the plugin config in `gatsby-config.js`. By default, no files are downloaded. Then you can query image data for `gatsby-plugin-image`'s `GatsbyImage` component like in the following example.
+You must list which files should be downloaded in the `[shouldDownloadFiles](./technical-reference-gatsby-source-prismic-v5.md)` option of the plugin config in `gatsby-config.js`. By default, no files are downloaded. Then you can query image data for `gatsby-plugin-image`'s `GatsbyImage` component like in the following example.
 
 **sample query**:
 
@@ -379,19 +373,18 @@ Arguments can be passed to the `gatsbyImageData` field to change its presentat
 
 To render Slices, use the `<SliceZone>` component from `@prismicio/react` to iterate over each Slice and pass them props to render the correct one.
 
-The following example has two Slices: `image_gallery` and `quote`. First, we create an index.js file in a `slices` folder. This will gather an object with all the Slice components.
+The following example has two Slices: `image_gallery` and `quote`. First, we create an `index.js` file in a `slices` folder. This will gather an object with all the Slice components.
 
 ```javascript
-import { ImageGallerySlice } from "./ImageGallerySlice";
-import { QuoteSlice } from "./QuoteSlice";
+import * as React from "react";
 
 export const components = {
-	quote: QuoteSlice,
-	image_gallery: ImageGallerySlice,
+	quote: React.lazy(() => import("./QuoteSlice")),
+	image_gallery: React.lazy(() => import("./ImageGallerySlice")),
 };
 ```
 
-Then, we import that file into the page where we render the SliceZone. The `components` prop receives the list of React components for each type of Slice and `slices` the Slice Zone array:
+Then, we import that file into the page where we render the Slice Zone. The `components` prop receives the list of React components for each type of Slice while the `slices` prop receives the Slice Zone array:
 
 ```javascript
 // Truncated page file example
@@ -402,7 +395,7 @@ import { components } from "../slices";
 const PageTemplate = ({ data }) => {
 	const pageContent = data.prismicPage;
 
-	return <SliceZone slices={pageContent.data} components={components} />;
+	return <SliceZone slices={pageContent.data.body} components={components} />;
 };
 
 // ...

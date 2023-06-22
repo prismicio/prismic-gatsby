@@ -112,7 +112,7 @@ Install and configure the required plugins to build and preview your site. Follo
 
 > **Preview setup**
 >
-> When setting up `gatsby-plugin-prismic-previews`, start at "**2. Configure the preview plugin"** and stop after the "[Add a preview resolver page](https://prismic.io/docs/technologies/previews-gatsby#2.-add-a-preview-resolver-page)" step.
+> When setting up `gatsby-plugin-prismic-previews`, start at "**Configure the preview plugin"** and stop after the "[Add a preview resolver page](./06-preview-drafts.md#2.-add-a-preview-resolver-page)" step.
 
 ### Push your project to Github
 
@@ -161,13 +161,13 @@ Once there, add the following variables.
 **Under the Build variables tab**:
 
 - `PRISMIC_REPO_NAME`: Your repository name.
-- `PRISMIC_API_KEY`: The [token you set up](https://prismic.io/docs/technologies/prismic-gatsby-cloud#create-api-tokens) in your Prismic repository for builds.
+- `PRISMIC_API_KEY`: The [token you set up](./08-use-gatsby-cloud.md#create-api-tokens) in your Prismic repository for builds.
 
 **Under the Preview variables tab**:
 
 - `PRISMIC_REPO_NAME`: Your repository name.
-- `PRISMIC_API_KEY`: The [token you set up](https://prismic.io/docs/technologies/prismic-gatsby-cloud#create-api-tokens) in your Prismic repository for previews.
-- `PRISMIC_RELEASE_ID`: The Release ID [you previously saved](https://prismic.io/docs/technologies/prismic-gatsby-cloud#find-and-save-the-release-id-for-later).
+- `PRISMIC_API_KEY`: The [token you set up](./08-use-gatsby-cloud.md#create-api-tokens) in your Prismic repository for previews.
+- `PRISMIC_RELEASE_ID`: The Release ID [you previously saved](./08-use-gatsby-cloud.md#find-and-save-the-release-id-for-later).
 
 ## 4. Set up webhooks
 
@@ -175,9 +175,7 @@ Use Webhooks to notify Gatsby Cloud when the content in Prismic changes.
 
 ### Webhook for previews
 
-In your Gatsby Cloud site dashboard, navigate to the **Site Settings** tab.
-
-Scroll down to **Preview Webhook** and copy the URL listed in the box.<br/>
+In your Gatsby Cloud dashboard, navigate to the **Site Settings** > **Webhook**. Scroll down to **Preview Webhook** and copy the URL listed in the box.
 
 ![Preview Webhook](https://images.prismic.io/prismicio-docs-v3/c0873da0-3a45-4f0b-982b-0bdc721531e2_previewwebhook.png?auto=compress,format&rect=0,0,1761,488&w=960&h=266)
 
@@ -186,15 +184,13 @@ Next, add the webhook to your Prismic repository.
 1. In your Prismic repository, navigate to **Settings > Webhooks**.
 1. Click the **Create a webhook** button.
 1. Name the webhook "Gatsby Cloud Preview."
-1. Paste the Preview webhook URL [copied from Gatsby Cloud](https://prismic.io/docs/technologies/prismic-gatsby-cloud#webhook-for-previews) into the URL field.
+1. Paste the Preview webhook URL [copied from Gatsby Cloud](./08-use-gatsby-cloud.md#webhook-for-previews) into the URL field.
 1. Ensure all checkboxes under **Triggers > Releases** are _checked_.
 1. Click the **Add this webhook** button.
 
 ### Webhook for Builds
 
-Back in your Gatsby Cloud site dashboard, navigate the **Site Settings** tab.
-
-Scroll down to **Builds Webhook** and copy the URL listed in the box.
+Now from the same Webhook list, select **Builds Webhook** and copy the URL listed in the box.
 
 ![Builds Webhook](https://images.prismic.io/prismicio-docs-v3/e96f4f44-4cd4-4ecb-974f-310b310c0f7d_buildwebhook.png?auto=compress,format&rect=0,0,1768,475&w=960&h=258)
 
@@ -203,7 +199,7 @@ Next, add the webhook to your Prismic repository. The process is the same as the
 1. In your Prismic repository, navigate to **Settings > Webhooks**.
 1. Click the **Create a webhook** button.
 1. Name the webhook "Gatsby Cloud Builds."
-1. Paste the Builds webhook URL [copied from Gatsby Cloud](https://prismic.io/docs/technologies/prismic-gatsby-cloud#webhook-for-builds) into the URL field.
+1. Paste the Builds webhook URL [copied from Gatsby Cloud](./08-use-gatsby-cloud.md#webhook-for-builds) into the URL field.
 1. Ensure all checkboxes under **Triggers > Releases** are _unchecked_.
 1. Click the **Add this webhook** button.
 
@@ -211,13 +207,13 @@ Now the production build will automatically update when you publish changes in P
 
 ## 5. Enable previews in your repository
 
-Navigate to your Gatsby Cloud dashboard. Adjacent to the **Site Settings** tab, select the **CMS Preview** tab on the far right.
+Navigate to your Gatsby Cloud dashboard. Next to the **Site Settings** tab, select the **CMS Preview** tab.
 
-Copy the URL that appears in the middle of the page (it should start with "preview-").
+Copy the URL in the middle of the page (it should start with "preview-").
 
 ![Preview URL](https://images.prismic.io/prismicio-docs-v3/8ff13ed6-2b2a-4511-967a-74d75eca33de_imagef3.png?auto=compress,format&rect=0,0,1480,324&w=960&h=210)
 
-Next, set up your Prismic repository for the Preview URL.
+Next, set up your Prismic repository with that Preview URL.
 
 1. In your Prismic repository, navigate to **Settings** and select **Previews** in the sidebar.
 1. Click the **Create a Preview** button.
@@ -225,9 +221,13 @@ Next, set up your Prismic repository for the Preview URL.
 Fill out the form with the following values:
 
 - **Site Name**: "Gatsby Cloud Preview"
-- **Domain for your application**: Paste the CMS Preview URL copied from Gatsby Cloud.
+- **Domain for your application**: Paste the Gatsby Cloud Preview URL
 - **Preview Route**: `/preview/`.
 
-![Create a preview](https://images.prismic.io/prismicio-docs-v3/34166318-1850-4491-9a4e-4d7bf760fccd_image.png?auto=compress,format&rect=0,0,1238,854&w=960&h=662)
+That's it. Your Gatsby Cloud integration is ready to rebuild your site when you publish content in Prismic. And your Prismic repository has a dedicated Prismic Release to [preview content before publishing](https://prismic.io/docs/core-concepts/previews), plus you can share a preview URL with your team.
 
-That's it. Now your Gatsby Cloud integration is ready to rebuild your site when you publish content in Prismic. And your Prismic repository has a dedicated Prismic Release to [preview content before publishing](https://prismic.io/docs/core-concepts/previews), plus you can share a preview URL with your team.
+> **Gatsby.js development 404 page**
+>
+> You may encounter the default Gatsby 404 page you are running your Gatsby site in development mode. This behavior is expected during development.
+>
+> Click on the "Preview custom 404 page" button on the default Gatsby 404 page. This action will enable you to see the preview content as expected. Please note that this behavior is specific to development mode and will not affect your site in production.
