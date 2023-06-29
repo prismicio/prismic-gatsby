@@ -5,7 +5,10 @@ export default defineConfig({
 	plugins: [sdk({ internalDependencies: ["p-queue"] })],
 	build: {
 		lib: {
-			entry: ["./src/index.ts", "./src/gatsby-node.ts"],
+			entry: {
+				index: "./src/index.ts",
+				"gatsby-node": "./src/gatsby-node/index.ts",
+			},
 			formats: ["cjs"],
 		},
 	},

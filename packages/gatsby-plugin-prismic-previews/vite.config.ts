@@ -7,12 +7,12 @@ export default defineConfig(({ mode }) => {
 		plugins: [react(), sdk()],
 		build: {
 			lib: {
-				entry: [
-					"./src/index.ts",
-					"./src/gatsby-node.ts",
-					"./src/gatsby-browser.ts",
-					"./src/gatsby-ssr.ts",
-				],
+				entry: {
+					index: "./src/index.ts",
+					"gatsby-node": "./src/gatsby-node/index.ts",
+					"gatsby-browser": "./src/gatsby-browser/index.ts",
+					"gatsby-ssr": "./src/gatsby-ssr/index.ts",
+				},
 				formats: ["cjs"],
 			},
 		},
