@@ -213,9 +213,9 @@ The `componentResolver` option will continue to support function values for case
 
 ## Update `useMergePrismicPreviewData()` hook return value
 
-In \***\*v5\*\***, the `useMergePrismicPreviewData()` hook let you access preview content in data fetched using Gatsby’s `useStaticQuery` hook. It returned an object containing the merged data and information about the preview plugin’s status.
+In **v5**, the `useMergePrismicPreviewData()` hook let you access preview content in data fetched using Gatsby’s `useStaticQuery` hook. It returned an object containing the merged data and information about the preview plugin’s status.
 
-In \***\*v6\*\***, `useMergePrismicPreviewData()`’s return value is simplified to only include the merged data.
+In **v6**, `useMergePrismicPreviewData()`’s return value is simplified to only include the merged data.
 
 ```jsx
   const staticData = useStaticQuery(graphql`
