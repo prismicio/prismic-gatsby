@@ -217,7 +217,7 @@ In **v5**, the `useMergePrismicPreviewData()` hook let you access preview conten
 
 In **v6**, `useMergePrismicPreviewData()`’s return value is simplified to only include the merged data.
 
-```jsx
+```diff
   const staticData = useStaticQuery(graphql`
     query NonPageQuery {
       prismicSettings {
