@@ -1,0 +1,34 @@
+diff --git a/node_modules/gatsby-core-utils/package.json b/node_modules/gatsby-core-utils/package.json
+index 9bf4692..f98762a 100644
+--- a/node_modules/gatsby-core-utils/package.json
++++ b/node_modules/gatsby-core-utils/package.json
+@@ -9,17 +9,17 @@
+   "exports": {
+     ".": {
+       "types": "./dist/index.d.ts",
+-      "import": "./dist/index.mjs",
++      "import": "./dist/index.js",
+       "require": "./dist/index.js"
+     },
+     "./*": {
+       "types": "./dist/*.d.ts",
+-      "import": "./dist/*.mjs",
++      "import": "./dist/*.js",
+       "require": "./dist/*.js"
+     },
+     "./dist/*": {
+       "types": "./dist/*.d.ts",
+-      "import": "./dist/*.mjs",
++      "import": "./dist/*.js",
+       "require": "./dist/*.js"
+     }
+   },
+@@ -35,7 +35,7 @@
+   "homepage": "https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-core-utils#readme",
+   "license": "MIT",
+   "main": "dist/index.js",
+-  "module": "dist/index.mjs",
++  "module": "dist/index.js",
+   "types": "dist/index.d.ts",
+   "repository": {
+     "type": "git",

@@ -1,9 +1,11 @@
+# custom
+CHANGELOG.md
+
 # .gitignore copy
 
 # custom
 dist
 examples/**/package-lock.json
-CHANGELOG.md
 
 # os
 .DS_Store

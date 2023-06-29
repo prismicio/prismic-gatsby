@@ -13,7 +13,7 @@
 
 		"forceConsistentCasingInFileNames": true,
 		"jsx": "preserve",
-		"lib": ["esnext", "dom", "dom.iterable"],
+		"lib": ["esnext", "dom"],
 		"types": ["node"]
 	},
 	"exclude": ["node_modules", "dist", "examples"]

@@ -1,7 +1,7 @@
 <div align="center">
   <br/>
   <div>
-    <img width="200" height="200" src="media/gatsby-plus-prismic.svg" alt="Gatsby + Prismic" />
+    <img width="200" height="200" src="https://github.com/prismicio/prismic-gatsby/assets/8601064/5a9e50c3-ac8d-41a2-b8d6-461c773aa8c3" alt="Gatsby + Prismic" />
   </div>
 </div>
 
@@ -9,7 +9,7 @@
 
 Build best-in-class static websites using [Gatsby][gatsby] and [Prismic][prismic].
 
-**[Gatsby][gatsby] is an open-source frontend framework** for creating integrated, blazing fast websites and apps.
+**[Gatsby][gatsby] is a React-based open source framework** with performance, scalability and security built-in.
 
 **[Prismic][prismic] is a content management system** that lets you choose your technology, framework, and language and then easily manage your content.
 
@@ -23,10 +23,10 @@ Or if you want to dive straight into some code and see an example site using Pri
 
 For full documentation, see each plugin's package.
 
-- [**gatsby-source-prismic**](https://github.com/prismicio/gatsby/tree/main/packages/gatsby-source-prismic): Gatsby source plugin for building websites using Prismic as a data source
-- [**gatsby-plugin-prismic-previews**](https://github.com/prismicio/gatsby/tree/main/packages/gatsby-plugin-prismic-previews): Gatsby plugin for integrating client-side Prismic Previews
+- [**gatsby-source-prismic**](https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages/gatsby-source-prismic): Gatsby source plugin for building websites using Prismic as a data source
+- [**gatsby-plugin-prismic-previews**](https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages/gatsby-plugin-prismic-previews): Gatsby plugin for integrating client-side Prismic Previews
 
-## How to Contribute
+## Contributing
 
 Whether you're helping us fix bugs, improve the docs, or spread the word, we'd love to have you as part of the Prismic developer community!
 
@@ -36,22 +36,45 @@ Whether you're helping us fix bugs, improve the docs, or spread the word, we'd l
 
 **Suggesting an improvement**: [Open an issue][repo-feature-request] explaining your improvement or feature so we can discuss and learn more.
 
-**Submitting code changes**: For small fixes, feel free to [open a PR][repo-pull-requests] with a description of your changes. For large changes, please first [open an issue][repo-feature-request] so we can discuss if and how the changes should be implemented.
+**Submitting code changes**: For small fixes, feel free to [open a pull request][repo-pull-requests] with a description of your changes. For large changes, please first [open an issue][repo-feature-request] so we can discuss if and how the changes should be implemented.
+
+For more clarity on this project and its structure you can also check out the detailed [CONTRIBUTING.md][contributing] document.
 
 ### A note on how this repository is organized
 
-This repository is a monorepo managed using Yarn workspaces. This means there are [multiple packages](https://github.com/prismicio/gatsby/tree/main/packages) managed in this codebase, even though we publish them to NPM as separate packages.
+This repository is a monorepo managed using [npm workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces). This means there are [multiple packages](https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages) managed in this codebase, even though we publish them to [npm](https://www.npmjs.com/) as separate packages.
+
+## License
+
+```
+Copyright 2013-2022 Prismic <contact@prismic.io> (https://prismic.io)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
 
 <!-- Links -->
 
-[gatsby]: https://gatsbyjs.com/
 [prismic]: https://prismic.io/
-[new-issue]: https://github.com/prismicio/gatsby/issues/new
-[pull-requests]: https://github.com/prismicio/gatsby/pulls
+[gatsby]: https://gatsbyjs.com/
+
+<!-- TODO: Replace link with a more useful one if available -->
+
+[prismic-docs]: https://prismic.io/docs
+[contributing]: ./CONTRIBUTING.md
 
 <!-- TODO: Replace link with a more useful one if available -->
 
 [forum-question]: https://community.prismic.io
-[repo-bug-report]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=bug&template=bug_report.md&title=
-[repo-feature-request]: https://github.com/prismicio/gatsby/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
-[repo-pull-requests]: https://github.com/prismicio/gatsby/pulls
+[repo-bug-report]: https://github.com/prismicio-community/prismic-gatsby-early-access/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/prismicio-community/prismic-gatsby-early-access/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/prismicio-community/prismic-gatsby-early-access/pulls

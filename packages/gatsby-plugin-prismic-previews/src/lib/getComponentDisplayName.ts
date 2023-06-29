@@ -1,7 +1,6 @@
-import * as React from "react";
-
 /**
- * Returns a component's display name. If none is provided, "Component" is returned.
+ * Returns a component's display name. If none is provided, "Component" is
+ * returned.
  *
  * @param WrappedComponent - Component from which to get the display name.
  *

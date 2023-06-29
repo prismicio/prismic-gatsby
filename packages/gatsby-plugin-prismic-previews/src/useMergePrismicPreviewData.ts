@@ -1,147 +1,91 @@
 import * as React from "react";
-import * as gatsbyPrismic from "gatsby-source-prismic";
 
-import { isPlainObject } from "./lib/isPlainObject";
-import { isProxy } from "./lib/isProxy";
+import { getDocument } from "./lib/getDocument";
+import { hasOwnProperty } from "./lib/hasOwnProperty";
 
-import { UnknownRecord } from "./types";
-import { PrismicPreviewState } from "./context";
-import { usePrismicPreviewContext } from "./usePrismicPreviewContext";
+import { usePrismicPreviewStore } from "./usePrismicPreviewStore";
 
-/**
- * Recursively finds previewable data and replaces data if a previewed version
- * of it exists in the provided nodes.
- *
- * @param nodes - List of Prismic document nodes.
- *
- * @returns Function that accepts a node or node content to find and replace
- *   previewable content.
- */
-const findAndReplacePreviewables = (
-	runtime: gatsbyPrismic.Runtime,
-	nodeOrLeaf: unknown,
-): unknown => {
-	if (isPlainObject(nodeOrLeaf)) {
-		// If the value is a proxy, we can't reliably replace properties since
-		// property keys could be synthetic. We opt to ignore the object
-		// completely.
-		//
-		// At the time of writing this comment, Proxies are only present in Link
-		// fields. We can safely opt out of merging preview data in this case.
-		if (isProxy(nodeOrLeaf)) {
-			return nodeOrLeaf;
-		}
-
-		const nodeId = nodeOrLeaf[gatsbyPrismic.PREVIEWABLE_NODE_ID_FIELD] as
-			| string
-			| undefined;
-		if (nodeId && runtime.hasNode(nodeId)) {
-			return runtime.getNode(nodeId);
-		}
-
-		// We didn't find a previewable field, so continue to iterate through all
-		// properties to find it.
-		const newNode = {} as typeof nodeOrLeaf;
-		for (const key in nodeOrLeaf) {
-			newNode[key] = findAndReplacePreviewables(runtime, nodeOrLeaf[key]);
-		}
-
-		return newNode;
-	}
-
-	// Iterate all elements in the node to find the previewable value.
-	if (Array.isArray(nodeOrLeaf)) {
-		return (nodeOrLeaf as unknown[]).map((subnode) =>
-			findAndReplacePreviewables(runtime, subnode),
-		);
-	}
-
-	// If the node is not an object or array, it cannot be a previewable value.
-	return nodeOrLeaf;
+type MergePreviewDataArgs<TStaticDataNode> = {
+	staticDataNode: TStaticDataNode;
+	publishedDocumentIDs: string[];
 };
 
-/**
- * Takes a static data object and a record of nodes and replaces any instances
- * of those nodes in the static data with the updated version. The replacement
- * is done recursively to ensure nested nodes are replaced.
- *
- * Nodes are considered matches if they have identical
- * `PREVIEWABLE_NODE_ID_FIELD` fields (see constant value in `src/constants.ts`).
- *
- * @param staticData - Static data object in which nodes will be replaced.
- * @param nodes - List of nodes that replace in `staticData`.
- *
- * @returns `staticData` with any matching nodes replaced with nodes in `nodes`.
- */
-const traverseAndReplace = <TStaticData extends UnknownRecord>(
-	staticData: TStaticData,
-	runtime: gatsbyPrismic.Runtime,
-): { data: TStaticData; isPreview: boolean } => {
-	if (runtime.nodes.length > 0) {
-		return {
-			data: findAndReplacePreviewables(runtime, staticData) as TStaticData,
-			isPreview: true,
-		};
+const mergePreviewData = <TStaticDataNode>({
+	staticDataNode,
+	publishedDocumentIDs,
+}: MergePreviewDataArgs<TStaticDataNode>): TStaticDataNode => {
+	const castedData: unknown = staticDataNode;
+
+	if (
+		typeof castedData === "object" &&
+		castedData !== null &&
+		!Array.isArray(castedData)
+	) {
+		if (hasOwnProperty(castedData, "_previewable")) {
+			const replacement = getDocument(castedData._previewable as string);
+
+			if (replacement) {
+				return replacement as unknown as typeof staticDataNode;
+			} else {
+				if (
+					publishedDocumentIDs.length > 0 &&
+					!publishedDocumentIDs.includes(castedData._previewable as string)
+				) {
+					return null as unknown as typeof staticDataNode;
+				} else {
+					return staticDataNode;
+				}
+			}
+		} else {
+			const newNode = {} as TStaticDataNode;
+
+			for (const key in castedData) {
+				newNode[key as keyof typeof newNode] = mergePreviewData({
+					staticDataNode: castedData[key as keyof typeof castedData],
+					publishedDocumentIDs,
+				});
+			}
+
+			return newNode;
+		}
+	} else if (Array.isArray(staticDataNode)) {
+		return staticDataNode.map((element) => {
+			return mergePreviewData({
+				staticDataNode: element,
+				publishedDocumentIDs,
+			});
+		}) as typeof staticDataNode;
 	} else {
-		return {
-			data: staticData,
-			isPreview: false,
-		};
+		return staticDataNode;
 	}
 };
 
-export type UsePrismicPreviewDataConfig = {
-	/**
-	 * Determines if merging should be skipped.
-	 */
-	skip?: boolean;
-};
-
-export type UsePrismicPreviewDataResult<TStaticData extends UnknownRecord> = {
-	/**
-	 * Data with previewed content merged if matching documents are found.
-	 */
-	data: TStaticData;
-
-	/**
-	 * Boolean determining if `data` contains previewed data.
-	 */
-	isPreview: boolean;
-};
-
-/**
- * Merges static Prismic data with previewed data during a Prismic preview
- * session. If the static data finds previewable Prismic data (identified by the
- * `_previewable` field in a Prismic document), this hook will replace its value
- * with one from the preview session.
- *
- * The static data could come from page queries or `useStaticQuery` within a component.
- *
- * @param staticData - Static data from Gatsby's GraphQL layer.
- * @param config - Configuration that determines how the hook merges preview data.
- *
- * @returns An object containing the merged data and a boolean determining if
- *   the merged data contains preview data.
- */
-export const useMergePrismicPreviewData = <TStaticData extends UnknownRecord>(
-	staticData: TStaticData,
-	config: UsePrismicPreviewDataConfig = { skip: false },
-): UsePrismicPreviewDataResult<TStaticData> => {
-	const [state] = usePrismicPreviewContext();
+export const useMergePrismicPreviewData = <
+	TStaticData extends Record<string, unknown>,
+>(
+	staticData: TStaticData | undefined,
+): TStaticData | undefined => {
+	const isBootstrapped = usePrismicPreviewStore(
+		(state) => state.isBootstrapped,
+	);
+	const publishedDocumentIDs = usePrismicPreviewStore(
+		(state) => state.publishedDocumentIDs,
+	);
+	const documents = usePrismicPreviewStore((state) => state.documents);
 
 	return React.useMemo(() => {
-		const runtime = state.activeRepositoryName
-			? state.runtimeStore[state.activeRepositoryName]
-			: undefined;
+		if (staticData) {
+			const hasPreviewData =
+				publishedDocumentIDs.length > 0 || Object.keys(documents).length > 0;
 
-		if (
-			!config.skip &&
-			runtime &&
-			state.previewState === PrismicPreviewState.ACTIVE
-		) {
-			return traverseAndReplace(staticData, runtime);
-		} else {
-			return { data: staticData, isPreview: false };
+			if (isBootstrapped && hasPreviewData) {
+				return mergePreviewData({
+					staticDataNode: staticData,
+					publishedDocumentIDs,
+				});
+			} else {
+				return staticData;
+			}
 		}
-	}, [staticData, config.skip, state]);
+	}, [documents, publishedDocumentIDs, isBootstrapped, staticData]);
 };

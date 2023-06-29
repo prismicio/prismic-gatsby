@@ -1,22 +1,15 @@
-import * as React from 'react'
-import { PageProps } from 'gatsby'
 import {
-  withPrismicPreviewResolver,
-  WithPrismicPreviewResolverProps,
-} from 'gatsby-plugin-prismic-previews'
+	WithPrismicPreviewResolverProps,
+	withPrismicPreviewResolver,
+} from "gatsby-plugin-prismic-previews";
 
-import { repositoryConfigs } from '../prismicPreviews'
-
-type PreviewPageProps = PageProps & WithPrismicPreviewResolverProps
-
-const PreviewPage = (props: PreviewPageProps): JSX.Element => {
-  const propsStr = JSON.stringify(props, null, 2)
-
-  return (
-    <pre style={{ backgroundColor: 'lightgray', padding: '2rem' }}>
-      <code>{propsStr}</code>
-    </pre>
-  )
+function PreviewPage({ isPrismicPreview }: WithPrismicPreviewResolverProps) {
+	return (
+		<p>
+			Is preview:{" "}
+			{isPrismicPreview == null ? "unknown" : isPrismicPreview.toString()}
+		</p>
+	);
 }
 
-export default withPrismicPreviewResolver(PreviewPage, repositoryConfigs)
+export default withPrismicPreviewResolver(PreviewPage);

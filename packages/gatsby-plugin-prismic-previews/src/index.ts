@@ -1,13 +1,17 @@
-export * from "./useMergePrismicPreviewData";
-export * from "./usePrismicPreviewAccessToken";
-export * from "./usePrismicPreviewBootstrap";
-export * from "./usePrismicPreviewContext";
-export * from "./usePrismicPreviewResolver";
+export { PrismicPreviewProvider } from "./PrismicPreviewProvider";
+export type { PrismicPreviewProviderProps } from "./PrismicPreviewProvider";
 
-export * from "./withPrismicPreview";
-export * from "./withPrismicPreviewResolver";
-export * from "./withPrismicUnpublishedPreview";
+export { withPrismicPreviewResolver } from "./withPrismicPreviewResolver";
+export type { WithPrismicPreviewResolverProps } from "./withPrismicPreviewResolver";
 
-export * from "./context";
+export { withPrismicPreview } from "./withPrismicPreview";
+export type { WithPrismicPreviewProps } from "./withPrismicPreview";
 
-export * from "./types";
+export { withPrismicUnpublishedPreview } from "./withPrismicUnpublishedPreview";
+
+export { useMergePrismicPreviewData } from "./useMergePrismicPreviewData";
+
+export type {
+	PublicPluginOptions as PluginOptions,
+	RepositoryConfig,
+} from "./types";

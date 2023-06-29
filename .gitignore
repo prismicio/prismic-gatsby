@@ -1,6 +1,7 @@
 # custom
 dist
 examples/**/package-lock.json
+.turbo
 
 # os
 .DS_Store

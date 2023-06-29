@@ -1,240 +1,235 @@
-import test from "ava";
-import * as sinon from "sinon";
-import * as assert from "assert";
-import * as mswNode from "msw/node";
-import * as prismic from "@prismicio/client";
-import * as prismicM from "@prismicio/mock";
-import * as prismicH from "@prismicio/helpers";
-import * as cookie from "es-cookie";
-import * as gatsby from "gatsby";
-import * as React from "react";
-import * as tlr from "@testing-library/react";
-// import browserEnv from 'browser-env'
-import globalJsdom from "global-jsdom";
-import fetch from "node-fetch";
+// @vitest-environment happy-dom
+import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { clearAllCookies } from "./__testutils__/clearAllCookies";
-import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
-import { createAPIRepositoryMockedRequest } from "./__testutils__/createAPIRepositoryMockedRequest";
-import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
-import { createPageProps } from "./__testutils__/createPageProps";
-import { createPluginOptions } from "./__testutils__/createPluginOptions";
-import { createPreviewRef } from "./__testutils__/createPreviewRef";
-import { createPreviewURL } from "./__testutils__/createPreviewURL";
-import { navigateToPreviewResolverURL } from "./__testutils__/navigateToPreviewResolverURL";
+import * as prismic from "@prismicio/client";
+import * as React from "react";
+import { render, screen, waitFor } from "@testing-library/react";
+import { navigate } from "gatsby";
+
+import { buildPluginOptions } from "./__testutils__/buildPluginOptions";
+import { buildPreviewRef } from "./__testutils__/buildPreviewRef";
+import { renderPage } from "./__testutils__/renderPage";
+import { setupPreviewEnv } from "./__testutils__/setupPreviewEnv";
+import { waitForConsoleError } from "./__testutils__/waitForConsoleError";
 
 import {
-	PluginOptions,
-	PrismicPreviewProvider,
-	WithPrismicPreviewResolverConfig,
 	WithPrismicPreviewResolverProps,
 	withPrismicPreviewResolver,
-	PrismicRepositoryConfigs,
 } from "../src";
-import { onClientEntry } from "../src/on-client-entry";
 
-const server = mswNode.setupServer();
-test.before(() => {
-	// browserEnv(['window', 'document'])
-	globalJsdom(undefined, {
-		url: "https://example.com",
-		pretendToBeVisual: true,
-	});
-	server.listen({ onUnhandledRequest: "error" });
-	window.requestAnimationFrame = function (callback) {
-		return setTimeout(callback, 0);
+vi.mock("gatsby", () => {
+	return {
+		navigate: vi.fn(),
 	};
-	console.error = sinon.stub();
-});
-test.beforeEach(() => {
-	clearAllCookies();
-	window.history.replaceState(null, "", createPreviewURL());
-});
-test.afterEach(() => tlr.cleanup());
-test.after(() => {
-	server.close();
 });
 
-const createRepositoryConfigs = (
-	pluginOptions: PluginOptions,
-): PrismicRepositoryConfigs => [
-	{
-		repositoryName: pluginOptions.repositoryName,
-		linkResolver: (doc): string => `/${doc.uid}`,
+beforeAll(() => {
+	vi.spyOn(console, "error").mockImplementation(() => {
+		// noop
+	});
+});
+
+afterEach(() => {
+	vi.mocked(navigate).mockClear();
+	vi.mocked(console.error).mockClear();
+});
+
+const Page = withPrismicPreviewResolver(
+	(props: Partial<WithPrismicPreviewResolverProps>) => {
+		return (
+			<div data-testid="page">
+				<div data-testid="isPrismicPreview">
+					{String(props.isPrismicPreview)}
+				</div>
+			</div>
+		);
 	},
-];
-
-const createConfig = (): WithPrismicPreviewResolverConfig => ({
-	navigate: sinon.stub().returns(void 0),
-});
-
-const Page = (props: gatsby.PageProps & WithPrismicPreviewResolverProps) => (
-	<div>
-		<div data-testid="isPrismicPreview">{String(props.isPrismicPreview)}</div>
-		<div data-testid="prismicPreviewPath">{props.prismicPreviewPath}</div>
-	</div>
 );
 
-const createTree = (
-	pageProps: gatsby.PageProps,
-	repositoryConfigs: PrismicRepositoryConfigs,
-	config?: WithPrismicPreviewResolverConfig,
-) => {
-	const WrappedPage = withPrismicPreviewResolver(Page, repositoryConfigs, {
-		...config,
-		fetch,
+const waitForNavigate = async () => {
+	await waitFor(() => {
+		expect(navigate).toHaveBeenCalled();
 	});
-
-	return (
-		<PrismicPreviewProvider>
-			<WrappedPage {...pageProps} />
-		</PrismicPreviewProvider>
-	);
 };
 
-test.serial("renders component if not a preview", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-	const pageProps = createPageProps();
-	const hookConfig = createRepositoryConfigs(pluginOptions);
-	const config = createConfig();
-	const tree = createTree(pageProps, hookConfig, config);
+test("renders the wrapped component", () => {
+	render(<Page />);
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
-	const result = tlr.render(tree);
-
-	t.true(result.getByTestId("isPrismicPreview").textContent === "false");
-	t.true((config.navigate as sinon.SinonStub).notCalled);
+	expect(screen.getByTestId("page")).toBeDefined();
 });
 
-test.serial("not a preview if documentId is not in URL", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-	const pageProps = createPageProps();
-	const hookConfig = createRepositoryConfigs(pluginOptions);
-	const config = createConfig();
-	const tree = createTree(pageProps, hookConfig, config);
-	const token = createPreviewRef(pluginOptions.repositoryName);
+test("redirects to the previewed document's URL", async (ctx) => {
+	const fields = { uid: ctx.mock.model.uid() };
+	const customTypeModels = [ctx.mock.model.customType({ id: "foo", fields })];
+	const docs = [
+		ctx.mock.value.document({ model: customTypeModels[0], withURL: false }),
+	];
 
-	navigateToPreviewResolverURL(token, null);
-	cookie.set(prismic.cookie.preview, token);
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		docs,
+		previewType: "resolver",
+	});
+	renderPage({ repositoryConfigs, Page });
+	await waitForNavigate();
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
-	const result = tlr.render(tree);
-
-	t.true(result.getByTestId("isPrismicPreview").textContent === "false");
-	t.true((config.navigate as sinon.SinonStub).notCalled);
+	expect(navigate).toHaveBeenCalledWith(`/${docs[0].uid}`);
 });
 
-test.serial("not a preview if no token is available", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-	const pageProps = createPageProps();
-	const hookConfig = createRepositoryConfigs(pluginOptions);
-	const config = createConfig();
-	const tree = createTree(pageProps, hookConfig, config);
-	const token = createPreviewRef(pluginOptions.repositoryName);
+test("uses the repository's Link Resolver to resolve URL", async (ctx) => {
+	const fields = { uid: ctx.mock.model.uid() };
+	const customTypeModels = [ctx.mock.model.customType({ id: "foo", fields })];
+	const docs = [
+		ctx.mock.value.document({ model: customTypeModels[0], withURL: false }),
+	];
 
-	navigateToPreviewResolverURL(token);
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		docs,
+		previewType: "resolver",
+		repositoryConfig: { linkResolver: () => "/hard-coded-link-resolver" },
+	});
+	renderPage({ repositoryConfigs, Page });
+	await waitForNavigate();
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
-	const result = tlr.render(tree);
-
-	t.true(result.getByTestId("isPrismicPreview").textContent === "false");
-	t.true((config.navigate as sinon.SinonStub).notCalled);
+	expect(navigate).toHaveBeenCalledWith(`/hard-coded-link-resolver`);
 });
 
-test.serial("redirects to path on valid preview", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-	const pageProps = createPageProps();
-	const hookConfig = createRepositoryConfigs(pluginOptions);
-	const config = createConfig();
-	const tree = createTree(pageProps, hookConfig, config);
-	const ref = createPreviewRef(pluginOptions.repositoryName);
+test("defaults isPrismicPreview prop to null", (ctx) => {
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		previewType: "inactive",
+	});
+	renderPage({ Page, repositoryConfigs, static: true });
 
-	const document = prismicM.value.document();
-	const queryResponse = prismicM.api.query({ documents: [document] });
-	const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	expect(screen.queryByTestId("isPrismicPreview")).toHaveTextContent("null");
+});
 
-	navigateToPreviewResolverURL(ref, document.id);
-	cookie.set(prismic.cookie.preview, ref);
+test("sets isPrismicPreview prop to false if a preview is not active", (ctx) => {
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		previewType: "inactive",
+	});
+	renderPage({ Page, repositoryConfigs });
 
-	server.use(
-		createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
-		createAPIQueryMockedRequest({
-			pluginOptions,
-			repositoryResponse,
-			queryResponse,
-			searchParams: {
-				ref,
-				q: `[${prismic.predicate.at("document.id", document.id)}]`,
-			},
-		}),
+	expect(screen.queryByTestId("isPrismicPreview")).toHaveTextContent("false");
+});
+
+test("sets isPrismicPreview prop to true if a preview is active", async (ctx) => {
+	const fields = { uid: ctx.mock.model.uid() };
+	const customTypeModels = [ctx.mock.model.customType({ id: "foo", fields })];
+	const docs = [
+		ctx.mock.value.document({ model: customTypeModels[0], withURL: false }),
+	];
+
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		docs,
+		previewType: "resolver",
+	});
+	renderPage({ repositoryConfigs, Page });
+	await waitForNavigate();
+
+	expect(screen.queryByTestId("isPrismicPreview")).toHaveTextContent("true");
+});
+
+test("does not redirect if the component unmounted", (ctx) => {
+	const fields = { uid: ctx.mock.model.uid() };
+	const customTypeModels = [ctx.mock.model.customType({ id: "foo", fields })];
+	const docs = [
+		ctx.mock.value.document({ model: customTypeModels[0], withURL: false }),
+	];
+
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		docs,
+		previewType: "resolver",
+	});
+	const { unmount } = renderPage({ repositoryConfigs, Page });
+	unmount();
+
+	expect(navigate).not.toHaveBeenCalled();
+});
+
+test("logs error if plugin options for the repository could not be found", async () => {
+	const pluginOptions = buildPluginOptions();
+	const ref = buildPreviewRef({ repositoryName: pluginOptions.repositoryName });
+
+	document.cookie = `${prismic.cookie.preview}=${ref};path=/`;
+
+	renderPage({ repositoryConfigs: [], Page });
+
+	await waitForConsoleError();
+
+	expect(console.error).toHaveBeenCalledWith(
+		expect.stringMatching(/plugin options could not be found/i),
 	);
-
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
-	tlr.render(tree);
-
-	await tlr.waitFor(() =>
-		assert.ok((config.navigate as sinon.SinonStub).called),
-	);
-
-	t.true(
-		(config.navigate as sinon.SinonStub).calledWith(
-			prismicH.asLink(document, hookConfig[0].linkResolver),
-		),
-	);
+	expect(navigate).not.toHaveBeenCalled();
 });
 
-test.serial(
-	"does not redirect on valid preview if autoRedirect is false",
-	async (t) => {
-		const gatsbyContext = createGatsbyContext();
-		const pluginOptions = createPluginOptions(t);
-		const pageProps = createPageProps();
-		const hookConfig = createRepositoryConfigs(pluginOptions);
-		const config = createConfig();
-		config.autoRedirect = false;
-		const tree = createTree(pageProps, hookConfig, config);
-		const ref = createPreviewRef(pluginOptions.repositoryName);
+test("logs error if repository configuration for the repository could not be found", async (ctx) => {
+	const fields = { uid: ctx.mock.model.uid() };
+	const customTypeModels = [ctx.mock.model.customType({ id: "foo", fields })];
+	const docs = [
+		ctx.mock.value.document({ model: customTypeModels[0], withURL: false }),
+	];
 
-		const document = prismicM.value.document();
-		const queryResponse = prismicM.api.query({ documents: [document] });
-		const repositoryResponse = prismicM.api.repository({ seed: t.title });
+	setupPreviewEnv({ ctx, docs, previewType: "resolver" });
+	renderPage({ repositoryConfigs: [], Page });
 
-		navigateToPreviewResolverURL(ref, document.id);
-		cookie.set(prismic.cookie.preview, ref);
+	await waitForConsoleError();
 
-		server.use(
-			createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
-			createAPIQueryMockedRequest({
-				pluginOptions,
-				repositoryResponse,
-				queryResponse,
-				searchParams: {
-					ref,
-					q: `[${prismic.predicate.at("document.id", document.id)}]`,
-				},
-			}),
-		);
+	expect(console.error).toHaveBeenCalledWith(
+		expect.stringMatching(/repository configuration could not be found/i),
+	);
+	expect(navigate).not.toHaveBeenCalled();
+});
 
-		// @ts-expect-error - Partial gatsbyContext provided
-		await onClientEntry(gatsbyContext, pluginOptions);
-		const result = tlr.render(tree);
+describe("environment-specific", () => {
+	const originalNodeEnv = process.env.NODE_ENV;
 
-		await tlr.waitFor(() =>
-			assert.ok(result.getByTestId("prismicPreviewPath").textContent),
-		);
+	afterAll(() => {
+		process.env.NODE_ENV = originalNodeEnv;
+	});
 
-		t.true(
-			result.getByTestId("prismicPreviewPath").textContent ===
-				prismicH.asLink(document, hookConfig[0].linkResolver),
-		);
-		t.true((config.navigate as sinon.SinonStub).notCalled);
-	},
-);
+	describe("development", () => {
+		beforeAll(() => {
+			process.env.NODE_ENV = "development";
+		});
+
+		test("labels the wrapped component with withPrismicPreviewResolver", () => {
+			const Component = () => <div />;
+			Component.displayName = "Component";
+
+			expect(withPrismicPreviewResolver(Component).displayName).toBe(
+				`withPrismicPreviewResolver(${Component.displayName})`,
+			);
+		});
+	});
+
+	describe("production", () => {
+		beforeAll(() => {
+			process.env.NODE_ENV = "production";
+		});
+
+		test("does not label the wrapped component with withPrismicPreviewResolver", () => {
+			const Component = () => <div />;
+			Component.displayName = "Component";
+
+			expect(withPrismicPreviewResolver(Component).displayName).toBe(undefined);
+		});
+	});
+
+	describe("test", () => {
+		beforeAll(() => {
+			process.env.NODE_ENV = "test";
+		});
+
+		test("does not label the wrapped component with withPrismicPreviewResolver", () => {
+			const Component = () => <div />;
+			Component.displayName = "Component";
+
+			expect(withPrismicPreviewResolver(Component).displayName).toBe(undefined);
+		});
+	});
+});

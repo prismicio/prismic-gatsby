@@ -1,16 +1,16 @@
 ---
 name: 🙋‍♀️ Feature request
 about: Suggest an idea or enhancement for the package.
-title: ''
-labels: 'enhancement'
-assignees: ''
+title: ""
+labels: "enhancement"
+assignees: ""
 ---
 
 <!-- 💙 Thanks for your time to make this package better with your feedback 💙 -->
 
 ### Is your feature request related to a problem? Please describe.
 
-<!-- A clear and concise description of what the problem is. E.g. I'm always frustrated when [...] -->
+<!-- A clear and concise description of what the problem is. Ex. I'm always frustrated when [...] -->
 
 ### Describe the solution you'd like
 

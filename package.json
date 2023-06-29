@@ -1,26 +1,34 @@
 {
-  "name": "@prismicio/gatsby",
-  "private": true,
-  "scripts": {
-    "clean": "yarn workspaces run clean",
-    "test": "yarn workspaces run test",
-    "build": "yarn workspaces run build",
-    "publish:canary": "lerna publish --canary",
-    "publish:slicemachine": "lerna publish --dist-tag slicemachine --preid slicemachine",
-    "publish:alpha": "lerna publish --dist-tag alpha --preid alpha",
-    "publish:beta": "lerna publish --dist-tag beta --preid beta",
-    "publish:next": "lerna publish --dist-tag next --preid next",
-    "publish:latest": "lerna publish --dist-tag latest"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/gatsby-source-prismic",
-      "packages/gatsby-plugin-prismic-previews",
-      "packages/*",
-      "test-site"
-    ]
-  },
-  "devDependencies": {
-    "lerna": "^4.0.0"
-  }
+	"name": "@prismicio/gatsby",
+	"private": true,
+	"workspaces": [
+		"packages/gatsby-source-prismic",
+		"packages/gatsby-plugin-prismic-previews",
+		"test-site"
+	],
+	"scripts": {
+		"build": "npm run build --workspace gatsby-source-prismic --workspace gatsby-plugin-prismic-previews",
+		"build:all": "npm run build --workspaces --if-present",
+		"dev": "concurrently \"npm run dev --workspace gatsby-source-prismic\" \"npm run dev --workspace gatsby-plugin-prismic-previews\" --names \"source,previews\" --prefix-colors magenta,blue",
+		"format": "npm run format --workspaces --if-present",
+		"postinstall": "patch-package",
+		"lint": "npm run lint --workspaces --if-present",
+		"release": "npm test && npm run build && lerna publish",
+		"release:alpha": "npm test && npm run build && lerna publish --dist-tag alpha --preid alpha",
+		"release:beta": "npm test && npm run build && lerna publish --dist-tag beta --preid beta",
+		"size": "size-limit",
+		"test": "npm run test --workspaces --if-present",
+		"types": "npm run types --workspaces --if-present",
+		"unit": "npm run unit --workspaces --if-present"
+	},
+	"devDependencies": {
+		"@size-limit/preset-small-lib": "^8.2.4",
+		"concurrently": "^8.2.0",
+		"lerna": "^7.0.2",
+		"patch-package": "^7.0.0",
+		"size-limit": "^8.2.4"
+	},
+	"engines": {
+		"node": ">=14.15.0"
+	}
 }

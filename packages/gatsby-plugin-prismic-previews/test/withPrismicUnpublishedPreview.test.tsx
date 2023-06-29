@@ -1,264 +1,146 @@
-import test from "ava";
-import * as assert from "assert";
-import * as mswNode from "msw/node";
-import * as prismic from "@prismicio/client";
-import * as prismicM from "@prismicio/mock";
-import * as cookie from "es-cookie";
-import * as gatsby from "gatsby";
-import * as React from "react";
-import * as tlr from "@testing-library/react";
-import * as cc from "camel-case";
-import globalJsdom from "global-jsdom";
-import fetch from "node-fetch";
+// @vitest-environment happy-dom
+import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { clearAllCookies } from "./__testutils__/clearAllCookies";
-import { createAPIQueryMockedRequest } from "./__testutils__/createAPIQueryMockedRequest";
-import { createAPIRepositoryMockedRequest } from "./__testutils__/createAPIRepositoryMockedRequest";
-import { createGatsbyContext } from "./__testutils__/createGatsbyContext";
-import { createPageProps } from "./__testutils__/createPageProps";
-import { createPluginOptions } from "./__testutils__/createPluginOptions";
-import { createPreviewRef } from "./__testutils__/createPreviewRef";
-import { createPreviewURL } from "./__testutils__/createPreviewURL";
-import { createRuntime } from "./__testutils__/createRuntime";
-import { createTypePathsMockedRequest } from "./__testutils__/createTypePathsMockedRequest";
-import { jsonFilter } from "./__testutils__/jsonFilter";
+import * as React from "react";
+import { screen, waitFor } from "@testing-library/react";
+import { withAssetPrefix } from "gatsby";
+
+import { renderPage } from "./__testutils__/renderPage";
+import { setupPreviewEnv } from "./__testutils__/setupPreviewEnv";
 
 import {
-	PluginOptions,
-	PrismicPreviewProvider,
-	PrismicRepositoryConfigs,
-	PrismicUnpublishedRepositoryConfigs,
-	UnknownRecord,
 	WithPrismicPreviewProps,
-	componentResolverFromMap,
 	withPrismicPreview,
 	withPrismicUnpublishedPreview,
-	WithPrismicUnpublishedPreviewConfig,
 } from "../src";
-import { onClientEntry } from "../src/on-client-entry";
+import type { PagePropsLike } from "../src/types";
 
-const server = mswNode.setupServer();
-test.before(() => {
-	globalJsdom(undefined, {
-		url: "https://example.com",
-		pretendToBeVisual: true,
-	});
-	server.listen({ onUnhandledRequest: "error" });
-	globalThis.__PATH_PREFIX__ = "https://example.com";
-});
-test.beforeEach(() => {
-	clearAllCookies();
-	window.history.replaceState(null, "", createPreviewURL());
-});
-test.afterEach(() => tlr.cleanup());
-test.after(() => {
-	server.close();
+vi.mock("gatsby", () => {
+	return {
+		withAssetPrefix: vi.fn((path: string) => path),
+	};
 });
 
-const createRepositoryConfigs = (
-	pluginOptions: PluginOptions,
-): PrismicUnpublishedRepositoryConfigs => {
-	const baseConfigs: PrismicRepositoryConfigs = [
-		{
-			repositoryName: pluginOptions.repositoryName,
-			linkResolver: (doc): string => `/${doc.uid}`,
-		},
-	];
+afterEach(() => {
+	vi.mocked(withAssetPrefix).mockClear();
+});
 
-	return baseConfigs.map((config) => ({
-		...config,
-		componentResolver: componentResolverFromMap({
-			type: withPrismicPreview(Page, baseConfigs),
-		}),
-	}));
-};
-
-const NotFoundPage = <TProps extends UnknownRecord = UnknownRecord>(
-	props: gatsby.PageProps<TProps>,
-) => (
-	<div>
-		<div data-testid="component-name">NotFoundPage</div>
-		<div data-testid="data">{JSON.stringify(props.data)}</div>
-	</div>
+const PageTemplate = withPrismicPreview(
+	(props: Partial<PagePropsLike & WithPrismicPreviewProps>) => {
+		return (
+			<div data-testid="page">
+				<div data-testid="isPrismicPreview">
+					{String(props.isPrismicPreview)}
+				</div>
+				<div data-testid="data">{JSON.stringify(props.data)}</div>
+				<div data-testid="originalData">
+					{JSON.stringify(props.originalData)}
+				</div>
+			</div>
+		);
+	},
 );
 
-const Page = <TProps extends UnknownRecord = UnknownRecord>(
-	props: gatsby.PageProps<TProps> & WithPrismicPreviewProps<TProps>,
-) => (
-	<div>
-		<div data-testid="component-name">Page</div>
-		<div data-testid="isPrismicPreview">
-			{props.isPrismicPreview === null
-				? "null"
-				: props.isPrismicPreview.toString()}
-		</div>
-		<div data-testid="prismicPreviewOriginalData">
-			{JSON.stringify(props.prismicPreviewOriginalData)}
-		</div>
-		<div data-testid="data">{JSON.stringify(props.data)}</div>
-	</div>
-);
-
-const createTree = (
-	pageProps: gatsby.PageProps,
-	repositoryConfigs: PrismicUnpublishedRepositoryConfigs,
-	config?: WithPrismicUnpublishedPreviewConfig,
-) => {
-	const WrappedPage = withPrismicUnpublishedPreview(
-		NotFoundPage,
-		repositoryConfigs,
-		{ ...config, fetch },
-	);
-
+const Page = withPrismicUnpublishedPreview((props: Partial<PagePropsLike>) => {
 	return (
-		<PrismicPreviewProvider>
-			{/*
-       // @ts-expect-error - Partial pageResources provided */}
-			<WrappedPage {...pageProps} />
-		</PrismicPreviewProvider>
+		<div data-testid="unpublished-page">
+			<div data-testid="data">{JSON.stringify(props.data)}</div>
+		</div>
 	);
+});
+
+const waitForDataChange = async () => {
+	await waitFor(() => {
+		expect(screen.getByTestId("page")).toBeDefined();
+	});
+
+	const propData = JSON.parse(screen.getByTestId("data").textContent ?? "null");
+
+	return { propData };
 };
 
-test.serial("renders the 404 page if not a preview", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-	const repositoryConfigs = createRepositoryConfigs(pluginOptions);
-
-	const model = prismicM.model.customType();
-	const documents = Array(20)
-		.fill(undefined)
-		.map(() => prismicM.value.document({ model }));
-
-	const runtime = createRuntime(pluginOptions, repositoryConfigs[0]);
-	runtime.registerCustomTypeModels([model]);
-	runtime.registerDocuments(documents);
-
-	// Need to use the query results nodes rather than new documents to ensure
-	// the IDs match.
-	const staticData = jsonFilter({
-		previewable: runtime.nodes[0],
-		nonPreviewable: runtime.nodes[1],
+test("renders the wrapped component", (ctx) => {
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		previewType: "inactive",
 	});
-	staticData.previewable._previewable = runtime.nodes[0].prismicId;
-	// Marking this data as "old" and should be replaced during the merge.
-	staticData.previewable.uid = "old";
+	renderPage({ Page, repositoryConfigs });
 
-	const pageProps = createPageProps(staticData);
-	const tree = createTree(pageProps, repositoryConfigs);
-
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
-	const result = tlr.render(tree);
-
-	// Because a preview ref was not set, preview data was not fetched. The
-	// component should render the base 404 component and data.
-	t.true(result.getByTestId("component-name").textContent === "NotFoundPage");
-	t.true(
-		result.getByTestId("data").textContent === JSON.stringify(pageProps.data),
-	);
+	expect(screen.getByTestId("unpublished-page")).toBeDefined();
 });
 
-test.serial("merges data if preview data is available", async (t) => {
-	const gatsbyContext = createGatsbyContext();
-	const pluginOptions = createPluginOptions(t);
-	const repositoryConfigs = createRepositoryConfigs(pluginOptions);
+test("fetches preview data and renders resolved component with data", async (ctx) => {
+	const fields = { uid: ctx.mock.model.uid() };
+	const customTypeModels = [ctx.mock.model.customType({ id: "foo", fields })];
+	const docs = [
+		ctx.mock.value.document({ model: customTypeModels[0], withURL: false }),
+	];
+	const data = { foo: "bar" };
 
-	const ref = createPreviewRef(pluginOptions.repositoryName);
-	cookie.set(prismic.cookie.preview, ref);
-
-	const model = prismicM.model.customType({ withUID: true });
-	model.id = "type";
-
-	const documents = Array(20)
-		.fill(undefined)
-		.map(() => prismicM.value.document({ model, withURL: false }));
-	const queryResponse = prismicM.api.query({ documents });
-	const repositoryResponse = prismicM.api.repository({ seed: t.title });
-
-	const runtime = createRuntime(pluginOptions, repositoryConfigs[0]);
-	runtime.registerCustomTypeModels([model]);
-	runtime.registerDocuments(documents);
-
-	// We'll use the first node as an unpublished preview. The unpublished HOC
-	// should see this URL and find the node with a matching URL.
-	window.history.replaceState(null, "", runtime.nodes[0].url);
-
-	server.use(
-		createAPIRepositoryMockedRequest({ pluginOptions, repositoryResponse }),
-		createAPIQueryMockedRequest({
-			pluginOptions,
-			repositoryResponse,
-			queryResponse,
-			searchParams: { ref },
-		}),
-		createTypePathsMockedRequest(
-			pluginOptions.repositoryName,
-			runtime.typePaths,
-		),
-	);
-
-	// Need to use the query results nodes rather than new documents to ensure
-	// the IDs match.
-	const staticData = jsonFilter({
-		previewable: runtime.nodes[0],
-		nonPreviewable: runtime.nodes[1],
+	const { repositoryConfigs } = setupPreviewEnv({
+		ctx,
+		docs,
+		customTypeModels,
+		repositoryConfig: { componentResolver: { [docs[0].type]: PageTemplate } },
 	});
-	staticData.previewable._previewable = runtime.nodes[0].prismicId;
-	// Marking this data as "old" and should be replaced during the merge.
-	staticData.previewable.uid = "old";
+	renderPage({ Page, data, repositoryConfigs });
+	const { propData } = await waitForDataChange();
 
-	const pageProps = createPageProps(staticData);
-	const tree = createTree(pageProps, repositoryConfigs);
+	expect(propData.foo).toBe("bar");
 
-	// @ts-expect-error - Partial gatsbyContext provided
-	await onClientEntry(gatsbyContext, pluginOptions);
-	const result = tlr.render(tree);
-
-	await tlr.waitFor(() =>
-		assert.ok(result.getByTestId("component-name").textContent === "Page"),
-	);
-
-	const propData = JSON.parse(result.getByTestId("data").textContent ?? "{}");
-	const mergedData = jsonFilter({
-		...staticData,
-		previewable: runtime.nodes[0],
-		[cc.camelCase(runtime.nodes[0].__typename, {
-			transform: cc.camelCaseTransformMerge,
-		})]: runtime.nodes[0],
-	});
-	t.deepEqual(propData, mergedData);
+	expect(propData.prismicFoo.prismicId).toBe(docs[0].id);
+	expect(propData.prismicFoo.__typename).toBe("PrismicFoo");
 });
 
-test("componentResolverFromMap returns componentResolver", (t) => {
-	const pluginOptions = createPluginOptions(t);
-	const config = createRepositoryConfigs(pluginOptions);
+describe("environment-specific", () => {
+	const originalNodeEnv = process.env.NODE_ENV;
 
-	const fooModel = prismicM.model.customType();
-	const fooDocument = prismicM.value.document({ model: fooModel });
-	const FooComp = () => <div />;
-
-	const barModel = prismicM.model.customType();
-	const barDocument = prismicM.value.document({ model: barModel });
-	const BarComp = () => <div />;
-
-	const runtime = createRuntime(pluginOptions, config[0]);
-	runtime.registerCustomTypeModels([fooModel, barModel]);
-	runtime.registerDocuments([fooDocument, barDocument]);
-
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	const fooNode = runtime.getNode(fooDocument.id)!;
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	const barNode = runtime.getNode(barDocument.id)!;
-
-	const componentResolver = componentResolverFromMap({
-		[fooDocument.type]: FooComp,
-		[barDocument.type]: BarComp,
+	afterAll(() => {
+		process.env.NODE_ENV = originalNodeEnv;
 	});
 
-	t.true(componentResolver([fooNode]) === FooComp);
-	t.true(componentResolver([barNode]) === BarComp);
+	describe("development", () => {
+		beforeAll(() => {
+			process.env.NODE_ENV = "development";
+		});
 
-	// It should use the first node to resolve the component.
-	t.true(componentResolver([fooNode, barNode]) === FooComp);
-	t.true(componentResolver([barNode, fooNode]) === BarComp);
+		test("labels the wrapped component with withPrismicUnpublishedPreview", () => {
+			const Component = () => <div />;
+			Component.displayName = "Component";
+
+			expect(withPrismicUnpublishedPreview(Component).displayName).toBe(
+				`withPrismicUnpublishedPreview(${Component.displayName})`,
+			);
+		});
+	});
+
+	describe("production", () => {
+		beforeAll(() => {
+			process.env.NODE_ENV = "production";
+		});
+
+		test("does not label the wrapped component with withPrismicUnpublishedPreview", () => {
+			const Component = () => <div />;
+			Component.displayName = "Component";
+
+			expect(withPrismicUnpublishedPreview(Component).displayName).toBe(
+				undefined,
+			);
+		});
+	});
+
+	describe("test", () => {
+		beforeAll(() => {
+			process.env.NODE_ENV = "test";
+		});
+
+		test("does not label the wrapped component with withPrismicUnpublishedPreview", () => {
+			const Component = () => <div />;
+			Component.displayName = "Component";
+
+			expect(withPrismicUnpublishedPreview(Component).displayName).toBe(
+				undefined,
+			);
+		});
+	});
 });
