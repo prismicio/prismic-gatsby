@@ -1,7 +1,7 @@
 <div align="center">
   <br/>
   <div>
-    <img width="200" height="200" src="media/gatsby-plus-prismic.svg" alt="Gatsby + Prismic" />
+    <img width="200" height="200" src="https://github.com/prismicio/prismic-gatsby/assets/8601064/5a9e50c3-ac8d-41a2-b8d6-461c773aa8c3" alt="Gatsby + Prismic" />
   </div>
 </div>
 
