@@ -21,10 +21,7 @@ Or if you want to dive straight into some code and see an example site using Pri
 
 ## Documentation
 
-For full documentation, see each plugin's package.
-
-- [**gatsby-source-prismic**](https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages/gatsby-source-prismic): Gatsby source plugin for building websites using Prismic as a data source
-- [**gatsby-plugin-prismic-previews**](https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages/gatsby-plugin-prismic-previews): Gatsby plugin for integrating client-side Prismic Previews
+[See the `docs` directory](./docs) for documenation on each package.
 
 ## Contributing
 
