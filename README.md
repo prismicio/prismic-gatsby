@@ -21,7 +21,7 @@ Or if you want to dive straight into some code and see an example site using Pri
 
 ## Documentation
 
-[See the `docs` directory](./docs) for documenation on each package.
+[See the `docs` directory](./docs) for documentation on each package.
 
 ## Contributing
 
