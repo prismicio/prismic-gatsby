@@ -150,7 +150,7 @@ To template a Group, you can use a `map()` method to loop over the results. Here
 
 ## Rich Text and Titles
 
-Rich Text and Titles are delivered in an array that contains information about the text structure. Use the `richText` field and the `[<PrismicRichText>](https://prismic.io/docs/technical-reference/prismicio-react#prismicrichtext)` component from the `@prismicio/react` package.
+Rich Text and Titles are delivered in an array that contains information about the text structure. Use the `richText` field and the [`<PrismicRichText>`](https://prismic.io/docs/technical-reference/prismicio-react#prismicrichtext) component from the `@prismicio/react` package.
 
 ```javascript
 import { PrismicRichText } from "@prismicio/react";
@@ -323,7 +323,7 @@ To use local image processing, you need the following plugins in your project's�
 - [gatsby-plugin-sharp](https://www.gatsbyjs.com/plugins/gatsby-plugin-sharp/)
 - [gatsby-transformer-sharp](https://www.gatsbyjs.com/plugins/gatsby-transformer-sharp/)
 
-You must list which files should be downloaded in the `[shouldDownloadFiles](./technical-reference-gatsby-source-prismic-v5.md)` option of the plugin config in `gatsby-config.js`. By default, no files are downloaded. Then you can query image data for `gatsby-plugin-image`'s `GatsbyImage` component like in the following example.
+You must list which files should be downloaded in the [`shouldDownloadFiles`](./technical-reference-gatsby-source-prismic-v5.md) option of the plugin config in `gatsby-config.js`. By default, no files are downloaded. Then you can query image data for `gatsby-plugin-image`'s `GatsbyImage` component like in the following example.
 
 **sample query**:
 
