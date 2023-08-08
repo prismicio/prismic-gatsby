@@ -16,8 +16,8 @@ If a developer sets up Prismic for you, you won't need any technical knowledge �
 
 Gatsby is a framework that offers a wide variety of plugins to customize and extend your application capabilities. Prismic has the following integration plugins:
 
-- `[gatsby-source-prismic](./technical-reference-gatsby-source-prismic-v5.md)`: This source plugin helps you to pull data from Prismic.
-- `[gatsby-plugin-prismic-previews](./technical-reference-gatsby-plugin-prismic-previews-v5.md)`: This plugin works together with the source plugin to integrate [Prismic Previews](./06-preview-drafts.md) into a Gatsby site.
+- [`gatsby-source-prismic`](./technical-reference-gatsby-source-prismic-v5.md): This source plugin helps you to pull data from Prismic.
+- [`gatsby-plugin-prismic-previews`](./technical-reference-gatsby-plugin-prismic-previews-v5.md): This plugin works together with the source plugin to integrate [Prismic Previews](./06-preview-drafts.md) into a Gatsby site.
 
 > **Are you using `gatsby-source-prismic-graphql`?**
 >
