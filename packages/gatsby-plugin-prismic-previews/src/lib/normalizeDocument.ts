@@ -58,8 +58,6 @@ const withDocumentProxy = <
 			if (prop === "document") {
 				if (hasOwnProperty(target, "id") && typeof target.id === "string") {
 					return getDocument(target.id) || null;
-				} else {
-					return null;
 				}
 			} else if (prop === "url") {
 				if (hasOwnProperty(target, "id") && typeof target.id === "string") {
@@ -70,12 +68,10 @@ const withDocumentProxy = <
 							linkResolver: repositoryConfig.linkResolver,
 						});
 					}
-				} else {
-					return null;
 				}
-			} else {
-				return Reflect.get(target, prop, receiver);
 			}
+
+			return Reflect.get(target, prop, receiver);
 		},
 	});
 };
@@ -238,8 +234,8 @@ const normalizeField = async (
 										variationModel.primary || {},
 										[...path, slice.slice_type, "primary"],
 										sharedSliceModels,
-										pluginOptions,
 										repositoryConfig,
+										pluginOptions,
 									);
 
 									result.items = await Promise.all(
@@ -249,8 +245,8 @@ const normalizeField = async (
 												variationModel.items || {},
 												[...path, slice.slice_type, "item"],
 												sharedSliceModels,
-												pluginOptions,
 												repositoryConfig,
+												pluginOptions,
 											);
 										}),
 									);
