@@ -39,7 +39,7 @@ For more clarity on this project and its structure you can also check out the de
 
 ### A note on how this repository is organized
 
-This repository is a monorepo managed using [npm workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces). This means there are [multiple packages](https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages) managed in this codebase, even though we publish them to [npm](https://www.npmjs.com/) as separate packages.
+This repository is a monorepo managed using [npm workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces). This means there are [multiple packages](https://github.com/prismicio/prismic-gatsby/tree/main/packages) managed in this codebase, even though we publish them to [npm](https://www.npmjs.com/) as separate packages.
 
 ## License
 
@@ -72,6 +72,6 @@ limitations under the License.
 <!-- TODO: Replace link with a more useful one if available -->
 
 [forum-question]: https://community.prismic.io
-[repo-bug-report]: https://github.com/prismicio-community/prismic-gatsby-early-access/issues/new?assignees=&labels=bug&template=bug_report.md&title=
-[repo-feature-request]: https://github.com/prismicio-community/prismic-gatsby-early-access/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
-[repo-pull-requests]: https://github.com/prismicio-community/prismic-gatsby-early-access/pulls
+[repo-bug-report]: https://github.com/prismicio/prismic-gatsby/issues/new?assignees=&labels=bug&template=bug_report.md&title=
+[repo-feature-request]: https://github.com/prismicio/prismic-gatsby/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=
+[repo-pull-requests]: https://github.com/prismicio/prismic-gatsby/pulls
