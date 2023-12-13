@@ -3,18 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [6.0.1](https://github.com/prismicio-community/prismic-gatsby-early-access/compare/v6.0.0...v6.0.1) (2023-09-05)
+## [6.0.1](https://github.com/prismicio/prismic-gatsby/compare/v6.0.0...v6.0.1) (2023-09-05)
 
 
 ### Bug Fixes
 
-* **previews:** correctly resolve the `url` property in link fields ([#542](https://github.com/prismicio-community/prismic-gatsby-early-access/issues/542)) ([0a426c5](https://github.com/prismicio-community/prismic-gatsby-early-access/commit/0a426c5f64b74af36f8b1c656355d44502c2ecfd))
+* **previews:** correctly resolve the `url` property in link fields ([#542](https://github.com/prismicio/prismic-gatsby/issues/542)) ([0a426c5](https://github.com/prismicio/prismic-gatsby/commit/0a426c5f64b74af36f8b1c656355d44502c2ecfd))
 
 
 
 
 
-# [6.0.0](https://github.com/prismicio-community/prismic-gatsby-early-access/compare/v5.3.1...v6.0.0) (2023-06-29)
+# [6.0.0](https://github.com/prismicio/prismic-gatsby/compare/v5.3.1...v6.0.0) (2023-06-29)
 
 **Note:** Version bump only for package gatsby-plugin-prismic-previews
 

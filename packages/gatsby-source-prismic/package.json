@@ -10,8 +10,9 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "ssh://git@github.com/prismicio-community/prismic-gatsby-early-access.git"
+		"url": "git+https://github.com/prismicio/prismic-gatsby.git"
 	},
+	"homepage": "https://github.com/prismicio/prismic-gatsby/tree/main/packages/gatsby-source-prismic",
 	"license": "Apache-2.0",
 	"author": "Prismic <contact@prismic.io> (https://prismic.io)",
 	"sideEffects": false,
