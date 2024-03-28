@@ -317,6 +317,9 @@ export const createSchemaCustomization = async <
 					type: "JSON!",
 					description:
 						"**Do not use this field unless you know what you are doing**. The unprocessed field value returned from the Prismic REST API.",
+					resolve: (source: object): object => {
+						return source;
+					},
 				},
 			},
 		}),
