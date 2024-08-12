@@ -1,6 +1,6 @@
 {
 	"name": "test-site",
-	"version": "6.0.1",
+	"version": "6.0.2",
 	"private": true,
 	"description": "Test Site",
 	"author": "Angelo Ashmore",
@@ -19,8 +19,8 @@
 		"@prismicio/react": "^2.7.1",
 		"gatsby": "^5.11.0",
 		"gatsby-plugin-image": "^3.11.0",
-		"gatsby-plugin-prismic-previews": "^6.0.1",
-		"gatsby-source-prismic": "^6.0.1",
+		"gatsby-plugin-prismic-previews": "^6.0.2",
+		"gatsby-source-prismic": "^6.0.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0"
 	},
