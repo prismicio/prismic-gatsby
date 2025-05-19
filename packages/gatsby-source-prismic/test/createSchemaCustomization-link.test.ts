@@ -199,6 +199,7 @@ test("creates shared types", async () => {
 				raw: {
 					type: "JSON!",
 					description: expect.any(String),
+					resolve: expect.any(Function),
 				},
 			}),
 		},
