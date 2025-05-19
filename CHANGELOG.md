@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.3](https://github.com/prismicio/prismic-gatsby/compare/v6.0.2...v6.0.3) (2025-05-19)
+
+
+### Bug Fixes
+
+* return all repeated items of a SharedSlice, not just the first item ([be50669](https://github.com/prismicio/prismic-gatsby/commit/be50669ff1673fcb6371d340b07a25c7dbb74e1b))
+
+
+
+
+
 ## [6.0.2](https://github.com/prismicio/prismic-gatsby/compare/v6.0.1...v6.0.2) (2024-08-12)
 
 **Note:** Version bump only for package @prismicio/gatsby
