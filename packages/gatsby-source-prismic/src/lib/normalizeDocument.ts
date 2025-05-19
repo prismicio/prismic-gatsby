@@ -80,7 +80,7 @@ const normalizeDocumentField = async <
 									});
 
 								if (sharedSliceModel && sharedSliceVariationModel) {
-									const [primary, items] = await Promise.all([
+									const [primary, ...items] = await Promise.all([
 										normalizeDocumentFieldRecord({
 											...args,
 											models: sharedSliceVariationModel.primary || {},
