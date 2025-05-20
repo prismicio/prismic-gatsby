@@ -21,7 +21,7 @@ npm install gatsby-source-prismic gatsby-plugin-image
 
 ## Documentation
 
-To discover what's new on this package check out [the changelog][changelog]. For full documentation, visit the [official Prismic documentation][prismic-docs].
+To discover what's new on this package check out [the changelog][changelog]. For full documentation, visit the [official Prismic documentation](../../docs).
 
 ## Contributing
 
@@ -59,19 +59,19 @@ limitations under the License.
 
 [prismic]: https://prismic.io
 [gatsby]: https://www.gatsbyjs.com/
-[prismic-slices]: https://prismic.io/docs/core-concepts/slices
+[prismic-slices]: https://prismic.io/docs/slices
 [gatsby-plugin-image]: https://www.gatsbyjs.com/plugins/gatsby-plugin-image/
 [gatsby-plugin-prismic-previews]: https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages/gatsby-plugin-prismic-previews
 [gatsby-transformer-sharp]: https://www.gatsbyjs.com/plugins/gatsby-transformer-sharp/
 [imgix]: https://imgix.com/
-[prismic-previews]: https://prismic.io/docs/core-concepts/preview-setup
-[prismic-fields]: https://prismic.io/docs/core-concepts#fields
-[prismic-rich-text]: https://prismic.io/docs/core-concepts/rich-text-title
-[prismic-link]: https://prismic.io/docs/core-concepts/link-content-relationship
+[prismic-previews]: https://prismic.io/docs/preview
+[prismic-fields]: https://prismic.io/docs/fields
+[prismic-rich-text]: https://prismic.io/docs/fields/rich-text
+[prismic-link]: https://prismic.io/docs/fields/link
 
 <!-- TODO: Replace link with a more useful one if available -->
 
-[prismic-docs]: https://prismic.io/docs/technologies/gatsby
+[prismic-docs]: https://prismic.io/docs
 [changelog]: https://github.com/prismicio-community/prismic-gatsby-early-access/blob/main/packages/gatsby-source-prismic/CHANGELOG.md
 [contributing]: https://github.com/prismicio-community/prismic-gatsby-early-access/blob/main/CONTRIBUTING.md
 

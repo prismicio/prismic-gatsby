@@ -22,7 +22,7 @@ npm install gatsby-plugin-prismic-previews gatsby-source-prismic gatsby-plugin-i
 
 ## Documentation
 
-To discover what's new on this package check out [the changelog][changelog]. For full documentation, visit the [official Prismic documentation][prismic-docs].
+To discover what's new on this package check out [the changelog][changelog]. For full documentation, visit the [official Prismic documentation](../../docs).
 
 ## Contributing
 
@@ -60,14 +60,14 @@ limitations under the License.
 
 [prismic]: https://prismic.io
 [gatsby]: https://www.gatsbyjs.com/
-[prismic-previews]: https://prismic.io/docs/core-concepts/preview-setup
-[gatsby-source-prismic]: https://github.com/prismicio-community/prismic-gatsby-early-access/tree/main/packages/gatsby-source-prismic
-[prismic-toolbar]: https://prismic.io/docs/technologies/previews-and-the-prismic-toolbar-javascript
+[prismic-previews]: https://prismic.io/docs/preview
+[gatsby-source-prismic]: ../gatsby-source-prismic
+[prismic-toolbar]: https://prismic.io/docs/preview#the-toolbar
 [gatsby-cloud]: https://www.gatsbyjs.com/products/cloud/
 
 <!-- TODO: Replace link with a more useful one if available -->
 
-[prismic-docs]: https://prismic.io/docs/technologies/gatsby
+[prismic-docs]: https://prismic.io/docs
 [changelog]: https://github.com/prismicio-community/prismic-gatsby-early-access/blob/main/packages/gatsby-plugin-prismic-previews/CHANGELOG.md
 [contributing]: https://github.com/prismicio-community/prismic-gatsby-early-access/blob/main/CONTRIBUTING.md
 
